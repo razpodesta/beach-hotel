@@ -1,84 +1,125 @@
-// RUTA: apps/portfolio-web/src/app/[lang]/mision-y-vision/page.tsx
-// VERSIÓN: 4.0 - Serialización Corregida
-// DESCRIPCIÓN: Se pasan cadenas de texto para identificar los iconos en lugar de
-//              funciones, permitiendo que el Server Component serialice las props correctamente.
+/**
+ * @file Página Institucional: Misión y Visión.
+ * @version 5.0 - MetaShark Elite Standard
+ * @description Orquestador de la narrativa de marca. Implementa Server-Side 
+ *              Dictionary loading y serialización segura de iconos para PillarCards.
+ * @author Raz Podestá - MetaShark Tech
+ */
 
+import React from 'react';
 import type { Metadata } from 'next';
 import { type Locale } from '@/config/i18n.config';
 import { getDictionary } from '@/lib/get-dictionary';
 import { BlurText } from '@/components/razBits/BlurText';
 import { PillarCard } from '@/components/ui/PillarCard';
 import { FadeIn } from '@/components/ui/FadeIn';
-import React from 'react';
 import type { VisionPillar } from '@/lib/schemas/mission_vision.schema';
 
+/**
+ * Propiedades de la página (Next.js 15 asynchronous params).
+ */
 type MissionVisionPageProps = {
   params: Promise<{ lang: Locale }>;
 };
 
+/**
+ * Generador de Metadatos de Autoridad.
+ * Asegura coherencia en el Título y Descripción para SEO E-E-A-T.
+ */
 export async function generateMetadata(props: MissionVisionPageProps): Promise<Metadata> {
-  const params = await props.params;
-  const dictionary = await getDictionary(params.lang);
+  const { lang } = await props.params;
+  const dictionary = await getDictionary(lang);
   const t = dictionary.mission_vision;
+  
   return {
     title: `${t.mission_title} & ${t.vision_title}`,
     description: t.mission_description,
+    openGraph: {
+      title: `${t.mission_title} | Beach Hotel Canasvieiras`,
+      description: t.mission_description,
+      type: 'website',
+    }
   };
 }
 
-// IDs de iconos mapeados como strings simples
-const PILLAR_ICONS = ['book-open', 'brain-circuit', 'goal'];
+/**
+ * Mapeo canónico de identificadores de iconos.
+ * Se mantienen como strings para garantizar la serialización entre Server y Client.
+ */
+const PILLAR_ICONS = ['book-open', 'brain-circuit', 'goal'] as const;
 
+/**
+ * Aparato Visual: Misión y Visión
+ * Implementa una narrativa dividida por un separador semántico de alta precisión.
+ */
 export default async function MissionVisionPage(props: MissionVisionPageProps) {
-  const params = await props.params;
-  const dictionary = await getDictionary(params.lang);
+  const { lang } = await props.params;
+  const dictionary = await getDictionary(lang);
   const t = dictionary.mission_vision;
 
   return (
-    <div className={`font-display ${'var(--font-display)'}`}>
-      <main className="container mx-auto px-4 py-20 sm:py-32">
-        <section className="mx-auto max-w-4xl text-center">
-          <BlurText
-            text={t.mission_title}
-            className="font-display text-4xl font-bold tracking-tight text-white sm:text-5xl justify-center mb-6"
-            animateBy="words"
-          />
-          <FadeIn delay={0.5}>
-            <p className="font-sans text-lg text-zinc-400">
+    <main className="min-h-screen bg-[#050505] text-zinc-300 selection:bg-purple-500/30">
+      <div className="container mx-auto px-6 py-32 sm:py-48">
+        
+        {/* 1. SECCIÓN: MISIÓN (El Propósito) */}
+        <section className="mx-auto max-w-4xl text-center mb-32">
+          <header className="mb-12">
+            <span className="text-[10px] font-bold tracking-[0.4em] text-purple-500 uppercase mb-4 block">
+               Core Purpose
+            </span>
+            <BlurText
+              text={t.mission_title}
+              className="font-display text-5xl md:text-7xl font-bold tracking-tighter text-white justify-center"
+              animateBy="words"
+            />
+          </header>
+          
+          <FadeIn delay={0.4} yOffset={30}>
+            <p className="font-sans text-lg md:text-2xl text-zinc-400 leading-relaxed max-w-3xl mx-auto">
               {t.mission_description}
             </p>
           </FadeIn>
         </section>
 
-        <div className="mx-auto my-20 h-px w-2/3 bg-zinc-800" />
+        {/* Separador de Élite: Línea de gradiente sutil */}
+        <div className="relative mx-auto my-32 h-px w-full max-w-5xl bg-linear-to-r from-transparent via-zinc-800 to-transparent" />
 
-        <section className="mx-auto max-w-5xl text-center">
-          <BlurText
-            text={t.vision_title}
-            className="font-display text-4xl font-bold tracking-tight text-white sm:text-5xl justify-center mb-4"
-            animateBy="words"
-          />
-          <FadeIn delay={0.5}>
-            <p className="font-sans text-lg text-zinc-400 mb-20">
-              {t.vision_subtitle}
-            </p>
-          </FadeIn>
+        {/* 2. SECCIÓN: VISIÓN (El Futuro) */}
+        <section className="mx-auto max-w-6xl text-center">
+          <header className="mb-20">
+            <span className="text-[10px] font-bold tracking-[0.4em] text-pink-500 uppercase mb-4 block">
+               Future Strategy
+            </span>
+            <BlurText
+              text={t.vision_title}
+              className="font-display text-5xl md:text-7xl font-bold tracking-tighter text-white justify-center mb-8"
+              animateBy="words"
+            />
+            <FadeIn delay={0.2}>
+              <p className="font-sans text-lg md:text-xl text-zinc-500 max-w-2xl mx-auto italic">
+                {t.vision_subtitle}
+              </p>
+            </FadeIn>
+          </header>
 
-          <div className="flex flex-col md:flex-row items-center md:items-end justify-center gap-8">
+          {/* GRID DE PILARES (THE GROWTH FLYWHEEL) */}
+          <div className="grid grid-cols-1 md:grid-cols-3 items-stretch gap-8 lg:gap-12">
             {t.vision_pillars.map((pillar: VisionPillar, index: number) => (
-              <React.Fragment key={pillar.title}>
-                <PillarCard
-                  iconName={PILLAR_ICONS[index]} // <-- CAMBIO: Pasamos string
-                  title={pillar.title}
-                  description={pillar.description}
-                  sequence={index + 1}
-                  className="flex-1 min-w-0"
-                />
-              </React.Fragment>
+              <PillarCard
+                key={pillar.title}
+                iconName={PILLAR_ICONS[index] || 'goal'}
+                title={pillar.title}
+                description={pillar.description}
+                sequence={index + 1}
+                className="h-full"
+              />
             ))}
           </div>
         </section>
-      </main>
-    </div>
+      </div>
+
+      {/* Arte Decorativo de Fondo */}
+      <div className="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_bottom_left,rgba(168,85,247,0.05),transparent_40%)] pointer-events-none" />
+    </main>
   );
 }

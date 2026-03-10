@@ -1,11 +1,16 @@
 {
   "header": {
-    "talk": "RESERVAR AGORA",
-    "tagline": "Sua Experiência Boutique em Canasvieiras",
-    "personal_portfolio": "BEACH HOTEL CANASVIEIRAS",
-    "job_title": "Hotel Boutique & Festival Pride Escape 2026",
-    "mobile_title": "Beach Hotel",
-    "mobile_subtitle": "Canasvieiras"
+    "nav_links": {
+      "hotel": "O Hotel",
+      "habitaciones": "Suítes",
+      "festival": "Pride Escape 2026",
+      "historia": "Nossa História",
+      "ubicacion": "Localização",
+      "contacto": "Contato",
+      "reservas": "Reservas Online",
+      "politica_privacidad": "Privacidade",
+      "terminos_servicio": "Termos de Uso"
+    }
   },
   "nav-links": {
     "nav_links": {
@@ -15,8 +20,6 @@
       "historia": "Nossa História",
       "ubicacion": "Localização",
       "contacto": "Contato",
-      "servicios": "Serviços",
-      "galeria": "Galeria",
       "reservas": "Reservas Online",
       "politica_privacidad": "Privacidade",
       "terminos_servicio": "Termos de Uso"
@@ -25,74 +28,132 @@
   "homepage": {
     "hero": {
       "page_title": "Beach Hotel Canasvieiras | Florianópolis",
-      "page_description": "Conforto e exclusividade no coração de Canasvieiras. Hospedagem boutique e sede do festival Pride Escape 2026.",
+      "page_description": "Hospedagem boutique e sede do festival Pride Escape 2026.",
       "SUITES_SUBTITLE": "Onde o luxo encontra o mar.",
       "SUITES_TITLE": "SUÍTES BOUTIQUE",
-      "SUITES_FEATURES": "Vista Panorâmica · Café da Manhã Gourmet · Wi-Fi de Alta Velocidade",
+      "SUITES_FEATURES": "Vista Panorâmica · Café da Manhã Gourmet",
       "FESTIVAL_SUBTITLE": "A nova onda de Florianópolis.",
       "FESTIVAL_TITLE": "PRIDE ESCAPE 2026",
       "FESTIVAL_FEATURES": "Boat Party · VIP Club Nights · 7 Dias de Takeover",
       "CTA_BUTTON": "VER DISPONIBILIDADE"
     },
     "about_section": {
-      "title": "Exclusividade e Conforto.",
-      "bio_part_1": "Situado na prestigiada <strong class=\"font-bold text-white\">Av. das Nações</strong>, o Beach Hotel Canasvieiras redefine a hospitalidade no norte da ilha. Com apenas 40 suítes, oferecemos um refúgio <strong class=\"font-bold text-white\">estratégico e íntimo</strong> para quem busca o equilíbrio perfeito entre o agito de Floripa e o descanso de elite.",
-      "bio_part_2": "Somos a sede oficial do <strong class=\"font-bold text-white\">Canasvieiras Fest: The Winter Escape</strong>, transformando a temporada de outono no momento mais desejado do ano. Nossa infraestrutura Lego-ready permite uma adaptação total para eventos de alto padrão.",
-      "cta_button": "Descubra Nossa História"
+      "title": "Engenheiro, Criativo, Estratega.",
+      "bio_part_1": "Com uma base forjada ao longo de mais de <strong class=\"font-bold text-white\">20 anos em engenharia de software</strong>, hoje eu uno o rigor técnico com uma paixão pela criatividade e estratégia de conversão. Minha especialidade é forjar <strong class=\"font-bold text-white\">ecossistemas digitais de elite</strong>: desde funis de vendas de alta conversão até PWAs com filosofia *Mobile-First*.",
+      "bio_part_2": "Para isso, construí meu próprio arsenal: minha IA copiloto soberana <strong class=\"font-bold text-white\">LIA Legacy</strong> e uma metodologia que acelera o desenvolvimento. Eu não construo sites, eu construo ativos escaláveis projetados para uma única coisa: <strong class=\"font-bold text-white\">resultados</strong>.",
+      "cta_button": "Ler a História Completa"
     },
     "value_proposition_section": {
-      "title": "Hospitalidade de Élite",
+      "amenities_title": "Comodidades Premium",
+      "amenities_cta": "Acesso exclusivo para hóspedes do Beach Hotel",
+      "title": "Hospitalidade de Elite",
       "subtitle": "Nossa filosofia baseia-se em três pilares fundamentais para garantir que sua estadia seja transformadora e inesquecível.",
       "pillars": [
         {
           "title": "Localização Premium",
-          "description": "No coração de Canasvieiras, a poucos metros da praia e cercado pela melhor gastronomia e vida noturna da região."
+          "description": "No coração de Canasvieiras, a poucos metros da praia."
         },
         {
           "title": "Design Inclusivo",
-          "description": "Um ambiente sofisticado e acolhedor, projetado para celebrar a diversidade com segurança e luxo contemporâneo."
+          "description": "Um ambiente sofisticado e acolhedor, projetado para celebrar a diversidade."
         },
         {
           "title": "Experiência Digital",
-          "description": "Check-in inteligente, concierge via app e suporte total para nômades digitais que não abrem mão do conforto."
+          "description": "Check-in inteligente e suporte total para nômades digitais."
         }
-      ]
+      ],
+      "testimonial": {
+        "quote": "Uma experiência inesquecível. O equilíbrio perfeito entre o relaxamento e a melhor vida noturna de Floripa.",
+        "author_name": "Alex Johnson",
+        "author_role": "Hóspede VIP"
+      }
     },
     "contact": {
-      "title": "RESERVE SUA ESTADIA",
-      "form_cta": "Tem alguma dúvida ou pedido especial? Nossa equipe de concierge está pronta para ajudar.",
+      "title": "ENTRE EM CONTATO",
+      "form_cta": "Tem uma ideia ou projeto em mente? Adoraria ouvir sobre isso. Preencha o formulário e entrarei em contato em breve.",
       "form_placeholder_name": "* Nome",
       "form_placeholder_email": "* Email",
-      "form_placeholder_message": "* Sua mensagem ou datas desejadas...",
-      "form_button_submit": "Enviar Solicitação",
+      "form_placeholder_message": "* Sua mensagem...",
+      "form_button_submit": "Enviar Mensagem",
       "validation": {
         "name_required": "O nome é obrigatório",
         "email_required": "O email é obrigatório",
-        "email_invalid": "Insira um email válido",
+        "email_invalid": "Por favor, insira um email válido",
         "message_too_short": "A mensagem deve ter pelo menos 10 caracteres"
       }
     },
     "history_section": {
-      "title": "O Legado Canasvieiras",
-      "subtitle": "De uma tradição familiar à vanguarda da hospitalidade boutique em Santa Catarina."
+      "title": "Forjado em Código",
+      "subtitle": "Descubra a fusão de duas décadas de engenharia de sistemas com uma visão criativa obcecada por resultados. Isto não é apenas um portfólio; é o legado de uma arquitetura construída para durar."
     },
     "ai_gallery_section": {
-      "badge": "Pride Escape Vibe",
-      "title": "Sintetizador Visual",
-      "subtitle": "A aura do Canasvieiras Fest 2026. Neons, reflexos e a energia da comunidade internacional.",
+      "badge": "Impulsionado por Ideogram 3.0",
+      "title": "Sintetizador Visual IA",
+      "subtitle": "Explore uma coleção curada de ativos gerados algoritmicamente. Fotorrealismo, tipografia perfeita e consistência estilística, orquestrados pelo nosso CMS soberano.",
       "overlay_indicator": "RENDER AO VIVO • WEBGL 2.0",
-      "footer_prompt": "Direção Criativa: Raz Podestá",
-      "footer_upscaling": "Experiência Inmersiva 8K"
+      "footer_prompt": "Engenharia de Prompts Avançada",
+      "footer_upscaling": "Upscaling 8K e Otimização",
+      "items": {
+        "neon-typography": {
+          "title": "Tipografia Neon e Cristal",
+          "description": "Renderização 3D tipográfica com tubos de neon."
+        },
+        "editorial-fashion": {
+          "title": "Moda Editorial",
+          "description": "Composição de alta moda com texturas fotorrealistas."
+        },
+        "tech-badge": {
+          "title": "Insígnia de Titânio",
+          "description": "Fotografia macro de produto com acabamento escovado."
+        },
+        "transparent-gadget": {
+          "title": "Hardware Transparente",
+          "description": "Visualização de engenharia de um dispositivo futurista."
+        },
+        "luxury-perfume": {
+          "title": "Vidraria de Luxo",
+          "description": "Fotografia publicitária com iluminação de borda."
+        },
+        "concept-car": {
+          "title": "Conceito Automotivo",
+          "description": "Detalhe abstrato de faróis com fibra de carbono."
+        },
+        "concrete-workspace": {
+          "title": "Espaço Minimalista",
+          "description": "Design de interiores com texturas de concreto bruto."
+        },
+        "cyberpunk-street": {
+          "title": "Atmosfera Cyberpunk",
+          "description": "Fotografia noturna com iluminação volumétrica."
+        },
+        "abstract-geometry": {
+          "title": "Geometria Paramétrica",
+          "description": "Arquitetura abstrata branca contra céu azul."
+        },
+        "fluid-shapes": {
+          "title": "Fluidos Iridescentes",
+          "description": "Simulação 3D de metal líquido com dispersão."
+        },
+        "mechanical-insect": {
+          "title": "Inseto Mecânico",
+          "description": "Macro fotografia steampunk de alta precisão."
+        },
+        "neural-network": {
+          "title": "Arte de Rede Neural",
+          "description": "Visualização abstrata de fluxos de dados."
+        }
+      }
     }
   },
   "footer": {
-    "newsletter_title": "Fique por dentro",
+    "newsletter_title": "Junte-se ao Ecossistema",
     "newsletter_placeholder": "Seu endereço de e-mail",
-    "newsletter_button": "Assinar",
-    "column_nav_title": "Mapa do Site",
+    "newsletter_button": "Inscrever-se",
+    "column_nav_title": "Navegação",
+    "column_services_title": "Serviços",
     "column_legal_title": "Legal",
-    "rights_reserved": "© 2026 Beach Hotel Canasvieiras. Todos os direitos reservados.",
-    "made_by": "Tecnologia por Raz Podestá | MetaShark Tech"
+    "rights_reserved": "© 2025 Todos os direitos reservados.",
+    "made_by": "Forjado por Raz Podestá | MetaShark Tech"
   },
   "language_switcher": {
     "label": "Idioma",
@@ -100,24 +161,538 @@
     "es-ES": "Español",
     "pt-BR": "Português"
   },
-  "system_status": {
-    "aria_label": "Status do Hotel",
-    "items": [
-      "🔥 PRIDE ESCAPE: 90% das Suítes Master ocupadas.",
-      "☀️ Previsão: 25°C em Canasvieiras. Céu limpo para a Boat Party.",
-      "🍸 Happy Hour no Rooftop: Todos os dias às 18h.",
-      "✅ WiFi 6 Liberado: Conectividade de alta performance em todo o predio."
-    ]
-  },
   "not_found": {
-    "title": "Quarto Não Encontrado",
-    "description": "A rota que você procura não está disponível em nosso mapa atual. Deixe nosso concierge guiá-lo de volta.",
-    "cta_button": "Voltar para a Recepção",
-    "error_code": "ERR_HOTEL_ROUTE_404"
+    "title": "Página Não Encontrada",
+    "description": "Parece que você se aventurou em território indefinido. A rota que você procura não existe nesta versão da matrix.",
+    "cta_button": "Retornar à Base",
+    "error_code": "ERR_ROUTE_MISSING • SYSTEM_ID_404"
   },
   "maintenance": {
-    "title": "Renovação Digital",
-    "description": "Estamos polindo nossa plataforma para oferecer uma experiência de reserva ainda mais fluida.",
-    "estimated_return": "Retorno em breve."
+    "title": "Atualização do Sistema em Andamento",
+    "description": "Estamos implementando melhorias arquitetônicas no ecossistema. O acesso está temporariamente restrito para garantir a integridade dos dados.",
+    "estimated_return": "Retorno esperado: Em breve."
+  },
+  "mission_vision": {
+    "mission_title": "Nossa Missão",
+    "mission_description": "Orquestrar o ciclo de vida completo da conversão digital. Forjamos ecossistemas inteligentes e soberanos que unificam a estratégia de marca, a criação de experiências e a otimização contínua, transformando o marketing de um jogo de adivinhação em uma ciência de crescimento previsível.",
+    "vision_title": "Nossa Visão: O Volante de Crescimento",
+    "vision_subtitle": "Nossa visão é ser a força motriz de um novo paradigma: a web como um ecossistema vivo e auto-otimizado, onde cada interação alimenta um volante de crescimento perpétuo (growth flywheel).",
+    "vision_pillars": [
+      {
+        "title": "Entender",
+        "description": "Não apenas capturamos métricas; alcançamos uma observabilidade holística. Integramos dados qualitativos e quantitativos para construir um perfil de visitante dinâmico, entendendo o 'porquê' por trás de cada 'o quê'."
+      },
+      {
+        "title": "Adaptar-se",
+        "description": "As plataformas que construímos não são estáticas. São entidades vivas que utilizam a inteligência artificial para se adaptar e evoluir harmonicamente, personalizando a experiência em tempo real para atender às necessidades de cada usuário."
+      },
+      {
+        "title": "Maximizar",
+        "description": "A conversão não é um evento, é uma ciência. Nosso ecossistema utiliza os insights gerados para alimentar um ciclo de otimização contínua, garantindo que cada ativo e cada campanha se tornem inerentemente mais eficazes ao longo do tempo, maximizando os objetivos de negócio."
+      }
+    ]
+  },
+  "legal": {
+    "privacy_policy": {
+      "title": "Política de Privacidade",
+      "last_updated": "12 de Novembro de 2025",
+      "content": [
+        {
+          "heading": "1. Introdução",
+          "body": "Bem-vindo ao meu portfólio. Sua privacidade é de extrema importância. Esta política detalha quais dados pessoais são coletados e como são utilizados."
+        },
+        {
+          "heading": "2. Dados que Coletamos",
+          "body": "Para o widget de visitante, coletamos dados de geolocalização anônimos através de APIs públicas (IP-API, Open-Meteo) para personalizar a experiência. Para a inscrição na newsletter, utilizamos o Supabase Auth, que pode envolver o uso de cookies para gerenciar sua sessão. Não vendemos nem compartilhamos seus dados com terceiros."
+        }
+      ]
+    },
+    "terms_of_service": {
+      "title": "Termos de Serviço",
+      "last_updated": "12 de Novembro de 2025",
+      "content": [
+        {
+          "heading": "1. Aceitação dos Termos",
+          "body": "Ao utilizar este site, você concorda em cumprir estes termos e condições de uso. O conteúdo e os projetos aqui exibidos são de minha propriedade intelectual, salvo indicação em contrário."
+        },
+        {
+          "heading": "2. Uso do Site",
+          "body": "Este site é fornecido 'como está' para fins informativos e profissionais. Não é permitido o uso de seu conteúdo para fins comerciais sem consentimento explícito prévio. É proibida qualquer tentativa de interromper ou comprometer a segurança do site."
+        }
+      ]
+    }
+  },
+  "system_status": {
+    "aria_label": "Live Status Updates",
+    "items": [
+      "🔥 PRIDE ESCAPE: 90% Master Suites occupied.",
+      "☀️ Forecast: 25°C in Canasvieiras. Clear skies for the Boat Party.",
+      "🍸 Happy Hour at HQ: Daily at 6 PM.",
+      "✅ High-Performance WiFi 6 enabled in all suites."
+    ]
+  },
+  "project_details": {
+    "landing-pages-de-conversion": {
+      "id": "landing-pages-de-conversion",
+      "title": "Landing Pages de Alta Conversão",
+      "subtitle": "Engenharia de Persuasão na Velocidade da Luz",
+      "introduction": {
+        "heading": "O Monorepo como Motor de Crescimento",
+        "body": "Esta não é uma simples página estática. É um ativo digital forjado dentro de um ecossistema de Monorepo Nx, projetado para escalar sem limites técnicos. Ao desacoplar a interface da lógica, garantimos tempos de carregamento instantâneos (LCP < 0.8s) e uma arquitetura pronta para integrar testes A/B no nível Edge sem atrito."
+      },
+      "tech_stack": [
+        "Next.js 15 (SSG)",
+        "Tailwind CSS v4",
+        "Framer Motion",
+        "React Hook Form",
+        "Zod Validation"
+      ],
+      "backend_architecture": {
+        "title": "Supabase: Captura de Leads Soberana",
+        "description": "Infraestrutura Serverless para gestão de dados sem latência.",
+        "features": [
+          "Edge Functions para processamento de formulários",
+          "Validação de dados em tempo real",
+          "Webhooks para integração com CRM"
+        ]
+      },
+      "elite_options": [
+        {
+          "name": "Internacionalização Total",
+          "detail": "Suporte nativo para 127 idiomas com detecção de IP."
+        },
+        {
+          "name": "Análise Comportamental",
+          "detail": "Mapas de calor e gravação de sessões integrados."
+        }
+      ],
+      "ui_sections": [
+        "Hero de Alto Impacto",
+        "Prova Social Dinâmica",
+        "Grid de Benefícios",
+        "Formulário Inteligente",
+        "FAQ Accordion",
+        "CTA Flutuante"
+      ],
+      "branding": {
+        "font_heading": "Clash Display",
+        "font_body": "Satoshi",
+        "primary_color": "#7c3aed",
+        "layout_style": "minimal"
+      }
+    },
+    "ecommerce-de-autor": {
+      "id": "ecommerce-de-autor",
+      "title": "E-Commerce Headless & Composable",
+      "subtitle": "Vendas sem Atrito, Experiência de Marca Total",
+      "introduction": {
+        "heading": "Arquitetura de Comércio Escalável",
+        "body": "Construído sobre os princípios de Composable Commerce dentro do nosso Monorepo. Separamos o frontend da lógica de inventário para oferecer experiências de compra instantâneas. Pronto para lidar com picos de tráfego massivos (Black Friday) graças à infraestrutura Serverless e cache inteligente no Edge."
+      },
+      "tech_stack": [
+        "Next.js (SSR/ISR)",
+        "Zustand (Carrinho Persistente)",
+        "Stripe API",
+        "Radix UI",
+        "React Query"
+      ],
+      "backend_architecture": {
+        "title": "Orquestração de Pedidos com Supabase",
+        "description": "Banco de dados Postgres em tempo real para gestão de estoque.",
+        "features": [
+          "Sincronização de inventário em tempo real (Websockets)",
+          "Autenticação segura de clientes",
+          "Triggers de banco de dados para emails transacionais"
+        ]
+      },
+      "elite_options": [
+        {
+          "name": "Busca Algolia/MeiliSearch",
+          "detail": "Resultados instantâneos e tolerantes a erros de digitação."
+        },
+        {
+          "name": "Auth Shield",
+          "detail": "Segurança biométrica (Passkeys) para login de clientes."
+        }
+      ],
+      "ai_features": {
+        "enabled": true,
+        "description": "Personalização de compras impulsionada por IA.",
+        "capabilities": [
+          "Recomendações de produtos preditivas",
+          "Chatbot de suporte pré-venda"
+        ]
+      },
+      "ui_sections": [
+        "Vitrine Dinâmica",
+        "Filtros Avançados",
+        "Quick View Modal",
+        "Checkout Otimizado",
+        "Histórico de Pedidos"
+      ],
+      "branding": {
+        "font_heading": "Cabinet Grotesk",
+        "font_body": "Inter",
+        "primary_color": "#0ea5e9",
+        "layout_style": "corporate"
+      }
+    },
+    "showrooms-corporativos": {
+      "id": "showrooms-corporativos",
+      "title": "Showroom Corporativo Imersivo",
+      "subtitle": "Projeção de Autoridade B2B Global",
+      "introduction": {
+        "heading": "Identidade Digital Soberana",
+        "body": "Um ecossistema digital projetado para inspirar confiança e autoridade. Graças ao Monorepo, compartilhamos componentes de design (Design System) entre múltiplas verticais da empresa, garantindo consistência de marca absoluta enquanto mantemos a flexibilidade para inovar na apresentação visual."
+      },
+      "tech_stack": [
+        "Next.js 15",
+        "React Three Fiber (3D)",
+        "GSAP ScrollTrigger",
+        "WebGL Shaders"
+      ],
+      "backend_architecture": {
+        "title": "CMS Headless Empresarial",
+        "description": "Gestão de conteúdo corporativo desacoplada.",
+        "features": [
+          "Funções RBAC (Admin/Editor/Viewer)",
+          "Pipeline de aprovação de conteúdo",
+          "API GraphQL federada"
+        ]
+      },
+      "elite_options": [
+        {
+          "name": "Multi-Tenant",
+          "detail": "Infraestrutura preparada para hospedar múltiplas marcas do grupo sob um mesmo código."
+        },
+        {
+          "name": "Lead Scoring",
+          "detail": "Qualificação automática de prospects B2B baseada em interação."
+        }
+      ],
+      "ui_sections": [
+        "Vídeo Hero 4K",
+        "Timeline Corporativo",
+        "Mapa de Presença Global",
+        "Visualizador de Produto 3D",
+        "Investor Relations Hub"
+      ],
+      "branding": {
+        "font_heading": "Playfair Display",
+        "font_body": "Lato",
+        "primary_color": "#1e293b",
+        "layout_style": "immersive"
+      }
+    },
+    "plataformas-hoteleras": {
+      "id": "plataformas-hoteleras",
+      "title": "Hospitality & Booking Engine",
+      "subtitle": "Gestão de Reservas em Tempo Real",
+      "introduction": {
+        "heading": "Disponibilidade Sincronizada",
+        "body": "Mais do que um site, é um motor de operações. Aproveitamos o poder do Node.js no backend do Monorepo para gerenciar concorrência e evitar overbooking. A arquitetura permite escalar de um hotel boutique para uma cadeia internacional sem reescrever o núcleo."
+      },
+      "tech_stack": [
+        "Next.js",
+        "Date-fns",
+        "Mapbox GL",
+        "PostgreSQL",
+        "Redis (Caching)"
+      ],
+      "backend_architecture": {
+        "title": "Motor de Disponibilidade Supabase",
+        "description": "Lógica complexa de datas e preços no banco de dados.",
+        "features": [
+          "Bloqueio otimista de quartos",
+          "Procedimentos armazenados para cálculo de tarifas",
+          "Webhooks de pagamento seguros"
+        ]
+      },
+      "elite_options": [
+        {
+          "name": "Geração de Vouchers PDF",
+          "detail": "Renderização de documentos on-the-fly com React-PDF."
+        },
+        {
+          "name": "Sistema de Fidelidade",
+          "detail": "Pontos e recompensas gerenciados em Blockchain privada."
+        }
+      ],
+      "ui_sections": [
+        "Busca de Disponibilidade",
+        "Galeria de Quartos",
+        "Experiências Locais",
+        "Painel de Hóspede",
+        "Integração de Avaliações"
+      ],
+      "branding": {
+        "font_heading": "Cinzel",
+        "font_body": "Montserrat",
+        "primary_color": "#c084fc",
+        "layout_style": "editorial"
+      }
+    },
+    "comunidades-online": {
+      "id": "comunidades-online",
+      "title": "Comunidade Digital & Assinatura",
+      "subtitle": "Interação em Tempo Real e Conteúdo Exclusivo",
+      "introduction": {
+        "heading": "Infraestrutura Social Escalável",
+        "body": "Construímos espaços digitais vivos. Usando WebSockets e a camada de tempo real do Supabase dentro do nosso Monorepo, facilitamos interações instantâneas (chat, notificações) que escalam horizontalmente. Tudo sob um sistema de autenticação robusto e funções granulares."
+      },
+      "tech_stack": [
+        "Next.js",
+        "Supabase Realtime",
+        "TipTap (Editor)",
+        "SWR",
+        "WebSockets"
+      ],
+      "backend_architecture": {
+        "title": "Backend Social em Tempo Real",
+        "description": "Gestão de eventos e presença de usuários.",
+        "features": [
+          "Canais de assinatura ao vivo",
+          "Row Level Security para privacidade estrita",
+          "Moderação automática"
+        ]
+      },
+      "elite_options": [
+        {
+          "name": "Gamificação (Protocolo 33)",
+          "detail": "Sistema de níveis, insígnias e recompensas integrado."
+        },
+        {
+          "name": "Newsletter Automatizada",
+          "detail": "Resumos semanais gerados automaticamente."
+        }
+      ],
+      "ui_sections": [
+        "Feed de Atividade",
+        "Fóruns de Discussão",
+        "Diretório de Membros",
+        "Chat Privado",
+        "Dashboard de Assinatura"
+      ],
+      "branding": {
+        "font_heading": "Space Grotesk",
+        "font_body": "DM Sans",
+        "primary_color": "#10b981",
+        "layout_style": "minimal"
+      }
+    },
+    "plataformas-ong": {
+      "id": "plataformas-ong",
+      "title": "ONGs & Impacto Social",
+      "subtitle": "Transparência e Arrecadação de Fundos",
+      "introduction": {
+        "heading": "Tecnologia para Mudança",
+        "body": "A confiança é a moeda de troca. Utilizamos a imutabilidade da arquitetura moderna e a integração com APIs de pagamento recorrente para maximizar as doações. O Monorepo permite implantar rapidamente 'landing pages de campanha' que herdam a segurança e o design da plataforma principal."
+      },
+      "tech_stack": [
+        "Next.js",
+        "Recharts (Visualização)",
+        "Stripe Donations",
+        "React Markdown"
+      ],
+      "backend_architecture": {
+        "title": "Rastreabilidade de Impacto",
+        "description": "Banco de dados auditável e gestão de CRM.",
+        "features": [
+          "Registro imutável de doações",
+          "Gestão de banco de dados de voluntários",
+          "API pública de transparência"
+        ]
+      },
+      "elite_options": [
+        {
+          "name": "Rastreabilidade Blockchain",
+          "detail": "Prova criptográfica do destino dos fundos."
+        },
+        {
+          "name": "Acessibilidade AAA",
+          "detail": "Conformidade estrita WCAG 2.1 para inclusão total."
+        }
+      ],
+      "ui_sections": [
+        "Storytelling de Impacto",
+        "Termômetro de Doações",
+        "Portal do Doador",
+        "Mapa de Projetos",
+        "Relatórios Anuais Interativos"
+      ],
+      "branding": {
+        "font_heading": "Merriweather",
+        "font_body": "Open Sans",
+        "primary_color": "#f59e0b",
+        "layout_style": "editorial"
+      }
+    },
+    "portafolios-creativos": {
+      "id": "portafolios-creativos",
+      "title": "Portfólio Criativo Autoral",
+      "subtitle": "A Galeria Digital Definitiva",
+      "introduction": {
+        "heading": "Performance Visual Sem Compromissos",
+        "body": "Projetado para artistas que exigem qualidade. Implementamos técnicas avançadas de carregamento progressivo de imagens e transições de página suaves (SPA feel) sobre uma arquitetura SSG. O Monorepo garante que seu portfólio não seja apenas bonito, mas tecnicamente perfeito aos olhos do Google."
+      },
+      "tech_stack": [
+        "Next.js",
+        "Framer Motion (Page Transitions)",
+        "Lenis Scroll",
+        "Cloudinary / Imgix"
+      ],
+      "backend_architecture": {
+        "title": "Gestor de Ativos Digitais (DAM)",
+        "description": "API otimizada para entrega de mídia pesada.",
+        "features": [
+          "Transformação de imagens on-the-fly",
+          "Suporte para streaming de vídeo 4K",
+          "Cache agressivo em CDN"
+        ]
+      },
+      "elite_options": [
+        {
+          "name": "Modo Escuro/Claro Semântico",
+          "detail": "Adaptação total da atmosfera visual."
+        },
+        {
+          "name": "Navegação Experimental",
+          "detail": "Interfaces não lineares e exploratórias."
+        }
+      ],
+      "ui_sections": [
+        "Grid Masonry",
+        "Lightbox Imersivo",
+        "About Me Interativo",
+        "Diário de Processos",
+        "Contato Minimalista"
+      ],
+      "branding": {
+        "font_heading": "Syne",
+        "font_body": "Manrope",
+        "primary_color": "#ec4899",
+        "layout_style": "brutalist"
+      }
+    },
+    "revistas-digitales": {
+      "id": "revistas-digitales",
+      "title": "Publicação Digital High-End",
+      "subtitle": "Conteúdo Editorial em Escala",
+      "introduction": {
+        "heading": "SEO e Legibilidade Massiva",
+        "body": "Uma plataforma editorial construída para velocidade e indexação. Usamos Incremental Static Regeneration (ISR) para servir conteúdo fresco sem sacrificar o desempenho do site estático. A arquitetura modular permite injetar publicidade ou paywalls de forma cirúrgica sem afetar a experiência de leitura."
+      },
+      "tech_stack": [
+        "Next.js (ISR)",
+        "MDX",
+        "Algolia Search",
+        "Integração com Newsletter"
+      ],
+      "backend_architecture": {
+        "title": "CMS API Soberana",
+        "description": "Gestão editorial centralizada.",
+        "features": [
+          "Modelagem de dados flexível com JSONB",
+          "Suporte multi-autor",
+          "API de sindicação de conteúdo (RSS/JSON)"
+        ]
+      },
+      "elite_options": [
+        {
+          "name": "Paywall Inteligente",
+          "detail": "Lógica de acesso baseada em assinatura ou micropagamentos."
+        },
+        {
+          "name": "Suporte AMP",
+          "detail": "Versões aceleradas para Google Discover."
+        }
+      ],
+      "ai_features": {
+        "enabled": true,
+        "description": "Assistente editorial inteligente.",
+        "capabilities": [
+          "Geração de resumos TL;DR",
+          "Etiquetagem automática de conteúdo",
+          "Tradução neural para 5 idiomas"
+        ]
+      },
+      "ui_sections": [
+        "Capa Editorial",
+        "Artigo Imersivo",
+        "Sidebar Inteligente",
+        "Arquivo por Categorias",
+        "Popup de Newsletter"
+      ],
+      "branding": {
+        "font_heading": "Bodoni Moda",
+        "font_body": "Lora",
+        "primary_color": "#be123c",
+        "layout_style": "editorial"
+      }
+    },
+    "fashion-wear-de-lujo": {
+      "id": "fashion-wear-de-lujo",
+      "title": "Fashion Wear & Luxury",
+      "subtitle": "Experiência de Marca Sensorial",
+      "introduction": {
+        "heading": "Vanguarda Estética e Técnica",
+        "body": "Onde a moda encontra o código. Usamos WebGL e Shaders personalizados para criar texturas digitais que quase se pode tocar. Dentro do Monorepo, esta aplicação empurra os limites do navegador, oferecendo uma experiência 'App-like' fluida e visualmente deslumbrante."
+      },
+      "tech_stack": [
+        "Next.js",
+        "Three.js / React Three Fiber",
+        "WebGL Shaders",
+        "Lenis Smooth Scroll"
+      ],
+      "backend_architecture": {
+        "title": "Estoque de Alta Frequência",
+        "description": "Sincronização global de estoque de luxo.",
+        "features": [
+          "Gestão de drops e lançamentos limitados",
+          "Lista de espera automatizada",
+          "Integração com ERPs de moda"
+        ]
+      },
+      "elite_options": [
+        {
+          "name": "Provador Virtual (AR)",
+          "detail": "Prova de acessórios via webcam e realidade aumentada."
+        },
+        {
+          "name": "Video Commerce",
+          "detail": "Compra direta sobre passarelas em vídeo."
+        }
+      ],
+      "ai_features": {
+        "enabled": true,
+        "description": "Estilista pessoal virtual.",
+        "capabilities": [
+          "Recomendação de looks baseada em estilo visual",
+          "Busca visual de produtos similares"
+        ]
+      },
+      "ui_sections": [
+        "Vídeo Hero Full-Screen",
+        "Lookbook Interativo",
+        "Ficha de Produto Cinematográfica",
+        "História da Coleção",
+        "Checkout Exclusivo"
+      ],
+      "branding": {
+        "font_heading": "Italiana",
+        "font_body": "Tenor Sans",
+        "primary_color": "#000000",
+        "layout_style": "immersive"
+      }
+    }
+  },
+  "blog_page": {
+    "page_title": "Concierge Journal | Beach Hotel Canasvieiras",
+    "page_description": "Descubra os segredos mais bem guardados da ilha, guias exclusivos de vida noturna e novidades sobre o Pride Escape.",
+    "hero_title": "The Concierge Journal",
+    "featured_title": "Leitura em Destaque",
+    "all_posts_title": "Últimas Novidades",
+    "read_more_cta": "Ler Artigo",
+    "empty_state": "Nenhum artigo disponível no momento. Fique ligado."
   }
 }

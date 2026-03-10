@@ -1,0 +1,42 @@
+{
+  "name": "@metashark-cms/core",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/cms/core/src",
+  "projectType": "library",
+  "tags": ["scope:cms", "type:core"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/cms/core",
+        "main": "packages/cms/core/src/payload.config.ts",
+        "tsConfig": "packages/cms/core/tsconfig.lib.json",
+        "assets": [
+          "packages/cms/core/*.md",
+          {
+            "input": "packages/cms/core/src",
+            "glob": "**/*.!(ts|tsx)",
+            "output": "./"
+          }
+        ]
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/packages/cms/core"],
+      "options": {
+        "jestConfig": "packages/cms/core/jest.config.ts"
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc -p packages/cms/core/tsconfig.lib.json --noEmit"
+      }
+    }
+  }
+}

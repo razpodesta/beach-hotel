@@ -1,0 +1,2692 @@
+{
+  "version": "6.0",
+  "nxVersion": "22.0.2",
+  "pathMappings": {
+    "@/*": [
+      "apps/portfolio-web/src/*"
+    ],
+    "@metashark/cms-core": [
+      "packages/cms/core/src/index.ts"
+    ],
+    "@metashark/cms-core/config": [
+      "packages/cms/core/src/payload.config.ts"
+    ],
+    "@metashark/cms-core/collections": [
+      "packages/cms/core/src/collections/index.ts"
+    ],
+    "@metashark/cms-ui": [
+      "packages/cms/ui/src/index.ts"
+    ],
+    "@metashark/protocol-33": [
+      "packages/protocol-33/src/index.ts"
+    ],
+    "@metashark/auth-shield": [
+      "packages/auth-shield/src/index.ts"
+    ],
+    "@metashark/testing-utils": [
+      "packages/testing-utils/src/index.ts"
+    ]
+  },
+  "nxJsonPlugins": [
+    {
+      "name": "@nx/js/typescript",
+      "options": {
+        "typecheck": {
+          "targetName": "typecheck"
+        }
+      }
+    },
+    {
+      "name": "@nx/next/plugin",
+      "options": {
+        "buildTargetName": "build",
+        "devTargetName": "dev",
+        "serveTargetName": "serve",
+        "serveStaticTargetName": "serve-static"
+      }
+    },
+    {
+      "name": "@nx/eslint/plugin",
+      "options": {
+        "targetName": "lint"
+      }
+    },
+    {
+      "name": "@nx/jest/plugin",
+      "options": {
+        "targetName": "test"
+      }
+    },
+    {
+      "name": "@nx/rollup/plugin",
+      "options": {
+        "buildTargetName": "build",
+        "buildDepsTargetName": "build-deps",
+        "watchDepsTargetName": "watch-deps"
+      }
+    },
+    {
+      "name": "@nx/js/typescript",
+      "options": {
+        "typecheck": {
+          "targetName": "typecheck"
+        },
+        "build": {
+          "targetName": "build",
+          "configName": "tsconfig.lib.json"
+        }
+      }
+    }
+  ],
+  "fileMap": {
+    "nonProjectFiles": [],
+    "projectFileMap": {
+      "@portfolio/testing-utils": [
+        {
+          "file": "packages/testing-utils/.spec.swcrc",
+          "hash": "18201067170784284381"
+        },
+        {
+          "file": "packages/testing-utils/README.md",
+          "hash": "16269602868918243062"
+        },
+        {
+          "file": "packages/testing-utils/eslint.config.mjs",
+          "hash": "685157097331647975",
+          "deps": [
+            "npm:jsonc-eslint-parser"
+          ]
+        },
+        {
+          "file": "packages/testing-utils/jest.config.ts",
+          "hash": "4941506416480583414"
+        },
+        {
+          "file": "packages/testing-utils/jest.setup.ts",
+          "hash": "2188842514027630305",
+          "deps": [
+            "npm:isomorphic-fetch"
+          ]
+        },
+        {
+          "file": "packages/testing-utils/package.json",
+          "hash": "11326666231651205992",
+          "deps": [
+            "npm:react",
+            "npm:react-dom",
+            "npm:tslib",
+            "npm:@faker-js/faker",
+            "npm:msw",
+            "npm:@testing-library/react",
+            "npm:next-themes"
+          ]
+        },
+        {
+          "file": "packages/testing-utils/src/index.ts",
+          "hash": "10496210136792617449"
+        },
+        {
+          "file": "packages/testing-utils/src/lib/factories/user.factory.ts",
+          "hash": "16366464358184771164",
+          "deps": [
+            "npm:@faker-js/faker"
+          ]
+        },
+        {
+          "file": "packages/testing-utils/src/lib/mocks/handlers.ts",
+          "hash": "6682892904495886246"
+        },
+        {
+          "file": "packages/testing-utils/src/lib/mocks/server.ts",
+          "hash": "5072969720175049260",
+          "deps": [
+            "npm:msw"
+          ]
+        },
+        {
+          "file": "packages/testing-utils/src/lib/rendering/custom-render.tsx",
+          "hash": "5941408186728530533",
+          "deps": [
+            "npm:react",
+            "npm:@testing-library/react",
+            "npm:next-themes"
+          ]
+        },
+        {
+          "file": "packages/testing-utils/src/lib/testing-utils.ts",
+          "hash": "16045256856501043472"
+        },
+        {
+          "file": "packages/testing-utils/tsconfig.json",
+          "hash": "16125344141381690932"
+        },
+        {
+          "file": "packages/testing-utils/tsconfig.lib.json",
+          "hash": "16555308295615761668"
+        },
+        {
+          "file": "packages/testing-utils/tsconfig.spec.json",
+          "hash": "6773699378602059148"
+        }
+      ],
+      "portfolio-web": [
+        {
+          "file": "apps/portfolio-web/.swcrc",
+          "hash": "2742566327615098680"
+        },
+        {
+          "file": "apps/portfolio-web/eslint.config.mjs",
+          "hash": "1983342572454620730",
+          "deps": [
+            "npm:typescript-eslint",
+            "npm:@next/eslint-plugin-next",
+            "npm:eslint-plugin-react-hooks",
+            "npm:eslint-plugin-jest"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/index.d.ts",
+          "hash": "5498222895072842432"
+        },
+        {
+          "file": "apps/portfolio-web/jest.config.ts",
+          "hash": "15047670514656310864"
+        },
+        {
+          "file": "apps/portfolio-web/jest.setup.ts",
+          "hash": "9451624703001438765",
+          "deps": [
+            "npm:isomorphic-fetch",
+            "npm:@testing-library/jest-dom"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/middleware.ts",
+          "hash": "5865548675541329561",
+          "deps": [
+            "npm:next",
+            "npm:@formatjs/intl-localematcher",
+            "npm:negotiator"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/next-env.d.ts",
+          "hash": "1320675027584673186"
+        },
+        {
+          "file": "apps/portfolio-web/next.config.js",
+          "hash": "8824732211104273292",
+          "deps": [
+            "npm:@nx/next",
+            "npm:@payloadcms/next"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/postcss.config.js",
+          "hash": "11860505650263276733"
+        },
+        {
+          "file": "apps/portfolio-web/postprocessing.d.ts",
+          "hash": "7986205200324700090",
+          "deps": [
+            "npm:three"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/project.json",
+          "hash": "7678880221673671464"
+        },
+        {
+          "file": "apps/portfolio-web/public/Logo-portfolio-png.png",
+          "hash": "321806918914935842"
+        },
+        {
+          "file": "apps/portfolio-web/public/audio/teaser-festival.mp3",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "apps/portfolio-web/public/favicon.ico",
+          "hash": "6058699349852120907"
+        },
+        {
+          "file": "apps/portfolio-web/public/fonts/ClashDisplay-Bold.woff2",
+          "hash": "11989498581320362949"
+        },
+        {
+          "file": "apps/portfolio-web/public/fonts/ClashDisplay-Regular.woff2",
+          "hash": "9892300192117144466"
+        },
+        {
+          "file": "apps/portfolio-web/public/fonts/Dicaten.woff2",
+          "hash": "14541492045793292995"
+        },
+        {
+          "file": "apps/portfolio-web/public/fonts/PallomaSignature.woff2",
+          "hash": "16073802737102914867"
+        },
+        {
+          "file": "apps/portfolio-web/public/fonts/Satoshi-Variable.woff2",
+          "hash": "5583310828694438789"
+        },
+        {
+          "file": "apps/portfolio-web/public/fonts/Satoshi-VariableItalic.woff2",
+          "hash": "3431948276316487907"
+        },
+        {
+          "file": "apps/portfolio-web/public/fonts/TimelessHandwriten.woff2",
+          "hash": "15044358037530843414"
+        },
+        {
+          "file": "apps/portfolio-web/public/fonts/astor-futuristic.woff2",
+          "hash": "12965696738342616830"
+        },
+        {
+          "file": "apps/portfolio-web/public/fonts/solitude-handrwitten.woff2",
+          "hash": "6989047234244552928"
+        },
+        {
+          "file": "apps/portfolio-web/public/fonts/sophisticoSignature.woff2",
+          "hash": "17549200935040998331"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/256x256-raz-podesta-avatar-curriculum-circular_png.png",
+          "hash": "1646847949225475868"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/ai-gallery/abstract-architectural-geometry.jpg",
+          "hash": "11550297703248662164"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/ai-gallery/aesthetic-editorial-fashion.jpg",
+          "hash": "1506623280311701329"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/ai-gallery/concept-car-detail.jpg",
+          "hash": "12691786235940176512"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/ai-gallery/cyberpunk-city-street.jpg",
+          "hash": "12328870707152575609"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/ai-gallery/data-visualization-art.jpg",
+          "hash": "2264647514612983046"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/ai-gallery/fluid-iridescent-shapes.jpg",
+          "hash": "15533439860227861898"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/ai-gallery/luxury-perfume-gold.jpg",
+          "hash": "15040370361082534955"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/ai-gallery/mechanical-insect-macro.jpg",
+          "hash": "4577678642024109520"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/ai-gallery/minimalist-concrete-workspace.jpg",
+          "hash": "9502197344688714711"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/ai-gallery/razbits-neon-typography.jpg",
+          "hash": "10783562822907530275"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/ai-gallery/tech-badge-v2.jpg",
+          "hash": "16832422675086782141"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/ai-gallery/transparent-tech-gadget.jpg",
+          "hash": "10180787275683174848"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/blog/arquitectura-por-manifiesto.jpg",
+          "hash": "16979495078212716286"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/blog/filosofia-mobile-first.jpg",
+          "hash": "17258660926368909381"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/blog/monorepo-con-nx.jpg",
+          "hash": "4472953553231379012"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/blog/que-es-una-pwa.jpg",
+          "hash": "1793154607731238773"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/blog/zod-fuente-de-verdad.jpg",
+          "hash": "2534960992816850048"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/newsletter-bg.jpg",
+          "hash": "6414318893567853737"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/projects/comunidades-online/.gitkeep",
+          "hash": "17135247899624431078"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/projects/comunidades-online/hero-1920x1080-digital_network_connections_abstract.jpg",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/projects/comunidades-online/members-1200x400-avatars_grid_collage.jpg",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/projects/comunidades-online/og-1200x630-community_preview.jpg",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/projects/comunidades-online/ui-1000x800-chat_interface_dark_mode.jpg",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/projects/ecommerce-de-autor/.gitkeep",
+          "hash": "17135247899624431078"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/projects/ecommerce-de-autor/hero-1920x1080-minimalist_luxury_storefront.jpg",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/projects/ecommerce-de-autor/og-1200x630-ecommerce_preview.jpg",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/projects/ecommerce-de-autor/showcase-1000x1000-product_detail_watch_macro.jpg",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/projects/ecommerce-de-autor/ui-1200x800-checkout_flow_dark_mode.jpg",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/projects/fashion-wear-de-lujo/hero-1920x1080-runway_model_cinematic_lighting.jpg",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/projects/fashion-wear-de-lujo/lookbook-800x1200-vertical_fashion_shot.jpg",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/projects/fashion-wear-de-lujo/og-1200x630-fashion_preview.jpg",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/projects/fashion-wear-de-lujo/texture-1000x1000-fabric_detail_macro_silk.jpg",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/projects/landing-pages-de-conversion/.gitkeep",
+          "hash": "17135247899624431078"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/projects/landing-pages-de-conversion/feature-800x600-ab_testing_interface_mockup.jpg",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/projects/landing-pages-de-conversion/hero-1920x1080-cyberpunk_analytics_dashboard.jpg",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/projects/landing-pages-de-conversion/og-1200x630-social_share_preview.jpg",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/projects/landing-pages-de-conversion/social-1200x400-trusted_companies_logos_grayscale.jpg",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/projects/plataformas-hoteleras/.gitkeep",
+          "hash": "17135247899624431078"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/projects/plataformas-hoteleras/amenities-800x600-spa_wellness_center.jpg",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/projects/plataformas-hoteleras/hero-1920x1080-boutique_hotel_infinity_pool.jpg",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/projects/plataformas-hoteleras/og-1200x630-hospitality_preview.jpg",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/projects/plataformas-hoteleras/room-800x600-suite_luxury_interior.jpg",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/projects/plataformas-ong/.gitkeep",
+          "hash": "17135247899624431078"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/projects/plataformas-ong/chart-800x600-impact_data_visualization.jpg",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/projects/plataformas-ong/hero-1920x1080-humanitarian_impact_field_work.jpg",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/projects/plataformas-ong/map-1200x600-global_projects_location.jpg",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/projects/plataformas-ong/og-1200x630-ngo_preview.jpg",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/projects/portafolios-creativos/.gitkeep",
+          "hash": "17135247899624431078"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/projects/portafolios-creativos/hero-1920x1080-art_gallery_minimal_white.jpg",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/projects/portafolios-creativos/masonry-1-600x800-editorial_photography_portrait.jpg",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/projects/portafolios-creativos/masonry-2-600x400-architecture_detail_bw.jpg",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/projects/portafolios-creativos/masonry-3-600x600-abstract_oil_painting.jpg",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/projects/portafolios-creativos/og-1200x630-portfolio_preview.jpg",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/projects/revistas-digitales/.gitkeep",
+          "hash": "17135247899624431078"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/projects/revistas-digitales/article-1-800x600-tech_lifestyle_photo.jpg",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/projects/revistas-digitales/article-2-800x600-culture_travel_photo.jpg",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/projects/revistas-digitales/hero-1920x1080-editorial_magazine_cover_typography.jpg",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/projects/revistas-digitales/og-1200x630-magazine_preview.jpg",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/projects/showrooms-corporativos/.gitkeep",
+          "hash": "17135247899624431078"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/projects/showrooms-corporativos/hero-video-poster-1920x1080-glass_office_future.jpg",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/projects/showrooms-corporativos/og-1200x630-corporate_preview.jpg",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/projects/showrooms-corporativos/product-3d-poster-1000x1000-industrial_machine_render.jpg",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/projects/showrooms-corporativos/timeline-1920x600-corporate_history_gradient.jpg",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "apps/portfolio-web/public/images/raz-podesta-avatar.jpg",
+          "hash": "4441800932748959602"
+        },
+        {
+          "file": "apps/portfolio-web/public/logo-animado.mp4.txt",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "apps/portfolio-web/public/logo.png",
+          "hash": "3102827742882455360"
+        },
+        {
+          "file": "apps/portfolio-web/public/logos/Adobe Express - file (1).png",
+          "hash": "3506768066929299253"
+        },
+        {
+          "file": "apps/portfolio-web/public/logos/Adobe Express - file.png",
+          "hash": "11342158833987358381"
+        },
+        {
+          "file": "apps/portfolio-web/public/logos/logo-removebg-preview.png",
+          "hash": "3875461204031454565"
+        },
+        {
+          "file": "apps/portfolio-web/public/logos/logo.jpeg",
+          "hash": "16685765715564412016"
+        },
+        {
+          "file": "apps/portfolio-web/public/projects/01-homepage-hero-landing-pages.jpg",
+          "hash": "9419484589491325603"
+        },
+        {
+          "file": "apps/portfolio-web/public/projects/02-homepage-hero-ecommerce.jpg",
+          "hash": "6315599295759408489"
+        },
+        {
+          "file": "apps/portfolio-web/public/projects/03-homepage-hero-showrooms-corporativos.jpg",
+          "hash": "4243885217682539404"
+        },
+        {
+          "file": "apps/portfolio-web/public/projects/04-homepage-hero-hoteleria.jpg",
+          "hash": "6284757009741387495"
+        },
+        {
+          "file": "apps/portfolio-web/public/projects/05-homepage-hero-comunidades-online.jpg",
+          "hash": "1920364199166729256"
+        },
+        {
+          "file": "apps/portfolio-web/public/projects/06-homepage-hero-plataformas-ong.jpg",
+          "hash": "4517456676853573092"
+        },
+        {
+          "file": "apps/portfolio-web/public/projects/07-homepage-hero-portafolios-creativos.jpg",
+          "hash": "12984861648195520666"
+        },
+        {
+          "file": "apps/portfolio-web/public/projects/08-homepage-hero-revistas-digitales.jpg",
+          "hash": "7889456077143024878"
+        },
+        {
+          "file": "apps/portfolio-web/public/projects/09-homepage-hero-fashion-wear.jpg",
+          "hash": "1744549724577171076"
+        },
+        {
+          "file": "apps/portfolio-web/public/projects/hero-homepage-002.jpg",
+          "hash": "14858056555292545819"
+        },
+        {
+          "file": "apps/portfolio-web/public/projects/hero-homepage-003.jpg",
+          "hash": "15288317845194093806"
+        },
+        {
+          "file": "apps/portfolio-web/public/projects/zzzz.jpeg",
+          "hash": "14355859641316346882"
+        },
+        {
+          "file": "apps/portfolio-web/public/projects/zzzzcomunidades-online.jpg",
+          "hash": "513830164012156886"
+        },
+        {
+          "file": "apps/portfolio-web/public/robots.txt",
+          "hash": "16023991809247473460"
+        },
+        {
+          "file": "apps/portfolio-web/src/app/[lang]/blog/[slug]/page.tsx",
+          "hash": "3515713782934103565",
+          "deps": [
+            "npm:next",
+            "npm:next-mdx-remote",
+            "npm:lucide-react"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/app/[lang]/blog/page.tsx",
+          "hash": "10989118064758931881",
+          "deps": [
+            "npm:next"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/app/[lang]/blog/tag/[slug]/page.tsx",
+          "hash": "16358429168254984781",
+          "deps": [
+            "npm:next"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/app/[lang]/festival/page.tsx",
+          "hash": "12053258439843683583"
+        },
+        {
+          "file": "apps/portfolio-web/src/app/[lang]/layout.tsx",
+          "hash": "9355716264635122083",
+          "deps": [
+            "npm:react",
+            "npm:next"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/app/[lang]/legal/politica-de-privacidad/page.tsx",
+          "hash": "13382089948888260307",
+          "deps": [
+            "npm:next"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/app/[lang]/legal/terminos-de-servicio/page.tsx",
+          "hash": "16060608513614546046",
+          "deps": [
+            "npm:next"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/app/[lang]/maintenance/page.tsx",
+          "hash": "12897696303381271270",
+          "deps": [
+            "npm:next",
+            "npm:lucide-react"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/app/[lang]/mision-y-vision/page.tsx",
+          "hash": "17338194882010410506",
+          "deps": [
+            "npm:react",
+            "npm:next"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/app/[lang]/not-found.tsx",
+          "hash": "7426779537607213062",
+          "deps": [
+            "npm:next",
+            "npm:lucide-react"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/app/[lang]/page.tsx",
+          "hash": "7109924754303041687",
+          "deps": [
+            "npm:react",
+            "npm:next"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/app/[lang]/quienes-somos/page.tsx",
+          "hash": "13842279114886031687",
+          "deps": [
+            "npm:next"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/app/[lang]/servicios/desarrollo-frontend/page.tsx",
+          "hash": "3767050218451762245"
+        },
+        {
+          "file": "apps/portfolio-web/src/app/[lang]/subscribe/page.tsx",
+          "hash": "900549891172885326"
+        },
+        {
+          "file": "apps/portfolio-web/src/app/api/payload/[[...slug]]/route.ts",
+          "hash": "11686620085037545137",
+          "deps": [
+            "npm:@payloadcms/next",
+            "@metashark-cms/core"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/app/api/visitor/route.ts",
+          "hash": "4726738655755538281",
+          "deps": [
+            "npm:next"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/app/auth/callback/route.ts",
+          "hash": "12769051024740044591",
+          "deps": [
+            "npm:next",
+            "npm:@supabase/ssr"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/app/global.css",
+          "hash": "14690647674919681694"
+        },
+        {
+          "file": "apps/portfolio-web/src/app/layout.tsx",
+          "hash": "4413493479521142425",
+          "deps": [
+            "npm:react",
+            "npm:next"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/app/not-found.tsx",
+          "hash": "13200857469301497808",
+          "deps": [
+            "npm:next"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/app/sitemap.ts",
+          "hash": "11256322446041843030",
+          "deps": [
+            "npm:next"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/components/layout/Footer.tsx",
+          "hash": "15539069016539388510",
+          "deps": [
+            "npm:react",
+            "npm:next",
+            "npm:framer-motion",
+            "npm:lucide-react"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/components/layout/Header.tsx",
+          "hash": "2562091094463048107",
+          "deps": [
+            "npm:react",
+            "npm:next",
+            "npm:lucide-react"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/components/layout/MobileMenu.tsx",
+          "hash": "15014754133061085126",
+          "deps": [
+            "npm:react",
+            "npm:framer-motion",
+            "npm:next",
+            "npm:lucide-react",
+            "npm:focus-trap-react"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/components/layout/NavigationTracker.tsx",
+          "hash": "220225227194565335",
+          "deps": [
+            "npm:react",
+            "npm:next",
+            "npm:cookies-next"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/components/layout/Providers.tsx",
+          "hash": "5301804901740394034",
+          "deps": [
+            "npm:react",
+            "npm:next-themes"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/components/projects/ProjectTechModal.tsx",
+          "hash": "7897024263738655478",
+          "deps": [
+            "npm:react",
+            "npm:framer-motion",
+            "npm:lucide-react"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/components/razBits/BlurText.tsx",
+          "hash": "9502816176564851846",
+          "deps": [
+            "npm:framer-motion",
+            "npm:react"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/components/razBits/GridScan.tsx",
+          "hash": "3393244103977659207",
+          "deps": [
+            "npm:react",
+            "npm:postprocessing",
+            "npm:three"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/components/razBits/LetterGlitch.tsx",
+          "hash": "989668515336452231",
+          "deps": [
+            "npm:react"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/components/razBits/OrbitalGallery.tsx",
+          "hash": "13732123381071447897",
+          "deps": [
+            "npm:react",
+            "npm:gl-matrix",
+            "npm:framer-motion"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/components/sections/homepage/AboutSection.tsx",
+          "hash": "13648940188919336735",
+          "deps": [
+            "npm:framer-motion",
+            "npm:next",
+            "npm:lucide-react"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/components/sections/homepage/AiContentSection.tsx",
+          "hash": "1737980860989765241",
+          "deps": [
+            "npm:react",
+            "npm:framer-motion",
+            "npm:lucide-react"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/components/sections/homepage/AmenitiesMarquee.tsx",
+          "hash": "535507812181361642",
+          "deps": [
+            "npm:react",
+            "npm:lucide-react"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/components/sections/homepage/BlogSection3D.tsx",
+          "hash": "13207755294231012432",
+          "deps": [
+            "npm:react",
+            "npm:framer-motion",
+            "npm:lucide-react",
+            "npm:next"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/components/sections/homepage/ContactSection.tsx",
+          "hash": "15216511587239251838",
+          "deps": [
+            "npm:react",
+            "npm:react-hook-form",
+            "npm:@hookform/resolvers",
+            "npm:framer-motion",
+            "npm:lucide-react"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/components/sections/homepage/ExperienceShowcase3D.tsx",
+          "hash": "1838184754953473432",
+          "deps": [
+            "npm:react",
+            "npm:framer-motion",
+            "npm:lucide-react",
+            "npm:next"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/components/sections/homepage/HeroCarousel.tsx",
+          "hash": "7881519804437487774",
+          "deps": [
+            "npm:react",
+            "npm:embla-carousel-react",
+            "npm:embla-carousel-fade",
+            "npm:embla-carousel-autoplay",
+            "npm:framer-motion",
+            "npm:lucide-react",
+            "npm:next"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/components/sections/homepage/HistorySection.tsx",
+          "hash": "3651792231322635310",
+          "deps": [
+            "npm:framer-motion"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/components/sections/homepage/LiveStatusTicker.tsx",
+          "hash": "10630138243626240599",
+          "deps": [
+            "npm:react",
+            "npm:lucide-react"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/components/sections/homepage/ValuePropositionSection.tsx",
+          "hash": "4548091980598306507",
+          "deps": [
+            "npm:react",
+            "npm:framer-motion",
+            "npm:lucide-react"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/components/sections/suites/SuiteGallery.tsx",
+          "hash": "6918580608457586743",
+          "deps": [
+            "npm:react",
+            "npm:lucide-react",
+            "npm:next"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/components/shared/NewsletterForm.tsx",
+          "hash": "11960719612151871112"
+        },
+        {
+          "file": "apps/portfolio-web/src/components/ui/AnimatedQrCode.tsx",
+          "hash": "12075457120073847247",
+          "deps": [
+            "npm:react"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/components/ui/Avatar.tsx",
+          "hash": "13609905107626925041",
+          "deps": [
+            "npm:react",
+            "npm:next",
+            "npm:class-variance-authority"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/components/ui/BlogCard.tsx",
+          "hash": "10371921693305231302",
+          "deps": [
+            "npm:next",
+            "npm:framer-motion"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/components/ui/BlogCard3D.tsx",
+          "hash": "9811955813914772785",
+          "deps": [
+            "npm:react",
+            "npm:next",
+            "npm:@react-spring/three",
+            "npm:@react-spring/web",
+            "npm:@react-three/drei",
+            "npm:@react-three/fiber",
+            "npm:lucide-react",
+            "npm:three"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/components/ui/ColorWaveBar.tsx",
+          "hash": "14933344899336297512",
+          "deps": [
+            "npm:framer-motion"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/components/ui/DropdownMenu.tsx",
+          "hash": "16189392913777014017",
+          "deps": [
+            "npm:react",
+            "npm:framer-motion"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/components/ui/FadeIn.tsx",
+          "hash": "11591449309997332351",
+          "deps": [
+            "npm:framer-motion",
+            "npm:react"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/components/ui/Flag.tsx",
+          "hash": "1170495814334124845",
+          "deps": [
+            "npm:next"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/components/ui/JsonLdScript.tsx",
+          "hash": "10483905999300904551"
+        },
+        {
+          "file": "apps/portfolio-web/src/components/ui/LanguageSwitcher.tsx",
+          "hash": "2311676862136849345",
+          "deps": [
+            "npm:next",
+            "npm:cookies-next"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/components/ui/NestedDropdownContent.tsx",
+          "hash": "13763701650630338836",
+          "deps": [
+            "npm:next",
+            "npm:lucide-react"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/components/ui/NewsletterModal.tsx",
+          "hash": "6301262894510139854",
+          "deps": [
+            "npm:react",
+            "npm:framer-motion",
+            "npm:lucide-react",
+            "npm:cookies-next"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/components/ui/PillarCard.tsx",
+          "hash": "7246937743081457722",
+          "deps": [
+            "npm:react",
+            "npm:framer-motion",
+            "npm:class-variance-authority",
+            "npm:lucide-react"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/components/ui/PrintButton.tsx",
+          "hash": "14538020884249402939",
+          "deps": [
+            "npm:react",
+            "npm:lucide-react"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/components/ui/ProjectCard.tsx",
+          "hash": "5612169257920115783",
+          "deps": [
+            "npm:framer-motion",
+            "npm:next",
+            "npm:lucide-react"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/components/ui/QrCode.tsx",
+          "hash": "10284895284838944661",
+          "deps": [
+            "npm:react",
+            "npm:qrcode"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/components/ui/ShareButtons.tsx",
+          "hash": "10540936557355663531",
+          "deps": [
+            "npm:next",
+            "npm:lucide-react"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/components/ui/SystemStatusTicker.tsx",
+          "hash": "10498827270167745359"
+        },
+        {
+          "file": "apps/portfolio-web/src/components/ui/TestimonialCard.tsx",
+          "hash": "9725851156170685911",
+          "deps": [
+            "npm:framer-motion",
+            "npm:lucide-react"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/components/ui/ThemeToggle.tsx",
+          "hash": "7464133429790737162",
+          "deps": [
+            "npm:next-themes",
+            "npm:lucide-react",
+            "npm:react"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/components/ui/VisitorHud.tsx",
+          "hash": "13223635841434653619",
+          "deps": [
+            "npm:react",
+            "npm:framer-motion",
+            "npm:lucide-react"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/config/i18n.config.ts",
+          "hash": "11478211375490582059"
+        },
+        {
+          "file": "apps/portfolio-web/src/data/ai-gallery.ts",
+          "hash": "1208269757933786836"
+        },
+        {
+          "file": "apps/portfolio-web/src/data/mocks/cms.mocks.ts",
+          "hash": "8716599228771854517"
+        },
+        {
+          "file": "apps/portfolio-web/src/dictionaries/en-US.json",
+          "hash": "2381263081744808889"
+        },
+        {
+          "file": "apps/portfolio-web/src/dictionaries/es-ES.json",
+          "hash": "4785205281986426795"
+        },
+        {
+          "file": "apps/portfolio-web/src/dictionaries/pt-BR.json",
+          "hash": "18055610020014383730"
+        },
+        {
+          "file": "apps/portfolio-web/src/lib/blog-api.ts",
+          "hash": "8448789937976101867"
+        },
+        {
+          "file": "apps/portfolio-web/src/lib/blog/actions.ts",
+          "hash": "1923370378163288064"
+        },
+        {
+          "file": "apps/portfolio-web/src/lib/blog/index.ts",
+          "hash": "7167615456314149467"
+        },
+        {
+          "file": "apps/portfolio-web/src/lib/contexts/WidgetContext.tsx",
+          "hash": "12824906563685923661",
+          "deps": [
+            "npm:react"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/lib/fonts.ts",
+          "hash": "8500336366955110052",
+          "deps": [
+            "npm:next"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/lib/get-dictionary.ts",
+          "hash": "7526254159169344424"
+        },
+        {
+          "file": "apps/portfolio-web/src/lib/graphql-client.ts",
+          "hash": "14046808983532381801"
+        },
+        {
+          "file": "apps/portfolio-web/src/lib/hooks/use-infinite-carousel-animation.ts",
+          "hash": "12585382888830928298",
+          "deps": [
+            "npm:react",
+            "npm:gsap"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/lib/hooks/use-scroll-direction.ts",
+          "hash": "9425736971293164138",
+          "deps": [
+            "npm:react"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/lib/hooks/use-visitor-data.ts",
+          "hash": "8210173442210572230",
+          "deps": [
+            "npm:react"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/lib/nav-links.ts",
+          "hash": "8739913627079616426",
+          "deps": [
+            "npm:lucide-react"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/lib/projects-data.ts",
+          "hash": "7781559815077451679"
+        },
+        {
+          "file": "apps/portfolio-web/src/lib/route-guard.ts",
+          "hash": "3251620908679390143",
+          "deps": [
+            "npm:next"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/lib/schemas/about_section.schema.ts",
+          "hash": "5971916815360257220",
+          "deps": [
+            "npm:zod"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/lib/schemas/blog.schema.ts",
+          "hash": "15329018309645953631",
+          "deps": [
+            "npm:zod"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/lib/schemas/contact.schema.ts",
+          "hash": "7354723360102795770",
+          "deps": [
+            "npm:zod"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/lib/schemas/contact_page.schema.ts",
+          "hash": "10169555690903685206",
+          "deps": [
+            "npm:zod"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/lib/schemas/dictionary.schema.ts",
+          "hash": "2440868891358315156",
+          "deps": [
+            "npm:zod"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/lib/schemas/festival_experience.schema.ts",
+          "hash": "8587160831464991345",
+          "deps": [
+            "npm:zod"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/lib/schemas/footer.schema.ts",
+          "hash": "14938499240781755239",
+          "deps": [
+            "npm:zod"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/lib/schemas/guest_experience.schema.ts",
+          "hash": "5778696774518119239",
+          "deps": [
+            "npm:zod"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/lib/schemas/header.schema.ts",
+          "hash": "7781447869449191235",
+          "deps": [
+            "npm:zod"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/lib/schemas/hero.schema.ts",
+          "hash": "7076176526898208781",
+          "deps": [
+            "npm:zod"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/lib/schemas/history_section.schema.ts",
+          "hash": "7749555322255298911",
+          "deps": [
+            "npm:zod"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/lib/schemas/homepage.schema.ts",
+          "hash": "11714833132716074596",
+          "deps": [
+            "npm:zod"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/lib/schemas/hotel.schema.ts",
+          "hash": "7527944281779413059",
+          "deps": [
+            "npm:zod"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/lib/schemas/language_switcher.schema.ts",
+          "hash": "16990282183990765977",
+          "deps": [
+            "npm:zod"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/lib/schemas/legal_page.schema.ts",
+          "hash": "11644625779996789522",
+          "deps": [
+            "npm:zod"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/lib/schemas/library_page.schema.ts",
+          "hash": "484093047154813271",
+          "deps": [
+            "npm:zod"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/lib/schemas/mission_vision.schema.ts",
+          "hash": "10741551717241775966",
+          "deps": [
+            "npm:zod"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/lib/schemas/nav-links.schema.ts",
+          "hash": "4512932407470154212",
+          "deps": [
+            "npm:zod"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/lib/schemas/not_found.schema.ts",
+          "hash": "12689134203582275761",
+          "deps": [
+            "npm:zod"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/lib/schemas/profile_page.schema.ts",
+          "hash": "3799592661871132953",
+          "deps": [
+            "npm:zod"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/lib/schemas/project_details.schema.ts",
+          "hash": "17432113590009970722",
+          "deps": [
+            "npm:zod"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/lib/schemas/quienes_somos.schema.ts",
+          "hash": "9323656643222406938",
+          "deps": [
+            "npm:zod"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/lib/schemas/seo.schema.ts",
+          "hash": "10648062903366327139",
+          "deps": [
+            "npm:zod"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/lib/schemas/suite_gallery.schema.ts",
+          "hash": "4924206450067971745",
+          "deps": [
+            "npm:zod"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/lib/schemas/system_status.schema.ts",
+          "hash": "16714513026168124699",
+          "deps": [
+            "npm:zod"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/lib/schemas/value_proposition.schema.ts",
+          "hash": "6254212146065776304",
+          "deps": [
+            "npm:zod"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/lib/social-links.ts",
+          "hash": "12762356840542481585",
+          "deps": [
+            "npm:lucide-react"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/lib/store/ui.store.ts",
+          "hash": "13714644282442425269",
+          "deps": [
+            "npm:zustand"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/lib/supabase/client.ts",
+          "hash": "10232640480796336577",
+          "deps": [
+            "npm:@supabase/ssr"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/lib/types.ts",
+          "hash": "8274999411750532091"
+        },
+        {
+          "file": "apps/portfolio-web/src/lib/utils/cn.ts",
+          "hash": "17589730785587636569",
+          "deps": [
+            "npm:clsx",
+            "npm:tailwind-merge"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/lib/utils/link-helpers.ts",
+          "hash": "9408131313877908471"
+        },
+        {
+          "file": "apps/portfolio-web/src/lib/visuals/orbital-gallery-engine.ts",
+          "hash": "16042570971187648021",
+          "deps": [
+            "npm:gl-matrix"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/en-US/about.json",
+          "hash": "15293215450471170598"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/en-US/ai_gallery_section.json",
+          "hash": "16994259213813782732"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/en-US/blog_page.json",
+          "hash": "12909133406013480321"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/en-US/cocreation_page.json",
+          "hash": "13882283457162882385"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/en-US/contact.json",
+          "hash": "6174542015711198622"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/en-US/contact_page.json",
+          "hash": "17418975439812639598"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/en-US/curriculum.json",
+          "hash": "879845149610528003"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/en-US/design_system_page.json",
+          "hash": "9605761358199947640"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/en-US/footer.json",
+          "hash": "1375370340108338326"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/en-US/header.json",
+          "hash": "4825165343439286550"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/en-US/hero.json",
+          "hash": "17694541855993071385"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/en-US/history.json",
+          "hash": "3580489517742031010"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/en-US/language_switcher.json",
+          "hash": "3464528149280134642"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/en-US/legal.json",
+          "hash": "10513652809680155968"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/en-US/lucide_page.json",
+          "hash": "598109493517722944"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/en-US/maintenance.json",
+          "hash": "9129580819070920022"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/en-US/mission_vision.json",
+          "hash": "10419264238693648515"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/en-US/nav-links.json",
+          "hash": "17652246716606200958"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/en-US/not_found.json",
+          "hash": "3872770214218924075"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/en-US/profile_page.json",
+          "hash": "5973443826400404945"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/en-US/project_details.json",
+          "hash": "10739298962622066585"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/en-US/quien_soy.json",
+          "hash": "17259288159666879313"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/en-US/server_error.json",
+          "hash": "5910526067850049423"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/en-US/system_status.json",
+          "hash": "16362182602214838482"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/en-US/technologies_page.json",
+          "hash": "6158077713172075245"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/en-US/value_proposition.json",
+          "hash": "1963558599771613584"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/en-US/visitor_hud.json",
+          "hash": "5799014928681645831"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/es-ES/about.json",
+          "hash": "9753648695311280594"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/es-ES/ai_gallery_section.json",
+          "hash": "119206057601192401"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/es-ES/blog_page.json",
+          "hash": "16505639533035677241"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/es-ES/cocreation_page.json",
+          "hash": "16870452471024662832"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/es-ES/contact.json",
+          "hash": "13652583786432486816"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/es-ES/contact_page.json",
+          "hash": "6764166508647982459"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/es-ES/curriculum.json",
+          "hash": "6595301938139654338"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/es-ES/design_system_page.json",
+          "hash": "13140372962513278031"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/es-ES/festival.json",
+          "hash": "16083138255173877580"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/es-ES/footer.json",
+          "hash": "1240380613134788436"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/es-ES/header.json",
+          "hash": "521481276412278020"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/es-ES/hero.json",
+          "hash": "14181444409573543073"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/es-ES/history.json",
+          "hash": "1404480268570420285"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/es-ES/homepage.json",
+          "hash": "6036514188355824868"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/es-ES/language_switcher.json",
+          "hash": "9130222659498805504"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/es-ES/legal.json",
+          "hash": "7166309512328145522"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/es-ES/lucide_page.json",
+          "hash": "886114717236981313"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/es-ES/maintenance.json",
+          "hash": "7105105713778154878"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/es-ES/mission_vision.json",
+          "hash": "14991795638450916565"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/es-ES/nav-links.json",
+          "hash": "3120877587447618556"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/es-ES/not_found.json",
+          "hash": "11778557790846060721"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/es-ES/profile_page.json",
+          "hash": "9279891001373133146"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/es-ES/project_details.json",
+          "hash": "2444927263185792611"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/es-ES/quien_soy.json",
+          "hash": "13263275252975484284"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/es-ES/server_error.json",
+          "hash": "18271477883872981361"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/es-ES/system_status.json",
+          "hash": "16362182602214838482"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/es-ES/technologies_page.json",
+          "hash": "15894416433279400583"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/es-ES/value_proposition.json",
+          "hash": "18269870118827162898"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/es-ES/visitor_hud.json",
+          "hash": "2508864032503125008"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/pt-BR/about.json",
+          "hash": "2755538333111275982"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/pt-BR/ai_gallery_section.json",
+          "hash": "2110855274438600971"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/pt-BR/blog_page.json",
+          "hash": "16461861744051526776"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/pt-BR/cocreation_page.json",
+          "hash": "1534708346235065688"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/pt-BR/contact.json",
+          "hash": "13059231980635350596"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/pt-BR/contact_page.json",
+          "hash": "3257323032491539370"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/pt-BR/curriculum.json",
+          "hash": "13152991160358999104"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/pt-BR/design_system_page.json",
+          "hash": "16623341106968094298"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/pt-BR/footer.json",
+          "hash": "11875768409460341010"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/pt-BR/header.json",
+          "hash": "9419535227458070680"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/pt-BR/hero.json",
+          "hash": "11771912651947692949"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/pt-BR/history.json",
+          "hash": "325040962573098132"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/pt-BR/language_switcher.json",
+          "hash": "9130222659498805504"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/pt-BR/legal.json",
+          "hash": "14757781464186193646"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/pt-BR/lucide_page.json",
+          "hash": "3254757738382609207"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/pt-BR/maintenance.json",
+          "hash": "14274858794567808932"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/pt-BR/mission_vision.json",
+          "hash": "9361526210612515096"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/pt-BR/nav-links.json",
+          "hash": "9419535227458070680"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/pt-BR/not_found.json",
+          "hash": "12740926420166495702"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/pt-BR/profile_page.json",
+          "hash": "12221802911912612303"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/pt-BR/project_details.json",
+          "hash": "12861156217339255154"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/pt-BR/quien_soy.json",
+          "hash": "2574231428604447607"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/pt-BR/server_error.json",
+          "hash": "12052145390181985052"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/pt-BR/system_status.json",
+          "hash": "16362182602214838482"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/pt-BR/technologies_page.json",
+          "hash": "17702328594963343716"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/pt-BR/value_proposition.json",
+          "hash": "7191204276409543715"
+        },
+        {
+          "file": "apps/portfolio-web/src/messages/pt-BR/visitor_hud.json",
+          "hash": "11124113001189234106"
+        },
+        {
+          "file": "apps/portfolio-web/tailwind.config.js",
+          "hash": "2799656782067769588"
+        },
+        {
+          "file": "apps/portfolio-web/tsconfig.json",
+          "hash": "3361320073043671630"
+        },
+        {
+          "file": "apps/portfolio-web/tsconfig.spec.json",
+          "hash": "3163259711715585231"
+        }
+      ],
+      "@metashark-cms/core": [
+        {
+          "file": "packages/cms/core/.spec.swcrc",
+          "hash": "18201067170784284381"
+        },
+        {
+          "file": "packages/cms/core/README.md",
+          "hash": "15554027265428607455"
+        },
+        {
+          "file": "packages/cms/core/eslint.config.mjs",
+          "hash": "12190544393852254075",
+          "deps": [
+            "npm:typescript-eslint",
+            "npm:eslint-plugin-jest"
+          ]
+        },
+        {
+          "file": "packages/cms/core/jest.config.ts",
+          "hash": "2358219154569139498"
+        },
+        {
+          "file": "packages/cms/core/package.json",
+          "hash": "12710286029624708065",
+          "deps": [
+            "npm:tslib"
+          ]
+        },
+        {
+          "file": "packages/cms/core/project.json",
+          "hash": "6796844063559981091"
+        },
+        {
+          "file": "packages/cms/core/src/collections/BlogPosts.ts",
+          "hash": "13965440209013390639",
+          "deps": [
+            "npm:payload",
+            "npm:@payloadcms/richtext-lexical"
+          ]
+        },
+        {
+          "file": "packages/cms/core/src/collections/Projects.ts",
+          "hash": "6372172002150720852",
+          "deps": [
+            "npm:payload"
+          ]
+        },
+        {
+          "file": "packages/cms/core/src/collections/Users.ts",
+          "hash": "17786790073154940549",
+          "deps": [
+            "npm:payload"
+          ]
+        },
+        {
+          "file": "packages/cms/core/src/collections/index.ts",
+          "hash": "10387382831896336925"
+        },
+        {
+          "file": "packages/cms/core/src/payload.config.ts",
+          "hash": "9862783454777538126",
+          "deps": [
+            "npm:payload",
+            "npm:@payloadcms/db-postgres",
+            "npm:@payloadcms/richtext-lexical"
+          ]
+        },
+        {
+          "file": "packages/cms/core/tsconfig.json",
+          "hash": "5353785037169149986"
+        },
+        {
+          "file": "packages/cms/core/tsconfig.lib.json",
+          "hash": "1709462475149795443"
+        }
+      ],
+      "@razpodesta/protocol-33": [
+        {
+          "file": "packages/protocol-33/.babelrc",
+          "hash": "2946678488919325452"
+        },
+        {
+          "file": "packages/protocol-33/README.md",
+          "hash": "4870483216979629579"
+        },
+        {
+          "file": "packages/protocol-33/eslint.config.mjs",
+          "hash": "15662645796767624439",
+          "deps": [
+            "npm:@nx/eslint-plugin"
+          ]
+        },
+        {
+          "file": "packages/protocol-33/jest.config.ts",
+          "hash": "14272716150414270804"
+        },
+        {
+          "file": "packages/protocol-33/package.json",
+          "hash": "5367994494023867283"
+        },
+        {
+          "file": "packages/protocol-33/project.json",
+          "hash": "16483671085791893062"
+        },
+        {
+          "file": "packages/protocol-33/src/index.ts",
+          "hash": "8366123336307147095"
+        },
+        {
+          "file": "packages/protocol-33/src/lib/codex.ts",
+          "hash": "16595967080211509877"
+        },
+        {
+          "file": "packages/protocol-33/src/lib/engine.ts",
+          "hash": "1528754415035672242"
+        },
+        {
+          "file": "packages/protocol-33/src/lib/types.ts",
+          "hash": "1556207297016173925"
+        },
+        {
+          "file": "packages/protocol-33/tsconfig.json",
+          "hash": "6009324416508387552"
+        },
+        {
+          "file": "packages/protocol-33/tsconfig.lib.json",
+          "hash": "12324427097209147365"
+        },
+        {
+          "file": "packages/protocol-33/tsconfig.spec.json",
+          "hash": "12839377670077572367"
+        }
+      ],
+      "@razpodesta/auth-shield": [
+        {
+          "file": "packages/auth-shield/.spec.swcrc",
+          "hash": "18201067170784284381"
+        },
+        {
+          "file": "packages/auth-shield/README.md",
+          "hash": "8699780366713087146"
+        },
+        {
+          "file": "packages/auth-shield/eslint.config.mjs",
+          "hash": "7885312352449748209",
+          "deps": [
+            [
+              "npm:jsonc-eslint-parser",
+              "dynamic"
+            ]
+          ]
+        },
+        {
+          "file": "packages/auth-shield/jest.config.ts",
+          "hash": "4349398581879204341"
+        },
+        {
+          "file": "packages/auth-shield/package.json",
+          "hash": "15522226633707814978",
+          "deps": [
+            "npm:tslib"
+          ]
+        },
+        {
+          "file": "packages/auth-shield/src/index.ts",
+          "hash": "12550811978168567675"
+        },
+        {
+          "file": "packages/auth-shield/src/lib/crypto.ts",
+          "hash": "18395952019876602590",
+          "deps": [
+            "npm:bcryptjs"
+          ]
+        },
+        {
+          "file": "packages/auth-shield/src/lib/token.ts",
+          "hash": "215175184019023078",
+          "deps": [
+            "npm:jsonwebtoken"
+          ]
+        },
+        {
+          "file": "packages/auth-shield/src/lib/types.ts",
+          "hash": "106442762050097634",
+          "deps": [
+            "npm:jsonwebtoken"
+          ]
+        },
+        {
+          "file": "packages/auth-shield/tsconfig.json",
+          "hash": "6009324416508387552"
+        },
+        {
+          "file": "packages/auth-shield/tsconfig.lib.json",
+          "hash": "15756904185632667197"
+        },
+        {
+          "file": "packages/auth-shield/tsconfig.spec.json",
+          "hash": "5969570393429747923"
+        }
+      ],
+      "@metashark-cms/ui": [
+        {
+          "file": "packages/cms/ui/.babelrc",
+          "hash": "2946678488919325452"
+        },
+        {
+          "file": "packages/cms/ui/README.md",
+          "hash": "18357593699270166023"
+        },
+        {
+          "file": "packages/cms/ui/eslint.config.mjs",
+          "hash": "4114437769683499576",
+          "deps": [
+            "npm:typescript-eslint",
+            "npm:@nx/eslint-plugin",
+            "npm:eslint-plugin-react-hooks",
+            "npm:eslint-plugin-jest"
+          ]
+        },
+        {
+          "file": "packages/cms/ui/jest.config.ts",
+          "hash": "1442313602854357902"
+        },
+        {
+          "file": "packages/cms/ui/jest.setup.ts",
+          "hash": "10479406955202642599",
+          "deps": [
+            "npm:isomorphic-fetch",
+            "npm:@testing-library/jest-dom"
+          ]
+        },
+        {
+          "file": "packages/cms/ui/package.json",
+          "hash": "17538569403311526572"
+        },
+        {
+          "file": "packages/cms/ui/project.json",
+          "hash": "12208332616757225447"
+        },
+        {
+          "file": "packages/cms/ui/src/index.ts",
+          "hash": "5977848407072712979"
+        },
+        {
+          "file": "packages/cms/ui/src/lib/ui.spec.tsx",
+          "hash": "9256240028211718861",
+          "deps": [
+            "npm:@testing-library/react"
+          ]
+        },
+        {
+          "file": "packages/cms/ui/src/lib/ui.tsx",
+          "hash": "3963993538601663407"
+        },
+        {
+          "file": "packages/cms/ui/tsconfig.json",
+          "hash": "211933816755001957"
+        },
+        {
+          "file": "packages/cms/ui/tsconfig.lib.json",
+          "hash": "6322626510567673884"
+        },
+        {
+          "file": "packages/cms/ui/tsconfig.spec.json",
+          "hash": "15739949394590019158"
+        }
+      ],
+      "@portfolio/source": [
+        {
+          "file": ".docs/_BITACORA.md",
+          "hash": "2874484614731796832"
+        },
+        {
+          "file": ".docs/_comandos-pruebas.md",
+          "hash": "13314093648529043584"
+        },
+        {
+          "file": ".docs/architecture/components/blog-3d-carousel.md",
+          "hash": "15706010781041578364"
+        },
+        {
+          "file": ".docs/directrices-obligatorias.md",
+          "hash": "16869097269984572535"
+        },
+        {
+          "file": ".docs/gamificacion-protocolo-33.md",
+          "hash": "336340992717856454"
+        },
+        {
+          "file": ".docs/interaccion-y-experiencia.md",
+          "hash": "14375201034930603262"
+        },
+        {
+          "file": ".docs/manifesto-arquitectura.md",
+          "hash": "156104386792555757"
+        },
+        {
+          "file": ".docs/manifiesto-calidad-codigo.md",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": ".docs/manifiesto-estado-global.md",
+          "hash": "15409691075961879946"
+        },
+        {
+          "file": ".docs/manifiesto-pruebas.md",
+          "hash": "9089472829749803146"
+        },
+        {
+          "file": ".docs/manifiesto-rutas.md",
+          "hash": "11508314177086664130"
+        },
+        {
+          "file": ".docs/manifiesto-tipografia.md",
+          "hash": "6887385811548216196"
+        },
+        {
+          "file": ".docs/manifiesto-typescript.md",
+          "hash": "14203087382636848344"
+        },
+        {
+          "file": ".docs/manifiestos/MANIFIESTO_GRANULARIZACION.md",
+          "hash": "13813018271421610771"
+        },
+        {
+          "file": ".docs/manifiestos/manifiesto-pwa-mobile-first.md",
+          "hash": "167485563005080612"
+        },
+        {
+          "file": ".docs/metodologia-arquitectura-librerias.md",
+          "hash": "17845732686467809039"
+        },
+        {
+          "file": ".docs/politicas-cookies.md",
+          "hash": "10245747344559098440"
+        },
+        {
+          "file": ".docs/posicionamiento-seo-obligatorio.md",
+          "hash": "15794258972312383831"
+        },
+        {
+          "file": ".docs/project-blueprints/plataformas-hoteleras.md",
+          "hash": "5767628520123410042"
+        },
+        {
+          "file": ".docs/protocolo-auditoria-elite.md",
+          "hash": "4869371507036709285"
+        },
+        {
+          "file": ".docs/protocolo-resolucion-errores-elite.md",
+          "hash": "12538566749147497669"
+        },
+        {
+          "file": ".github/workflows/ci.yml",
+          "hash": "7725873038738926441"
+        },
+        {
+          "file": ".gitignore",
+          "hash": "8203853149744356463"
+        },
+        {
+          "file": ".prettierignore",
+          "hash": "14688272390704683536"
+        },
+        {
+          "file": ".prettierrc",
+          "hash": "16267754514737964994"
+        },
+        {
+          "file": "README.md",
+          "hash": "15706242059990761052"
+        },
+        {
+          "file": "cls",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "eslint.config.mjs",
+          "hash": "3940295225361143286",
+          "deps": [
+            "npm:@nx/eslint-plugin"
+          ]
+        },
+        {
+          "file": "jest.config.ts",
+          "hash": "860990485679511336"
+        },
+        {
+          "file": "jest.preset.js",
+          "hash": "2522204644006015562",
+          "deps": [
+            "npm:ts-jest",
+            "npm:@nx/jest"
+          ]
+        },
+        {
+          "file": "nx.json",
+          "hash": "14749681642377368027"
+        },
+        {
+          "file": "package.json",
+          "hash": "6683134680295559804",
+          "deps": [
+            "npm:@babel/core",
+            "npm:@babel/preset-react",
+            "npm:@babel/preset-typescript",
+            "npm:@eslint/compat",
+            "npm:@eslint/eslintrc",
+            "npm:@eslint/js",
+            "npm:@faker-js/faker",
+            "npm:@icons-pack/react-simple-icons",
+            "npm:@next/eslint-plugin-next",
+            "npm:@nx/devkit",
+            "npm:@nx/eslint",
+            "npm:@nx/eslint-plugin",
+            "npm:@nx/jest",
+            "npm:@nx/js",
+            "npm:@nx/next",
+            "npm:@nx/playwright",
+            "npm:@nx/react",
+            "npm:@nx/rollup",
+            "npm:@playwright/test",
+            "npm:@rollup/plugin-url",
+            "npm:@svgr/rollup",
+            "npm:@swc-node/register",
+            "npm:@swc/cli",
+            "npm:@swc/core",
+            "npm:@swc/helpers",
+            "npm:@swc/jest",
+            "npm:@tailwindcss/postcss",
+            "npm:@testing-library/dom",
+            "npm:@testing-library/jest-dom",
+            "npm:@testing-library/react",
+            "npm:@types/jest",
+            "npm:@types/negotiator",
+            "npm:@types/node",
+            "npm:@types/qrcode",
+            "npm:@types/react",
+            "npm:@types/react-dom",
+            "npm:@types/three",
+            "npm:autoprefixer",
+            "npm:babel-jest",
+            "npm:concurrently",
+            "npm:core-js",
+            "npm:eslint",
+            "npm:eslint-plugin-import",
+            "npm:eslint-plugin-jest",
+            "npm:eslint-plugin-jsx-a11y",
+            "npm:eslint-plugin-playwright",
+            "npm:eslint-plugin-react",
+            "npm:eslint-plugin-react-hooks",
+            "npm:jest",
+            "npm:jest-environment-jsdom",
+            "npm:jest-environment-node",
+            "npm:jest-util",
+            "npm:jsonc-eslint-parser",
+            "npm:msw",
+            "npm:nx",
+            "npm:postcss",
+            "npm:prettier",
+            "npm:rollup",
+            "npm:schema-dts",
+            "npm:tailwindcss",
+            "npm:ts-jest",
+            "npm:ts-node",
+            "npm:tslib",
+            "npm:typescript",
+            "npm:typescript-eslint",
+            "npm:verdaccio",
+            "npm:zod",
+            "npm:@apollo/client",
+            "npm:@emotion/react",
+            "npm:@emotion/styled",
+            "npm:@formatjs/intl-localematcher",
+            "npm:@hookform/resolvers",
+            "npm:@payloadcms/db-postgres",
+            "npm:@payloadcms/next",
+            "npm:@payloadcms/richtext-lexical",
+            "npm:@react-spring/three",
+            "npm:@react-spring/web",
+            "npm:@react-three/drei",
+            "npm:@react-three/fiber",
+            "npm:@supabase/ssr",
+            "npm:@supabase/supabase-js",
+            "npm:@use-gesture/react",
+            "npm:class-variance-authority",
+            "npm:clsx",
+            "npm:cookies-next",
+            "npm:embla-carousel",
+            "npm:embla-carousel-autoplay",
+            "npm:embla-carousel-fade",
+            "npm:embla-carousel-react",
+            "npm:focus-trap-react",
+            "npm:framer-motion",
+            "npm:gl-matrix",
+            "npm:graphql",
+            "npm:gsap",
+            "npm:isomorphic-fetch",
+            "npm:lucide-react",
+            "npm:negotiator",
+            "npm:next",
+            "npm:next-mdx-remote",
+            "npm:next-themes",
+            "npm:payload",
+            "npm:postprocessing",
+            "npm:qrcode",
+            "npm:react",
+            "npm:react-dom",
+            "npm:react-hook-form",
+            "npm:react-icons",
+            "npm:sharp",
+            "npm:tailwind-merge",
+            "npm:three",
+            "npm:uuid",
+            "npm:zustand"
+          ]
+        },
+        {
+          "file": "pnpm-lock.yaml",
+          "hash": "11552293880909469085"
+        },
+        {
+          "file": "pnpm-workspace.yaml",
+          "hash": "15800875520565575530"
+        },
+        {
+          "file": "scripts/audit-typescript-integrity.mjs",
+          "hash": "15145441463593403610"
+        },
+        {
+          "file": "scripts/debug-test-paths.js",
+          "hash": "5866746104991935630"
+        },
+        {
+          "file": "scripts/diagnosis/supabase/check-connection.ts",
+          "hash": "8515134816395095391",
+          "deps": [
+            "npm:pg",
+            "npm:dotenv"
+          ]
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_044011287198.jpg",
+          "hash": "13599835536717189110"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_044012411939.jpg",
+          "hash": "413204514160501580"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_044013842366.jpg",
+          "hash": "9701948116049843792"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_044014254535.jpg",
+          "hash": "6418059962706647064"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_044014788678.jpg",
+          "hash": "16806149686913092610"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_044015718492.jpg",
+          "hash": "10813103919258493410"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_044018657446.jpg",
+          "hash": "2200210280286654006"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_04401922987.jpg",
+          "hash": "11374916472290602581"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_05079.jpg",
+          "hash": "7008379019161968046"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_174733251068262da026fc43831201331425740.jpg",
+          "hash": "2986873116781864582"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_174733251068262da026fc43831201331446261.jpg",
+          "hash": "8540294326770454724"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_174733251068262da026fc43831201333016603.jpg",
+          "hash": "10775655622485577359"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_174733251068262da026fc4383120133403295.jpg",
+          "hash": "6067434627666991042"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_174733251068262da026fc43831201335950951.jpg",
+          "hash": "5416566329420314512"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_174733251068262da026fc43831201336575920.jpg",
+          "hash": "2900262610872842604"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_174733251068262da026fc43831201336788855.jpg",
+          "hash": "2036554455781626416"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_174733251068262da026fc43831201338457320.jpg",
+          "hash": "3282586306236028590"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_174733251068262da026fc43831201339347055.jpg",
+          "hash": "10179972369210218535"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_174733251068262da029ad7161210530.jpg",
+          "hash": "17349929969966531683"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_174735280925839616.jpg",
+          "hash": "18151071432230145712"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_174835857124042086.jpg",
+          "hash": "16514583857038129995"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_258861470434.jpg",
+          "hash": "10900993669519672445"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_25886223185.jpg",
+          "hash": "307842782162618955"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_258865135467.jpg",
+          "hash": "3565987830833483409"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_258865776309.jpg",
+          "hash": "3746639177234835919"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_258866978797.jpg",
+          "hash": "12858043604599989973"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_25886711589.jpg",
+          "hash": "4937989568917933954"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_258867686571.jpg",
+          "hash": "4557925716066855129"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_31934219885.jpg",
+          "hash": "3204261743700178435"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_319344233994.jpg",
+          "hash": "14151937905419163008"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_31934507529.jpg",
+          "hash": "13392325055791490700"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_31934591025.jpg",
+          "hash": "1360909181874633296"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_319346049082.jpg",
+          "hash": "6707887340012877051"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_319346107358.jpg",
+          "hash": "12363166224323169674"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_319346883041.jpg",
+          "hash": "3155444242076770621"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_319349031286.jpg",
+          "hash": "17588546762717117461"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_3193491601.jpg",
+          "hash": "580667141722325556"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_347792394133.jpg",
+          "hash": "6073494607131578797"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_347792751775.jpg",
+          "hash": "7943765154615946027"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_347794051680.jpg",
+          "hash": "3199797834212768597"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_5371669912.jpg",
+          "hash": "1139820548716684555"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_537168097589.jpg",
+          "hash": "16679272529415091459"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_793223482082.jpg",
+          "hash": "4879833218332798927"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_793225830806.jpg",
+          "hash": "15969648045133041399"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_793227049912.jpg",
+          "hash": "10214101003236996757"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_793227453220.jpg",
+          "hash": "17581414459054754021"
+        },
+        {
+          "file": "scripts/downloaded_assets/homepage/gallery-2.jpg",
+          "hash": "8420839051032950235"
+        },
+        {
+          "file": "scripts/downloaded_assets/homepage/slider-1-floripa.jpg",
+          "hash": "1966176199901508523"
+        },
+        {
+          "file": "scripts/downloaded_assets/homepage/slider-3-salvador.jpg",
+          "hash": "6892085014632894368"
+        },
+        {
+          "file": "scripts/downloaded_assets/iconos/2611202_1_174854224590487802.png",
+          "hash": "4763389873611974577"
+        },
+        {
+          "file": "scripts/downloaded_assets/iconos/2611202_1_174948144115203071.png",
+          "hash": "6461656931200573646"
+        },
+        {
+          "file": "scripts/downloaded_assets/iconos/2611202_1_174948144115213733.png",
+          "hash": "9220741446145392843"
+        },
+        {
+          "file": "scripts/downloaded_assets/iconos/2611202_1_174948144115236464.png",
+          "hash": "16918486392011015316"
+        },
+        {
+          "file": "scripts/downloaded_assets/iconos/2611202_1_174948144115241776.png",
+          "hash": "5662799661289037756"
+        },
+        {
+          "file": "scripts/downloaded_assets/iconos/2611202_1_174948144115261034.png",
+          "hash": "18031733908842153361"
+        },
+        {
+          "file": "scripts/downloaded_assets/iconos/2611202_1_19549.png",
+          "hash": "10923841351601164288"
+        },
+        {
+          "file": "scripts/downloaded_assets/iconos/2611202_1_29262.png",
+          "hash": "6522009401094846609"
+        },
+        {
+          "file": "scripts/downloaded_assets/iconos/2611202_1_34687.png",
+          "hash": "14253556636724544523"
+        },
+        {
+          "file": "scripts/downloaded_assets/iconos/2611202_1_36379.png",
+          "hash": "6380318779121147756"
+        },
+        {
+          "file": "scripts/downloaded_assets/iconos/2611202_1_73883.gif",
+          "hash": "11778468997219707847"
+        },
+        {
+          "file": "scripts/downloaded_assets/iconos/2611202_1_87163.png",
+          "hash": "18312365495643688587"
+        },
+        {
+          "file": "scripts/downloaded_assets/iconos/Date.png",
+          "hash": "10195557020158335376"
+        },
+        {
+          "file": "scripts/downloaded_assets/iconos/cta-anim-whatsapp.gif",
+          "hash": "11778468997219707847"
+        },
+        {
+          "file": "scripts/downloaded_assets/iconos/icon-instagram.png",
+          "hash": "16918486392011015316"
+        },
+        {
+          "file": "scripts/downloaded_assets/iconos/icon-whatsapp.png",
+          "hash": "5662799661289037756"
+        },
+        {
+          "file": "scripts/downloaded_assets/logos/favicon.png",
+          "hash": "13048722742456448825"
+        },
+        {
+          "file": "scripts/downloaded_assets/logos/logo-footer.png",
+          "hash": "13832451218670876258"
+        },
+        {
+          "file": "scripts/downloaded_assets/logos/logo-header-desktop.png",
+          "hash": "8654916221470033765"
+        },
+        {
+          "file": "scripts/downloaded_assets/logos/logo-header-mobile.png",
+          "hash": "5195448956750898467"
+        },
+        {
+          "file": "scripts/downloader.bat",
+          "hash": "18336626221456820500"
+        },
+        {
+          "file": "scripts/optimizar.ps1",
+          "hash": "17474276735156832386"
+        },
+        {
+          "file": "scripts/prebuild-portfolio-web.mjs",
+          "hash": "14636333977342112542"
+        },
+        {
+          "file": "scripts/verify-build-readiness.mjs",
+          "hash": "11863945486363005086"
+        },
+        {
+          "file": "scripts/verify-config-integrity.mjs",
+          "hash": "15040230663727894099"
+        },
+        {
+          "file": "scripts/verify-path-aliases.mjs",
+          "hash": "969225611843486136"
+        },
+        {
+          "file": "tests/apps/cms-admin/smoke.spec.tsx",
+          "hash": "11209399778899478933",
+          "deps": [
+            "npm:react",
+            "@portfolio/testing-utils"
+          ]
+        },
+        {
+          "file": "tests/apps/portfolio-web/architecture.spec.tsx",
+          "hash": "2057675374389277225",
+          "deps": [
+            "npm:react",
+            "npm:@testing-library/react",
+            "@portfolio/testing-utils",
+            "portfolio-web"
+          ]
+        },
+        {
+          "file": "tests/tsconfig.json",
+          "hash": "459056823417845939"
+        },
+        {
+          "file": "tsconfig.base.json",
+          "hash": "1439055925247646076"
+        },
+        {
+          "file": "tsconfig.json",
+          "hash": "1379983966652230747"
+        },
+        {
+          "file": "tsconfig.spec.json",
+          "hash": "3091195692643263037"
+        }
+      ]
+    }
+  },
+  "externalNodesHash": "2008942951005678387"
+}

@@ -1,4 +1,4 @@
-// RUTA: packages/cms/core/src/index.ts
-export * from './collections/Users.js';
-export * from './collections/BlogPosts.js';
-export * from './collections/Projects.js';
+// RUTA: packages/cms/core/src/collections/index.ts
+export * from './Users.js';
+export * from './BlogPosts.js';
+export * from './Projects.js';

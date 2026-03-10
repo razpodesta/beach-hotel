@@ -1,32 +1,53 @@
-// RUTA: apps/portfolio-web/src/lib/utils/link-helpers.ts
-// VERSIÓN: 1.0 - Generador de Rutas Localizadas
-// DESCRIPCIÓN: Inyecta el idioma actual en rutas internas, respetando anclas y enlaces externos.
+/**
+ * @file apps/portfolio-web/src/lib/utils/link-helpers.ts
+ * @description Utilidades de saneamiento y localización de hipervínculos. 
+ *              Garantiza que la navegación interna respete el contexto de idioma activo.
+ * @version 2.0
+ * @author Raz Podestá - MetaShark Tech
+ */
 
-import { type Locale } from '@/config/i18n.config';
+// CORRECCIÓN: Uso de ruta relativa para cumplir con @nx/enforce-module-boundaries
+import { type Locale } from '../../config/i18n.config';
 
 /**
- * Transforma una ruta abstracta (ej: /#contact) en una ruta localizada (ej: /pt-BR/#contact).
- * Ignora enlaces externos (http/https/mailto).
+ * Transforma una ruta lógica en una ruta física localizada para el ecosistema.
+ * Maneja excepciones para enlaces externos, protocolos de comunicación y anclas de página.
+ * 
+ * @param href - La ruta de destino original (ej: '/reservas' o '#servicios').
+ * @param currentLang - El idioma activo en la sesión del usuario.
+ * @returns La URL final procesada y lista para el componente Link de Next.js.
  */
 export function getLocalizedHref(href: string | undefined, currentLang: Locale): string {
-  if (!href) return '#';
+  // 1. Guardia de Resiliencia: Si no hay destino, retornamos un ancla nula segura.
+  if (!href || href === '') return '#';
 
-  // 1. Enlaces externos o anclas vacías: se retornan tal cual.
-  if (href.startsWith('http') || href.startsWith('mailto:') || href === '#') {
+  // 2. Bypass Técnico: Ignorar enlaces externos, protocolos mailto/tel o anclas puras.
+  const isExternal = href.startsWith('http');
+  const isProtocol = href.startsWith('mailto:') || href.startsWith('tel:');
+  const isPureAnchor = href === '#';
+
+  if (isExternal || isProtocol || isPureAnchor) {
     return href;
   }
 
-  // 2. Si la ruta ya tiene el idioma (edge case), no lo duplicamos.
-  if (href.startsWith(`/${currentLang}`)) {
+  // 3. Verificación de Redundancia: Si la ruta ya incluye el locale, se retorna íntegra.
+  if (href.startsWith(`/${currentLang}/`) || href === `/${currentLang}`) {
     return href;
   }
 
-  // 3. Limpieza: Asegurar que la ruta empiece con / si no es un ancla directa en la misma página
-  // Si es solo '#id', asumimos navegación en la misma página y no tocamos (o prefijamos si queremos forzar home).
-  // Para la arquitectura actual donde los links del menú van a la home, forzamos la ruta completa.
-  const cleanHref = href.startsWith('/') ? href : `/${href}`;
+  // 4. Saneamiento de Segmentos: Asegurar que la ruta comience con '/'
+  // Si es un ancla interna (ej: '#contact'), Next.js recomienda prefijar con '/' 
+  // para forzar la navegación a la home si el usuario está en una subpágina.
+  const cleanPath = href.startsWith('/') ? href : `/${href}`;
 
-  // 4. Construcción de la ruta localizada.
-  // Se elimina la barra final para evitar trailing slashes innecesarios.
-  return `/${currentLang}${cleanHref}`.replace(/\/$/, '');
+  /**
+   * 5. Construcción Soberana:
+   * Concatenamos el locale con la ruta limpia y eliminamos la barra final (trailing slash)
+   * para mantener la consistencia SEO, excepto para la raíz del idioma.
+   */
+  const localizedPath = `/${currentLang}${cleanPath}`;
+  
+  return localizedPath.length > 6 
+    ? localizedPath.replace(/\/$/, '') 
+    : localizedPath;
 }
