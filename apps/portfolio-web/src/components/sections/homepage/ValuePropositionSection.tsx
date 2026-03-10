@@ -1,34 +1,43 @@
 // RUTA: apps/portfolio-web/src/components/sections/homepage/ValuePropositionSection.tsx
-// VERSIÓN: 2.4 - Alineación de API de Iconos
-// DESCRIPCIÓN: Se actualiza para usar 'iconName' (string) en lugar de pasar componentes
-//              directamente, cumpliendo con la nueva firma de PillarCard.
+
+/**
+ * @file Sección de Propuesta de Valor
+ * @version 3.0 - Resilient Orchestrator
+ * @description Orquestador de tarjetas de pilares. Utiliza animaciones de 
+ *              fase para una entrada elegante y semántica de contenido.
+ * @author Raz Podestá - MetaShark Tech
+ */
 
 'use client';
 
 import React from 'react';
 import { motion, type Variants } from 'framer-motion';
 import { ChevronRight } from 'lucide-react';
-import type { Dictionary } from '../../../lib/schemas/dictionary.schema';
+import { cn } from '../../../lib/utils/cn';
 import { PillarCard } from '../../ui/PillarCard';
+import type { Dictionary } from '../../../lib/schemas/dictionary.schema';
 
 type ValuePropositionSectionProps = {
   dictionary: Dictionary['homepage']['value_proposition_section'];
+  className?: string;
 };
 
-// Definimos las claves de los iconos como strings
+// Mapa de iconos soberano. Si el índice excede, el componente PillarCard ya gestiona el fallback.
 const PILLAR_ICONS = ['blocks', 'sparkles', 'trending-up'];
 
 const containerVariants: Variants = {
-  hidden: {},
+  hidden: { opacity: 0 },
   visible: {
+    opacity: 1,
     transition: {
-      staggerChildren: 0.2,
+      staggerChildren: 0.25,
+      delayChildren: 0.1,
     },
   },
 };
 
 const connectorVariants: Variants = {
-  hidden: { opacity: 0, scale: 0.5 },
+  hidden: { opacity: 0, scale: 0.8 },
   visible: {
     opacity: 1,
     scale: 1,
@@ -36,15 +45,17 @@ const connectorVariants: Variants = {
   },
 };
 
-export function ValuePropositionSection({ dictionary }: ValuePropositionSectionProps) {
+export function ValuePropositionSection({ dictionary, className }: ValuePropositionSectionProps) {
   return (
-    <section className="w-full bg-zinc-950/50 py-20 sm:py-32 overflow-hidden">
+    <section className={cn("w-full py-20 sm:py-32 overflow-hidden bg-zinc-950/50", className)}>
       <div className="container mx-auto px-4">
+        
+        {/* Encabezado SEO-Friendly */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.5 }}
-          transition={{ duration: 0.7, ease: 'easeOut' }}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           className="mx-auto max-w-3xl text-center mb-16 md:mb-24"
         >
           <h2 className="font-display text-4xl font-bold tracking-tight text-white sm:text-5xl">
@@ -55,6 +66,7 @@ export function ValuePropositionSection({ dictionary }: ValuePropositionSectionP
           </p>
         </motion.div>
 
+        {/* Orquestador de Pilares */}
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -65,20 +77,20 @@ export function ValuePropositionSection({ dictionary }: ValuePropositionSectionP
           {dictionary.pillars.map((pillar, index) => (
             <React.Fragment key={pillar.title}>
               <PillarCard
-                // CORRECCIÓN: Usamos iconName con el string correspondiente
-                iconName={PILLAR_ICONS[index]}
+                iconName={PILLAR_ICONS[index] || 'blocks'}
                 title={pillar.title}
                 description={pillar.description}
                 sequence={index + 1}
                 className="flex-1 min-w-0"
               />
 
+              {/* Conector Visual */}
               {index < dictionary.pillars.length - 1 && (
                 <motion.div
                   variants={connectorVariants}
                   className="hidden md:flex items-center justify-center"
                 >
-                  <ChevronRight className="h-12 w-12 text-zinc-700" />
+                  <ChevronRight className="h-10 w-10 text-zinc-800" />
                 </motion.div>
               )}
             </React.Fragment>

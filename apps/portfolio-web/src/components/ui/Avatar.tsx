@@ -1,16 +1,17 @@
 // RUTA: apps/portfolio-web/src/components/ui/Avatar.tsx
-// VERSIÓN: 1.0 - Componente de Identidad Dinámica (Imagen/Video)
+// VERSIÓN: 2.0 - Avatar de Élite (Fallback Inteligente & Style Merge)
+// DESCRIPCIÓN: Componente de identidad con soporte para fallback de iniciales,
+//              fusión de clases segura con `cn` y optimización de medios.
 
+'use client';
+
+import React, { useMemo } from 'react';
 import Image from 'next/image';
 import { cva, type VariantProps } from 'class-variance-authority';
-
-// ===================================================================================
-// DEFINICIÓN DE ESTILOS CON CVA (CLASS-VARIANCE-AUTHORITY)
-// Esto permite crear variantes de estilo de una manera organizada y escalable.
-// ===================================================================================
+import { cn } from '../../lib/utils/cn';
 
 const avatarVariants = cva(
-  'relative inline-flex items-center justify-center overflow-hidden',
+  'relative inline-flex items-center justify-center overflow-hidden bg-zinc-800 text-zinc-400 select-none',
   {
     variants: {
       shape: {
@@ -18,10 +19,10 @@ const avatarVariants = cva(
         square: 'rounded-xl',
       },
       size: {
-        sm: 'h-10 w-10',
-        md: 'h-16 w-16',
-        lg: 'h-24 w-24',
-        xl: 'h-32 w-32',
+        sm: 'h-10 w-10 text-xs',
+        md: 'h-16 w-16 text-sm',
+        lg: 'h-24 w-24 text-base',
+        xl: 'h-32 w-32 text-lg',
       },
     },
     defaultVariants: {
@@ -31,59 +32,62 @@ const avatarVariants = cva(
   }
 );
 
-// ===================================================================================
-// DEFINICIÓN DE PROPS DEL COMPONENTE
-// ===================================================================================
-
-// Heredamos las variantes de CVA para tener autocompletado de `shape` y `size`.
 export interface AvatarProps extends VariantProps<typeof avatarVariants> {
-  src?: string;       // Fuente para la imagen estática (opcional)
-  videoSrc?: string;  // Fuente para el video animado (opcional, tiene prioridad)
-  alt: string;        // Texto alternativo (obligatorio por accesibilidad)
-  className?: string; // Para clases de estilo personalizadas
+  src?: string;
+  videoSrc?: string;
+  alt: string;
+  fallbackName?: string; // Nuevo: Nombre para generar iniciales si src falla
+  className?: string;
 }
 
-// ===================================================================================
-// COMPONENTE AVATAR
-// ===================================================================================
-
+/**
+ * Avatar de Élite: Renderiza identidad visual con soporte para fallback de iniciales,
+ * video optimizado o imagen optimizada por Next/Image.
+ */
 export function Avatar({
   src,
   videoSrc,
   alt,
+  fallbackName,
   shape,
   size,
   className,
 }: AvatarProps) {
-  // Prioridad de Medio Dinámico: Si existe `videoSrc`, se renderiza el video.
-  const hasVideo = !!videoSrc;
+  
+  // Extrae las iniciales del nombre (ej: "Raz Podestá" -> "RP")
+  const initials = useMemo(() => {
+    if (!fallbackName) return null;
+    return fallbackName
+      .split(' ')
+      .map((n) => n[0])
+      .join('')
+      .toUpperCase()
+      .substring(0, 2);
+  }, [fallbackName]);
 
   return (
-    <div className={avatarVariants({ shape, size, className })}>
-      {hasVideo ? (
-        // --- Renderizado de Video Animado ---
+    <div className={cn(avatarVariants({ shape, size }), className)}>
+      {videoSrc ? (
         <video
-          key={videoSrc} // `key` asegura que el video se recargue si la fuente cambia
           autoPlay
           loop
-          muted         // `muted` es ESENCIAL para que `autoPlay` funcione en la mayoría de los navegadores
-          playsInline   // `playsInline` es crucial para la reproducción en iOS
+          muted
+          playsInline
           className="h-full w-full object-cover"
         >
           <source src={videoSrc} type="video/mp4" />
-          {/* Puedes añadir más <source> para otros formatos como webm u ogg */}
         </video>
+      ) : src ? (
+        <Image
+          src={src}
+          alt={alt}
+          fill
+          sizes="(max-width: 768px) 64px, 128px"
+          className="object-cover"
+          onError={(e) => (e.currentTarget.style.display = 'none')}
+        />
       ) : (
-        // --- Renderizado de Imagen Estática (con optimización de Next.js) ---
-        src && (
-          <Image
-            src={src}
-            alt={alt}
-            fill
-            sizes="(max-width: 768px) 10vw, (max-width: 1200px) 5vw, 5vw"
-            className="object-cover"
-          />
-        )
+        <span className="font-bold tracking-tight uppercase">{initials}</span>
       )}
     </div>
   );

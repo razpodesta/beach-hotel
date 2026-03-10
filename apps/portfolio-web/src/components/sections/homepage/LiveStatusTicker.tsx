@@ -1,143 +1,77 @@
+// RUTA: apps/portfolio-web/src/components/sections/homepage/LiveStatusTicker.tsx
+
 /**
- * @file LiveStatusTicker.tsx
- * @version 1.0 - Production Ready
- * @description Aparato de comunicación dinámica que sustituye al Tech Stack.
- *              Diseñado para mostrar disponibilidad, eventos y clima en tiempo real.
+ * @file Ticker de Estado en Tiempo Real
+ * @version 2.0 - Arquitectura de Datos Sincronizada
+ * @description Ticker infinito optimizado mediante GSAP. 
+ *              Consume datos inyectados para permitir actualización vía CMS.
+ * @author Raz Podestá - MetaShark Tech
  */
 
 'use client';
 
-import React, { useRef, useMemo } from 'react';
-import { motion } from 'framer-motion';
-import { 
-  Sparkles, 
-  Waves, 
-  Music, 
-  Ticket, 
-  Users, 
-  ThermometerSun, 
-  ShieldCheck 
-} from 'lucide-react';
+import React, { useRef } from 'react';
+import { Ticket, ThermometerSun, ShieldCheck, Music, Users, Waves, Sparkles } from 'lucide-react';
+import { cn } from '../../../lib/utils/cn';
 import { useInfiniteCarouselAnimation } from '../../../lib/hooks/use-infinite-carousel-animation';
+import type { Dictionary } from '../../../lib/schemas/dictionary.schema';
 
-// --- Contrato de Datos (Atomizado) ---
-interface TickerMessage {
-  id: string;
-  text: string;
-  category: 'URGENTE' | 'EVENTO' | 'STATUS' | 'INFO';
-  icon: React.ElementType;
-  colorClass: string;
-}
+// Mapeo canónico de iconos para deserialización desde CMS/Dictionary
+const ICON_MAP: Record<string, React.ElementType> = {
+  Ticket, ThermometerSun, ShieldCheck, Music, Users, Waves, Sparkles
+};
 
-// --- Mocks Naturalizados (Sustituyen a los iconos de lenguajes) ---
-const LIVE_DATA: TickerMessage[] = [
-  { 
-    id: 'msg-1', 
-    text: "BOAT PARTY: ÚLTIMOS 12 TICKETS DISPONÍVEIS", 
-    category: 'URGENTE', 
-    icon: Ticket, 
-    colorClass: "text-purple-500" 
-  },
-  { 
-    id: 'msg-2', 
-    text: "TEMPERATURA EM CANASVIEIRAS: 26°C - CÉU LIMPO", 
-    category: 'INFO', 
-    icon: ThermometerSun, 
-    colorClass: "text-yellow-400" 
-  },
-  { 
-    id: 'msg-3', 
-    text: "SUITE MASTER: 100% OCUPADA PARA O PRIDE ESCAPE", 
-    category: 'STATUS', 
-    icon: ShieldCheck, 
-    colorClass: "text-green-400" 
-  },
-  { 
-    id: 'msg-4', 
-    text: "DJ GUEST CONFIRMADO: TECH-HOUSE SESSIONS", 
-    category: 'EVENTO', 
-    icon: Music, 
-    colorClass: "text-pink-500" 
-  },
-  { 
-    id: 'msg-5', 
-    text: "+300 PAX CONFIRMADOS DE ARGENTINA E CHILE", 
-    category: 'INFO', 
-    icon: Users, 
-    colorClass: "text-blue-400" 
-  },
-  { 
-    id: 'msg-6', 
-    text: "MAR CALMO: CONDIÇÕES IDEAIS PARA NAVEGAÇÃO", 
-    category: 'INFO', 
-    icon: Waves, 
-    colorClass: "text-cyan-400" 
-  },
-  { 
-    id: 'msg-7', 
-    text: "EXPERIÊNCIA VIP: UPGRADE DISPONÍVEL NO CHECK-IN", 
-    category: 'STATUS', 
-    icon: Sparkles, 
-    colorClass: "text-purple-400" 
-  }
-];
+// Mapeo de colores semánticos para evitar colisiones con Tailwind
+const COLOR_MAP: Record<string, string> = {
+  purple: "text-purple-500",
+  yellow: "text-yellow-400",
+  green: "text-green-400",
+  pink: "text-pink-500",
+  blue: "text-blue-400",
+  cyan: "text-cyan-400",
+};
 
-export function LiveStatusTicker() {
+export function LiveStatusTicker({ dictionary }: { dictionary: Dictionary['system_status'] }) {
   const trackRef = useRef<HTMLDivElement>(null);
 
-  // --- Lógica de Loop Inteligente ---
-  // Duplicamos el set de datos para asegurar un scroll infinito sin saltos visuales
-  const loopedMessages = useMemo(() => [...LIVE_DATA, ...LIVE_DATA, ...LIVE_DATA], []);
-
-  // Hook de animación (GSAP / Framer Motion optimizado para GPU)
+  // Activación del motor de animación infinita
   useInfiniteCarouselAnimation([
-    { 
-      ref: trackRef, 
-      duration: 140, // Velocidad ultra lenta para lectura cómoda
-      direction: 1 
-    }
+    { ref: trackRef, duration: 120, direction: 1 }
   ]);
 
   return (
     <section 
-      className="relative w-full bg-[#050505] border-y border-white/5 py-8 overflow-hidden select-none"
-      aria-label="Live Hotel Updates"
+      className="relative w-full border-y border-border bg-background py-8 overflow-hidden select-none"
+      aria-label={dictionary.aria_label}
     >
-      {/* Efecto de difuminado lateral (Vignette) para profundidad */}
-      <div className="absolute left-0 top-0 z-10 h-full w-24 bg-linear-to-r from-black to-transparent pointer-events-none" />
-      <div className="absolute right-0 top-0 z-10 h-full w-24 bg-linear-to-l from-black to-transparent pointer-events-none" />
+      {/* Vignetage semántico para profundidad */}
+      <div className="absolute left-0 top-0 z-10 h-full w-24 bg-linear-to-r from-background to-transparent pointer-events-none" />
+      <div className="absolute right-0 top-0 z-10 h-full w-24 bg-linear-to-l from-background to-transparent pointer-events-none" />
 
-      {/* Contenedor del Carrusel */}
-      <div 
-        ref={trackRef} 
-        className="flex items-center w-max will-change-transform"
-      >
-        {loopedMessages.map((message, index) => (
-          <div 
-            key={`${message.id}-${index}`} 
-            className="flex items-center gap-6 px-12 group cursor-default"
-          >
-            {/* Indicador de Categoría */}
-            <div className="flex flex-col">
-              <span className={`text-[8px] font-mono font-bold tracking-[0.3em] uppercase opacity-40 group-hover:opacity-100 transition-opacity ${message.colorClass}`}>
-                {message.category}
-              </span>
-              
-              <div className="flex items-center gap-4 mt-1">
-                <message.icon 
-                  size={18} 
-                  className={`${message.colorClass} drop-shadow-[0_0_8px_rgba(255,255,255,0.2)]`} 
-                />
-                <span className="text-sm font-bold text-zinc-300 uppercase tracking-widest whitespace-nowrap group-hover:text-white transition-colors">
-                  {message.text}
+      <div ref={trackRef} className="flex items-center w-max will-change-transform">
+        {dictionary.items.map((item, index) => {
+          // Extraemos metadatos simulando estructura de CMS (puedes ajustar el split según tu JSON)
+          const [cat, text, iconKey, colorKey] = item.split('|');
+          const Icon = ICON_MAP[iconKey] || Sparkles;
+          const colorClass = COLOR_MAP[colorKey] || "text-primary";
+
+          return (
+            <div key={`${index}`} className="flex items-center gap-6 px-12 group cursor-default">
+              <div className="flex flex-col">
+                <span className={cn("text-[8px] font-mono font-bold tracking-[0.3em] uppercase opacity-40 group-hover:opacity-100 transition-opacity", colorClass)}>
+                  {cat}
                 </span>
+                <div className="flex items-center gap-4 mt-1">
+                  <Icon size={16} className={colorClass} />
+                  <span className="text-sm font-bold text-foreground uppercase tracking-widest whitespace-nowrap">
+                    {text}
+                  </span>
+                </div>
               </div>
+              <div className="ml-12 h-1 w-1 rounded-full bg-border group-hover:bg-primary transition-colors" />
             </div>
-
-            {/* Separador Estilizado entre mensajes */}
-            <div className="ml-12 h-1 w-1 rounded-full bg-zinc-800 group-hover:bg-purple-500 transition-colors" />
-          </div>
-        ))}
+          );
+        })}
       </div>
     </section>
   );

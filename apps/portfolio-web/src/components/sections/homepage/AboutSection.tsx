@@ -1,18 +1,23 @@
 // RUTA: apps/portfolio-web/src/components/sections/homepage/AboutSection.tsx
-// VERSIÓN: 5.1 - Sintaxis Canónica de Tailwind.
-// DESCRIPCIÓN: Se reemplaza la clase 'flex-grow' por su forma canónica y más
-//              concisa, 'grow', para alinear el código con las mejores prácticas
-//              modernas de Tailwind CSS y resolver las advertencias del linter.
+
+/**
+ * @file AboutSection.tsx
+ * @version 7.0 - Elite Architecture
+ * @description Presentación narrativa del Beach Hotel Canasvieiras. 
+ *              Elimina dangerouslySetInnerHTML por renderizado semántico.
+ *              Optimizado con LetterGlitch como fondo de rendimiento controlado.
+ * @author Raz Podestá - MetaShark Tech
+ */
 
 'use client';
 
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
-import type { Dictionary } from '@/lib/schemas/dictionary.schema';
-import { socialLinks } from '@/lib/social-links';
-import LetterGlitch from '@/components/razBits/LetterGlitch';
+import { ArrowRight, Landmark } from 'lucide-react';
+import { cn } from '../../../lib/utils/cn';
+import LetterGlitch from '../../razBits/LetterGlitch';
+import type { Dictionary } from '../../../lib/schemas/dictionary.schema';
 
 type AboutSectionProps = {
   dictionary: Dictionary['homepage']['about_section'];
@@ -20,80 +25,85 @@ type AboutSectionProps = {
 
 export function AboutSection({ dictionary }: AboutSectionProps) {
   return (
-    <section id="quien-soy" className="relative w-full overflow-hidden py-20 sm:py-24">
-      <div className="absolute inset-0 z-0">
+    <section id="nossa-historia" className="relative w-full overflow-hidden py-24 sm:py-32 bg-black">
+      {/* Fondo de Glitch Tecnológico - Optimizado con opacidad semántica */}
+      <div className="absolute inset-0 z-0 opacity-20">
         <LetterGlitch
-          glitchColors={['#4a044e', '#86198f', '#c026d3']}
-          glitchSpeed={80}
+          glitchColors={['#4a044e', '#86198f', '#2e1065']}
+          glitchSpeed={100}
           smooth={true}
           outerVignette={true}
         />
       </div>
 
       <div className="relative z-10 container mx-auto px-4">
-        <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-5 lg:gap-8">
-          {/* Columna de Imagen */}
+        <div className="grid grid-cols-1 items-stretch gap-12 lg:grid-cols-5 lg:gap-16">
+          
+          {/* Lado Izquierdo: Visual Asset */}
           <motion.div
-            initial={{ opacity: 0, x: -30 }}
+            initial={{ opacity: 0, x: -40 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, amount: 0.3 }}
-            transition={{ duration: 0.8, ease: 'easeOut' }}
+            transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
             className="lg:col-span-2"
           >
-            <div className="rounded-2xl border border-zinc-800 bg-zinc-950/70 p-6 backdrop-blur-sm">
-              <div className="aspect-square w-full overflow-hidden rounded-xl relative">
+            <div className="relative h-full min-h-[400px] rounded-3xl border border-white/5 bg-zinc-950/30 p-2 backdrop-blur-md">
+              <div className="relative h-full w-full overflow-hidden rounded-2xl shadow-2xl">
                 <Image
-                  src="/images/raz-podesta-avatar.jpg"
-                  alt="Foto de Raz Podestá"
+                  src="/images/hotel/about-building-front.jpg"
+                  alt="Beach Hotel Canasvieiras Architecture"
                   fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 90vw, (max-width: 1024px) 40vw, 33vw"
-                  priority
+                  className="object-cover grayscale-[0.3] hover:grayscale-0 transition-all duration-700"
+                  sizes="(max-width: 768px) 100vw, 40vw"
+                  priority={false}
                 />
-              </div>
-              <div className="my-6 h-px w-full bg-zinc-800" />
-              <div className="flex items-center justify-center gap-4">
-                {socialLinks.map(({ href, label, icon: Icon }) => (
-                  <a
-                    key={label}
-                    href={href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={`Visita mi perfil de ${label}`}
-                    className="rounded-full p-3 text-zinc-400 transition-colors hover:bg-zinc-800 hover:text-white"
-                  >
-                    <Icon size={22} />
-                  </a>
-                ))}
+                <div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent" />
+                
+                <div className="absolute bottom-6 left-6 flex items-center gap-3">
+                   <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 backdrop-blur-md border border-white/10">
+                      <Landmark size={20} className="text-purple-400" />
+                   </div>
+                   <span className="text-[10px] font-mono font-bold tracking-[0.3em] text-zinc-300 uppercase">
+                      Est. 2026 • Florianópolis
+                   </span>
+                </div>
               </div>
             </div>
           </motion.div>
 
-          {/* Columna de Texto como Tarjeta */}
+          {/* Lado Derecho: Narrativa de Marca */}
           <motion.div
-            initial={{ opacity: 0, x: 30 }}
+            initial={{ opacity: 0, x: 40 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, amount: 0.3 }}
-            transition={{ duration: 0.8, delay: 0.2, ease: 'easeOut' }}
-            className="lg:col-span-3 h-full"
+            transition={{ duration: 0.9, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            className="lg:col-span-3 flex flex-col justify-center"
           >
-            <div className="flex h-full flex-col rounded-2xl border border-zinc-800 bg-zinc-950/70 p-8 backdrop-blur-sm">
-              <h2 className="font-display text-4xl font-bold text-white">
-                {dictionary.title}
-              </h2>
-              {/* --- INICIO DE LA MEJORA DE SINTAXIS --- */}
-              <div className="mt-6 grow space-y-5 font-sans text-lg text-zinc-300">
-              {/* --- FIN DE LA MEJORA DE SINTAXIS --- */}
-                <p style={{ textShadow: '0 1px 4px rgba(0,0,0,0.7)' }} dangerouslySetInnerHTML={{ __html: dictionary.bio_part_1 }} />
-                <p style={{ textShadow: '0 1px 4px rgba(0,0,0,0.7)' }} dangerouslySetInnerHTML={{ __html: dictionary.bio_part_2 }} />
+            <div className="space-y-8">
+              <div className="space-y-4">
+                <h2 className="font-display text-5xl md:text-7xl font-bold tracking-tighter text-white leading-none">
+                  {dictionary.title}
+                </h2>
+                <div className="h-1 w-20 bg-linear-to-r from-purple-600 to-pink-600 rounded-full" />
               </div>
-              <div className="mt-8">
+
+              <div className="grow space-y-6 text-lg md:text-xl text-zinc-400 leading-relaxed max-w-2xl">
+                <p className="first-letter:text-5xl first-letter:font-display first-letter:font-bold first-letter:text-white first-letter:mr-3 first-letter:float-left">
+                  {dictionary.bio_part_1}
+                </p>
+                <p>{dictionary.bio_part_2}</p>
+              </div>
+
+              <div className="pt-6">
                 <Link
-                  href="/quien-soy"
-                  className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-bold text-black transition-transform hover:scale-105"
+                  href="/historia"
+                  className={cn(
+                    "group relative inline-flex items-center gap-4 rounded-full bg-white px-10 py-5",
+                    "text-sm font-bold text-black transition-all hover:bg-zinc-200"
+                  )}
                 >
                   {dictionary.cta_button}
-                  <ArrowRight size={18} />
+                  <ArrowRight size={20} className="transition-transform group-hover:translate-x-1" />
                 </Link>
               </div>
             </div>

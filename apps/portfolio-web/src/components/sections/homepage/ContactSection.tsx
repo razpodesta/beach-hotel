@@ -1,80 +1,134 @@
 // RUTA: apps/portfolio-web/src/components/sections/homepage/ContactSection.tsx
-// VERSIÓN: 2.1 - Sintaxis Canónica de Tailwind CSS v4.
-// DESCRIPCIÓN: Se actualizan las clases de gradiente a su forma canónica
-//              ('bg-linear-to-r') para cumplir con los estándares más recientes
-//              de Tailwind CSS y resolver las advertencias del linter.
+
+/**
+ * @file Sección de Contacto (Conversión)
+ * @version 4.0 - Tipado de Élite
+ * @description Refactorizado para acceso seguro a diccionarios y estados de UI resilientes.
+ * @author Raz Podestá - MetaShark Tech
+ */
 
 'use client';
 
+import { useState } from 'react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { motion } from 'framer-motion';
-import {
-  contactFormSchema,
-  type ContactFormData,
-} from '../../../lib/schemas/contact.schema';
+import { Loader2, CheckCircle2 } from 'lucide-react';
+import { cn } from '../../../lib/utils/cn';
+import { contactFormSchema, type ContactFormData } from '../../../lib/schemas/contact.schema';
 import type { Dictionary } from '../../../lib/schemas/dictionary.schema';
 
-type ContactSectionProps = {
+interface ContactSectionProps {
   dictionary: Dictionary['homepage']['contact'];
-};
+}
 
 export function ContactSection({ dictionary }: ContactSectionProps) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<ContactFormData>({
     resolver: zodResolver(contactFormSchema),
   });
 
-  const onSubmit: SubmitHandler<ContactFormData> = (data) => {
-    console.log('Mensaje enviado:', data);
-    alert('¡Mensaje enviado con éxito! Revisa la consola para ver los datos.');
+  const onSubmit: SubmitHandler<ContactFormData> = async (data) => {
+    setIsSubmitting(true);
+    try {
+      // Simulación de transporte de datos
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      console.log('Datos procesados:', data);
+      setIsSuccess(true);
+      reset();
+    } catch (err) {
+      console.error('Error en envío:', err);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
-    <section className="w-full bg-zinc-950 py-20 sm:py-24" id="contact">
+    <section className="w-full bg-background py-20 sm:py-32" id="contact">
       <motion.div
         className="container mx-auto px-4"
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.2 }}
-        transition={{ duration: 0.8, ease: 'easeOut' }}
+        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
       >
         <div className="mx-auto max-w-2xl text-center">
-            {/* --- MEJORA DE SINTAXIS (1/2) --- */}
-            <h2 className="text-3xl font-bold tracking-tight text-transparent sm:text-4xl bg-clip-text bg-linear-to-r from-purple-400 to-pink-600">
+            <h2 className="font-display text-3xl font-bold tracking-tight text-transparent sm:text-5xl bg-clip-text bg-linear-to-r from-purple-400 to-pink-600">
               {dictionary.title}
             </h2>
-            <p className="mt-2 text-lg text-zinc-400">{dictionary.form_cta}</p>
+            <p className="mt-4 text-lg text-muted-foreground">{dictionary.form_cta}</p>
         </div>
 
         <motion.form
           onSubmit={handleSubmit(onSubmit)}
-          className="mx-auto mt-10 w-full max-w-2xl space-y-4 rounded-lg bg-zinc-900/50 p-8 border border-zinc-800"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.3 }}
+          className="mx-auto mt-12 w-full max-w-xl space-y-6 rounded-2xl bg-card p-8 border border-border shadow-2xl"
           noValidate
         >
-          <div>
-            <input {...register('name')} placeholder={dictionary.form_placeholder_name} className={`w-full rounded-md border bg-transparent p-3 focus:ring-2 focus:ring-pink-500 ${errors.name ? 'border-red-500' : 'border-zinc-700'}`} />
-            {errors.name?.message && <p className="mt-1 text-sm text-red-600">{dictionary.validation[errors.name.message as keyof typeof dictionary.validation]}</p>}
-          </div>
+          {isSuccess ? (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9 }} 
+              animate={{ opacity: 1, scale: 1 }}
+              className="py-12 flex flex-col items-center justify-center text-center text-primary"
+            >
+              <CheckCircle2 size={48} className="mb-4" />
+              <p className="font-bold">¡Mensaje recibido con éxito!</p>
+            </motion.div>
+          ) : (
+            <>
+              {/* Refactorizado: Acceso tipado seguro a los diccionarios */}
+              <div>
+                <input
+                  {...register('name')}
+                  placeholder={dictionary.form_placeholder_name}
+                  className={cn(
+                    "w-full rounded-xl border bg-secondary p-4 outline-none transition-all",
+                    errors.name ? "border-destructive focus:ring-destructive" : "border-border focus:border-primary focus:ring-1 focus:ring-primary"
+                  )}
+                />
+                {errors.name && <p className="mt-2 text-xs text-destructive">{dictionary.validation.name_required}</p>}
+              </div>
 
-          <div>
-            <input {...register('email')} placeholder={dictionary.form_placeholder_email} className={`w-full rounded-md border bg-transparent p-3 focus:ring-2 focus:ring-pink-500 ${errors.email ? 'border-red-500' : 'border-zinc-700'}`} />
-            {errors.email?.message && <p className="mt-1 text-sm text-red-600">{dictionary.validation[errors.email.message as keyof typeof dictionary.validation]}</p>}
-          </div>
+              <div>
+                <input
+                  {...register('email')}
+                  placeholder={dictionary.form_placeholder_email}
+                  className={cn(
+                    "w-full rounded-xl border bg-secondary p-4 outline-none transition-all",
+                    errors.email ? "border-destructive focus:ring-destructive" : "border-border focus:border-primary focus:ring-1 focus:ring-primary"
+                  )}
+                />
+                {errors.email && <p className="mt-2 text-xs text-destructive">{dictionary.validation[errors.email.message as keyof typeof dictionary.validation]}</p>}
+              </div>
 
-          <div>
-            <textarea {...register('message')} placeholder={dictionary.form_placeholder_message} rows={5} className={`w-full rounded-md border bg-transparent p-3 focus:ring-2 focus:ring-pink-500 ${errors.message ? 'border-red-500' : 'border-zinc-700'}`} />
-            {errors.message?.message && <p className="mt-1 text-sm text-red-600">{dictionary.validation[errors.message.message as keyof typeof dictionary.validation]}</p>}
-          </div>
+              <div>
+                <textarea
+                  {...register('message')}
+                  placeholder={dictionary.form_placeholder_message}
+                  rows={4}
+                  className={cn(
+                    "w-full rounded-xl border bg-secondary p-4 outline-none transition-all",
+                    errors.message ? "border-destructive focus:ring-destructive" : "border-border focus:border-primary focus:ring-1 focus:ring-primary"
+                  )}
+                />
+                {errors.message && <p className="mt-2 text-xs text-destructive">{dictionary.validation.message_too_short}</p>}
+              </div>
 
-          {/* --- MEJORA DE SINTAXIS (2/2) --- */}
-          <button type="submit" className="w-full rounded-md bg-linear-to-r from-purple-500 to-pink-600 p-4 font-bold text-white transition-transform hover:scale-105">{dictionary.form_button_submit}</button>
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full rounded-xl bg-primary py-4 font-bold text-primary-foreground transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-70"
+              >
+                {isSubmitting ? <Loader2 className="animate-spin mx-auto" /> : dictionary.form_button_submit}
+              </button>
+            </>
+          )}
         </motion.form>
       </motion.div>
     </section>

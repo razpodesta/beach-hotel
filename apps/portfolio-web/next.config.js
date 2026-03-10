@@ -1,23 +1,23 @@
 // RUTA: apps/portfolio-web/next.config.js
-// VERSIÓN: 3.4 - Type Safety & Stability Fix
-// DESCRIPCIÓN: Se reemplaza el tipo interno roto de @nx/next por el estándar
-//              de Next.js para eliminar el error TS2306.
+
+/**
+ * @file Next.js Configuration (CMS Integration Layer)
+ * @version 4.0 - Payload 3.0 Native Integration
+ * @description Configura la integración nativa de Payload CMS 3.0 en el App Router.
+ *              Incluye políticas de seguridad para media y transpilación modular.
+ */
 
 // @ts-check
 const { composePlugins, withNx } = require('@nx/next');
+const { withPayload } = require('@payloadcms/next/withPayload');
 
-/**
- * @type {import('next').NextConfig}
- **/
+/** @type {import('next').NextConfig} */
 const nextConfig = {
-  // El objeto 'nx' se mantiene implícito para que el plugin lo maneje,
-  // pero ya no bloquea el tipado estático.
-  nx: {
-    // Configuración limpia.
-  },
+  // Configuración de salida para despliegue en Vercel/Docker
   output: 'standalone',
 
   // --- OPTIMIZACIÓN DE BUILD ---
+  // Mantenemos la transpilación de librerías soberanas del monorepo
   transpilePackages: [
     '@metashark-cms/ui',
     '@metashark-cms/core',
@@ -38,4 +38,9 @@ const nextConfig = {
   },
 };
 
-module.exports = composePlugins(withNx)(nextConfig);
+// Integramos withPayload para habilitar el CMS en el App Router
+// El orden de ejecución es crítico para la resolución de rutas
+module.exports = composePlugins(
+  withNx,
+  withPayload
+)(nextConfig);

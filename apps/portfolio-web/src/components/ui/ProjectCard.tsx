@@ -1,59 +1,75 @@
 // RUTA: apps/portfolio-web/src/components/ui/ProjectCard.tsx
-// VERSIÓN: 2.1 - Sintaxis Canónica de Tailwind CSS.
-// DESCRIPCIÓN: Se refactoriza el componente para reemplazar las clases 'flex-grow'
-//              por su forma canónica y más concisa, 'grow'. Esto resuelve las
-//              advertencias del linter y alinea el código con las mejores prácticas
-//              modernas de Tailwind CSS, manteniendo la pureza sintáctica del proyecto.
+
+/**
+ * @file Tarjeta de Proyecto (ProjectCard)
+ * @version 3.0 - CMS-Ready & Semantic Design
+ * @description Tarjeta altamente optimizada con soporte para integración Payload CMS.
+ *              Utiliza tokens semánticos para adaptabilidad automática a temas.
+ * @author Raz Podestá - MetaShark Tech
+ */
 
 'use client';
+
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ExternalLink, Github } from 'lucide-react';
+import { cn } from '../../lib/utils/cn';
 import type { Project } from '../../lib/types';
 
-export function ProjectCard({ project }: { project: Project }) {
+interface ProjectCardProps {
+  project: Project;
+  className?: string;
+}
+
+export function ProjectCard({ project, className }: ProjectCardProps) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
+    <motion.article
+      initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.3 }}
-      transition={{ duration: 0.5, ease: 'easeOut' }}
-      className="flex h-full flex-col overflow-hidden rounded-xl border border-zinc-700 bg-zinc-800/50 transition-all duration-300 hover:border-pink-500/50 hover:shadow-2xl hover:shadow-pink-500/10"
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+      className={cn(
+        "flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card transition-all duration-300",
+        "hover:border-primary hover:shadow-2xl hover:shadow-primary/10",
+        className
+      )}
     >
-      <div className="relative h-52 w-full">
+      {/* Imagen optimizada para LCP */}
+      <div className="relative h-52 w-full overflow-hidden">
         <Image
           src={project.imageUrl}
-          alt={`Imagen del proyecto ${project.title}`}
+          alt={project.title}
           fill
-          className="object-cover"
-          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          className="object-cover transition-transform duration-700 hover:scale-105"
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
       </div>
 
-      {/* --- INICIO DE LA MEJORA DE SINTAXIS (1/2) --- */}
       <div className="flex grow flex-col p-6">
-        <div className="flex items-center justify-between">
-          <h3 className="text-xl font-bold text-zinc-100">{project.title}</h3>
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-xl font-display font-bold text-card-foreground">{project.title}</h3>
           {project.codeUrl && (
             <Link
               href={project.codeUrl}
               target="_blank"
               rel="noopener noreferrer"
-              aria-label={`Ver el código de ${project.title} en GitHub`}
-              className="p-2 text-zinc-400 transition-colors hover:text-white"
+              aria-label={`Ver código de ${project.title}`}
+              className="text-muted-foreground transition-colors hover:text-primary"
             >
-              <Github size={20} />
+              <Github size={18} />
             </Link>
           )}
         </div>
 
-        {/* --- INICIO DE LA MEJORA DE SINTAXIS (2/2) --- */}
-        <p className="mt-2 grow text-sm text-zinc-400">{project.description}</p>
+        <p className="grow text-sm text-muted-foreground leading-relaxed">{project.description}</p>
 
-        <div className="mt-4 flex flex-wrap gap-2">
+        <div className="mt-6 flex flex-wrap gap-2">
           {project.tags.map((tag) => (
-            <span key={tag} className="rounded-full bg-zinc-700 px-3 py-1 text-xs font-medium text-zinc-300">
+            <span 
+              key={tag} 
+              className="rounded-full bg-secondary px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground border border-border"
+            >
               {tag}
             </span>
           ))}
@@ -61,12 +77,17 @@ export function ProjectCard({ project }: { project: Project }) {
       </div>
 
       {project.liveUrl && project.liveUrl !== '#' && (
-        <div className="flex items-center justify-end gap-2 border-t border-zinc-700 p-4">
-          <Link href={project.liveUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 rounded-md px-3 py-1.5 text-zinc-300 transition-colors hover:bg-zinc-700 hover:text-white">
-            <ExternalLink size={16} /> <span className="text-sm">Demo</span>
+        <div className="border-t border-border p-4 bg-muted/20">
+          <Link 
+            href={project.liveUrl} 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="flex items-center justify-center gap-2 rounded-lg py-2 text-sm font-bold text-primary hover:bg-muted transition-colors"
+          >
+            <ExternalLink size={16} /> <span>Demo</span>
           </Link>
         </div>
       )}
-    </motion.div>
+    </motion.article>
   );
 }

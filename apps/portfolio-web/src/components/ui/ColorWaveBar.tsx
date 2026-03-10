@@ -1,51 +1,69 @@
 // RUTA: apps/portfolio-web/src/components/ui/ColorWaveBar.tsx
-// VERSIÓN: 2.0 - Componente reutilizable con props para posición y dirección.
+
+/**
+ * @file Barra de Gradiente Dinámica (WaveBar)
+ * @version 3.0 - Semántica & Adaptable
+ * @description Barra de acento con gradientes semánticos inyectables.
+ *              Soporta variantes 'hotel' (elegante) y 'festival' (neón).
+ * @author Raz Podestá - MetaShark Tech
+ */
 
 'use client';
 
 import { motion } from 'framer-motion';
+import { cn } from '../../lib/utils/cn';
 
-// --- Definición de las Props del Componente ---
-// Esto permite controlar la barra desde donde se la llama.
 type ColorWaveBarProps = {
-  /** Determina si la barra aparece en la parte superior o inferior del contenedor. */
+  /** Posición absoluta de la barra. */
   position?: 'top' | 'bottom';
-  /** Controla la dirección del flujo del degradado. */
-  direction?: 'left-to-right' | 'right-to-left';
+  /** Variante temática para inyectar colores semánticos. */
+  variant?: 'hotel' | 'festival' | 'custom';
+  /** Clases adicionales. */
+  className?: string;
 };
 
+/**
+ * Renderiza una barra de gradiente animada. 
+ * Utiliza clases semánticas para permitir que el tema defina los colores.
+ */
 export function ColorWaveBar({
-  position = 'bottom', // Valor por defecto
-  direction = 'left-to-right', // Valor por defecto
+  position = 'bottom',
+  variant = 'hotel',
+  className,
 }: ColorWaveBarProps) {
 
-  // --- Lógica condicional para la animación ---
-  // Se define el punto de inicio y fin de la animación basado en la dirección.
-  const backgroundPosition = direction === 'left-to-right'
-    ? ['0% 50%', '400% 50%']
-    : ['400% 50%', '0% 50%'];
+  // Mapeo de variantes a clases de Tailwind (Tailwind v4)
+  const variantStyles = {
+    hotel: "from-purple-500 via-pink-500 to-fuchsia-500",
+    festival: "from-blue-500 via-purple-500 to-pink-500",
+    custom: "from-primary via-accent to-secondary",
+  };
 
   return (
-    <motion.div
-      // --- El posicionamiento ahora es dinámico basado en las props ---
-      className={`absolute left-0 w-full h-1 overflow-hidden z-10 ${
-        position === 'top' ? 'top-0' : 'bottom-0'
-      }`}
+    <div
+      className={cn(
+        'absolute left-0 w-full h-1 overflow-hidden z-10 pointer-events-none',
+        position === 'top' ? 'top-0' : 'bottom-0',
+        className
+      )}
     >
       <motion.div
-        className="h-full w-full bg-gradient-to-r from-purple-500 via-pink-500 to-fuchsia-500"
+        className={cn(
+          'h-full w-full bg-linear-to-r',
+          variantStyles[variant]
+        )}
         style={{
           backgroundSize: '400% 100%',
         }}
         animate={{
-          backgroundPosition,
+          backgroundPosition: ['0% 50%', '400% 50%'],
         }}
         transition={{
-          duration: 20, // Aumentamos la duración para un efecto más sutil
+          duration: 20,
           ease: 'linear',
-          repeat: Infinity, // La animación ahora es un bucle infinito y continuo
+          repeat: Infinity,
         }}
       />
-    </motion.div>
+    </div>
   );
 }

@@ -1,29 +1,54 @@
 // RUTA: apps/portfolio-web/src/components/ui/PrintButton.tsx
-// VERSIÓN: 1.0 - "Botón de Interacción de Cliente"
-// @author: Raz Podestá - MetaShark Tech
-// @description: Componente de Cliente soberano que encapsula la funcionalidad de impresión del navegador.
-//               Su extracción resuelve la violación de las reglas de React Server Components al aislar la
-//               interactividad (onClick) del lado del cliente, donde pertenece.
+
+/**
+ * @file Botón de Acción de Impresión
+ * @version 2.0 - Soberano, Accesible & Estilizado
+ * @description Botón flotante para impresión de documentos. Implementa `cn()` 
+ *              y validación de entorno, ocultándose automáticamente mediante 
+ *              media queries de impresión.
+ * @author Raz Podestá - MetaShark Tech
+ */
 
 'use client';
 
+import React, { useState, useEffect } from 'react';
 import { Printer } from 'lucide-react';
+import { cn } from '../../lib/utils/cn';
+
+export interface PrintButtonProps {
+  /** Texto del botón para accesibilidad y UI. */
+  text: string;
+  className?: string;
+}
 
 /**
- * @description Renderiza un botón flotante que, al ser presionado, invoca la funcionalidad de impresión del navegador.
- *              Este componente está diseñado para ser ocultado automáticamente al imprimir.
- * @param {{ text: string }} props Las propiedades del componente.
- * @returns {JSX.Element} El componente de botón de impresión.
+ * Renderiza un botón flotante soberano para activar la impresión del documento.
+ * Se oculta automáticamente cuando el usuario inicia el diálogo de impresión.
  */
-export function PrintButton({ text }: { text: string }) {
+export function PrintButton({ text, className }: PrintButtonProps) {
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // No renderizamos nada hasta estar en el cliente para evitar hidratación fallida
+  if (!isClient) return null;
+
   return (
     <button
       onClick={() => window.print()}
-      className="print:hidden fixed bottom-8 right-8 flex items-center gap-2 rounded-full bg-purple-600 px-6 py-3 text-sm font-bold text-white shadow-lg transition-transform hover:scale-105"
+      className={cn(
+        // 'print:hidden' es la directriz clave para ocultar este botón en papel
+        'print:hidden fixed bottom-8 right-8 z-50 flex items-center gap-3',
+        'rounded-full bg-primary px-6 py-3 text-sm font-bold text-primary-foreground shadow-2xl',
+        'transition-all duration-300 hover:scale-105 hover:shadow-purple-500/20 active:scale-95',
+        className
+      )}
       aria-label={text}
     >
       <Printer size={18} />
-      {text}
+      <span>{text}</span>
     </button>
   );
 }

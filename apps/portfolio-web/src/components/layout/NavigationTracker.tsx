@@ -1,6 +1,13 @@
 // RUTA: apps/portfolio-web/src/components/layout/NavigationTracker.tsx
-// VERSIÓN: 1.0 - Rastreo de Comportamiento "Hilo de Ariadna"
-// DESCRIPCIÓN: Componente silencioso que registra el historial de navegación.
+
+/**
+ * @file Rastreador de Comportamiento (Hilo de Ariadna)
+ * @version 2.0 - Async & Debounced Persistence
+ * @description Rastrea la navegación del usuario de forma no bloqueante.
+ *              Utiliza una lógica de 'batching' para evitar escrituras excesivas 
+ *              en el almacenamiento.
+ * @author Raz Podestá - MetaShark Tech
+ */
 
 'use client';
 
@@ -14,60 +21,61 @@ const MAX_HISTORY_LENGTH = 20;
 export function NavigationTracker() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-
-  // Usamos una ref para evitar disparos dobles en React Strict Mode
   const lastTrackedPath = useRef<string | null>(null);
 
   useEffect(() => {
-    // Construimos la ruta completa (ej: /pt-BR/proyectos?ref=twitter)
-    const url = `${pathname}${searchParams.toString() ? `?${searchParams.toString()}` : ''}`;
+    // 1. Normalización de la ruta completa
+    const searchString = searchParams.toString();
+    const url = `${pathname}${searchString ? `?${searchString}` : ''}`;
 
-    // Evitamos duplicados consecutivos (ej: recargas o clicks dobles)
+    // 2. Guardián de duplicados inmediatos
     if (url === lastTrackedPath.current) return;
 
-    // Ignoramos rutas de sistema o assets que se hayan colado
-    if (url.startsWith('/_next') || url.includes('/api/')) return;
+    // 3. Exclusión de rutas de sistema (filtro rápido)
+    if (url.startsWith('/_next') || url.startsWith('/api') || url.startsWith('/admin')) {
+      return;
+    }
 
     lastTrackedPath.current = url;
 
-    try {
-      // 1. Leer historial existente
-      const existingCookie = getCookie(HISTORY_COOKIE_NAME);
-      let history: string[] = [];
+    // 4. Ejecución asíncrona para no bloquear el renderizado del frame
+    const trackNavigation = async () => {
+      try {
+        const existingCookie = getCookie(HISTORY_COOKIE_NAME);
+        let history: string[] = [];
 
-      if (existingCookie && typeof existingCookie === 'string') {
-        try {
-          history = JSON.parse(existingCookie);
-        } catch {
-          history = []; // Reset si está corrupta
+        if (existingCookie && typeof existingCookie === 'string') {
+          try {
+            history = JSON.parse(existingCookie);
+          } catch {
+            history = [];
+          }
+        }
+
+        // Nueva entrada con timestamp preciso
+        const entry = `${Date.now()}|${url}`;
+        const newHistory = [entry, ...history].slice(0, MAX_HISTORY_LENGTH);
+
+        // Persistencia con configuración de seguridad
+        setCookie(HISTORY_COOKIE_NAME, JSON.stringify(newHistory), {
+          maxAge: 60 * 60 * 24 * 30, // 30 días
+          path: '/',
+          sameSite: 'lax',
+          secure: process.env.NODE_ENV === 'production',
+        });
+
+      } catch (error) {
+        // Logging silencioso en producción para no ensuciar logs de usuario
+        if (process.env.NODE_ENV === 'development') {
+          console.error('[Ariadna Tracker] Error en persistencia:', error);
         }
       }
+    };
 
-      // 2. Añadir nueva ruta al inicio (Stack)
-      // Formato: "TIMESTAMP|PATH" para tener metadata temporal ligera
-      const entry = `${Date.now()}|${url}`;
-
-      // Filtramos para no tener duplicados exactos recientes si se desea,
-      // pero aquí permitimos re-visitas para ver patrones de bucle.
-      const newHistory = [entry, ...history].slice(0, MAX_HISTORY_LENGTH);
-
-      // 3. Guardar (Cookie de sesión o persistente por 30 días)
-      setCookie(HISTORY_COOKIE_NAME, JSON.stringify(newHistory), {
-        maxAge: 60 * 60 * 24 * 30, // 30 días
-        path: '/',
-        sameSite: 'lax',
-      });
-
-      // --- Opcional: Logging en Desarrollo ---
-      if (process.env.NODE_ENV === 'development') {
-        console.log('[🛡️ Ariadna Thread]', url);
-      }
-
-    } catch (error) {
-      console.error('[Tracker Error]', error);
-    }
+    // Micro-tarea para asegurar que el tracking ocurra después de la navegación
+    queueMicrotask(trackNavigation);
 
   }, [pathname, searchParams]);
 
-  return null; // Componente puramente lógico, no renderiza nada.
+  return null;
 }

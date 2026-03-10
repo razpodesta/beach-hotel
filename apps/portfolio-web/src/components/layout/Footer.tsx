@@ -1,51 +1,43 @@
 // RUTA: apps/portfolio-web/src/components/layout/Footer.tsx
-// VERSIÓN: 5.0 - Full Semantic Theming & Zod Integration
-// AUTOR: Raz Podestá - MetaShark Tech
-// DESCRIPCIÓN: Pie de página principal de la aplicación.
-//              Implementa diseño adaptativo (Dark/Light) utilizando tokens CSS semánticos.
-//              Consume contenido estrictamente tipado desde los diccionarios de i18n.
+
+/**
+ * @file Footer Institucional (Boutique Hospitality)
+ * @version 6.0 - Semantic Theming & Branding Resilient
+ * @description Pie de página optimizado para entornos de hospitalidad. 
+ *              Utiliza composición para delegar formularios y emplea tokens semánticos.
+ * @author Raz Podestá - MetaShark Tech
+ */
 
 'use client';
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, type Variants } from 'framer-motion';
-import { ArrowRight } from 'lucide-react';
-import type { Dictionary } from '@/lib/schemas/dictionary.schema';
-import { socialLinks } from '@/lib/social-links';
-import { footerNavStructure } from '@/lib/nav-links';
-import { getLocalizedHref } from '@/lib/utils/link-helpers';
-import { i18n, type Locale } from '@/config/i18n.config';
+import { cn } from '../../lib/utils/cn';
+import type { Dictionary } from '../../lib/schemas/dictionary.schema';
+import { socialLinks } from '../../lib/social-links';
+import { footerNavStructure } from '../../lib/nav-links';
+import { getLocalizedHref } from '../../lib/utils/link-helpers';
+import { i18n, type Locale } from '../../config/i18n.config';
 
-/**
- * Props del Footer.
- * Utiliza tipos inferidos de Zod para garantizar la integridad de los datos.
- */
-type FooterProps = {
+interface FooterProps {
   content: Dictionary['footer'];
   navLabels: Dictionary['nav-links']['nav_links'];
   tagline: string;
-};
+  className?: string;
+}
 
-// Variantes de animación optimizadas para no bloquear el hilo principal
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.2,
-    },
-  },
+  visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
 };
 
 const itemVariants: Variants = {
   hidden: { opacity: 0, y: 10 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] } },
 };
 
-export function Footer({ content, navLabels, tagline }: FooterProps) {
-  const t = content;
+export function Footer({ content, navLabels, tagline, className }: FooterProps) {
   const pathname = usePathname();
   const currentLang = (pathname?.split('/')[1] as Locale) || i18n.defaultLocale;
 
@@ -55,100 +47,59 @@ export function Footer({ content, navLabels, tagline }: FooterProps) {
       whileInView="visible"
       viewport={{ once: true, amount: 0.2 }}
       variants={containerVariants}
-      // THEMED: Fondo y bordes semánticos
-      className="border-t border-border bg-background text-muted-foreground"
+      className={cn("border-t border-border bg-background text-muted-foreground", className)}
     >
-      <div className="container mx-auto px-4 pt-16 pb-8">
-        <div className="grid grid-cols-2 gap-8 md:grid-cols-5">
-
-          {/* Columna de Branding */}
-          <motion.div variants={itemVariants} className="col-span-2 md:col-span-2">
-            <Link
-              href={`/${currentLang}`}
-              // THEMED: Texto principal adaptativo
-              className="font-signature text-5xl text-foreground transition-colors hover:text-primary"
-            >
-              Raz Podestá
+      <div className="container mx-auto px-6 pt-20 pb-10">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-12 lg:gap-20">
+          
+          {/* Branding Section */}
+          <motion.div variants={itemVariants} className="md:col-span-4 space-y-4">
+            <Link href={`/${currentLang}`} className="block">
+              <h2 className="font-display text-4xl text-foreground">Beach Hotel</h2>
+              <span className="text-[10px] font-mono tracking-[0.3em] uppercase text-primary">Canasvieiras</span>
             </Link>
-            <p className="mt-4 max-w-xs text-sm text-muted-foreground">
-              {tagline}
-            </p>
+            <p className="text-sm leading-relaxed max-w-xs">{tagline}</p>
           </motion.div>
 
-          {/* Columnas de Navegación Dinámicas */}
+          {/* Dynamic Navigation Grid */}
           {footerNavStructure.map((column) => (
-            <motion.div variants={itemVariants} key={column.columnKey}>
-              <h2 className="text-sm font-semibold tracking-wider text-foreground uppercase">
-                {t[column.columnKey as keyof typeof t]}
-              </h2>
-              <ul className="mt-4 space-y-3">
-                {column.links.map((link) => {
-                  const finalHref = getLocalizedHref(link.href, currentLang);
-
-                  return (
-                    <li key={link.labelKey}>
-                      <Link
-                        href={finalHref}
-                        className="flex items-center gap-2 text-sm transition-colors hover:text-foreground hover:underline decoration-primary/50 underline-offset-4"
-                      >
-                        {link.Icon && (
-                          <link.Icon size={14} className="shrink-0 text-muted-foreground group-hover:text-primary transition-colors" />
-                        )}
-                        <span>{navLabels[link.labelKey as keyof typeof navLabels]}</span>
-                      </Link>
-                    </li>
-                  );
-                })}
+            <motion.div variants={itemVariants} key={column.columnKey} className="md:col-span-2">
+              <h3 className="text-xs font-bold uppercase tracking-widest text-foreground mb-6">
+                {content[column.columnKey as keyof typeof content]}
+              </h3>
+              <ul className="space-y-4">
+                {column.links.map((link) => (
+                  <li key={link.labelKey}>
+                    <Link
+                      href={getLocalizedHref(link.href, currentLang)}
+                      className="text-sm hover:text-primary transition-colors flex items-center gap-2"
+                    >
+                      {link.Icon && <link.Icon size={14} />}
+                      {navLabels[link.labelKey as keyof typeof navLabels]}
+                    </Link>
+                  </li>
+                ))}
               </ul>
             </motion.div>
           ))}
         </div>
 
-        {/* Sección de Newsletter */}
-        <motion.div variants={itemVariants} className="mt-12 border-t border-border pt-8">
-          <div className="flex flex-col items-start gap-4 lg:flex-row lg:items-center lg:justify-between">
-            <div>
-              <h3 className="text-lg font-bold text-foreground">{t.newsletter_title}</h3>
-              <p className="text-sm text-muted-foreground">Recibe insights y actualizaciones directamente.</p>
-            </div>
-            <form className="flex w-full max-w-md gap-2">
-              <input
-                type="email"
-                placeholder={t.newsletter_placeholder}
-                // THEMED: Inputs con fondo secundario y borde de input
-                className="w-full rounded-md border border-input bg-secondary px-4 py-2 text-sm text-foreground placeholder-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-all"
-                aria-label={t.newsletter_placeholder}
-              />
-              <button
-                type="submit"
-                // THEMED: Botón primario con texto invertido
-                className="shrink-0 rounded-md bg-primary px-4 py-2 text-sm font-bold text-primary-foreground transition-transform hover:scale-105 hover:bg-primary/90"
-                aria-label={t.newsletter_button}
-              >
-                <ArrowRight size={18} />
-              </button>
-            </form>
+        {/* Bottom Bar */}
+        <motion.div variants={itemVariants} className="mt-20 pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-6">
+          <div className="text-xs text-muted-foreground">
+            {content.rights_reserved} | {content.made_by}
           </div>
-        </motion.div>
-
-        {/* Copyright y Redes Sociales */}
-        <motion.div variants={itemVariants} className="mt-12 flex flex-col-reverse items-center justify-between gap-6 border-t border-border pt-8 md:flex-row">
-          <div className="text-center text-sm md:text-left">
-            <p className="text-foreground font-medium">{t.rights_reserved}</p>
-            <p className="text-muted-foreground text-xs mt-1">{t.made_by}</p>
-          </div>
-          <div className="flex items-center gap-4">
+          <div className="flex gap-4">
             {socialLinks.map(({ href, label, icon: Icon }) => (
               <a
                 key={label}
                 href={href}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label={`Visita mi perfil de ${label}`}
-                // THEMED: Botones sociales circulares
-                className="rounded-full p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+                className="p-2 rounded-full bg-secondary hover:bg-primary hover:text-primary-foreground transition-all"
+                aria-label={label}
               >
-                <Icon size={20} />
+                <Icon size={16} />
               </a>
             ))}
           </div>
