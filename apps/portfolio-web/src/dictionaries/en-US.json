@@ -1,0 +1,123 @@
+{
+  "header": {
+    "talk": "BOOK NOW",
+    "tagline": "Your Boutique Experience in Canasvieiras",
+    "personal_portfolio": "BEACH HOTEL CANASVIEIRAS",
+    "job_title": "Boutique Hotel & Pride Escape 2026 Headquarters",
+    "mobile_title": "Beach Hotel",
+    "mobile_subtitle": "Canasvieiras"
+  },
+  "nav-links": {
+    "nav_links": {
+      "hotel": "The Hotel",
+      "habitaciones": "Luxury Suites",
+      "festival": "Pride Escape 2026",
+      "historia": "Our Story",
+      "ubicacion": "Location",
+      "contacto": "Contact",
+      "servicios": "Services",
+      "galeria": "Gallery",
+      "reservas": "Online Booking",
+      "politica_privacidad": "Privacy",
+      "terminos_servicio": "Terms of Use"
+    }
+  },
+  "homepage": {
+    "hero": {
+      "page_title": "Beach Hotel Canasvieiras | Florianópolis",
+      "page_description": "Comfort and exclusivity in the heart of Canasvieiras. Boutique accommodation and official headquarters of the Pride Escape 2026 festival.",
+      "SUITES_SUBTITLE": "Where luxury meets the sea.",
+      "SUITES_TITLE": "BOUTIQUE SUITES",
+      "SUITES_FEATURES": "Panoramic Views · Gourmet Breakfast · High-Speed Wi-Fi",
+      "FESTIVAL_SUBTITLE": "The new wave of Florianópolis.",
+      "FESTIVAL_TITLE": "PRIDE ESCAPE 2026",
+      "FESTIVAL_FEATURES": "Boat Party · VIP Club Nights · 7 Days of Takeover",
+      "CTA_BUTTON": "CHECK AVAILABILITY"
+    },
+    "about_section": {
+      "title": "Exclusivity and Comfort.",
+      "bio_part_1": "Located on the prestigious <strong class=\"font-bold text-white\">Av. das Nações</strong>, Beach Hotel Canasvieiras redefines hospitality in the north of the island. With only 40 suites, we offer a <strong class=\"font-bold text-white\">strategic and intimate</strong> sanctuary for those seeking the perfect balance between Floripa's pulse and elite relaxation.",
+      "bio_part_2": "We are the official headquarters of <strong class=\"font-bold text-white\">Canasvieiras Fest: The Winter Escape</strong>, transforming the autumn season into the most desired moment of the year. Our infrastructure is designed for total adaptation to high-end events.",
+      "cta_button": "Discover Our History"
+    },
+    "value_proposition_section": {
+      "title": "Elite Hospitality",
+      "subtitle": "Our philosophy is based on three fundamental pillars to ensure your stay is transformative and unforgettable.",
+      "pillars": [
+        {
+          "title": "Premium Location",
+          "description": "In the heart of Canasvieiras, just meters from the beach and surrounded by the best gastronomy and nightlife in the region."
+        },
+        {
+          "title": "Inclusive Design",
+          "description": "A sophisticated and welcoming atmosphere, designed to celebrate diversity with security and contemporary luxury."
+        },
+        {
+          "title": "Digital Experience",
+          "description": "Smart check-in, app-based concierge, and full support for digital nomads who don't compromise on comfort."
+        }
+      ]
+    },
+    "contact": {
+      "title": "BOOK YOUR STAY",
+      "form_cta": "Do you have any questions or special requests? Our concierge team is ready to assist you.",
+      "form_placeholder_name": "* Name",
+      "form_placeholder_email": "* Email",
+      "form_placeholder_message": "* Your message or desired dates...",
+      "form_button_submit": "Send Request",
+      "validation": {
+        "name_required": "Name is required",
+        "email_required": "Email is required",
+        "email_invalid": "Please enter a valid email",
+        "message_too_short": "Message must be at least 10 characters"
+      }
+    },
+    "history_section": {
+      "title": "The Canasvieiras Legacy",
+      "subtitle": "From a family tradition to the vanguard of boutique hospitality in Santa Catarina."
+    },
+    "ai_gallery_section": {
+      "badge": "Pride Escape Vibe",
+      "title": "Visual Synth",
+      "subtitle": "The aura of Canasvieiras Fest 2026. Neons, reflections, and the energy of the international community.",
+      "overlay_indicator": "LIVE RENDER • WEBGL 2.0",
+      "footer_prompt": "Creative Direction: Raz Podestá",
+      "footer_upscaling": "8K Immersive Experience"
+    }
+  },
+  "footer": {
+    "newsletter_title": "Stay Informed",
+    "newsletter_placeholder": "Your email address",
+    "newsletter_button": "Subscribe",
+    "column_nav_title": "Sitemap",
+    "column_legal_title": "Legal",
+    "rights_reserved": "© 2026 Beach Hotel Canasvieiras. All rights reserved.",
+    "made_by": "Technology by Raz Podestá | MetaShark Tech"
+  },
+  "language_switcher": {
+    "label": "Language",
+    "en-US": "English",
+    "es-ES": "Español",
+    "pt-BR": "Português"
+  },
+  "system_status": {
+    "aria_label": "Hotel Status",
+    "items": [
+      "🔥 PRIDE ESCAPE: 90% of Master Suites occupied.",
+      "☀️ Forecast: 25°C in Canasvieiras. Clear skies for the Boat Party.",
+      "🍸 Happy Hour on the Rooftop: Daily at 6 PM.",
+      "✅ WiFi 6 Enabled: High-performance connectivity throughout the premises."
+    ]
+  },
+  "not_found": {
+    "title": "Room Not Found",
+    "description": "The route you are looking for is not available on our current map. Let our concierge guide you back.",
+    "cta_button": "Return to Reception",
+    "error_code": "ERR_HOTEL_ROUTE_404"
+  },
+  "maintenance": {
+    "title": "Digital Renovation",
+    "description": "We are polishing our platform to provide an even smoother booking experience.",
+    "estimated_return": "Returning shortly."
+  }
+}

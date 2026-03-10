@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "composite": true,
+    "outDir": "../../../dist/out-tsc",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "types": ["jest", "node"]
+  },
+  "include": [
+    "jest.config.ts",
+    "src/**/*.ts",
+    "../../../tests/packages/cms/core/**/*.ts",
+    "../../../tests/packages/cms/core/**/*.spec.ts",
+    "../../../tests/packages/cms/core/**/*.test.ts"
+  ]
+}

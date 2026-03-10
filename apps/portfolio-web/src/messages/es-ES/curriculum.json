@@ -1,0 +1,101 @@
+{
+  "page_title": "Currículum de Raz Podestá",
+  "page_description": "Currículum profesional de Raz Podestá, Arquitecto de Ecosistemas Digitales y Desarrollador Full-Stack.",
+  "print_button": "Imprimir",
+  "printable_footer": "CURRÍCULUM DESARROLLADO POR RAZ PODESTÁ - VERSIÓN IMPRIMIBLE 2025",
+  "header": {
+    "name": "RAZ PODESTÁ",
+    "title": "Arquitecto de Ecosistemas Digitales | Desarrollador Full-Stack | IA",
+    "phone": "Whatsapp +55 (48) 9212-3079",
+    "email": "razpodesta@gmail.com",
+    "linkedin": "linkedin.com/in/razpodesta",
+    "location": "Florianópolis, SC, Brasil"
+  },
+  "summary": {
+    "title": "RESUMEN PROFESIONAL",
+    "content": "Arquitecto de software multidisciplinario con más de 20 años de experiencia, especializado en la creación de 'cerebros digitales inteligentes'. Mi filosofía fusiona una profunda ingeniería de sistemas con una visión estratégica de producto y una obsesión por la UX para construir activos digitales escalables y resilientes. No construyo sitios; construyo ecosistemas soberanos diseñados para crecer y convertir."
+  },
+  "experience": {
+    "title": "EXPERIENCIA",
+    "items": [
+      {
+        "role": "Arquitecto de Ecosistemas Digitales & Fundador",
+        "company": "MetaShark Tech",
+        "period": "2020 - Presente",
+        "location": "Florianópolis, Brasil",
+        "duties": [
+          "Diseño y desarrollo de arquitecturas de software basadas en monorepos (Nx) para proyectos de alta complejidad.",
+          "Implementación de CMS Headless soberanos y APIs GraphQL optimizadas con Apollo Server, NestJS y Sequelize.",
+          "Creación de Progressive Web Apps (PWA) de alto rendimiento y Mobile-First utilizando Next.js y Tailwind CSS.",
+          "Desarrollo de 'LIA Legacy', una IA co-piloto orquestadora para acelerar el ciclo de vida del desarrollo de software."
+        ]
+      },
+      {
+        "role": "Líder Técnico & Arquitecto de Software",
+        "company": "Diversas Consultoras de Tecnología",
+        "period": "2000 - 2020",
+        "location": "Latinoamérica",
+        "duties": [
+          "Liderazgo de equipos de desarrollo en proyectos a gran escala para los sectores de finanzas, retail y medios.",
+          "Optimización de bases de datos SQL y NoSQL, logrando mejoras de rendimiento de hasta un 300%.",
+          "Implementación de pipelines de CI/CD que redujeron el time-to-market en un 50%.",
+          "Mentoría técnica y elevación de los estándares de calidad de código en equipos multidisciplinarios."
+        ]
+      }
+    ]
+  },
+  "education": {
+    "title": "EDUCACIÓN",
+    "items": [
+      {
+        "degree": "Ingeniería en Informática y Gestión",
+        "university": "Universidad de Ciencias de la Informática (UCINF)",
+        "period": "2002 - 2006",
+        "location": "Santiago, Chile"
+      },
+      {
+        "degree": "Derecho",
+        "university": "Universidad de Chile",
+        "period": "1994 - 1998",
+        "location": "Santiago, Chile"
+      }
+    ]
+  },
+  "certifications": {
+    "title": "CERTIFICACIONES",
+    "items": [
+      {
+        "name": "Google Data Analytics Professional Certificate",
+        "issuer": "Google",
+        "year": "2023"
+      },
+      {
+        "name": "Next.js & React - The Complete Guide",
+        "issuer": "Udemy",
+        "year": "2024"
+      },
+      {
+        "name": "Advanced GraphQL with Node.js",
+        "issuer": "Udemy",
+        "year": "2022"
+      },
+      {
+        "name": "Architecting with Google Compute Engine",
+        "issuer": "Google Cloud",
+        "year": "2021"
+      }
+    ]
+  },
+  "skills_section": {
+    "title": "HABILIDADES"
+  },
+  "hobbies": {
+    "title": "INTERESES Y AFICIONES",
+    "items": [
+      "Composición Musical & Sintetizadores",
+      "Inteligencia Artificial Generativa",
+      "Filosofía de Sistemas Complejos",
+      "Arquitectura de Software"
+    ]
+  }
+}

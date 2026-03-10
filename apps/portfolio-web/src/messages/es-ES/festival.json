@@ -1,0 +1,17 @@
+{
+  "hero": {
+    "title": "PRIDE ESCAPE",
+    "subtitle": "La toma boutique de Canasvieiras"
+  },
+  "manifesto": "Una semana diseñada para conocer, conectar y disfrutar en comunidad. Escapá del frío y viví una experiencia única...",
+  "vip_upsell": {
+    "title": "Experiencia VIP",
+    "price_addon": "+U$120",
+    "benefits": [
+      "Habitación preferencial",
+      "Acceso VIP a las fiestas",
+      "Welcome Kit exclusivo",
+      "Cena exclusiva"
+    ]
+  }
+}

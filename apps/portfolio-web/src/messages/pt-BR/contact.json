@@ -1,0 +1,9 @@
+{
+"title": "ENTRE EM CONTATO",
+"form_cta": "Tem uma ideia ou projeto em mente? Adoraria ouvir sobre isso. Preencha o formulário e entrarei em contato em breve.",
+"form_placeholder_name": "* Nome",
+"form_placeholder_email": "* Email",
+"form_placeholder_message": "* Sua mensagem...",
+"form_button_submit": "Enviar Mensagem",
+"validation": { "name_required": "O nome é obrigatório", "email_required": "O email é obrigatório", "email_invalid": "Por favor, insira um email válido", "message_too_short": "A mensagem deve ter pelo menos 10 caracteres" }
+}

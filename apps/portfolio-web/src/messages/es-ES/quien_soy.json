@@ -1,0 +1,26 @@
+{
+  "page_title": "Quién Soy | Raz Podestá - Arquitecto de Ecosistemas Digitales",
+  "page_description": "Descubre la fusión de dos décadas de ingeniería de software de élite con una visión creativa impulsada por IA, diseñada para construir activos digitales de alto rendimiento.",
+  "intro_title": "El Arquitecto detrás de la Máquina",
+  "intro_subtitle": "Mi nombre es Raz Podestá. Y mi propósito es transformar tu visión en un activo digital de alto rendimiento.",
+  "act_i": {
+    "title": "La Fundación del Ingeniero",
+    "description": "Con una base forjada durante más de 20 años en la ingeniería de computación, mi carrera se centró en la arquitectura de sistemas backend, el data business y el análisis de datos. Esta base en ingeniería de sistemas no es solo mi pasado; es la garantía de que cada proyecto que construyo hoy nace sobre cimientos inquebrantables, diseñados para la escala y la resiliencia."
+  },
+  "act_ii": {
+    "title": "El Vuelco Estratégico",
+    "description": "Comprendí que el mercado no necesitaba más código, sino soluciones holísticas que integraran la excelencia técnica con una estrategia de marca y una experiencia de usuario cautivadora. Este fue mi punto de inflexión: la decisión de independizarme para fusionar el rigor del ingeniero con la visión del arquitecto creativo."
+  },
+  "act_iii": {
+    "title": "El Arsenal Soberano",
+    "description": "Para materializar esta visión, forjé mi propio arsenal. 'LIA Legacy', mi IA co-piloto soberana, no solo acelera radicalmente el desarrollo, sino que actúa como una co-autora estratégica en cada solución. Paralelamente, mi metodología 'ES' asegura un ciclo de vida de desarrollo de alta velocidad y claridad, lo que se traduce en una reducción drástica de la deuda técnica para mis clientes."
+  },
+  "act_iv": {
+    "title": "La Filosofía del Predio Digital",
+    "description": "Mi filosofía es simple: no construyo 'sitios', construyo 'predios digitales'. Cada proyecto comienza con una base arquitectónica robusta (un monorepo Nx) preparada para un crecimiento ilimitado. Esto significa que cuando inviertes en una solución conmigo, no estás comprando una casa, estás adquiriendo un terreno preparado para construir un rascacielos. La escalabilidad no es una idea de futuro; es el punto de partida."
+  },
+  "act_v": {
+    "title": "El Arsenal de Crecimiento",
+    "description": "La creatividad y la tecnología solo tienen sentido si impulsan resultados. Por eso, mi trabajo abarca todo el espectro de la conversión: desde el diseño de embudos de marketing y venta, hasta la creación de contenido de alta calidad y el desarrollo de Progressive Web Apps (PWA) que dominan la experiencia móvil. Soy un constructor full-stack y un socio estratégico en la modernización y evaluación de proyectos tecnológicos."
+  }
+}

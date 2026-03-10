@@ -1,0 +1,30 @@
+{
+  "privacy_policy": {
+    "title": "Privacy Policy",
+    "last_updated": "November 12, 2025",
+    "content": [
+      {
+        "heading": "1. Introduction",
+        "body": "Welcome to my portfolio. Your privacy is of the utmost importance. This policy details what personal data is collected and how it is used."
+      },
+      {
+        "heading": "2. Data We Collect",
+        "body": "For the visitor widget, we collect anonymous geolocation data through public APIs (IP-API, Open-Meteo) to personalize the experience. For the newsletter subscription, we use Supabase Auth, which may involve the use of cookies to manage your session. We do not sell or share your data with third parties."
+      }
+    ]
+  },
+  "terms_of_service": {
+    "title": "Terms of Service",
+    "last_updated": "November 12, 2025",
+    "content": [
+      {
+        "heading": "1. Acceptance of Terms",
+        "body": "By using this website, you agree to comply with these terms and conditions of use. The content and projects displayed here are my intellectual property, unless otherwise stated."
+      },
+      {
+        "heading": "2. Use of the Site",
+        "body": "This site is provided 'as is' for informational and professional purposes. The use of its content for commercial purposes without prior explicit consent is not permitted. Any attempt to disrupt or compromise the security of the site is prohibited."
+      }
+    ]
+  }
+}

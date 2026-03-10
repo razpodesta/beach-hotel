@@ -1,0 +1,6 @@
+{
+  "title": "Falha no Sistema",
+  "description": "Uma anomalia crítica foi detectada no núcleo. Nossas sentinelas automatizadas foram notificadas e os protocolos de recuperação estão em andamento.",
+  "retry_button": "Tentar Novamente",
+  "home_button": "Evacuação de Emergência (Início)"
+}

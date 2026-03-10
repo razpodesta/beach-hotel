@@ -1,0 +1,23 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "composite": true,
+    "outDir": "../../../dist/out-tsc",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "types": ["jest", "node", "react", "react-dom"]
+  },
+  "include": [
+    "jest.config.ts",
+    "jest.setup.ts",
+    "src/**/*.test.ts",
+    "src/**/*.spec.ts",
+    "src/**/*.test.tsx",
+    "src/**/*.spec.tsx",
+    "src/**/*.d.ts",
+    "../../../tests/packages/cms/ui/**/*.spec.ts",
+    "../../../tests/packages/cms/ui/**/*.spec.tsx",
+    "../../../tests/packages/cms/ui/**/*.test.ts",
+    "../../../tests/packages/cms/ui/**/*.test.tsx"
+  ]
+}

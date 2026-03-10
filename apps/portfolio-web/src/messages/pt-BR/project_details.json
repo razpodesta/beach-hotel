@@ -1,0 +1,251 @@
+{
+  "landing-pages-de-conversion": {
+    "id": "landing-pages-de-conversion",
+    "title": "Landing Pages de Alta Conversão",
+    "subtitle": "Engenharia de Persuasão na Velocidade da Luz",
+    "introduction": {
+      "heading": "O Monorepo como Motor de Crescimento",
+      "body": "Esta não é uma simples página estática. É um ativo digital forjado dentro de um ecossistema de Monorepo Nx, projetado para escalar sem limites técnicos. Ao desacoplar a interface da lógica, garantimos tempos de carregamento instantâneos (LCP < 0.8s) e uma arquitetura pronta para integrar testes A/B no nível Edge sem atrito."
+    },
+    "tech_stack": ["Next.js 15 (SSG)", "Tailwind CSS v4", "Framer Motion", "React Hook Form", "Zod Validation"],
+    "backend_architecture": {
+      "title": "Supabase: Captura de Leads Soberana",
+      "description": "Infraestrutura Serverless para gestão de dados sem latência.",
+      "features": ["Edge Functions para processamento de formulários", "Validação de dados em tempo real", "Webhooks para integração com CRM"]
+    },
+    "elite_options": [
+      { "name": "Internacionalização Total", "detail": "Suporte nativo para 127 idiomas com detecção de IP." },
+      { "name": "Análise Comportamental", "detail": "Mapas de calor e gravação de sessões integrados." }
+    ],
+    "ui_sections": ["Hero de Alto Impacto", "Prova Social Dinâmica", "Grid de Benefícios", "Formulário Inteligente", "FAQ Accordion", "CTA Flutuante"],
+    "branding": {
+      "font_heading": "Clash Display",
+      "font_body": "Satoshi",
+      "primary_color": "#7c3aed",
+      "layout_style": "minimal"
+    }
+  },
+  "ecommerce-de-autor": {
+    "id": "ecommerce-de-autor",
+    "title": "E-Commerce Headless & Composable",
+    "subtitle": "Vendas sem Atrito, Experiência de Marca Total",
+    "introduction": {
+      "heading": "Arquitetura de Comércio Escalável",
+      "body": "Construído sobre os princípios de Composable Commerce dentro do nosso Monorepo. Separamos o frontend da lógica de inventário para oferecer experiências de compra instantâneas. Pronto para lidar com picos de tráfego massivos (Black Friday) graças à infraestrutura Serverless e cache inteligente no Edge."
+    },
+    "tech_stack": ["Next.js (SSR/ISR)", "Zustand (Carrinho Persistente)", "Stripe API", "Radix UI", "React Query"],
+    "backend_architecture": {
+      "title": "Orquestração de Pedidos com Supabase",
+      "description": "Banco de dados Postgres em tempo real para gestão de estoque.",
+      "features": ["Sincronização de inventário em tempo real (Websockets)", "Autenticação segura de clientes", "Triggers de banco de dados para emails transacionais"]
+    },
+    "elite_options": [
+      { "name": "Busca Algolia/MeiliSearch", "detail": "Resultados instantâneos e tolerantes a erros de digitação." },
+      { "name": "Auth Shield", "detail": "Segurança biométrica (Passkeys) para login de clientes." }
+    ],
+    "ai_features": {
+      "enabled": true,
+      "description": "Personalização de compras impulsionada por IA.",
+      "capabilities": ["Recomendações de produtos preditivas", "Chatbot de suporte pré-venda"]
+    },
+    "ui_sections": ["Vitrine Dinâmica", "Filtros Avançados", "Quick View Modal", "Checkout Otimizado", "Histórico de Pedidos"],
+    "branding": {
+      "font_heading": "Cabinet Grotesk",
+      "font_body": "Inter",
+      "primary_color": "#0ea5e9",
+      "layout_style": "corporate"
+    }
+  },
+  "showrooms-corporativos": {
+    "id": "showrooms-corporativos",
+    "title": "Showroom Corporativo Imersivo",
+    "subtitle": "Projeção de Autoridade B2B Global",
+    "introduction": {
+      "heading": "Identidade Digital Soberana",
+      "body": "Um ecossistema digital projetado para inspirar confiança e autoridade. Graças ao Monorepo, compartilhamos componentes de design (Design System) entre múltiplas verticais da empresa, garantindo consistência de marca absoluta enquanto mantemos a flexibilidade para inovar na apresentação visual."
+    },
+    "tech_stack": ["Next.js 15", "React Three Fiber (3D)", "GSAP ScrollTrigger", "WebGL Shaders"],
+    "backend_architecture": {
+      "title": "CMS Headless Empresarial",
+      "description": "Gestão de conteúdo corporativo desacoplada.",
+      "features": ["Funções RBAC (Admin/Editor/Viewer)", "Pipeline de aprovação de conteúdo", "API GraphQL federada"]
+    },
+    "elite_options": [
+      { "name": "Multi-Tenant", "detail": "Infraestrutura preparada para hospedar múltiplas marcas do grupo sob um mesmo código." },
+      { "name": "Lead Scoring", "detail": "Qualificação automática de prospects B2B baseada em interação." }
+    ],
+    "ui_sections": ["Vídeo Hero 4K", "Timeline Corporativo", "Mapa de Presença Global", "Visualizador de Produto 3D", "Investor Relations Hub"],
+    "branding": {
+      "font_heading": "Playfair Display",
+      "font_body": "Lato",
+      "primary_color": "#1e293b",
+      "layout_style": "immersive"
+    }
+  },
+  "plataformas-hoteleras": {
+    "id": "plataformas-hoteleras",
+    "title": "Hospitality & Booking Engine",
+    "subtitle": "Gestão de Reservas em Tempo Real",
+    "introduction": {
+      "heading": "Disponibilidade Sincronizada",
+      "body": "Mais do que um site, é um motor de operações. Aproveitamos o poder do Node.js no backend do Monorepo para gerenciar concorrência e evitar overbooking. A arquitetura permite escalar de um hotel boutique para uma cadeia internacional sem reescrever o núcleo."
+    },
+    "tech_stack": ["Next.js", "Date-fns", "Mapbox GL", "PostgreSQL", "Redis (Caching)"],
+    "backend_architecture": {
+      "title": "Motor de Disponibilidade Supabase",
+      "description": "Lógica complexa de datas e preços no banco de dados.",
+      "features": ["Bloqueio otimista de quartos", "Procedimentos armazenados para cálculo de tarifas", "Webhooks de pagamento seguros"]
+    },
+    "elite_options": [
+      { "name": "Geração de Vouchers PDF", "detail": "Renderização de documentos on-the-fly com React-PDF." },
+      { "name": "Sistema de Fidelidade", "detail": "Pontos e recompensas gerenciados em Blockchain privada." }
+    ],
+    "ui_sections": ["Busca de Disponibilidade", "Galeria de Quartos", "Experiências Locais", "Painel de Hóspede", "Integração de Avaliações"],
+    "branding": {
+      "font_heading": "Cinzel",
+      "font_body": "Montserrat",
+      "primary_color": "#c084fc",
+      "layout_style": "editorial"
+    }
+  },
+  "comunidades-online": {
+    "id": "comunidades-online",
+    "title": "Comunidade Digital & Assinatura",
+    "subtitle": "Interação em Tempo Real e Conteúdo Exclusivo",
+    "introduction": {
+      "heading": "Infraestrutura Social Escalável",
+      "body": "Construímos espaços digitais vivos. Usando WebSockets e a camada de tempo real do Supabase dentro do nosso Monorepo, facilitamos interações instantâneas (chat, notificações) que escalam horizontalmente. Tudo sob um sistema de autenticação robusto e funções granulares."
+    },
+    "tech_stack": ["Next.js", "Supabase Realtime", "TipTap (Editor)", "SWR", "WebSockets"],
+    "backend_architecture": {
+      "title": "Backend Social em Tempo Real",
+      "description": "Gestão de eventos e presença de usuários.",
+      "features": ["Canais de assinatura ao vivo", "Row Level Security para privacidade estrita", "Moderação automática"]
+    },
+    "elite_options": [
+      { "name": "Gamificação (Protocolo 33)", "detail": "Sistema de níveis, insígnias e recompensas integrado." },
+      { "name": "Newsletter Automatizada", "detail": "Resumos semanais gerados automaticamente." }
+    ],
+    "ui_sections": ["Feed de Atividade", "Fóruns de Discussão", "Diretório de Membros", "Chat Privado", "Dashboard de Assinatura"],
+    "branding": {
+      "font_heading": "Space Grotesk",
+      "font_body": "DM Sans",
+      "primary_color": "#10b981",
+      "layout_style": "minimal"
+    }
+  },
+  "plataformas-ong": {
+    "id": "plataformas-ong",
+    "title": "ONGs & Impacto Social",
+    "subtitle": "Transparência e Arrecadação de Fundos",
+    "introduction": {
+      "heading": "Tecnologia para Mudança",
+      "body": "A confiança é a moeda de troca. Utilizamos a imutabilidade da arquitetura moderna e a integração com APIs de pagamento recorrente para maximizar as doações. O Monorepo permite implantar rapidamente 'landing pages de campanha' que herdam a segurança e o design da plataforma principal."
+    },
+    "tech_stack": ["Next.js", "Recharts (Visualização)", "Stripe Donations", "React Markdown"],
+    "backend_architecture": {
+      "title": "Rastreabilidade de Impacto",
+      "description": "Banco de dados auditável e gestão de CRM.",
+      "features": ["Registro imutável de doações", "Gestão de banco de dados de voluntários", "API pública de transparência"]
+    },
+    "elite_options": [
+      { "name": "Rastreabilidade Blockchain", "detail": "Prova criptográfica do destino dos fundos." },
+      { "name": "Acessibilidade AAA", "detail": "Conformidade estrita WCAG 2.1 para inclusão total." }
+    ],
+    "ui_sections": ["Storytelling de Impacto", "Termômetro de Doações", "Portal do Doador", "Mapa de Projetos", "Relatórios Anuais Interativos"],
+    "branding": {
+      "font_heading": "Merriweather",
+      "font_body": "Open Sans",
+      "primary_color": "#f59e0b",
+      "layout_style": "editorial"
+    }
+  },
+  "portafolios-creativos": {
+    "id": "portafolios-creativos",
+    "title": "Portfólio Criativo Autoral",
+    "subtitle": "A Galeria Digital Definitiva",
+    "introduction": {
+      "heading": "Performance Visual Sem Compromissos",
+      "body": "Projetado para artistas que exigem qualidade. Implementamos técnicas avançadas de carregamento progressivo de imagens e transições de página suaves (SPA feel) sobre uma arquitetura SSG. O Monorepo garante que seu portfólio não seja apenas bonito, mas tecnicamente perfeito aos olhos do Google."
+    },
+    "tech_stack": ["Next.js", "Framer Motion (Page Transitions)", "Lenis Scroll", "Cloudinary / Imgix"],
+    "backend_architecture": {
+      "title": "Gestor de Ativos Digitais (DAM)",
+      "description": "API otimizada para entrega de mídia pesada.",
+      "features": ["Transformação de imagens on-the-fly", "Suporte para streaming de vídeo 4K", "Cache agressivo em CDN"]
+    },
+    "elite_options": [
+      { "name": "Modo Escuro/Claro Semântico", "detail": "Adaptação total da atmosfera visual." },
+      { "name": "Navegação Experimental", "detail": "Interfaces não lineares e exploratórias." }
+    ],
+    "ui_sections": ["Grid Masonry", "Lightbox Imersivo", "About Me Interativo", "Diário de Processos", "Contato Minimalista"],
+    "branding": {
+      "font_heading": "Syne",
+      "font_body": "Manrope",
+      "primary_color": "#ec4899",
+      "layout_style": "brutalist"
+    }
+  },
+  "revistas-digitales": {
+    "id": "revistas-digitales",
+    "title": "Publicação Digital High-End",
+    "subtitle": "Conteúdo Editorial em Escala",
+    "introduction": {
+      "heading": "SEO e Legibilidade Massiva",
+      "body": "Uma plataforma editorial construída para velocidade e indexação. Usamos Incremental Static Regeneration (ISR) para servir conteúdo fresco sem sacrificar o desempenho do site estático. A arquitetura modular permite injetar publicidade ou paywalls de forma cirúrgica sem afetar a experiência de leitura."
+    },
+    "tech_stack": ["Next.js (ISR)", "MDX", "Algolia Search", "Integração com Newsletter"],
+    "backend_architecture": {
+      "title": "CMS API Soberana",
+      "description": "Gestão editorial centralizada.",
+      "features": ["Modelagem de dados flexível com JSONB", "Suporte multi-autor", "API de sindicação de conteúdo (RSS/JSON)"]
+    },
+    "elite_options": [
+      { "name": "Paywall Inteligente", "detail": "Lógica de acesso baseada em assinatura ou micropagamentos." },
+      { "name": "Suporte AMP", "detail": "Versões aceleradas para Google Discover." }
+    ],
+    "ai_features": {
+      "enabled": true,
+      "description": "Assistente editorial inteligente.",
+      "capabilities": ["Geração de resumos TL;DR", "Etiquetagem automática de conteúdo", "Tradução neural para 5 idiomas"]
+    },
+    "ui_sections": ["Capa Editorial", "Artigo Imersivo", "Sidebar Inteligente", "Arquivo por Categorias", "Popup de Newsletter"],
+    "branding": {
+      "font_heading": "Bodoni Moda",
+      "font_body": "Lora",
+      "primary_color": "#be123c",
+      "layout_style": "editorial"
+    }
+  },
+  "fashion-wear-de-lujo": {
+    "id": "fashion-wear-de-lujo",
+    "title": "Fashion Wear & Luxury",
+    "subtitle": "Experiência de Marca Sensorial",
+    "introduction": {
+      "heading": "Vanguarda Estética e Técnica",
+      "body": "Onde a moda encontra o código. Usamos WebGL e Shaders personalizados para criar texturas digitais que quase se pode tocar. Dentro do Monorepo, esta aplicação empurra os limites do navegador, oferecendo uma experiência 'App-like' fluida e visualmente deslumbrante."
+    },
+    "tech_stack": ["Next.js", "Three.js / React Three Fiber", "WebGL Shaders", "Lenis Smooth Scroll"],
+    "backend_architecture": {
+      "title": "Estoque de Alta Frequência",
+      "description": "Sincronização global de estoque de luxo.",
+      "features": ["Gestão de drops e lançamentos limitados", "Lista de espera automatizada", "Integração com ERPs de moda"]
+    },
+    "elite_options": [
+      { "name": "Provador Virtual (AR)", "detail": "Prova de acessórios via webcam e realidade aumentada." },
+      { "name": "Video Commerce", "detail": "Compra direta sobre passarelas em vídeo." }
+    ],
+    "ai_features": {
+      "enabled": true,
+      "description": "Estilista pessoal virtual.",
+      "capabilities": ["Recomendação de looks baseada em estilo visual", "Busca visual de produtos similares"]
+    },
+    "ui_sections": ["Vídeo Hero Full-Screen", "Lookbook Interativo", "Ficha de Produto Cinematográfica", "História da Coleção", "Checkout Exclusivo"],
+    "branding": {
+      "font_heading": "Italiana",
+      "font_body": "Tenor Sans",
+      "primary_color": "#000000",
+      "layout_style": "immersive"
+    }
+  }
+}

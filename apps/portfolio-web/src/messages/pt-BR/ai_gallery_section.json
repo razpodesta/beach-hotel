@@ -1,0 +1,22 @@
+{
+  "badge": "Impulsionado por Ideogram 3.0",
+  "title": "Sintetizador Visual IA",
+  "subtitle": "Explore uma coleção curada de ativos gerados algoritmicamente. Fotorrealismo, tipografia perfeita e consistência estilística, orquestrados pelo nosso CMS soberano.",
+  "overlay_indicator": "RENDER AO VIVO • WEBGL 2.0",
+  "footer_prompt": "Engenharia de Prompts Avançada",
+  "footer_upscaling": "Upscaling 8K e Otimização",
+  "items": {
+    "neon-typography": { "title": "Tipografia Neon e Cristal", "description": "Renderização 3D tipográfica com tubos de neon." },
+    "editorial-fashion": { "title": "Moda Editorial", "description": "Composição de alta moda com texturas fotorrealistas." },
+    "tech-badge": { "title": "Insígnia de Titânio", "description": "Fotografia macro de produto com acabamento escovado." },
+    "transparent-gadget": { "title": "Hardware Transparente", "description": "Visualização de engenharia de um dispositivo futurista." },
+    "luxury-perfume": { "title": "Vidraria de Luxo", "description": "Fotografia publicitária com iluminação de borda." },
+    "concept-car": { "title": "Conceito Automotivo", "description": "Detalhe abstrato de faróis com fibra de carbono." },
+    "concrete-workspace": { "title": "Espaço Minimalista", "description": "Design de interiores com texturas de concreto bruto." },
+    "cyberpunk-street": { "title": "Atmosfera Cyberpunk", "description": "Fotografia noturna com iluminação volumétrica." },
+    "abstract-geometry": { "title": "Geometria Paramétrica", "description": "Arquitetura abstrata branca contra céu azul." },
+    "fluid-shapes": { "title": "Fluidos Iridescentes", "description": "Simulação 3D de metal líquido com dispersão." },
+    "mechanical-insect": { "title": "Inseto Mecânico", "description": "Macro fotografia steampunk de alta precisão." },
+    "neural-network": { "title": "Arte de Rede Neural", "description": "Visualização abstrata de fluxos de dados." }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "tech_stack_title": "Tecnologias Favoritas",
+  "tech_stack_cta": "Clique em qualquer tecnologia para explorar seu site oficial.",
+  "title": "Além do Código: Construindo Ativos Digitais de Elite",
+  "subtitle": "Minha filosofia baseia-se na criação de soluções que não são apenas tecnicamente impecáveis, mas que também impulsionam o crescimento, cativam os usuários e se tornam pilares estratégicos para o seu negócio. A excelência não é uma opção, é o ponto de partida.",
+  "pillars": [
+    { "title": "Arquitetura de Vanguarda", "description": "Construo sobre bases sólidas com código limpo, escalável e de fácil manutenção, garantindo que seu projeto cresça sem atritos e com segurança de dados inabalável." },
+    { "title": "Interação e Estética", "description": "Desenho interfaces intuitivas e fluidas, onde cada microinteração e animação tem um propósito: guiar o usuário e reforçar uma percepção de qualidade e domínio técnico." },
+    { "title": "Resultados de Negócio", "description": "Meu trabalho vai além da estética. Implemento as melhores práticas de SEO técnico e otimização de performance (Core Web Vitals) para garantir máxima visibilidade e um impacto real em seus objetivos." }
+  ],
+  "testimonial": {
+    "quote": "Trabalhar com o Raz foi um ponto de virada. Sua visão estratégica e execução técnica impecável não apenas nos entregaram um produto de classe mundial, mas transformaram nossa maneira de entender o potencial de nossa plataforma digital.",
+    "author_name": "Alex Johnson",
+    "author_role": "CEO, Tech Innovators Inc."
+  }
+}

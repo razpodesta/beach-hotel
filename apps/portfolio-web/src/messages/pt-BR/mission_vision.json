@@ -1,0 +1,20 @@
+{
+  "mission_title": "Nossa Missão",
+  "mission_description": "Orquestrar o ciclo de vida completo da conversão digital. Forjamos ecossistemas inteligentes e soberanos que unificam a estratégia de marca, a criação de experiências e a otimização contínua, transformando o marketing de um jogo de adivinhação em uma ciência de crescimento previsível.",
+  "vision_title": "Nossa Visão: O Volante de Crescimento",
+  "vision_subtitle": "Nossa visão é ser a força motriz de um novo paradigma: a web como um ecossistema vivo e auto-otimizado, onde cada interação alimenta um volante de crescimento perpétuo (growth flywheel).",
+  "vision_pillars": [
+    {
+      "title": "Entender",
+      "description": "Não apenas capturamos métricas; alcançamos uma observabilidade holística. Integramos dados qualitativos e quantitativos para construir um perfil de visitante dinâmico, entendendo o 'porquê' por trás de cada 'o quê'."
+    },
+    {
+      "title": "Adaptar-se",
+      "description": "As plataformas que construímos não são estáticas. São entidades vivas que utilizam a inteligência artificial para se adaptar e evoluir harmonicamente, personalizando a experiência em tempo real para atender às necessidades de cada usuário."
+    },
+    {
+      "title": "Maximizar",
+      "description": "A conversão não é um evento, é uma ciência. Nosso ecossistema utiliza os insights gerados para alimentar um ciclo de otimização contínua, garantindo que cada ativo e cada campanha se tornem inerentemente mais eficazes ao longo do tempo, maximizando os objetivos de negócio."
+    }
+  ]
+}

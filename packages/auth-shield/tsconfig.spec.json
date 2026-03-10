@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "composite": true,
+    "outDir": "../../dist/out-tsc",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "types": ["jest", "node"]
+  },
+  "include": [
+    "jest.config.ts",
+    "src/**/*.ts",
+    "../../tests/packages/auth-shield/**/*.ts",
+    "../../tests/packages/auth-shield/**/*.spec.ts",
+    "../../tests/packages/auth-shield/**/*.test.ts"
+  ]
+}

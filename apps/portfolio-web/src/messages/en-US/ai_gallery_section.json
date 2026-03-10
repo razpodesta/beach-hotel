@@ -1,0 +1,22 @@
+{
+  "badge": "Ideogram 3.0 Powered",
+  "title": "AI Visual Synth",
+  "subtitle": "Explore a curated collection of algorithmically generated assets. Photorealism, perfect typography, and stylistic consistency, orchestrated by our sovereign CMS.",
+  "overlay_indicator": "LIVE RENDER • WEBGL 2.0",
+  "footer_prompt": "Advanced Prompt Engineering",
+  "footer_upscaling": "8K Upscaling & Optimization",
+  "items": {
+    "neon-typography": { "title": "Neon Glass Typography", "description": "3D typography render with neon tubes and glass." },
+    "editorial-fashion": { "title": "Editorial Fashion", "description": "High-fashion composition with photorealistic textures." },
+    "tech-badge": { "title": "Titanium Tech Badge", "description": "Macro product shot with brushed titanium finish." },
+    "transparent-gadget": { "title": "Transparent Hardware", "description": "Engineering visualization of a futuristic device." },
+    "luxury-perfume": { "title": "Luxury Glassware", "description": "Product photography with rim lighting." },
+    "concept-car": { "title": "Automotive Concept", "description": "Abstract detail of carbon fiber headlights." },
+    "concrete-workspace": { "title": "Concrete Workspace", "description": "Minimalist interior design with raw concrete." },
+    "cyberpunk-street": { "title": "Cyberpunk Atmosphere", "description": "Night street photography with volumetric lighting." },
+    "abstract-geometry": { "title": "Parametric Geometry", "description": "White abstract architecture against deep blue sky." },
+    "fluid-shapes": { "title": "Iridescent Fluids", "description": "3D liquid metal simulation with chromatic dispersion." },
+    "mechanical-insect": { "title": "Clockwork Insect", "description": "Steampunk mechanical insect macro photography." },
+    "neural-network": { "title": "Neural Network Art", "description": "Abstract visualization of data streams." }
+  }
+}

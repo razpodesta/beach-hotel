@@ -1,0 +1,99 @@
+/* RUTA: apps/portfolio-web/src/app/global.css */
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  /* Tipografía: Priorizamos Inter para la UI moderna y bold */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+  --font-signature: var(--font-signature), cursive;
+
+  /* Paleta Semántica */
+  --color-background: oklch(var(--background));
+  --color-foreground: oklch(var(--foreground));
+  --color-card: oklch(var(--card));
+  --color-card-foreground: oklch(var(--card-foreground));
+  --color-popover: oklch(var(--popover));
+  --color-popover-foreground: oklch(var(--popover-foreground));
+  --color-primary: oklch(var(--primary));
+  --color-primary-foreground: oklch(var(--primary-foreground));
+  --color-secondary: oklch(var(--secondary));
+  --color-secondary-foreground: oklch(var(--secondary-foreground));
+  --color-muted: oklch(var(--muted));
+  --color-muted-foreground: oklch(var(--muted-foreground));
+  --color-accent: oklch(var(--accent));
+  --color-accent-foreground: oklch(var(--accent-foreground));
+  --color-destructive: oklch(var(--destructive));
+  --color-destructive-foreground: oklch(var(--destructive-foreground));
+  --color-border: oklch(var(--border));
+  --color-input: oklch(var(--input));
+  --color-ring: oklch(var(--ring));
+}
+
+@layer base {
+  :root {
+    --background: 98.5% 0 0;
+    --foreground: 20% 0.02 260;
+    --card: 100% 0 0;
+    --card-foreground: 20% 0.02 260;
+    --popover: 100% 0 0;
+    --popover-foreground: 20% 0.02 260;
+    --primary: 45% 0.20 270;
+    --primary-foreground: 98% 0 0;
+    --secondary: 96% 0.01 260;
+    --secondary-foreground: 20% 0.02 260;
+    --muted: 96% 0.01 260;
+    --muted-foreground: 55% 0.02 260;
+    --accent: 94% 0.02 260;
+    --accent-foreground: 20% 0.02 260;
+    --destructive: 50% 0.20 25;
+    --destructive-foreground: 98% 0 0;
+    --border: 90% 0.01 260;
+    --input: 90% 0.01 260;
+    --ring: 45% 0.20 270;
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 10% 0.01 260;
+    --foreground: 98% 0 0;
+    --card: 12% 0.01 260;
+    --card-foreground: 98% 0 0;
+    --popover: 10% 0.01 260;
+    --popover-foreground: 98% 0 0;
+    --primary: 65% 0.25 270;
+    --primary-foreground: 10% 0.01 260;
+    --secondary: 20% 0.02 260;
+    --secondary-foreground: 98% 0 0;
+    --muted: 20% 0.02 260;
+    --muted-foreground: 70% 0.01 260;
+    --accent: 20% 0.02 260;
+    --accent-foreground: 98% 0 0;
+    --destructive: 30% 0.20 25;
+    --destructive-foreground: 98% 0 0;
+    --border: 20% 0.02 260;
+    --input: 20% 0.02 260;
+    --ring: 65% 0.25 270;
+  }
+}
+
+@layer base {
+  * { @apply border-border; }
+  body { @apply bg-background text-foreground font-sans antialiased transition-colors duration-300; }
+}
+
+/* Animación para el Ticker Infinito */
+@keyframes infinite-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.animate-infinite-scroll {
+  animation: infinite-scroll 120s linear infinite; /* 120s = Lento y suave */
+}
+
+@media print {
+  body { @apply bg-white text-black; }
+  .print-hidden { display: none !important; }
+}

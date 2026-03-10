@@ -1,0 +1,23 @@
+{
+  "page_title": "Iconografía Lucide | Raz Podestá",
+  "page_description": "Explora la colección completa de iconos Lucide disponibles en el sistema de diseño.",
+  "header_title": "Universo Lucide",
+  "header_subtitle": "Una colección de iconos SVG hermosos y consistentes para interfaces modernas.",
+  "search_placeholder": "Buscar icono por nombre...",
+  "load_more_button": "Cargar más Iconos",
+  "showing_results": "Mostrando {count} de {total} iconos",
+  "visit_official": "Ver Documentación",
+  "copy_import": "Copiar JSX",
+  "category_all": "Todos",
+  "view_details": "Ver Detalles",
+  "modal_install_title": "Instalación de Librería",
+  "modal_usage_title": "Implementación",
+  "modal_close": "Cerrar",
+  "scroll_top": "Ir Arriba",
+  "scroll_bottom": "Ir Abajo",
+  "library_help_btn": "Ayuda de Librería",
+  "library_help_title": "Recurso de Arquitectura",
+  "library_help_desc": "Este índice centralizado facilita la selección de iconos para nuevos proyectos.",
+  "btn_docs": "Documentación de Iconos",
+  "btn_repo": "Repositorio GitHub"
+}

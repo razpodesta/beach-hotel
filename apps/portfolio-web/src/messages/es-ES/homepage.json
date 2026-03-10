@@ -1,0 +1,60 @@
+{
+  "ai_gallery_section": {
+    "badge": "Impulsado por Ideogram 3.0",
+    "title": "Sintetizador Visual IA",
+    "subtitle": "Explora una colección curada de activos generados algorítmicamente. Fotorrealismo, tipografía perfecta y consistencia estilística, orquestados por nuestro CMS soberano.",
+    "overlay_indicator": "RENDER EN VIVO • WEBGL 2.0",
+    "footer_prompt": "Ingeniería de Prompts Avanzada",
+    "footer_upscaling": "Escalado 8K y Optimización",
+    "items": {
+      "neon-typography": {
+        "title": "Tipografía Neón y Cristal",
+        "description": "Renderizado 3D tipográfico con tubos de neón."
+      },
+      "editorial-fashion": {
+        "title": "Moda Editorial",
+        "description": "Composición de alta moda con texturas fotorrealistas."
+      },
+      "tech-badge": {
+        "title": "Insignia de Titanio",
+        "description": "Fotografía macro de producto con acabado cepillado."
+      },
+      "transparent-gadget": {
+        "title": "Hardware Transparente",
+        "description": "Visualización de ingeniería de un dispositivo futurista."
+      },
+      "luxury-perfume": {
+        "title": "Cristalería de Lujo",
+        "description": "Fotografía de producto publicitaria con iluminación de borde."
+      },
+      "concept-car": {
+        "title": "Concepto Automotriz",
+        "description": "Detalle abstracto de faros con fibra de carbono."
+      },
+      "concrete-workspace": {
+        "title": "Espacio Minimalista",
+        "description": "Interiorismo con texturas de hormigón crudo."
+      },
+      "cyberpunk-street": {
+        "title": "Atmósfera Cyberpunk",
+        "description": "Fotografía nocturna con iluminación volumétrica."
+      },
+      "abstract-geometry": {
+        "title": "Geometría Paramétrica",
+        "description": "Arquitectura abstracta blanca contra cielo azul."
+      },
+      "fluid-shapes": {
+        "title": "Fluidos Iridiscentes",
+        "description": "Simulación 3D de metal líquido con dispersión."
+      },
+      "mechanical-insect": {
+        "title": "Insecto Mecánico",
+        "description": "Macro fotografía steampunk de alta precisión."
+      },
+      "neural-network": {
+        "title": "Arte de Red Neuronal",
+        "description": "Visualización abstracta de flujos de datos."
+      }
+    }
+  }
+}

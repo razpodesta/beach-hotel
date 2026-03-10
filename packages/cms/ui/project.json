@@ -1,0 +1,19 @@
+{
+  "name": "@metashark-cms/ui",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/cms/ui/src",
+  "projectType": "library",
+  "tags": ["scope:cms", "type:ui"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/packages/cms/ui"],
+      "options": {
+        "jestConfig": "packages/cms/ui/jest.config.ts"
+      }
+    }
+  }
+}

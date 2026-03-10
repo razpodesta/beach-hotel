@@ -1,0 +1,40 @@
+# =================================================================
+# ARCHIVO .gitignore CANÓNICO PARA MONOREPO NX + NEXT.JS
+# =================================================================
+
+# 1. Dependencias
+# La carpeta más pesada y siempre se reinstala con `pnpm install`.
+node_modules
+
+# 2. Artefactos de Build y Cachés
+# Archivos generados por Next.js y Nx durante el desarrollo y la construcción.
+.next/
+dist/
+.nx/cache/
+
+# 3. Logs y Reportes
+# Archivos de errores y reportes de cobertura de pruebas.
+error.log
+coverage/
+
+# 4. Variables de Entorno y Secretos
+# NUNCA subir archivos .env que contienen claves de API.
+# Es una buena práctica tener un archivo de ejemplo sin secretos.
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# 5. Configuración del Editor de Código (IDE)
+# Configuraciones personales que no deben ser compartidas.
+.vscode/
+
+# 6. Archivos del Sistema Operativo
+# Basura generada por macOS, Windows y Linux.
+.DS_Store
+Thumbs.db
+
+
+test-output
+
+*.apps.googleusercontent.com

@@ -1,0 +1,14 @@
+{
+  "label_visitor_info": "VISITOR INFORMATION",
+  "label_ip_visitor": "VISITOR I.P.",
+  "footer_credits": "Component created by Raz Podestá - MetaShark Tech",
+  "status_calibrating": "CALIBRATING...",
+  "status_error": "SIGNAL LOST",
+  "label_location": "LOCATION",
+  "label_weather": "WEATHER",
+  "weather_sunny": "SUNNY",
+  "weather_rainy": "RAINY",
+  "weather_cloudy": "CLOUDY",
+  "label_time": "LOCAL TIME",
+  "coords_format": "COORDINATES"
+}

@@ -1,0 +1,6 @@
+{
+  "title": "System Malfunction",
+  "description": "A critical anomaly has been detected in the core. Our automated sentinels have been notified and recovery protocols are engaging.",
+  "retry_button": "Retry Connection",
+  "home_button": "Emergency Evac (Home)"
+}

@@ -1,0 +1,251 @@
+{
+  "landing-pages-de-conversion": {
+    "id": "landing-pages-de-conversion",
+    "title": "High-Conversion Landing Pages",
+    "subtitle": "Persuasion Engineering at Light Speed",
+    "introduction": {
+      "heading": "The Monorepo as a Growth Engine",
+      "body": "This is not a simple static page. It is a digital asset forged within an Nx Monorepo ecosystem, designed to scale without technical limits. By decoupling the interface from the logic, we guarantee instant load times (LCP < 0.8s) and an architecture ready to integrate A/B testing at the Edge level seamlessly."
+    },
+    "tech_stack": ["Next.js 15 (SSG)", "Tailwind CSS v4", "Framer Motion", "React Hook Form", "Zod Validation"],
+    "backend_architecture": {
+      "title": "Supabase: Sovereign Lead Capture",
+      "description": "Serverless infrastructure for zero-latency data management.",
+      "features": ["Edge Functions for form processing", "Real-time data validation", "Webhooks for CRM integration"]
+    },
+    "elite_options": [
+      { "name": "Total Internationalization", "detail": "Native support for 127 languages with IP detection." },
+      { "name": "Behavioral Analytics", "detail": "Integrated heatmaps and session recording." }
+    ],
+    "ui_sections": ["High-Impact Hero", "Dynamic Social Proof", "Benefits Grid", "Smart Form", "FAQ Accordion", "Floating CTA"],
+    "branding": {
+      "font_heading": "Clash Display",
+      "font_body": "Satoshi",
+      "primary_color": "#7c3aed",
+      "layout_style": "minimal"
+    }
+  },
+  "ecommerce-de-autor": {
+    "id": "ecommerce-de-autor",
+    "title": "Headless & Composable E-Commerce",
+    "subtitle": "Frictionless Sales, Total Brand Experience",
+    "introduction": {
+      "heading": "Scalable Commerce Architecture",
+      "body": "Built on Composable Commerce principles within our Monorepo. We separate the frontend from inventory logic to deliver instant shopping experiences. Ready to handle massive traffic spikes (Black Friday) thanks to Serverless infrastructure and intelligent Edge caching."
+    },
+    "tech_stack": ["Next.js (SSR/ISR)", "Zustand (Persistent Cart)", "Stripe API", "Radix UI", "React Query"],
+    "backend_architecture": {
+      "title": "Order Orchestration with Supabase",
+      "description": "Real-time Postgres database for stock management.",
+      "features": ["Real-time inventory sync (Websockets)", "Secure customer authentication", "Database triggers for transactional emails"]
+    },
+    "elite_options": [
+      { "name": "Algolia/MeiliSearch Search", "detail": "Instant, typo-tolerant search results." },
+      { "name": "Auth Shield", "detail": "Biometric security (Passkeys) for customer login." }
+    ],
+    "ai_features": {
+      "enabled": true,
+      "description": "AI-driven shopping personalization.",
+      "capabilities": ["Predictive product recommendations", "Pre-sales support chatbot"]
+    },
+    "ui_sections": ["Dynamic Showcase", "Advanced Filters", "Quick View Modal", "Optimized Checkout", "Order History"],
+    "branding": {
+      "font_heading": "Cabinet Grotesk",
+      "font_body": "Inter",
+      "primary_color": "#0ea5e9",
+      "layout_style": "corporate"
+    }
+  },
+  "showrooms-corporativos": {
+    "id": "showrooms-corporativos",
+    "title": "Immersive Corporate Showroom",
+    "subtitle": "Global B2B Authority Projection",
+    "introduction": {
+      "heading": "Sovereign Digital Identity",
+      "body": "A digital ecosystem designed to inspire trust and authority. Thanks to the Monorepo, we share design components (Design System) across multiple business verticals, ensuring absolute brand consistency while maintaining flexibility to innovate in visual presentation."
+    },
+    "tech_stack": ["Next.js 15", "React Three Fiber (3D)", "GSAP ScrollTrigger", "WebGL Shaders"],
+    "backend_architecture": {
+      "title": "Enterprise Headless CMS",
+      "description": "Decoupled corporate content management.",
+      "features": ["RBAC Roles (Admin/Editor/Viewer)", "Content approval pipeline", "Federated GraphQL API"]
+    },
+    "elite_options": [
+      { "name": "Multi-Tenant", "detail": "Infrastructure ready to host multiple group brands under one codebase." },
+      { "name": "Lead Scoring", "detail": "Automatic B2B prospect qualification based on interaction." }
+    ],
+    "ui_sections": ["4K Video Hero", "Corporate Timeline", "Global Presence Map", "3D Product Viewer", "Investor Relations Hub"],
+    "branding": {
+      "font_heading": "Playfair Display",
+      "font_body": "Lato",
+      "primary_color": "#1e293b",
+      "layout_style": "immersive"
+    }
+  },
+  "plataformas-hoteleras": {
+    "id": "plataformas-hoteleras",
+    "title": "Hospitality & Booking Engine",
+    "subtitle": "Real-Time Reservation Management",
+    "introduction": {
+      "heading": "Synchronized Availability",
+      "body": "More than a website, it's an operations engine. We leverage the power of Node.js in the Monorepo backend to manage concurrency and avoid overbooking. The architecture allows scaling from a boutique hotel to an international chain without rewriting the core."
+    },
+    "tech_stack": ["Next.js", "Date-fns", "Mapbox GL", "PostgreSQL", "Redis (Caching)"],
+    "backend_architecture": {
+      "title": "Supabase Availability Engine",
+      "description": "Complex date and pricing logic in database.",
+      "features": ["Optimistic room locking", "Stored procedures for rate calculation", "Secure payment webhooks"]
+    },
+    "elite_options": [
+      { "name": "PDF Voucher Generation", "detail": "On-the-fly document rendering with React-PDF." },
+      { "name": "Loyalty System", "detail": "Points and rewards managed on private Blockchain." }
+    ],
+    "ui_sections": ["Availability Search", "Room Gallery", "Local Experiences", "Guest Dashboard", "Review Integration"],
+    "branding": {
+      "font_heading": "Cinzel",
+      "font_body": "Montserrat",
+      "primary_color": "#c084fc",
+      "layout_style": "editorial"
+    }
+  },
+  "comunidades-online": {
+    "id": "comunidades-online",
+    "title": "Digital Community & Membership",
+    "subtitle": "Real-Time Interaction and Exclusive Content",
+    "introduction": {
+      "heading": "Scalable Social Infrastructure",
+      "body": "We build living digital spaces. Using WebSockets and Supabase's real-time layer within our Monorepo, we facilitate instant interactions (chat, notifications) that scale horizontally. All under a robust authentication system and granular roles."
+    },
+    "tech_stack": ["Next.js", "Supabase Realtime", "TipTap (Editor)", "SWR", "WebSockets"],
+    "backend_architecture": {
+      "title": "Real-Time Social Backend",
+      "description": "Event management and user presence.",
+      "features": ["Live subscription channels", "Row Level Security for strict privacy", "Automatic moderation"]
+    },
+    "elite_options": [
+      { "name": "Gamification (Protocol 33)", "detail": "Integrated leveling, badges, and rewards system." },
+      { "name": "Automated Newsletter", "detail": "Weekly summaries generated automatically." }
+    ],
+    "ui_sections": ["Activity Feed", "Discussion Forums", "Member Directory", "Private Chat", "Subscription Dashboard"],
+    "branding": {
+      "font_heading": "Space Grotesk",
+      "font_body": "DM Sans",
+      "primary_color": "#10b981",
+      "layout_style": "minimal"
+    }
+  },
+  "plataformas-ong": {
+    "id": "plataformas-ong",
+    "title": "NGOs & Social Impact",
+    "subtitle": "Transparency and Fundraising",
+    "introduction": {
+      "heading": "Technology for Change",
+      "body": "Trust is the currency. We use modern architecture immutability and recurring payment API integration to maximize donations. The Monorepo allows rapid deployment of 'campaign landing pages' inheriting the security and design of the main platform."
+    },
+    "tech_stack": ["Next.js", "Recharts (Visualization)", "Stripe Donations", "React Markdown"],
+    "backend_architecture": {
+      "title": "Impact Traceability",
+      "description": "Auditable database and CRM management.",
+      "features": ["Immutable donation record", "Volunteer database management", "Public transparency API"]
+    },
+    "elite_options": [
+      { "name": "Blockchain Traceability", "detail": "Cryptographic proof of fund destination." },
+      { "name": "AAA Accessibility", "detail": "Strict WCAG 2.1 compliance for total inclusion." }
+    ],
+    "ui_sections": ["Impact Storytelling", "Donation Thermometer", "Donor Portal", "Project Map", "Interactive Annual Reports"],
+    "branding": {
+      "font_heading": "Merriweather",
+      "font_body": "Open Sans",
+      "primary_color": "#f59e0b",
+      "layout_style": "editorial"
+    }
+  },
+  "portafolios-creativos": {
+    "id": "portafolios-creativos",
+    "title": "Creative Author Portfolio",
+    "subtitle": "The Ultimate Digital Gallery",
+    "introduction": {
+      "heading": "Visual Performance Without Compromise",
+      "body": "Designed for artists who demand quality. We implement advanced progressive image loading techniques and smooth page transitions (SPA feel) on an SSG architecture. The Monorepo ensures your portfolio is not only beautiful but technically perfect in Google's eyes."
+    },
+    "tech_stack": ["Next.js", "Framer Motion (Page Transitions)", "Lenis Scroll", "Cloudinary / Imgix"],
+    "backend_architecture": {
+      "title": "Digital Asset Manager (DAM)",
+      "description": "API optimized for heavy media delivery.",
+      "features": ["On-the-fly image transformation", "4K video streaming support", "Aggressive CDN caching"]
+    },
+    "elite_options": [
+      { "name": "Semantic Dark/Light Mode", "detail": "Total adaptation of visual atmosphere." },
+      { "name": "Experimental Navigation", "detail": "Non-linear and exploratory interfaces." }
+    ],
+    "ui_sections": ["Masonry Grid", "Immersive Lightbox", "Interactive About Me", "Process Journal", "Minimalist Contact"],
+    "branding": {
+      "font_heading": "Syne",
+      "font_body": "Manrope",
+      "primary_color": "#ec4899",
+      "layout_style": "brutalist"
+    }
+  },
+  "revistas-digitales": {
+    "id": "revistas-digitales",
+    "title": "High-End Digital Publishing",
+    "subtitle": "Editorial Content at Scale",
+    "introduction": {
+      "heading": "SEO and Massive Readability",
+      "body": "An editorial platform built for speed and indexing. We use Incremental Static Regeneration (ISR) to serve fresh content without sacrificing static site performance. Modular architecture allows surgical injection of ads or paywalls without affecting the reading experience."
+    },
+    "tech_stack": ["Next.js (ISR)", "MDX", "Algolia Search", "Newsletter Integration"],
+    "backend_architecture": {
+      "title": "Sovereign CMS API",
+      "description": "Centralized editorial management.",
+      "features": ["Flexible data modeling with JSONB", "Multi-author support", "Content syndication API (RSS/JSON)"]
+    },
+    "elite_options": [
+      { "name": "Smart Paywall", "detail": "Access logic based on subscription or micropayments." },
+      { "name": "AMP Support", "detail": "Accelerated versions for Google Discover." }
+    ],
+    "ai_features": {
+      "enabled": true,
+      "description": "Intelligent editorial assistant.",
+      "capabilities": ["TL;DR summary generation", "Automatic content tagging", "Neural translation to 5 languages"]
+    },
+    "ui_sections": ["Editorial Cover", "Immersive Article", "Smart Sidebar", "Category Archive", "Newsletter Popup"],
+    "branding": {
+      "font_heading": "Bodoni Moda",
+      "font_body": "Lora",
+      "primary_color": "#be123c",
+      "layout_style": "editorial"
+    }
+  },
+  "fashion-wear-de-lujo": {
+    "id": "fashion-wear-de-lujo",
+    "title": "Fashion Wear & Luxury",
+    "subtitle": "Sensory Brand Experience",
+    "introduction": {
+      "heading": "Aesthetic and Technical Vanguard",
+      "body": "Where fashion meets code. We use WebGL and custom Shaders to create digital textures you can almost touch. Within the Monorepo, this application pushes browser limits, offering a fluid, visually dazzling 'App-like' experience."
+    },
+    "tech_stack": ["Next.js", "Three.js / React Three Fiber", "WebGL Shaders", "Lenis Smooth Scroll"],
+    "backend_architecture": {
+      "title": "High-Frequency Inventory",
+      "description": "Global luxury stock synchronization.",
+      "features": ["Drop management and limited releases", "Automated waitlists", "Integration with fashion ERPs"]
+    },
+    "elite_options": [
+      { "name": "Virtual Try-On (AR)", "detail": "Accessory trial via webcam and augmented reality." },
+      { "name": "Video Commerce", "detail": "Direct purchase over runway videos." }
+    ],
+    "ai_features": {
+      "enabled": true,
+      "description": "Virtual personal stylist.",
+      "capabilities": ["Outfit recommendation based on visual style", "Visual search for similar products"]
+    },
+    "ui_sections": ["Full-Screen Video Hero", "Interactive Lookbook", "Cinematic Product Card", "Collection Story", "Exclusive Checkout"],
+    "branding": {
+      "font_heading": "Italiana",
+      "font_body": "Tenor Sans",
+      "primary_color": "#000000",
+      "layout_style": "immersive"
+    }
+  }
+}

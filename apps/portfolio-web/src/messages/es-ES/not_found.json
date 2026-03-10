@@ -1,0 +1,6 @@
+{
+  "title": "Página No Encontrada",
+  "description": "Parece que te has aventurado en territorio indefinido. La ruta que buscas no existe en esta versión de la matriz.",
+  "cta_button": "Volver a la Base",
+  "error_code": "ERR_ROUTE_MISSING • SYSTEM_ID_404"
+}

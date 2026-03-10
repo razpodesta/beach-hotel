@@ -1,0 +1,6 @@
+{
+  "title": "Fallo del Sistema",
+  "description": "Se ha detectado una anomalía crítica en el núcleo. Nuestros centinelas automatizados han sido notificados y los protocolos de recuperación están en marcha.",
+  "retry_button": "Reintentar Conexión",
+  "home_button": "Evacuación de Emergencia (Inicio)"
+}

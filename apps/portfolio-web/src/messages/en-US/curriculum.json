@@ -1,0 +1,105 @@
+{
+  "page_title": "Raz Podestá's Resume",
+  "page_description": "Professional resume of Raz Podestá, Digital Ecosystems Architect and Full-Stack Developer.",
+  "print_button": "Print",
+  "printable_footer": "CURRICULUM DEVELOPED BY RAZ PODESTÁ - PRINTABLE VERSION 2025",
+  "header": {
+    "name": "Raz Podestá",
+    "title": "Digital Ecosystems Architect | Full-Stack Developer | AI",
+    "phone": "Whatsapp +55 (48) 9212-3079",
+    "email": "razpodesta@gmail.com",
+    "linkedin": "linkedin.com/in/razpodesta",
+    "location": "Florianópolis, SC, Brazil"
+  },
+  "summary": {
+    "title": "Professional Summary",
+    "content": "A multidisciplinary software architect with over 20 years of experience, specializing in creating 'intelligent digital brains' instead of simple websites. My philosophy is to merge deep systems engineering with a strategic product vision and a passion for UX to build scalable, resilient, and high-performance digital assets that drive measurable business results. I don't build sites; I build sovereign ecosystems designed to grow."
+  },
+  "experience": {
+    "title": "Experience",
+    "items": [
+      {
+        "role": "Digital Ecosystems Architect & Founder",
+        "company": "MetaShark Tech",
+        "period": "2020 - Present",
+        "location": "Florianópolis, Brazil",
+        "duties": [
+          "Design and development of software architectures based on monorepos (Nx) for complex projects.",
+          "Implementation of sovereign Headless CMS and GraphQL APIs with Apollo Server, NestJS, and Sequelize.",
+          "Creation of high-performance Progressive Web Apps (PWA) with Next.js, TypeScript, and Tailwind CSS.",
+          "Development of 'LIA Legacy', an orchestrating AI co-pilot to accelerate the software development lifecycle."
+        ]
+      },
+      {
+        "role": "Technical Lead & Software Architect",
+        "company": "Various Technology Consultancies",
+        "period": "2000 - 2020",
+        "location": "Latin America",
+        "duties": [
+          "Led development teams on large-scale projects for the finance, retail, and media sectors.",
+          "Optimized SQL and NoSQL databases, achieving performance improvements of up to 300%.",
+          "Implemented Continuous Integration and Continuous Deployment (CI/CD) pipelines, reducing time-to-market by 50%.",
+          "Mentored and trained developers, improving code quality and team productivity."
+        ]
+      }
+    ]
+  },
+  "education": {
+    "title": "Education",
+    "items": [
+      {
+        "degree": "Computer Science and Management Engineering",
+        "university": "University of Science and Technology (UCIT)",
+        "period": "2002 - 2006",
+        "location": "Santiago, Chile"
+      },
+      {
+        "degree": "Law",
+        "university": "University of Chile",
+        "period": "1994 - 1998",
+        "location": "Santiago, Chile"
+      }
+    ]
+  },
+  "skills_section": {
+    "title": "Skills & Tech Stack",
+    "categories": [
+      {
+        "title": "Frontend",
+        "skills": ["TypeScript", "React", "Next.js", "Vue.js", "Svelte", "Tailwind CSS", "Framer Motion", "Three.js"]
+      },
+      {
+        "title": "Backend",
+        "skills": ["Node.js", "NestJS", "Python", "GraphQL", "REST APIs", "Go"]
+      },
+      {
+        "title": "Databases",
+        "skills": ["PostgreSQL", "MongoDB", "Redis", "SQL Server"]
+      },
+      {
+        "title": "DevOps & Git",
+        "skills": ["Git", "Jest", "CI/CD", "GitHub Actions"]
+      },
+      {
+        "title": "AI & Blockchain",
+        "skills": ["LangChain", "TensorFlow", "PyTorch", "Solidity", "Smart Contracts"]
+      },
+      {
+        "title": "E-commerce & Marketing",
+        "skills": ["Shopify", "WooCommerce", "PrestaShop", "VTEX", "Meta Ads", "Google Ads"]
+      }
+    ]
+  },
+  "methodologies": {
+    "title": "Methodologies & Principles",
+    "items": ["Architecture by Manifesto", "Scrum", "SOLID", "DRY", "CI/CD", "Mobile-First Development"]
+  },
+  "hobbies": {
+    "title": "Hobbies & Interests",
+    "content": "AI-assisted music composition, exploring new software architectures, and studying the philosophy behind complex systems."
+  },
+  "call_to_action": {
+    "title": "Let's Build Together",
+    "content": "My passion is to transform ambitious visions into digital reality. If you have a project in mind or are looking for a strategic partner to take your platform to the next level, I would love to hear your vision and explore if we can create quality software together that endures and scales."
+  }
+}

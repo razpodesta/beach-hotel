@@ -1,0 +1,29 @@
+{
+  "name": "@razpodesta/protocol-33",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/protocol-33/src",
+  "projectType": "library",
+  "tags": ["scope:shared", "type:util"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/protocol-33",
+        "main": "packages/protocol-33/src/index.ts",
+        "tsConfig": "packages/protocol-33/tsconfig.lib.json",
+        "assets": ["packages/protocol-33/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/packages/protocol-33"],
+      "options": {
+        "jestConfig": "packages/protocol-33/jest.config.ts"
+      }
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "privacy_policy": {
+    "title": "Política de Privacidad",
+    "last_updated": "12 de Noviembre de 2025",
+    "content": [
+      {
+        "heading": "1. Introducción",
+        "body": "Bienvenido a mi portafolio. Tu privacidad es de suma importancia. Esta política detalla qué datos personales se recopilan y cómo se utilizan."
+      },
+      {
+        "heading": "2. Datos que Recopilamos",
+        "body": "Para el widget de visitante, recopilamos datos de geolocalización anónimos a través de APIs públicas (IP-API, Open-Meteo) para personalizar la experiencia. Para la suscripción al boletín, utilizamos Supabase Auth, que puede implicar el uso de cookies para gestionar tu sesión. No vendemos ni compartimos tus datos con terceros."
+      }
+    ]
+  },
+  "terms_of_service": {
+    "title": "Términos de Servicio",
+    "last_updated": "12 de Noviembre de 2025",
+    "content": [
+      {
+        "heading": "1. Aceptación de los Términos",
+        "body": "Al utilizar este sitio web, aceptas cumplir con los presentes términos y condiciones de uso. El contenido y los proyectos aquí mostrados son de mi propiedad intelectual, a menos que se indique lo contrario."
+      },
+      {
+        "heading": "2. Uso del Sitio",
+        "body": "Este sitio se proporciona 'tal cual' con fines informativos y profesionales. No se permite el uso de su contenido con fines comerciales sin consentimiento explícito previo. Se prohíbe cualquier intento de interrumpir o comprometer la seguridad del sitio."
+      }
+    ]
+  }
+}

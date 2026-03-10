@@ -1,0 +1,105 @@
+{
+  "page_title": "Currículo de Raz Podestá",
+  "page_description": "Currículo profissional de Raz Podestá, Arquiteto de Ecossistemas Digitais e Desenvolvedor Full-Stack.",
+  "print_button": "Imprimir",
+  "printable_footer": "CURRÍCULO DESENVOLVIDO POR RAZ PODESTÁ - VERSÃO PARA IMPRESSÃO 2025",
+  "header": {
+    "name": "Raz Podestá",
+    "title": "Arquiteto de Ecossistemas Digitais | Desenvolvedor Full-Stack | IA",
+    "phone": "Whatsapp +55 (48) 9212-3079",
+    "email": "razpodesta@gmail.com",
+    "linkedin": "linkedin.com/in/razpodesta",
+    "location": "Florianópolis, SC, Brasil"
+  },
+  "summary": {
+    "title": "Resumo Profissional",
+    "content": "Arquiteto de software multidisciplinar com mais de 20 anos de experiência, especializado na criação de 'cérebros digitais inteligentes' em vez de simples websites. Minha filosofia é fundir uma profunda engenharia de sistemas com uma visão estratégica de produto e uma paixão pela UX para construir ativos digitais escaláveis, resilientes e de alto desempenho que impulsionam resultados de negócio mensuráveis. Eu não construo sites; construo ecossistemas soberanos projetados para crescer."
+  },
+  "experience": {
+    "title": "Experiência",
+    "items": [
+      {
+        "role": "Arquiteto de Ecossistemas Digitais & Fundador",
+        "company": "MetaShark Tech",
+        "period": "2020 - Presente",
+        "location": "Florianópolis, Brasil",
+        "duties": [
+          "Projeto e desenvolvimento de arquiteturas de software baseadas em monorepos (Nx) para projetos complexos.",
+          "Implementação de CMS Headless soberanos e APIs GraphQL com Apollo Server, NestJS e Sequelize.",
+          "Criação de Progressive Web Apps (PWA) de alto desempenho com Next.js, TypeScript e Tailwind CSS.",
+          "Desenvolvimento de 'LIA Legacy', uma IA copiloto orquestradora para acelerar o ciclo de vida do desenvolvimento de software."
+        ]
+      },
+      {
+        "role": "Líder Técnico & Arquiteto de Software",
+        "company": "Diversas Consultorias de Tecnologia",
+        "period": "2000 - 2020",
+        "location": "América Latina",
+        "duties": [
+          "Liderança de equipes de desenvolvimento em projetos de grande escala para os setores financeiro, varejo e mídia.",
+          "Otimização de bancos de dados SQL e NoSQL, alcançando melhorias de desempenho de até 300%.",
+          "Implementação de pipelines de Integração Contínua e Implantação Contínua (CI/CD), reduzindo o time-to-market em 50%.",
+          "Mentoria e treinamento de desenvolvedores, melhorando a qualidade do código e a produtividade da equipe."
+        ]
+      }
+    ]
+  },
+  "education": {
+    "title": "Formação Acadêmica",
+    "items": [
+      {
+        "degree": "Engenharia em Informática e Gestão",
+        "university": "Universidade de Ciências da Tecnologia (UCIT)",
+        "period": "2002 - 2006",
+        "location": "Santiago, Chile"
+      },
+      {
+        "degree": "Direito",
+        "university": "Universidade do Chile",
+        "period": "1994 - 1998",
+        "location": "Santiago, Chile"
+      }
+    ]
+  },
+  "skills_section": {
+    "title": "Habilidades & Stack Tecnológico",
+    "categories": [
+      {
+        "title": "Frontend",
+        "skills": ["TypeScript", "React", "Next.js", "Vue.js", "Svelte", "Tailwind CSS", "Framer Motion", "Three.js"]
+      },
+      {
+        "title": "Backend",
+        "skills": ["Node.js", "NestJS", "Python", "GraphQL", "REST APIs", "Go"]
+      },
+      {
+        "title": "Bancos de Dados",
+        "skills": ["PostgreSQL", "MongoDB", "Redis", "SQL Server"]
+      },
+      {
+        "title": "DevOps & Git",
+        "skills": ["Git", "Jest", "CI/CD", "GitHub Actions"]
+      },
+      {
+        "title": "Inteligência Artificial & Blockchain",
+        "skills": ["LangChain", "TensorFlow", "PyTorch", "Solidity", "Smart Contracts"]
+      },
+      {
+        "title": "E-commerce & Marketing",
+        "skills": ["Shopify", "WooCommerce", "PrestaShop", "VTEX", "Meta Ads", "Google Ads"]
+      }
+    ]
+  },
+  "methodologies": {
+    "title": "Metodologias & Princípios",
+    "items": ["Arquitetura por Manifesto", "Scrum", "SOLID", "DRY", "CI/CD", "Desenvolvimento Mobile-First"]
+  },
+  "hobbies": {
+    "title": "Hobbies & Interesses",
+    "content": "Composição musical assistida por IA, exploração de novas arquiteturas de software e o estudo da filosofia por trás de sistemas complexos."
+  },
+  "call_to_action": {
+    "title": "Vamos Construir Juntos",
+    "content": "Minha paixão é transformar visões ambiciosas em realidade digital. Se você tem um projeto em mente ou busca um parceiro estratégico para levar sua plataforma ao próximo nível, adoraria ouvir sua visão e explorar se podemos criar juntos um software de qualidade que perdure e escale."
+  }
+}
