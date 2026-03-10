@@ -1,7 +1,9 @@
 {
-  "page_title": "Blog | Raz Podestá - Ecossistemas Digitais e Estratégia",
-  "page_description": "Explore artigos sobre arquitetura de software, desenvolvimento frontend, inteligência artificial e estratégia digital.",
-  "featured_title": "Artigo em Destaque",
-  "all_posts_title": "Todos os Artigos",
-  "read_more_cta": "Leia Mais"
+  "page_title": "Concierge Journal | Beach Hotel Canasvieiras",
+  "page_description": "Descubra os segredos mais bem guardados da ilha, guias exclusivos de vida noturna e novidades sobre o Pride Escape.",
+  "hero_title": "The Concierge Journal",
+  "featured_title": "Leitura em Destaque",
+  "all_posts_title": "Últimas Novidades",
+  "read_more_cta": "Ler Artigo",
+  "empty_state": "Nenhum artigo disponível no momento. Fique ligado."
 }

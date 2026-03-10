@@ -1,16 +1,16 @@
 {
-  "tech_stack_title": "Favorite Technologies",
-  "tech_stack_cta": "Click on any technology to explore its official site.",
+  "amenities_title": "Premium Amenities",
+  "amenities_cta": "Exclusive access for Beach Hotel guests",
   "title": "Beyond Code: Building Elite Digital Assets",
-  "subtitle": "My philosophy is based on creating solutions that are not only technically flawless, but also drive growth, captivate users, and become strategic pillars for your business. Excellence is not an option, it's the starting point.",
-  "pillars": [
-    { "title": "Vanguard Architecture", "description": "I build on solid foundations with clean, scalable, and maintainable code, ensuring your project grows frictionlessly with unwavering data security." },
-    { "title": "Interaction & Aesthetics", "description": "I design intuitive and fluid interfaces where every micro-interaction and animation has a purpose: to guide the user and reinforce a perception of quality and technical mastery." },
-    { "title": "Business Results", "description": "My work goes beyond aesthetics. I implement technical SEO best practices and performance optimization (Core Web Vitals) to ensure maximum visibility and a real impact on your goals." }
+  "subtitle": "My philosophy is based on creating solutions that are not only technically flawless, but also drive growth.",
+  "pillars":[
+    { "title": "Premium Location", "description": "In the heart of Canasvieiras, just meters from the beach." },
+    { "title": "Inclusive Design", "description": "A sophisticated and welcoming atmosphere." },
+    { "title": "Digital Experience", "description": "Smart check-in and full support for digital nomads." }
   ],
   "testimonial": {
-    "quote": "Working with Raz was a turning point. His strategic vision and flawless technical execution not only delivered a world-class product, but transformed how we understand the potential of our digital platform.",
+    "quote": "An unforgettable experience. The perfect balance between relaxation and the best nightlife in Floripa.",
     "author_name": "Alex Johnson",
-    "author_role": "CEO, Tech Innovators Inc."
+    "author_role": "VIP Guest"
   }
 }

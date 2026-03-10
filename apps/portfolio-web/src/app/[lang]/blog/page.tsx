@@ -1,14 +1,12 @@
-// apps/portfolio-web/src/app/[lang]/blog/page.tsx
+// RUTA: apps/portfolio-web/src/app/[lang]/blog/page.tsx
 
 /**
- * @file Hub de Contenidos del Blog.
- * @version 2.1 - Lint Fixed
- * @description Corrección de rutas relativas (3 niveles).
+ * @file The Concierge Journal (Hub de Contenidos).
+ * @version 3.0 - Hospitality Rebranding & Full i18n
+ * @description Diseño inmersivo de revista digital. Cero textos quemados.
  */
 
 import type { Metadata } from 'next';
-
-// CORRECCIÓN: 3 niveles hacia arriba
 import { getDictionary } from '../../../lib/get-dictionary';
 import { getAllPosts } from '../../../lib/blog';
 import { BlogCard } from '../../../components/ui/BlogCard';
@@ -42,31 +40,37 @@ export default async function BlogIndexPage(props: BlogIndexProps) {
   const [featuredPost, ...restPosts] = posts;
 
   return (
-    <main className="min-h-screen bg-black text-white selection:bg-purple-500/30">
+    <main className="min-h-screen bg-[#050505] text-white selection:bg-purple-500/30">
+      {/* HEADER INMERSIVO */}
       <section className="relative overflow-hidden pt-32 pb-16">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(120,119,198,0.1),transparent_50%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(168,85,247,0.15),transparent_50%)]" />
+        
         <div className="container mx-auto px-4 text-center relative z-10">
-          <span className="inline-block py-1 px-3 rounded-full bg-zinc-900/50 border border-zinc-800 text-[10px] font-bold tracking-widest text-zinc-400 uppercase mb-4 backdrop-blur-md">
-            {t.page_title.split('|')[0]}
+          <span className="inline-flex items-center gap-2 py-1.5 px-4 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold tracking-[0.3em] text-zinc-400 uppercase mb-6 backdrop-blur-md">
+            BEACH HOTEL CANASVIEIRAS
           </span>
+          
           <BlurText
-            text="Bitácora de Ingeniería"
-            className="font-display text-4xl md:text-6xl font-bold justify-center mb-6"
+            text={t.hero_title}
+            className="font-display text-5xl md:text-7xl font-bold justify-center mb-6 tracking-tighter"
             delay={50}
           />
-          <p className="max-w-2xl mx-auto text-zinc-400 text-lg leading-relaxed font-sans">
+          
+          <p className="max-w-2xl mx-auto text-zinc-400 text-lg md:text-xl leading-relaxed font-sans">
             {t.page_description}
           </p>
         </div>
       </section>
 
+      {/* CONTENIDO DEL JOURNAL */}
       <div className="container mx-auto px-4 pb-24">
         {featuredPost && (
-          <section className="mb-20">
-            <h2 className="text-sm font-bold text-zinc-500 uppercase tracking-widest mb-8 border-b border-zinc-800 pb-2">
+          <section className="mb-24">
+            <h2 className="flex items-center gap-3 text-xs font-bold text-zinc-400 uppercase tracking-[0.2em] mb-8 border-b border-white/5 pb-4">
+              <span className="h-2 w-2 rounded-full bg-purple-500 animate-pulse" />
               {t.featured_title}
             </h2>
-            <div className="transform transition-all hover:scale-[1.01] duration-500">
+            <div className="transform transition-all hover:scale-[1.01] duration-500 shadow-2xl">
                 <BlogCard
                     post={featuredPost.metadata}
                     slug={featuredPost.slug}
@@ -78,9 +82,10 @@ export default async function BlogIndexPage(props: BlogIndexProps) {
         )}
 
         <section>
-          <h2 className="text-sm font-bold text-zinc-500 uppercase tracking-widest mb-8 border-b border-zinc-800 pb-2">
+          <h2 className="text-xs font-bold text-zinc-400 uppercase tracking-[0.2em] mb-8 border-b border-white/5 pb-4">
             {t.all_posts_title}
           </h2>
+          
           {restPosts.length > 0 ? (
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
               {restPosts.map((post) => (
@@ -94,8 +99,10 @@ export default async function BlogIndexPage(props: BlogIndexProps) {
               ))}
             </div>
           ) : (
-            <div className="text-center py-20 border border-dashed border-zinc-800 rounded-xl">
-              <p className="text-zinc-500">No hay más artículos disponibles en este momento.</p>
+            <div className="text-center py-24 border border-dashed border-white/10 rounded-2xl bg-white/[0.02]">
+              <p className="text-zinc-500 font-mono text-sm uppercase tracking-widest">
+                {t.empty_state}
+              </p>
             </div>
           )}
         </section>

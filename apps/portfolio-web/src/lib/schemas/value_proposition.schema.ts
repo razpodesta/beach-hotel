@@ -1,14 +1,12 @@
 // RUTA: apps/portfolio-web/src/lib/schemas/value_proposition.schema.ts
-// VERSIÓN: 2.0 - Contratos de Texto de Sección de Tecnologías.
-// DESCRIPCIÓN: Se renombra 'tech_carousel_title' a 'tech_stack_title' para mayor
-//              claridad semántica y se añade 'tech_stack_cta' para la
-//              internacionalización completa de la sección.
+// VERSIÓN: 3.0 - Mutación a Amenities
+// DESCRIPCIÓN: Contrato de datos adaptado para la nueva sección de Amenities.
 
 import { z } from 'zod';
 
 export const valuePropositionSectionSchema = z.object({
-  tech_stack_title: z.string(), // <-- CLAVE RENOMBRADA
-  tech_stack_cta: z.string(),   // <-- NUEVA CLAVE
+  amenities_title: z.string(), // <-- RENOMBRADO
+  amenities_cta: z.string(),   // <-- RENOMBRADO
   title: z.string(),
   subtitle: z.string(),
   pillars: z.array(z.object({

@@ -1,25 +1,16 @@
 {
-  "tech_stack_title": "Tecnologías Favoritas",
-  "tech_stack_cta": "Haz clic en cualquier tecnología para explorar su sitio oficial.",
-  "title": "Más Allá del Código: Construyendo Activos Digitales de Élite",
-  "subtitle": "Mi filosofía se basa en la creación de soluciones que no solo son técnicamente impecables, sino que también impulsan el crecimiento, cautivan a los usuarios y se convierten en pilares estratégicos para tu negocio. La excelencia no es una opción, es el punto de partida.",
-  "pillars": [
-    {
-      "title": "Arquitectura de Vanguardia",
-      "description": "Construyo sobre cimientos sólidos con código limpio, escalable y mantenible, garantizando que tu proyecto crezca sin fricciones y con una seguridad de datos inquebrantable."
-    },
-    {
-      "title": "Interacción y Estética",
-      "description": "Diseño interfaces intuitivas y fluidas donde cada microinteracción y animación tiene un propósito: guiar al usuario y reforzar una percepción de calidad y dominio técnico."
-    },
-    {
-      "title": "Resultados de Negocio",
-      "description": "Mi trabajo va más allá de la estética. Implemento las mejores prácticas de SEO técnico y optimización de rendimiento (Core Web Vitals) para asegurar la máxima visibilidad y un impacto real en tus objetivos."
-    }
+  "amenities_title": "Servicios Premium",
+  "amenities_cta": "Acceso exclusivo para huéspedes del Beach Hotel",
+  "title": "Hospitalidad de Élite",
+  "subtitle": "Nuestra filosofía se basa en tres pilares fundamentales para garantizar que tu estadía sea transformadora e inolvidable.",
+  "pillars":[
+    { "title": "Ubicación Premium", "description": "En el corazón de Canasvieiras, a metros de la playa." },
+    { "title": "Diseño Inclusivo", "description": "Un ambiente sofisticado, diseñado para celebrar la diversidad." },
+    { "title": "Experiencia Digital", "description": "Check-in inteligente y soporte total para nómadas digitales." }
   ],
   "testimonial": {
-    "quote": "Trabajar con Raz fue un punto de inflexión. Su visión estratégica y su impecable ejecución técnica no solo nos entregaron un producto de clase mundial, sino que transformaron nuestra forma de entender el potencial de nuestra plataforma digital.",
+    "quote": "Una experiencia inolvidable. El equilibrio perfecto entre el descanso y la mejor vida nocturna de Floripa.",
     "author_name": "Alex Johnson",
-    "author_role": "CEO, Tech Innovators Inc."
+    "author_role": "Huésped VIP"
   }
 }
