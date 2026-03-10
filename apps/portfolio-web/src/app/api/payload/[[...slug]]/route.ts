@@ -2,18 +2,17 @@
 
 /**
  * @file Hub de Comunicaciones Payload CMS
- * @version 1.1 - Importación Soberana (Nx Compliant)
- * @description Ruta dinámica que actúa como puerta de entrada para Payload CMS.
- *              Utiliza el módulo @metashark-cms/core para la configuración.
- * @author Raz Podestá - MetaShark Tech
+ * @version 1.2 - Hotfix: Exportación Específica
+ * @description Ruta dinámica para Payload CMS 3.0. 
+ *              Utilizamos el patrón de manejador de servidor de Payload.
  */
 
 import { handlePayload } from '@payloadcms/next/route';
-// Importación desde el paquete centralizado, respetando las fronteras del monorepo
+// Corregimos la importación para apuntar al archivo generado por TS 
+// y asegurar compatibilidad con la estructura de exportación
 import config from '@metashark-cms/core/payload.config';
 
-// Payload CMS 3.0 exporta un manejador de peticiones para Next.js
-// Exportamos las funciones necesarias para manejar el ciclo de vida del CMS
+// Payload 3.0 requiere que el manejador esté envuelto en el context de Next.js
 export const GET = handlePayload(config);
 export const POST = handlePayload(config);
 export const PUT = handlePayload(config);

@@ -11,10 +11,16 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "default": "./dist/index.js"
+    },
+    "./payload.config": {
+      "types": "./src/payload.config.ts",
+      "import": "./src/payload.config.ts",
+      "default": "./src/payload.config.ts"
     }
   },
   "files": [
     "dist",
+    "src", 
     "!**/*.tsbuildinfo"
   ],
   "dependencies": {

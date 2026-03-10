@@ -1,12 +1,5 @@
 // RUTA: apps/portfolio-web/src/components/ui/NewsletterModal.tsx
-
-/**
- * @file NewsletterModal (Orquestador)
- * @version 5.0 - Desacoplado & UI-First
- * @description Modal de suscripción con carga diferida. Orquesta la visibilidad 
- *              mientras delega la lógica de negocio a sub-componentes.
- * @author Raz Podestá - MetaShark Tech
- */
+// VERSIÓN: 5.1 - Fix: Importación corregida a @/components/shared
 
 'use client';
 
@@ -15,7 +8,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 import { getCookie, setCookie } from 'cookies-next';
 import { cn } from '../../lib/utils/cn';
-import { NewsletterForm } from '../shared/NewsletterForm';
+// CORRECCIÓN: Uso del alias @/ para evitar problemas de profundidad relativa
+import { NewsletterForm } from '@/components/shared/NewsletterForm';
 
 const COOKIE_NAME = 'newsletter_modal_seen';
 
@@ -49,7 +43,6 @@ export function NewsletterModal() {
             initial={{ scale: 0.95, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.95, opacity: 0, y: 20 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 25 }}
             className="relative w-full max-w-md overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900 shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
@@ -59,10 +52,7 @@ export function NewsletterModal() {
             >
               <X size={20} />
             </button>
-
-            {/* Delegación de Lógica al Átomo NewsletterForm */}
             <NewsletterForm />
-            
           </motion.div>
         </motion.div>
       )}
