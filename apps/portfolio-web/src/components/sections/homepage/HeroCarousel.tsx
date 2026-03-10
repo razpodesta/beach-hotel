@@ -1,31 +1,36 @@
 // RUTA: apps/portfolio-web/src/components/sections/homepage/HeroCarousel.tsx
-
-/**
- * @file HeroCarousel.tsx
- * @version 5.0 - Performance & LCP Optimized
- * @description Carrusel de alta conversión con carga diferida de medios.
- *              Prioriza la carga del primer slide para métricas Core Web Vitals (LCP).
- * @author Raz Podestá - MetaShark Tech
- */
+// VERSIÓN: 6.0 - Hospitality 2026 Edition
+// DESCRIPCIÓN: Hero inmersivo de alto rendimiento. Acceso tipado a diccionarios
+//              y optimización de carga para Core Web Vitals.
 
 'use client';
 
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
 import Fade from 'embla-carousel-fade';
 import Autoplay from 'embla-carousel-autoplay';
-import { motion } from 'framer-motion';
-import { Volume2, VolumeX, ArrowRight, Play } from 'lucide-react';
-import Image from 'next/image';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Volume2, VolumeX, Sparkles } from 'lucide-react';
 import NextLink from 'next/link';
-import { cn } from '../../lib/utils/cn';
-import type { Dictionary } from '../../lib/schemas/dictionary.schema';
+import { cn } from '../../../lib/utils/cn';
+import type { Dictionary } from '../../../lib/schemas/dictionary.schema';
 
-const SLIDE_SETTINGS = [
+// Tipado estricto para los slides
+type Slide = {
+  id: string;
+  titleKey: 'SUITES_TITLE' | 'FESTIVAL_TITLE';
+  subtitleKey: 'SUITES_SUBTITLE' | 'FESTIVAL_SUBTITLE';
+  priceKey: 'price_info' | 'ticket_info';
+  videoUrl: string;
+  posterUrl: string;
+  ctaLink: string;
+};
+
+const SLIDES: Slide[] = [
   {
     id: 'luxury-suite',
-    titleKey: 'SUITES_TITLE' as const,
-    subtitleKey: 'SUITES_SUBTITLE' as const,
+    titleKey: 'SUITES_TITLE',
+    subtitleKey: 'SUITES_SUBTITLE',
     priceKey: 'price_info',
     videoUrl: "https://cdn.pixabay.com/video/2021/09/01/87113-596486047_large.mp4",
     posterUrl: "/images/hotel/suite-luxury-poster.jpg",
@@ -33,8 +38,8 @@ const SLIDE_SETTINGS = [
   },
   {
     id: 'pride-festival',
-    titleKey: 'FESTIVAL_TITLE' as const,
-    subtitleKey: 'FESTIVAL_SUBTITLE' as const,
+    titleKey: 'FESTIVAL_TITLE',
+    subtitleKey: 'FESTIVAL_SUBTITLE',
     priceKey: 'ticket_info',
     videoUrl: "https://cdn.pixabay.com/video/2023/10/24/186358-877995180_large.mp4",
     posterUrl: "/images/festival/pride-poster.jpg",
@@ -58,65 +63,71 @@ export function HeroCarousel({ dictionary }: { dictionary: Dictionary['homepage'
   }, [emblaApi, onSelect]);
 
   return (
-    <section className="relative h-screen w-full bg-[#050505] overflow-hidden">
-      {/* Audio Control */}
+    <section className="relative h-screen w-full bg-[#020202] overflow-hidden">
+      
+      {/* Botón de Audio Minimalista */}
       <button
         onClick={() => setIsMuted(!isMuted)}
-        className="absolute top-28 right-6 z-50 rounded-full border border-white/10 bg-black/40 p-4 text-white backdrop-blur-xl hover:bg-white hover:text-black transition-all"
+        className="absolute top-28 right-6 z-50 rounded-full border border-white/10 bg-white/5 p-3 text-white backdrop-blur-md hover:bg-white/20 transition-all"
+        aria-label="Toggle Mute"
       >
-        {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
+        {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
       </button>
 
       <div className="h-full w-full" ref={emblaRef}>
         <div className="flex h-full">
-          {SLIDE_SETTINGS.map((slide, index) => {
+          {SLIDES.map((slide, index) => {
             const isActive = index === selectedIndex;
             return (
               <div className="relative flex-[0_0_100%] h-full min-w-0" key={slide.id}>
-                {/* Optimized Media Layer */}
+                
+                {/* Media Layer: Priorizamos carga del primer elemento para el LCP */}
                 <div className="absolute inset-0 z-0">
                   <video
-                    src={isActive ? slide.videoUrl : undefined}
+                    src={slide.videoUrl}
                     poster={slide.posterUrl}
                     autoPlay
                     loop
                     muted={isMuted}
                     playsInline
-                    className="h-full w-full object-cover brightness-[0.7]"
+                    preload="auto"
+                    className="h-full w-full object-cover brightness-[0.6]"
                   />
-                  <div className="absolute inset-0 bg-linear-to-b from-black/20 via-transparent to-black/80" />
+                  <div className="absolute inset-0 bg-linear-to-t from-[#020202] via-transparent to-transparent/40" />
                 </div>
 
-                {/* Content */}
-                <div className="relative z-10 container mx-auto h-full flex flex-col justify-center px-6">
-                  {isActive && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 40 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-                      className="max-w-4xl"
-                    >
-                      <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold text-white tracking-[0.4em] uppercase backdrop-blur-md mb-8">
-                         <Play size={10} fill="currentColor" /> 
-                         {(dictionary as any)[slide.priceKey] || "Experience"}
-                      </span>
-                      
-                      <h1 className="font-display text-6xl md:text-9xl font-bold text-white tracking-tighter leading-[0.85] mb-8 uppercase">
-                        {dictionary[slide.titleKey]}
-                      </h1>
-                      
-                      <p className="font-sans text-xl md:text-2xl text-zinc-300 max-w-2xl mb-12 opacity-90">
-                        {dictionary[slide.subtitleKey]}
-                      </p>
-
-                      <NextLink 
-                        href={slide.ctaLink}
-                        className="inline-flex items-center gap-4 rounded-full bg-white px-10 py-5 text-sm font-bold text-black hover:scale-105 transition-transform"
+                {/* Content Layer */}
+                <div className="relative z-10 container mx-auto h-full flex flex-col justify-center px-6 md:px-12">
+                  <AnimatePresence mode="wait">
+                    {isActive && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -30 }}
+                        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                       >
-                        {dictionary.CTA_BUTTON}
-                      </NextLink>
-                    </motion.div>
-                  )}
+                        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-[9px] font-bold text-white tracking-[0.3em] uppercase mb-8 backdrop-blur-sm">
+                           <Sparkles size={10} className="text-purple-400" />
+                           {dictionary[slide.priceKey]}
+                        </div>
+                        
+                        <h1 className="font-display text-5xl md:text-8xl font-bold text-white tracking-tighter leading-[0.9] mb-8 uppercase">
+                          {dictionary[slide.titleKey]}
+                        </h1>
+                        
+                        <p className="font-sans text-lg md:text-xl text-zinc-400 max-w-xl mb-12">
+                          {dictionary[slide.subtitleKey]}
+                        </p>
+
+                        <NextLink 
+                          href={slide.ctaLink}
+                          className="group relative inline-flex items-center gap-3 rounded-full bg-white px-8 py-4 text-xs font-bold text-black uppercase tracking-widest hover:bg-zinc-200 transition-all"
+                        >
+                          {dictionary.CTA_BUTTON}
+                        </NextLink>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               </div>
             );

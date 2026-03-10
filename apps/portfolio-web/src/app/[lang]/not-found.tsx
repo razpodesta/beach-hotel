@@ -1,57 +1,49 @@
 // RUTA: apps/portfolio-web/src/app/[lang]/not-found.tsx
-// VERSIÓN: 6.0 - UI de Error 404 Internacionalizada (Server Component)
-// DESCRIPCIÓN: Página de "No Encontrado" con acceso completo al sistema de diseño
-//              e internacionalización. No cruza fronteras cliente/servidor innecesariamente.
+// VERSIÓN: 7.0 - Concierge 404 Experience
+// DESCRIPCIÓN: Transformación de error técnico a mensaje de hospitalidad boutique.
 
 import Link from 'next/link';
-import { Home, AlertTriangle } from 'lucide-react';
+import { Compass, Sparkles } from 'lucide-react';
 import { i18n } from '@/config/i18n.config';
 import { getDictionary } from '@/lib/get-dictionary';
 
-// Al ser una página especial de Next.js, no siempre recibe params de la forma estándar.
-// Sin embargo, al estar dentro de [lang], el layout ya habrá resuelto el contexto.
-// Usamos un fallback defensivo para garantizar la estabilidad.
-
 export default async function LocalizedNotFound() {
-  const lang = i18n.defaultLocale; // Fallback seguro para el renderizado del componente de error
+  const lang = i18n.defaultLocale; 
   const dictionary = await getDictionary(lang);
   const t = dictionary.not_found;
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-black text-white p-4 selection:bg-purple-500/30">
-      <div className="max-w-lg text-center space-y-8">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-[#020202] text-white p-6 selection:bg-purple-500/30">
+      <div className="max-w-md text-center space-y-10">
 
-        {/* Arte Visual CSS Puro para el 404 */}
-        <div className="relative mx-auto w-32 h-32 flex items-center justify-center">
-          <div className="absolute inset-0 rounded-full border-2 border-zinc-800 animate-ping opacity-20" />
-          <div className="absolute inset-0 rounded-full border border-purple-500/30 animate-pulse" />
-          <h1 className="font-display text-6xl font-bold tracking-tighter text-transparent bg-clip-text bg-linear-to-b from-white to-zinc-600">
-            404
-          </h1>
+        {/* Arte Visual: Concierge Badge */}
+        <div className="relative mx-auto w-24 h-24 flex items-center justify-center">
+            <div className="absolute inset-0 border border-white/5 rounded-full animate-spin-slow" />
+            <Sparkles size={32} className="text-purple-500" />
         </div>
 
-        <div className="space-y-4">
-          <h2 className="text-2xl font-bold tracking-tight sm:text-3xl font-display">
+        <div className="space-y-6">
+          <h1 className="font-display text-7xl font-bold tracking-tighter text-white">404</h1>
+          <h2 className="text-2xl font-display font-bold tracking-tight text-zinc-100">
             {t.title}
           </h2>
-          <p className="text-zinc-400 leading-relaxed font-sans">
+          <p className="text-zinc-400 leading-relaxed font-sans text-lg">
             {t.description}
           </p>
         </div>
 
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+        <div className="flex justify-center">
           <Link
             href={`/${lang}`}
-            className="group flex items-center gap-2 rounded-full bg-zinc-100 px-6 py-3 text-sm font-bold text-black transition-all hover:bg-white hover:scale-105 hover:shadow-lg hover:shadow-purple-500/20"
+            className="group flex items-center gap-3 rounded-full bg-white px-8 py-4 text-xs font-bold text-black uppercase tracking-widest hover:scale-105 transition-all hover:shadow-[0_0_30px_rgba(255,255,255,0.2)]"
           >
-            <Home size={18} className="text-zinc-600 group-hover:text-black transition-colors" />
+            <Compass size={16} />
             {t.cta_button}
           </Link>
         </div>
 
-        <div className="pt-12 flex items-center justify-center gap-2 text-xs text-zinc-600 font-mono">
-           <AlertTriangle size={12} />
-           <span>ERR_ROUTE_MISSING • SYSTEM_ID_404</span>
+        <div className="pt-12 border-t border-white/5 flex items-center justify-center gap-3 text-[10px] text-zinc-700 font-mono tracking-[0.2em] uppercase">
+           <span>{t.error_code}</span>
         </div>
       </div>
     </div>
