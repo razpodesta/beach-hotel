@@ -2,24 +2,22 @@
 
 /**
  * @file Widget de Estado del Visitante (VisitorHUD)
- * @version 15.0 - Arquitectura de Alta Resiliencia
- * @description Widget flotante con diseño glassmorphism semántico. 
- *              Utiliza `useVisitorData` para gestión de estado asíncrono y 
- *              Zustand para persistencia de UI.
+ * @version 16.0 - Hidratación Atómica & Resiliencia
+ * @description Widget flotante con diseño glassmorphism semántico.
+ *              Implementa HydrationGuard para prevenir errores de renderizado.
  * @author Raz Podestá - MetaShark Tech
  */
 
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence, useMotionValue } from 'framer-motion';
-import { MapPin, CloudRain, Cloud, Sun, Clock, Loader, AlertCircle, X, ScanFace } from 'lucide-react';
+import { CloudRain, Cloud, Sun, Loader, AlertCircle, X, ScanFace } from 'lucide-react';
 import { cn } from '../../lib/utils/cn';
 import { useVisitorData } from '../../lib/hooks/use-visitor-data';
 import { useUIStore } from '../../lib/store/ui.store';
 import type { Dictionary } from '../../lib/schemas/dictionary.schema';
 
-// --- Utilidades Puras (Desacopladas para Testing) ---
 const formatDMS = (decimal: number, type: 'lat' | 'lon'): string => {
   if (!decimal) return '--';
   const abs = Math.abs(decimal);
@@ -38,12 +36,15 @@ const WeatherIcon = ({ code }: { code: number }) => {
 export function VisitorHud({ dictionary }: { dictionary: Dictionary['visitor_hud'] | undefined }) {
   const { data, isLoading, error } = useVisitorData();
   const [currentTime, setCurrentTime] = useState('--:--');
-  const { isVisitorHudOpen, closeVisitorHud } = useUIStore();
+  
+  // Selector optimizado para evitar re-renders innecesarios
+  const isHydrated = useUIStore((s) => s.hasHydrated);
+  const isOpen = useUIStore((s) => s.isVisitorHudOpen);
+  const closeHud = useUIStore((s) => s.closeVisitorHud);
   
   const x = useMotionValue(0);
   const y = useMotionValue(0);
 
-  // Reloj local optimizado
   useEffect(() => {
     if (!data?.timezone) return;
     const tick = () => {
@@ -56,8 +57,8 @@ export function VisitorHud({ dictionary }: { dictionary: Dictionary['visitor_hud
     return () => clearInterval(interval);
   }, [data?.timezone]);
 
-  // Renderizado defensivo
-  if (!dictionary || !isVisitorHudOpen) return null;
+  // Guardia de Hidratación: Previene mismatch entre cliente y servidor
+  if (!isHydrated || !isOpen || !dictionary) return null;
 
   return (
     <AnimatePresence>
@@ -72,14 +73,13 @@ export function VisitorHud({ dictionary }: { dictionary: Dictionary['visitor_hud
           "bg-card/95 shadow-2xl backdrop-blur-md overflow-hidden active:cursor-grabbing"
         )}
       >
-        {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 bg-muted/50 border-b border-border">
           <div className="flex items-center gap-2 text-primary">
             <ScanFace size={16} />
             <span className="font-display text-[10px] font-bold uppercase tracking-widest">{dictionary.label_visitor_info}</span>
           </div>
           <button 
-            onClick={closeVisitorHud} 
+            onClick={closeHud} 
             className="hover:text-foreground text-muted-foreground transition-colors"
             aria-label="Cerrar widget"
           >
@@ -87,7 +87,6 @@ export function VisitorHud({ dictionary }: { dictionary: Dictionary['visitor_hud
           </button>
         </div>
 
-        {/* Body (Min-height garantizado para evitar Layout Shift) */}
         <div className="p-4 space-y-4 min-h-[140px] flex flex-col justify-center">
           {isLoading ? (
             <div className="flex flex-col items-center gap-2 text-muted-foreground">

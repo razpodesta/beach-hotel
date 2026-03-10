@@ -1,12 +1,9 @@
 // RUTA: apps/portfolio-web/src/app/[lang]/layout.tsx
-// VERSIÓN: 25.0 - Final Polish
-// DESCRIPCIÓN: Layout con Google Inter, Ticker informativo y estructura S.O.L.I.D.
+// VERSIÓN: 26.0 - Integración Tipográfica Soberana
+// DESCRIPCIÓN: Layout con Google Inter, Dicaten y Clash Display inyectados como variables CSS.
 
 import React, { Suspense } from 'react';
 import type { Metadata } from 'next';
-import localFont from 'next/font/local';
-import { Inter } from 'next/font/google';
-
 import { i18n, type Locale } from '../../config/i18n.config';
 import { getDictionary } from '../../lib/get-dictionary';
 import { Providers } from '../../components/layout/Providers';
@@ -16,32 +13,14 @@ import { SystemStatusTicker } from '../../components/ui/SystemStatusTicker';
 import { NewsletterModal } from '../../components/ui/NewsletterModal';
 import { VisitorHud } from '../../components/ui/VisitorHud';
 import { NavigationTracker } from '../../components/layout/NavigationTracker';
+
+// Importamos el motor de fuentes que creamos
+import { fontInter, fontSignature, fontClashDisplay } from '../../lib/fonts';
+
 import '../global.css';
 
-// --- 1. FUENTES ---
-const fontInter = Inter({
-  subsets: ['latin'],
-  variable: '--font-inter',
-  display: 'swap',
-  weight: ['400', '500', '600', '700', '800'],
-});
-
-const fontSignature = localFont({
-  src: '../../../public/fonts/Dicaten.woff2',
-  variable: '--font-signature',
-  display: 'swap',
-  preload: true,
-});
-
-const fontClashDisplay = localFont({
-  src: [
-    { path: '../../../public/fonts/ClashDisplay-Regular.woff2', weight: '400', style: 'normal' },
-    { path: '../../../public/fonts/ClashDisplay-Bold.woff2', weight: '700', style: 'normal' },
-  ],
-  variable: '--font-display',
-  display: 'swap',
-  preload: true,
-});
+// Variables combinadas para el body
+const fontVariables = `${fontInter.variable} ${fontSignature.variable} ${fontClashDisplay.variable}`;
 
 export async function generateStaticParams() {
   return i18n.locales.map((locale) => ({ lang: locale }));
@@ -83,9 +62,7 @@ export default async function RootLayout({
   return (
     <html lang={lang} suppressHydrationWarning>
       <head />
-      <body
-        className={`${fontInter.variable} ${fontSignature.variable} ${fontClashDisplay.variable} font-sans bg-background text-foreground antialiased selection:bg-purple-500/30`}
-      >
+      <body className={`${fontVariables} font-sans antialiased`}>
         <Providers>
             <Suspense fallback={null}>
               <NavigationTracker />

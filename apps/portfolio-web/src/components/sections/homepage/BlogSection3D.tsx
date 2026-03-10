@@ -1,10 +1,11 @@
 // RUTA: apps/portfolio-web/src/components/sections/homepage/BlogSection3D.tsx
-// VERSIÓN: 7.0 - Production Resilient Edition
-// DESCRIPCIÓN: Carrusel editorial de alta disponibilidad con manejo de estados vacíos.
+// VERSIÓN: 7.1 - Elite Editorial & Keyboard Accessible
+// DESCRIPCIÓN: Carrusel editorial de alta disponibilidad. Añadido soporte de teclado
+//              y optimización de renderizado para máxima performance.
 
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Sparkles, ArrowUpRight } from 'lucide-react';
 import Image from 'next/image';
@@ -16,18 +17,18 @@ import type { Dictionary } from '../../../lib/schemas/dictionary.schema';
 
 const AUTOPLAY_INTERVAL = 5000;
 
-export function BlogSection3D({ posts, dictionary, lang }: { 
-  posts: PostWithSlug[], 
-  dictionary: Dictionary['blog_page'], 
-  lang: string 
-}) {
+interface BlogSection3DProps {
+  posts: PostWithSlug[];
+  dictionary: Dictionary['blog_page'];
+  lang: string;
+}
+
+export function BlogSection3D({ posts, dictionary, lang }: BlogSection3DProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
 
-  // Manejo de estado vacío: Si no hay posts, no renderizamos el componente
-  if (!posts || posts.length === 0) return null;
-
-  const displayPosts = posts.slice(0, 5);
+  // Memoización para optimizar el slice y el orden
+  const displayPosts = useMemo(() => posts.slice(0, 5), [posts]);
 
   const handleNext = useCallback(() => {
     setActiveIndex((prev) => (prev + 1) % displayPosts.length);
@@ -37,16 +38,29 @@ export function BlogSection3D({ posts, dictionary, lang }: {
     setActiveIndex((prev) => (prev - 1 + displayPosts.length) % displayPosts.length);
   }, [displayPosts.length]);
 
+  // Soporte para navegación por teclado
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft') handlePrev();
+      if (e.key === 'ArrowRight') handleNext();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [handleNext, handlePrev]);
+
   useEffect(() => {
     if (isPaused) return;
     const timer = setInterval(handleNext, AUTOPLAY_INTERVAL);
     return () => clearInterval(timer);
   }, [handleNext, isPaused]);
 
+  if (displayPosts.length === 0) return null;
+
   return (
-    <section className="relative w-full overflow-hidden bg-[#020202] py-24 border-y border-white/5" aria-label="Concierge Journal">
-      
-      {/* Header Editorial */}
+    <section 
+      className="relative w-full overflow-hidden bg-[#020202] py-24 border-y border-white/5" 
+      aria-label="Concierge Journal"
+    >
       <div className="container mx-auto px-6 mb-20 flex flex-col items-center">
         <div className="flex items-center gap-2 mb-6 text-purple-500">
           <Sparkles size={14} />
@@ -60,7 +74,6 @@ export function BlogSection3D({ posts, dictionary, lang }: {
         />
       </div>
 
-      {/* Stack Container */}
       <div 
         className="relative h-[480px] w-full flex items-center justify-center perspective-1000"
         onMouseEnter={() => setIsPaused(true)}
@@ -102,7 +115,6 @@ export function BlogSection3D({ posts, dictionary, lang }: {
                   priority={isActive}
                 />
                 
-                {/* Degradado para legibilidad del texto */}
                 <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/20 to-transparent p-8 flex flex-col justify-end">
                    {isActive && (
                     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
@@ -124,12 +136,11 @@ export function BlogSection3D({ posts, dictionary, lang }: {
         </AnimatePresence>
       </div>
 
-      {/* Controls */}
       <div className="flex justify-center gap-6 mt-16">
-        <button onClick={handlePrev} className="p-4 rounded-full border border-white/10 text-white hover:bg-white/5 transition-all">
+        <button onClick={handlePrev} aria-label="Previous" className="p-4 rounded-full border border-white/10 text-white hover:bg-white/5 transition-all">
           <ChevronLeft size={20} />
         </button>
-        <button onClick={handleNext} className="p-4 rounded-full border border-white/10 text-white hover:bg-white/5 transition-all">
+        <button onClick={handleNext} aria-label="Next" className="p-4 rounded-full border border-white/10 text-white hover:bg-white/5 transition-all">
           <ChevronRight size={20} />
         </button>
       </div>

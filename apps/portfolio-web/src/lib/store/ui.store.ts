@@ -1,57 +1,56 @@
 // RUTA: apps/portfolio-web/src/lib/store/ui.store.ts
-// VERSIÓN: 1.0 - Store de UI Soberano
-// DESCRIPCIÓN: Gestión de estado global para la interfaz de usuario utilizando Zustand.
-//              Implementa persistencia automática para preferencias de usuario.
+// VERSIÓN: 2.0 - Hidratación Atómica & Contrato Separado
+// DESCRIPCIÓN: Store global para UI con persistencia controlada y estado de hidratación
+//              para prevenir Hydration Mismatch en Next.js 15.
 
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 
-// 1. Contrato de Estado (Interface)
-// Define estrictamente qué datos y acciones están disponibles.
 interface UIState {
-  // --- Estado del Visitor HUD ---
   isVisitorHudOpen: boolean;
+  isMobileMenuOpen: boolean;
+  hasHydrated: boolean; // Estado para control de hidratación
+}
+
+interface UIActions {
   toggleVisitorHud: () => void;
   closeVisitorHud: () => void;
   openVisitorHud: () => void;
-
-  // --- Estado del Menú Móvil (Preparado para expansión) ---
-  isMobileMenuOpen: boolean;
   toggleMobileMenu: () => void;
   closeMobileMenu: () => void;
+  setHasHydrated: (state: boolean) => void;
 }
 
-// 2. Implementación del Store
-export const useUIStore = create<UIState>()(
+export const useUIStore = create<UIState & UIActions>()(
   persist(
     (set) => ({
-      // --- Lógica Visitor HUD ---
-      isVisitorHudOpen: true, // Valor inicial por defecto
+      // --- Estado Inicial ---
+      isVisitorHudOpen: true,
+      isMobileMenuOpen: false,
+      hasHydrated: false,
 
+      // --- Acciones ---
+      setHasHydrated: (state) => set({ hasHydrated: state }),
+      
       toggleVisitorHud: () =>
         set((state) => ({ isVisitorHudOpen: !state.isVisitorHudOpen })),
-
       closeVisitorHud: () => set({ isVisitorHudOpen: false }),
-
       openVisitorHud: () => set({ isVisitorHudOpen: true }),
-
-      // --- Lógica Menú Móvil ---
-      isMobileMenuOpen: false,
 
       toggleMobileMenu: () =>
         set((state) => ({ isMobileMenuOpen: !state.isMobileMenuOpen })),
-
       closeMobileMenu: () => set({ isMobileMenuOpen: false }),
     }),
     {
-      name: 'portfolio-ui-preferences', // Clave única en localStorage
-      storage: createJSONStorage(() => localStorage), // Motor de persistencia
-
-      // 3. Configuración de Persistencia Parcial
-      // Solo persistimos 'isVisitorHudOpen'. El menú móvil siempre debe empezar cerrado.
+      name: 'portfolio-ui-preferences',
+      storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
-        isVisitorHudOpen: state.isVisitorHudOpen
+        isVisitorHudOpen: state.isVisitorHudOpen,
       }),
+      // Middleware de hidratación
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated(true);
+      },
     }
   )
 );

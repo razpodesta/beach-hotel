@@ -1,19 +1,11 @@
 // RUTA: apps/portfolio-web/src/lib/route-guard.ts
-
-/**
- * @file Guardián de Rutas (Middleware Logic)
- * @version 8.0 - CMS Integration & RBAC Ready
- * @description Maneja la protección de rutas, RBAC y normalización de URLs.
- *              Esta versión está optimizada para convivir con Payload CMS 3.0.
- * @author Raz Podestá - MetaShark Tech
- */
+// VERSIÓN: 9.0 - Arquitectura de Seguridad Edge
+// DESCRIPCIÓN: Guardián de rutas optimizado con normalización eficiente 
+//              y contrato de sesión estricto.
 
 import { NextResponse, type NextRequest } from 'next/server';
 import { type Locale } from '../config/i18n.config';
 
-/**
- * Definición de roles soberanos.
- */
 type UserRole = 'user' | 'admin' | 'guest';
 
 interface Session {
@@ -21,11 +13,8 @@ interface Session {
   role: UserRole;
 }
 
-// ============================================================================
-// CONFIGURACIÓN DE ACCESO
-// ============================================================================
-
-const PUBLIC_PATHS = [
+// Configuración centralizada de acceso
+const PUBLIC_PATHS = new Set([
   '/', 
   '/login', 
   '/quien-soy', 
@@ -36,38 +25,43 @@ const PUBLIC_PATHS = [
   '/festival',
   '/legal',
   '/maintenance'
-];
+]);
 
-const ADMIN_PATH = '/admin'; // Ruta protegida de Payload CMS
+const ADMIN_PATH = '/admin';
 
-// ============================================================================
-// LÓGICA DE GUARDIÁN
-// ============================================================================
+/**
+ * Normaliza la ruta eliminando el prefijo de idioma para validación lógica.
+ * Utiliza una lógica de string puro en lugar de RegExp costosas.
+ */
+function getLogicalPath(pathname: string, locale: Locale): string {
+  const prefix = `/${locale}`;
+  if (pathname === prefix) return '/';
+  return pathname.startsWith(prefix) ? pathname.replace(prefix, '') : pathname;
+}
 
 /**
  * Orquesta la seguridad en el Edge.
  */
 export function routeGuard(request: NextRequest, locale: Locale): NextResponse | null {
   const { pathname } = request.nextUrl;
+  const pathWithoutLocale = getLogicalPath(pathname, locale);
   
-  // 1. Normalización: Eliminamos el locale para evaluar la ruta lógica
-  const pathWithoutLocale = pathname.replace(new RegExp(`^/${locale}`), '') || '/';
-
-  // 2. Bypass de Rutas Públicas
-  // Si la ruta lógica es pública, permitimos el acceso sin evaluar sesión.
-  if (PUBLIC_PATHS.some((p) => pathWithoutLocale === p || pathWithoutLocale.startsWith(`${p}/`))) {
+  // 1. Bypass eficiente usando Set.has()
+  if (PUBLIC_PATHS.has(pathWithoutLocale)) {
     return null;
   }
 
-  // 3. Simulación de Sesión (Integrable con Supabase SSR en Middleware)
+  // 2. Integración de Sesión (Supabase SSR)
+  // Nota: En una implementación real, aquí leerías la cookie de sesión de Supabase.
   const session: Session = {
-    isAuthenticated: false,
+    isAuthenticated: false, // Placeholder
     role: 'guest'
   };
 
-  // 4. Protección de Rutas Administrativas (Payload CMS Admin)
+  // 3. Protección de Rutas Administrativas
   if (pathWithoutLocale.startsWith(ADMIN_PATH)) {
     if (!session.isAuthenticated || session.role !== 'admin') {
+      // Retornamos la redirección formateada para el locale actual
       return NextResponse.redirect(new URL(`/${locale}/login`, request.url));
     }
   }
