@@ -1,11 +1,30 @@
-import { redirect } from 'next/navigation';
-import { i18n } from '@/config/i18n.config';
+/**
+ * @file apps/portfolio-web/src/app/not-found.tsx
+ * @description Guardián de errores 404 a nivel raíz (fuera de segmentos de idioma).
+ *              Implementa un protocolo de rescate redireccionando al usuario a la
+ *              recepción (Home) del idioma soberano por defecto.
+ * @version 10.0
+ * @author Raz Podestá - MetaShark Tech
+ */
 
-// Este archivo solo captura errores 404 a nivel raíz (ej: domain.com/archivo-inexistente.php)
-// Como no tenemos contexto de idioma, asumimos el default.
+import { redirect } from 'next/navigation';
+
+/**
+ * IMPORTACIONES NIVELADAS (Cumplimiento estricto @nx/enforce-module-boundaries)
+ * Se utiliza la ruta relativa para mantener la integridad del grafo de Nx.
+ */
+import { i18n } from '../config/i18n.config';
+
+/**
+ * Aparato de Rescate: GlobalNotFound
+ * Este componente actúa como la última línea de defensa cuando el middleware
+ * no logra interceptar una ruta inexistente o mal formada en la raíz del dominio.
+ */
 export default function GlobalNotFound() {
-  // Redirige a la Home del idioma por defecto.
-  // Si el usuario intentó acceder a una ruta interna inválida sin locale,
-  // el middleware ya habrá intentado corregirlo. Si llegamos aquí, es un fallo total.
+  /**
+   * PROTOCOLO DE REDIRECCIÓN:
+   * Forzamos el regreso al ecosistema controlado mediante el locale por defecto.
+   * En el Beach Hotel Canasvieiras, el flujo siempre debe ser localizado.
+   */
   redirect(`/${i18n.defaultLocale}`);
 }

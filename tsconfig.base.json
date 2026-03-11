@@ -15,16 +15,32 @@
     "resolveJsonModule": true,
     "declaration": true,
     "sourceMap": true,
+    "importHelpers": true,
+    "noPropertyAccessFromIndexSignature": false,
     "paths": {
+      /* 
+         ALIAS DE APLICACIÓN:
+         Uso exclusivo dentro de apps/portfolio-web 
+      */
       "@/*": ["apps/portfolio-web/src/*"],
       
+      /* 
+         DOMINIO @METASHARK: CMS CORE
+         Sincronizado con Payload CMS 3.0 e importaciones ESM 
+      */
       "@metashark/cms-core": ["packages/cms/core/src/index.ts"],
       "@metashark/cms-core/config": ["packages/cms/core/src/payload.config.ts"],
       "@metashark/cms-core/collections": ["packages/cms/core/src/collections/index.ts"],
-      "@metashark/cms-ui": ["packages/cms/ui/src/index.ts"],
       
+      /* 
+         DOMINIO @METASHARK: COMPONENTES & LÓGICA
+         Mapeo directo a los puntos de entrada (Barrels)
+      */
+      "@metashark/cms-ui": ["packages/cms/ui/src/index.ts"],
       "@metashark/protocol-33": ["packages/protocol-33/src/index.ts"],
       "@metashark/auth-shield": ["packages/auth-shield/src/index.ts"],
+      
+      /* INFRAESTRUCTURA DE PRUEBAS */
       "@metashark/testing-utils": ["packages/testing-utils/src/index.ts"]
     }
   },

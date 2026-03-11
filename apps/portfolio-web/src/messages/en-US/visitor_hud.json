@@ -1,14 +1,14 @@
 {
-  "label_visitor_info": "VISITOR INFORMATION",
-  "label_ip_visitor": "VISITOR I.P.",
-  "footer_credits": "Component created by Raz Podestá - MetaShark Tech",
-  "status_calibrating": "CALIBRATING...",
-  "status_error": "SIGNAL LOST",
-  "label_location": "LOCATION",
-  "label_weather": "WEATHER",
-  "weather_sunny": "SUNNY",
-  "weather_rainy": "RAINY",
-  "weather_cloudy": "CLOUDY",
-  "label_time": "LOCAL TIME",
-  "coords_format": "COORDINATES"
+  "label_visitor_info": "INFORMAÇÃO DO HÓSPEDE",
+  "label_ip_visitor": "I.P. DE ORIGEM",
+  "footer_credits": "Tecnologia MetaShark Tech",
+  "status_calibrating": "CALIBRANDO INSTRUMENTOS...",
+  "status_error": "SINAL PERDIDO",
+  "label_location": "LOCALIZAÇÃO",
+  "label_weather": "CLIMA EM CANASVIEIRAS",
+  "weather_sunny": "ENSOLARADO",
+  "weather_rainy": "CHUVOSO",
+  "weather_cloudy": "NUBLADO",
+  "label_time": "HORA LOCAL",
+  "coords_format": "COORDENADAS"
 }

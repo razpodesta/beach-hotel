@@ -1,67 +1,120 @@
-// RUTA: apps/portfolio-web/src/components/ui/BlogCard.tsx
-// VERSIÓN: 1.1 - Sintaxis Canónica y Alineación con Tailwind Moderno.
-// DESCRIPCIÓN: Se refactoriza el componente para reemplazar las clases 'flex-grow'
-//              por su forma canónica y más concisa, 'grow'. Esta mejora alinea
-//              el código con las mejores prácticas de Tailwind CSS v4+, resuelve
-//              las advertencias del linter y mantiene la pureza sintáctica del proyecto.
-//              La lógica de internacionalización y la estructura de datos permanecen intactas.
+/**
+ * @file apps/portfolio-web/src/components/ui/BlogCard.tsx
+ * @description Aparato visual de élite para la representación de artículos. 
+ *              Implementa semántica HTML5, optimización de estilos Tailwind v4 
+ *              y animaciones físicas fluidas.
+ * @version 3.0
+ * @author Raz Podestá - MetaShark Tech
+ */
 
-'use client'; // Necesario para el uso de Framer Motion
+'use client';
 
+import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import type { BlogPost } from '@/lib/schemas/blog.schema';
+import { ArrowUpRight, Calendar, User } from 'lucide-react';
 
-type BlogCardProps = {
+/**
+ * IMPORTACIONES NIVELADAS (Cumplimiento @nx/enforce-module-boundaries)
+ */
+import type { BlogPost } from '../../lib/schemas/blog.schema';
+import { cn } from '../../lib/utils/cn';
+
+interface BlogCardProps {
+  /** Metadatos del post validados por el adaptador de CMS */
   post: BlogPost;
+  /** Identificador semántico para la construcción de la URL */
   slug: string;
+  /** Contexto de idioma activo */
   lang: string;
+  /** Texto localizado para el botón de acción */
   ctaText: string;
-};
+  /** Clases adicionales para el orquestador externo */
+  className?: string;
+}
 
-export function BlogCard({ post, slug, lang, ctaText }: BlogCardProps) {
-  // Convención para la ruta de la imagen del post.
+/**
+ * Aparato de UI: BlogCard
+ * Orquesta una experiencia visual inmersiva con feedback táctil y visual.
+ */
+export function BlogCard({ post, slug, lang, ctaText, className }: BlogCardProps) {
   const imageUrl = `/images/blog/${slug}.jpg`;
+  const postUrl = `/${lang}/blog/${slug}`;
 
   return (
-    <motion.div
+    <motion.article
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.3 }}
-      transition={{ duration: 0.6 }}
-      className="group flex flex-col overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/50 transition-all duration-300 hover:border-purple-500/50 hover:shadow-2xl hover:shadow-purple-500/10"
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+      className={cn(
+        "group relative flex flex-col overflow-hidden rounded-4xl border border-white/5 bg-zinc-900/40 backdrop-blur-sm",
+        "transition-all duration-500 hover:border-purple-500/30 hover:shadow-2xl hover:shadow-purple-500/5",
+        className
+      )}
     >
-      <Link href={`/${lang}/blog/${slug}`} className="relative block h-52 w-full" aria-label={`Leer más sobre ${post.title}`}>
+      {/* 1. CAPA VISUAL (Visual Hook) */}
+      <Link 
+        href={postUrl} 
+        className="relative block aspect-video w-full overflow-hidden outline-none" 
+        aria-label={`${ctaText}: ${post.title}`}
+      >
         <Image
           src={imageUrl}
-          alt={`Imagen del artículo ${post.title}`}
+          alt={post.title}
           fill
-          className="object-cover transition-transform duration-500 group-hover:scale-105"
+          className="object-cover transition-transform duration-700 ease-out group-hover:scale-110 group-hover:rotate-1"
           sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          loading="lazy"
         />
+        <div className="absolute inset-0 bg-linear-to-t from-zinc-950/80 via-transparent to-transparent opacity-60" />
+        
+        {/* Badge de Taxonomía */}
+        <div className="absolute top-6 left-6">
+           <span className="rounded-full bg-black/40 backdrop-blur-md border border-white/10 px-4 py-1.5 text-[9px] font-bold uppercase tracking-[0.2em] text-white">
+             {post.tags[0] || 'Editorial'}
+           </span>
+        </div>
       </Link>
 
-      {/* --- INICIO DE LA MEJORA DE SINTAXIS (1/2) --- */}
-      <div className="flex grow flex-col p-6">
-        <h3 className="font-display text-xl font-bold text-white transition-colors group-hover:text-purple-400">
-          <Link href={`/${lang}/blog/${slug}`}>{post.title}</Link>
+      {/* 2. CAPA INFORMATIVA */}
+      <div className="flex grow flex-col p-8">
+        <div className="mb-4 flex items-center gap-4 text-[10px] font-mono uppercase tracking-widest text-zinc-500">
+          <div className="flex items-center gap-1.5" title="Fecha de publicación">
+            <Calendar size={12} className="text-purple-500" />
+            <span>{post.published_date}</span>
+          </div>
+          <div className="flex items-center gap-1.5" title="Autor">
+            <User size={12} className="text-pink-500" />
+            <span>{post.author}</span>
+          </div>
+        </div>
+
+        <h3 className="font-display text-2xl font-bold leading-tight text-white transition-colors group-hover:text-purple-300">
+          <Link href={postUrl} className="outline-none focus-visible:underline decoration-purple-500 underline-offset-4">
+            {post.title}
+          </Link>
         </h3>
 
-        {/* --- INICIO DE LA MEJORA DE SINTAXIS (2/2) --- */}
-        <p className="mt-3 grow text-sm text-zinc-400">{post.description}</p>
-
-        <div className="mt-4 flex items-center justify-between text-xs text-zinc-500">
-          <span>{post.author}</span>
-          <span>{post.published_date}</span>
-        </div>
+        <p className="mt-4 grow line-clamp-3 text-sm leading-relaxed text-zinc-400 font-sans">
+          {post.description}
+        </p>
       </div>
 
-      <div className="border-t border-zinc-800 p-4">
-        <Link href={`/${lang}/blog/${slug}`} className="text-sm font-bold text-purple-400 transition-colors hover:text-white">
-          {ctaText}
+      {/* 3. CAPA DE ACCIÓN (Footer) */}
+      <div className="border-t border-white/5 p-6 bg-white/1">
+        <Link 
+          href={postUrl} 
+          className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.3em] text-purple-400 transition-all group-hover:gap-4 group-hover:text-white outline-none"
+        >
+          {ctaText} 
+          <ArrowUpRight 
+            size={14} 
+            className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" 
+          />
         </Link>
       </div>
-    </motion.div>
+    </motion.article>
   );
 }

@@ -1,27 +1,41 @@
-// RUTA: apps/portfolio-web/src/components/ui/ThemeToggle.tsx
-
 /**
- * @file Interruptor de Tema (ThemeToggle)
- * @version 4.0 - Performance Elite & React 19 Sync
- * @description Control maestro de tema con detección de hidratación sin parpadeos (flicker-free).
- *              Utiliza `useSyncExternalStore` para sincronización atómica con el DOM.
+ * @file apps/portfolio-web/src/components/ui/ThemeToggle.tsx
+ * @description Control soberano de alternancia de tema (Claro/Oscuro). 
+ *              Implementa detección de hidratación de alta fidelidad para evitar 
+ *              parpadeos de layout (CLS) y animaciones físicas con Framer Motion.
+ * @version 5.0
  * @author Raz Podestá - MetaShark Tech
  */
 
 'use client';
 
+import React, { useSyncExternalStore, useCallback } from 'react';
 import { useTheme } from 'next-themes';
 import { Sun, Moon } from 'lucide-react';
-import { useSyncExternalStore, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+
+/**
+ * IMPORTACIONES NIVELADAS (Rutas relativas para cumplimiento Nx)
+ */
 import { cn } from '../../lib/utils/cn';
 
 /**
- * Hook de hidratación optimizado.
- * Utiliza una función de suscripción nula que cumple con el contrato de `useSyncExternalStore`
- * sin desperdiciar recursos de memoria en listeners innecesarios.
+ * Hook de hidratación de élite.
+ * Utiliza useSyncExternalStore para una sincronización atómica con el DOM,
+ * garantizando que el componente sepa exactamente cuándo está montado en el cliente.
  */
 function useIsMounted(): boolean {
-  const subscribe = useCallback(() => () => {}, []);
+  /**
+   * CORRECCIÓN ESLINT: Se define una función de limpieza explícita 
+   * para evitar el error de "función flecha vacía".
+   */
+  const subscribe = useCallback(() => {
+    const unsubscribe = () => {
+      // No-op: Suscripción estática al ciclo de montaje
+    };
+    return unsubscribe;
+  }, []);
+
   return useSyncExternalStore(
     subscribe,
     () => true,
@@ -29,14 +43,21 @@ function useIsMounted(): boolean {
   );
 }
 
+/**
+ * Aparato de UI: ThemeToggle
+ * @returns {JSX.Element} Un botón interactivo con feedback visual inmersivo.
+ */
 export function ThemeToggle() {
   const isMounted = useIsMounted();
   const { theme, setTheme } = useTheme();
 
-  // Skeleton de élite para prevenir layout shift durante la hidratación
+  /**
+   * Skeleton de seguridad: Durante la hidratación (SSR/Pre-mount), 
+   * renderizamos un placeholder del mismo tamaño para evitar saltos visuales.
+   */
   if (!isMounted) {
     return (
-      <div className="flex h-10 w-10 items-center justify-center rounded-full animate-pulse bg-zinc-800/20" />
+      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted/20 animate-pulse" />
     );
   }
 
@@ -46,27 +67,29 @@ export function ThemeToggle() {
     <button
       onClick={() => setTheme(isDark ? 'light' : 'dark')}
       className={cn(
-        "flex h-10 w-10 items-center justify-center rounded-full",
-        "text-muted-foreground transition-all duration-300",
-        "hover:bg-accent hover:text-accent-foreground",
-        "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+        "relative flex h-10 w-10 items-center justify-center rounded-full transition-all duration-300",
+        "bg-muted/50 border border-border hover:bg-accent hover:border-primary/30",
+        "focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
       )}
       aria-label={isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
-      title={isDark ? 'Modo Claro' : 'Modo Oscuro'}
+      title={isDark ? 'Activar Luz' : 'Activar Oscuridad'}
     >
-      <motion.div
-        key={isDark ? 'dark' : 'light'}
-        initial={{ opacity: 0, rotate: -90 }}
-        animate={{ opacity: 1, rotate: 0 }}
-        exit={{ opacity: 0, rotate: 90 }}
-        transition={{ duration: 0.3 }}
-      >
-        {isDark ? (
-          <Moon size={18} strokeWidth={1.5} />
-        ) : (
-          <Sun size={18} strokeWidth={1.5} />
-        )}
-      </motion.div>
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.div
+          key={isDark ? 'dark' : 'light'}
+          initial={{ opacity: 0, rotate: -90, scale: 0.5 }}
+          animate={{ opacity: 1, rotate: 0, scale: 1 }}
+          exit={{ opacity: 0, rotate: 90, scale: 0.5 }}
+          transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+          className="flex items-center justify-center"
+        >
+          {isDark ? (
+            <Moon size={18} strokeWidth={1.5} className="text-primary" />
+          ) : (
+            <Sun size={18} strokeWidth={1.5} className="text-yellow-500" />
+          )}
+        </motion.div>
+      </AnimatePresence>
     </button>
   );
 }

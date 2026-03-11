@@ -1,28 +1,40 @@
-// RUTA: apps/portfolio-web/src/components/projects/ProjectTechModal.tsx
-
 /**
- * @file Modal Técnico de Proyecto
- * @version 2.0 - Semantic Theming & Portal Ready
- * @description Presentación de especificaciones técnicas para proyectos de élite.
- *              Usa tokens semánticos de Tailwind v4 y fusión de clases `cn()`.
+ * @file apps/portfolio-web/src/components/projects/ProjectTechModal.tsx
+ * @description Modal de especificaciones técnicas avanzadas. Proyecta la autoridad 
+ *              técnica del proyecto mediante un desglose arquitectónico detallado.
+ *              Implementa animaciones físicas y tokens de diseño Tailwind v4.
+ * @version 3.0
  * @author Raz Podestá - MetaShark Tech
  */
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Cpu, ShieldCheck, Layers, Database, Zap } from 'lucide-react';
+import { X, Cpu, ShieldCheck, Layers, Zap } from 'lucide-react';
+
+/**
+ * IMPORTACIONES NIVELADAS (Rutas relativas para cumplimiento Nx)
+ */
 import { cn } from '../../lib/utils/cn';
 import type { ProjectDetailItem } from '../../lib/schemas/project_details.schema';
 
 interface ProjectTechModalProps {
+  /** Objeto de datos que contiene la configuración de marca y arquitectura del proyecto */
   data: ProjectDetailItem;
 }
 
+/**
+ * Aparato Visual: ProjectTechModal
+ * Orquesta la presentación de la "Caja Negra" técnica de cada desarrollo de élite.
+ */
 export function ProjectTechModal({ data }: ProjectTechModalProps) {
   const [isOpen, setIsOpen] = useState(false);
 
+  /**
+   * Disparador de atención: Abre el modal automáticamente tras un breve delay
+   * para invitar al usuario a profundizar en la ingeniería.
+   */
   useEffect(() => {
     const timer = setTimeout(() => setIsOpen(true), 1500);
     return () => clearTimeout(timer);
@@ -35,61 +47,75 @@ export function ProjectTechModal({ data }: ProjectTechModalProps) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-md"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-md"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="modal-title"
           onClick={() => setIsOpen(false)}
         >
           <motion.div
-            initial={{ scale: 0.95, opacity: 0, y: 20 }}
+            initial={{ scale: 0.95, opacity: 0, y: 30 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.95, opacity: 0, y: 20 }}
-            className="relative w-full max-w-3xl overflow-hidden rounded-2xl border border-border bg-card shadow-2xl"
+            exit={{ scale: 0.95, opacity: 0, y: 30 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            className={cn(
+              "relative w-full max-w-3xl overflow-hidden rounded-4xl border border-white/10 bg-zinc-950 shadow-3xl",
+              "before:absolute before:inset-0 before:bg-linear-to-b before:from-white/5 before:to-transparent before:pointer-events-none"
+            )}
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Header: Branding dinámico */}
-            <header className="relative h-32 w-full overflow-hidden bg-muted">
+            {/* 1. CABECERA: Identidad de Proyecto */}
+            <header className="relative h-40 w-full overflow-hidden bg-zinc-900">
+              {/* Overlay de color dinámico basado en el branding del proyecto */}
               <div 
-                className="absolute inset-0 opacity-10"
+                className="absolute inset-0 opacity-20 transition-colors duration-1000"
                 style={{ backgroundColor: data.branding.primary_color }} 
               />
               
               <button
                 onClick={() => setIsOpen(false)}
-                className="absolute right-4 top-4 z-10 rounded-full bg-background/20 p-2 text-foreground backdrop-blur-md hover:bg-background/40 transition-colors"
+                className="absolute right-6 top-6 z-20 rounded-full bg-black/40 p-2.5 text-white backdrop-blur-xl hover:bg-white hover:text-black transition-all active:scale-90"
+                aria-label="Cerrar modal"
               >
                 <X size={20} />
               </button>
 
-              <div className="absolute bottom-0 left-0 p-8">
-                <span className="inline-flex items-center gap-1 rounded-full border border-border bg-background/50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2">
-                  <Cpu size={10} /> Ingeniería de Élite
-                </span>
-                <h2 className="font-display text-3xl font-bold text-foreground">{data.title}</h2>
+              <div className="absolute bottom-0 left-0 p-8 z-10">
+                <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/40 px-3 py-1 text-[9px] font-bold uppercase tracking-[0.3em] text-purple-400 mb-3 backdrop-blur-md">
+                  <Cpu size={12} /> Ingeniería de Élite
+                </div>
+                <h2 id="modal-title" className="font-display text-4xl font-bold text-white tracking-tighter">
+                  {data.title}
+                </h2>
               </div>
             </header>
 
-            {/* Content: Scrollable con scrollbar semántico */}
-            <div className="max-h-[60vh] overflow-y-auto p-8 space-y-8 scrollbar-thin scrollbar-thumb-border">
+            {/* 2. CONTENIDO: Desglose Técnico */}
+            <div className="max-h-[60vh] overflow-y-auto p-8 space-y-10 scrollbar-thin scrollbar-thumb-white/10 custom-scrollbar">
               
-              {/* Sección 1: Objetivo */}
-              <section>
-                <h3 className="mb-4 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-primary">
-                  <Zap size={16} /> Objetivo Arquitectónico
+              {/* Sección: Propósito Arquitectónico */}
+              <section className="space-y-4">
+                <h3 className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.3em] text-purple-500">
+                  <Zap size={16} /> Objetivo del Sistema
                 </h3>
-                <div className="rounded-xl border border-border bg-secondary p-5">
-                  <h4 className="mb-2 font-bold text-foreground">{data.introduction.heading}</h4>
-                  <p className="text-sm leading-relaxed text-muted-foreground">{data.introduction.body}</p>
+                <div className="rounded-3xl border border-white/5 bg-white/2 p-6">
+                  <h4 className="mb-2 font-bold text-zinc-100">{data.introduction.heading}</h4>
+                  <p className="text-sm leading-relaxed text-zinc-400 font-sans">{data.introduction.body}</p>
                 </div>
               </section>
 
-              {/* Sección 2: Grid Técnico */}
-              <div className="grid gap-8 md:grid-cols-2">
+              {/* Grid: Stack y Backend */}
+              <div className="grid gap-10 md:grid-cols-2">
                 <section>
-                  <h3 className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-primary">
+                  <h3 className="mb-5 flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.3em] text-pink-500">
                     <Layers size={16} /> Tech Stack
                   </h3>
                   <div className="flex flex-wrap gap-2">
                     {data.tech_stack.map((tech) => (
-                      <span key={tech} className="rounded-md border border-border bg-secondary px-3 py-1.5 text-xs font-medium text-foreground">
+                      <span 
+                        key={tech} 
+                        className="rounded-xl border border-white/5 bg-zinc-900 px-4 py-2 text-xs font-mono font-medium text-zinc-300"
+                      >
                         {tech}
                       </span>
                     ))}
@@ -97,13 +123,13 @@ export function ProjectTechModal({ data }: ProjectTechModalProps) {
                 </section>
 
                 <section>
-                  <h3 className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-primary">
-                    <Database size={16} /> {data.backend_architecture.title}
+                  <h3 className="mb-5 flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.3em] text-blue-500">
+                    <ShieldCheck size={16} /> {data.backend_architecture.title}
                   </h3>
-                  <ul className="space-y-2">
+                  <ul className="space-y-3">
                     {data.backend_architecture.features.map((feat, i) => (
-                      <li key={i} className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+                      <li key={i} className="flex items-start gap-3 text-xs text-zinc-500 font-sans">
+                        <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-blue-500" />
                         {feat}
                       </li>
                     ))}
@@ -112,13 +138,13 @@ export function ProjectTechModal({ data }: ProjectTechModalProps) {
               </div>
             </div>
 
-            {/* Footer */}
-            <footer className="border-t border-border bg-secondary p-4">
+            {/* 3. FOOTER: Conversión */}
+            <footer className="border-t border-white/5 bg-white/1 p-6">
               <button
                 onClick={() => setIsOpen(false)}
-                className="w-full rounded-xl bg-primary py-3 text-sm font-bold text-primary-foreground hover:opacity-90 transition-all"
+                className="w-full rounded-2xl bg-white py-4 text-[10px] font-bold uppercase tracking-[0.4em] text-black hover:bg-purple-600 hover:text-white transition-all duration-300 shadow-xl"
               >
-                Explorar Demo en Vivo
+                Cerrar Especificaciones
               </button>
             </footer>
           </motion.div>

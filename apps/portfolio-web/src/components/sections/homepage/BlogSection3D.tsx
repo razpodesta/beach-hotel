@@ -1,8 +1,9 @@
 /**
- * @file BlogSection3D - Concierge Journal 3D Stack.
- * @version 8.0 - MetaShark Elite Standard
- * @description Carrusel editorial interactivo con profundidad 3D. 
- *              Optimizado para rendimiento WebGL simulado con Framer Motion y alias soberanos.
+ * @file apps/portfolio-web/src/components/sections/homepage/BlogSection3D.tsx
+ * @description Aparato de visualización editorial con profundidad interactiva (3D Stack). 
+ *              Implementa orquestación de animaciones físicas mediante Framer Motion,
+ *              soporte de teclado y cumplimiento estricto de fronteras arquitectónicas.
+ * @version 9.0
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -14,32 +15,38 @@ import { ChevronLeft, ChevronRight, Sparkles, ArrowUpRight } from 'lucide-react'
 import Image from 'next/image';
 import Link from 'next/link';
 
-// ALIAS SOBERANOS (@/* mapea a apps/portfolio-web/src/*)
-import { cn } from '@/lib/utils/cn';
-import { BlurText } from '@/components/razBits/BlurText';
-import type { PostWithSlug } from '@/lib/schemas/blog.schema';
-import type { Dictionary } from '@/lib/schemas/dictionary.schema';
+/**
+ * IMPORTACIONES NIVELADAS (Rutas relativas para cumplimiento @nx/enforce-module-boundaries)
+ */
+import { cn } from '../../../lib/utils/cn';
+import { BlurText } from '../../razBits/BlurText';
+import type { PostWithSlug } from '../../../lib/schemas/blog.schema';
+import type { Dictionary } from '../../../lib/schemas/dictionary.schema';
 
 const AUTOPLAY_INTERVAL = 5000;
 
 interface BlogSection3DProps {
+  /** Colección de artículos provenientes del CMS */
   posts: PostWithSlug[];
+  /** Diccionario localizado para la sección de blog */
   dictionary: Dictionary['blog_page'];
+  /** Contexto de idioma para la construcción de rutas */
   lang: string;
 }
 
 /**
- * Aparato de Visualización Editorial 3D.
- * Implementa un carrusel tipo "Stack" con transformaciones de perspectiva.
+ * Aparato Visual: BlogSection3D
+ * Gestiona el carrusel interactivo "The Concierge Journal".
  */
 export function BlogSection3D({ posts, dictionary, lang }: BlogSection3DProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
 
-  // Memoización defensiva de los posts (limitado a los 5 más recientes para performance)
-  const displayPosts = useMemo(() => 
-    (posts || []).slice(0, 5), 
-  [posts]);
+  /**
+   * MEMOIZACIÓN ESTRATÉGICA:
+   * Limitamos a los 5 posts más recientes para optimizar el peso del DOM en dispositivos móviles.
+   */
+  const displayPosts = useMemo(() => (posts || []).slice(0, 5), [posts]);
 
   const handleNext = useCallback(() => {
     setActiveIndex((prev) => (prev + 1) % displayPosts.length);
@@ -49,7 +56,10 @@ export function BlogSection3D({ posts, dictionary, lang }: BlogSection3DProps) {
     setActiveIndex((prev) => (prev - 1 + displayPosts.length) % displayPosts.length);
   }, [displayPosts.length]);
 
-  // Soporte para navegación nativa por teclado
+  /**
+   * ACCESIBILIDAD NATIVA:
+   * Control por teclado sincronizado con el ciclo de vida del componente.
+   */
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (isPaused) return;
@@ -60,24 +70,27 @@ export function BlogSection3D({ posts, dictionary, lang }: BlogSection3DProps) {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleNext, handlePrev, isPaused]);
 
-  // Orquestador de Autoplay
+  /**
+   * ORQUESTADOR DE AUTOPLAY:
+   * Implementa una pausa inteligente al detectar interacción del usuario.
+   */
   useEffect(() => {
     if (isPaused || displayPosts.length <= 1) return;
     const timer = setInterval(handleNext, AUTOPLAY_INTERVAL);
     return () => clearInterval(timer);
   }, [handleNext, isPaused, displayPosts.length]);
 
-  // Fail-safe de renderizado
+  // Guardia de renderizado: Previene flashes si no hay datos.
   if (displayPosts.length === 0) return null;
 
   return (
     <section 
       className="relative w-full overflow-hidden bg-[#020202] py-24 border-y border-white/5" 
-      aria-label="Concierge Journal"
+      aria-label="The Concierge Journal Carousel"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
-      {/* 1. HEADER EDITORIAL */}
+      {/* 1. ENCABEZADO EDITORIAL */}
       <div className="container mx-auto px-6 mb-20 flex flex-col items-center">
         <div className="flex items-center gap-2 mb-6 text-purple-500">
           <Sparkles size={14} className="animate-pulse" />
@@ -91,7 +104,7 @@ export function BlogSection3D({ posts, dictionary, lang }: BlogSection3DProps) {
         />
       </div>
 
-      {/* 2. STACK CONTAINER (3D Simulation) */}
+      {/* 2. CONTENEDOR DE PERSPECTIVA (3D STACK) */}
       <div 
         className="relative h-[520px] w-full flex items-center justify-center perspective-1000"
         role="region"
@@ -103,7 +116,7 @@ export function BlogSection3D({ posts, dictionary, lang }: BlogSection3DProps) {
             const isPrev = index === (activeIndex - 1 + displayPosts.length) % displayPosts.length;
             const isNext = index === (activeIndex + 1) % displayPosts.length;
 
-            // Solo renderizamos las 3 tarjetas visibles para optimizar el DOM
+            // Optimizamos el renderizado manteniendo solo el trío activo en el DOM.
             if (!isActive && !isPrev && !isNext) return null;
 
             return (
@@ -118,19 +131,19 @@ export function BlogSection3D({ posts, dictionary, lang }: BlogSection3DProps) {
                   rotateY: isActive ? 0 : isNext ? -25 : 25,
                   filter: isActive ? 'blur(0px)' : 'blur(4px)'
                 }}
-                exit={{ opacity: 0, scale: 0.5, transition: { duration: 0.4 } }}
+                exit={{ opacity: 0, scale: 0.5 }}
                 transition={{ 
                   duration: 0.8, 
-                  ease: [0.16, 1, 0.3, 1] // Easing fluido de élite
+                  ease: [0.16, 1, 0.3, 1] 
                 }}
                 className={cn(
-                  "absolute w-[280px] sm:w-[320px] md:w-[380px] aspect-[3/4] rounded-[2.5rem] border border-white/10 bg-zinc-900 overflow-hidden shadow-2xl transition-shadow duration-500",
+                  "absolute w-[280px] sm:w-[320px] md:w-[380px] aspect-3/4 rounded-[2.5rem] border border-white/10 bg-zinc-900 overflow-hidden shadow-2xl transition-shadow duration-500",
                   isActive ? "cursor-default shadow-purple-500/10" : "cursor-pointer hover:border-white/20"
                 )}
                 onClick={() => !isActive && (isNext ? handleNext() : handlePrev())}
                 aria-hidden={!isActive}
               >
-                {/* Imagen del Artículo con Priority en el Active */}
+                {/* Visual Hook: Imagen de portada */}
                 <Image
                   src={`/images/blog/${post.slug}.jpg`}
                   alt={post.metadata.title}
@@ -140,7 +153,7 @@ export function BlogSection3D({ posts, dictionary, lang }: BlogSection3DProps) {
                   priority={isActive}
                 />
                 
-                {/* Overlay de Contenido */}
+                {/* Narrative Overlay */}
                 <div className="absolute inset-0 bg-linear-to-t from-black via-black/20 to-transparent p-10 flex flex-col justify-end">
                    <AnimatePresence>
                      {isActive && (
@@ -172,18 +185,17 @@ export function BlogSection3D({ posts, dictionary, lang }: BlogSection3DProps) {
         </AnimatePresence>
       </div>
 
-      {/* 3. CONTROLES DE NAVEGACIÓN */}
+      {/* 3. CONTROLES DE NAVEGACIÓN (Touch & Click Optimized) */}
       <div className="flex justify-center items-center gap-10 mt-20">
         <button 
           onClick={handlePrev} 
           aria-label="Previous Article"
-          className="p-5 rounded-full border border-white/5 text-white bg-white/5 hover:bg-white/10 hover:border-white/20 transition-all active:scale-90"
+          className="p-5 rounded-full border border-white/5 text-white bg-white/5 hover:bg-white/10 hover:border-white/20 transition-all active:scale-90 outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
         >
           <ChevronLeft size={24} strokeWidth={1.5} />
         </button>
 
-        {/* Indicador de Posición */}
-        <div className="flex gap-2">
+        <div className="flex gap-2" aria-hidden="true">
           {displayPosts.map((_, i) => (
             <div 
               key={i} 
@@ -198,7 +210,7 @@ export function BlogSection3D({ posts, dictionary, lang }: BlogSection3DProps) {
         <button 
           onClick={handleNext} 
           aria-label="Next Article"
-          className="p-5 rounded-full border border-white/5 text-white bg-white/5 hover:bg-white/10 hover:border-white/20 transition-all active:scale-90"
+          className="p-5 rounded-full border border-white/5 text-white bg-white/5 hover:bg-white/10 hover:border-white/20 transition-all active:scale-90 outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
         >
           <ChevronRight size={24} strokeWidth={1.5} />
         </button>

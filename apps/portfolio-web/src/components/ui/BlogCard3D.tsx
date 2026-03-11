@@ -1,9 +1,9 @@
 /**
- * @file BlogCard3D - Tarjeta Editorial Híbrida (WebGL/DOM).
- * @version 9.0 - MetaShark Elite Standard
- * @description Componente de visualización avanzada que fusiona geometría 3D con 
- *              contenido HTML accesible. Utiliza 'react-spring' para físicas de 
- *              movimiento y 'Drei Html' para renderizado de texto semántico.
+ * @file apps/portfolio-web/src/components/ui/BlogCard3D.tsx
+ * @description Aparato de visualización híbrida avanzada (WebGL/HTML). 
+ *              Utiliza físicas de resorte para profundidad interactiva y 
+ *              proyección de contenido semántico mediante Drei Html.
+ * @version 10.0
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -19,28 +19,36 @@ import Image from 'next/image';
 import { ArrowRight } from 'lucide-react';
 import * as THREE from 'three';
 
-// ALIAS SOBERANO (@/* mapea a apps/portfolio-web/src/*)
-import type { PostWithSlug } from '@/lib/schemas/blog.schema';
-import { cn } from '@/lib/utils/cn';
+/**
+ * IMPORTACIONES NIVELADAS (Cumplimiento @nx/enforce-module-boundaries)
+ */
+import type { PostWithSlug } from '../../lib/schemas/blog.schema';
+import { cn } from '../../lib/utils/cn';
 
 /**
- * Propiedades extendidas de Three.js para soporte de posicionamiento en el Canvas.
+ * Definición de propiedades extendidas para integración en escena Three.js.
  */
 type BlogCard3DProps = {
+  /** Objeto de datos del artículo validado por el adaptador CMS */
   post: PostWithSlug;
+  /** Contexto de idioma para la navegación */
   lang: string;
+  /** Etiqueta localizada para el botón de lectura */
   ctaText: string;
 } & ThreeElements['group'];
 
 /**
- * Aparato de Visualización: BlogCard3D
- * Integra lógica de raycasting para detección de puntero y resortes físicos para escala.
+ * Aparato Visual: BlogCard3D
+ * Orquesta la fusión entre el motor de renderizado WebGL y el árbol DOM de React.
  */
 export function BlogCard3D({ post, lang, ctaText, ...props }: BlogCard3DProps) {
   const router = useRouter();
   const [isHovered, setIsHovered] = useState(false);
 
-  // Configuración de resortes (Físicas de lujo)
+  /**
+   * Configuración de Físicas Inmersivas.
+   * La respuesta de resorte proporciona un feedback orgánico de alta gama.
+   */
   const { scale, opacity } = useSpring({
     scale: isHovered ? 1.1 : 1,
     opacity: isHovered ? 1 : 0.85,
@@ -51,7 +59,9 @@ export function BlogCard3D({ post, lang, ctaText, ...props }: BlogCard3DProps) {
     },
   });
 
-  // Gestores de eventos WebGL (Raycasting)
+  /**
+   * Manejadores de Eventos de Puntero (Raycasting).
+   */
   const handlePointerOver = (e: ThreeEvent<PointerEvent>) => {
     e.stopPropagation();
     setIsHovered(true);
@@ -65,11 +75,11 @@ export function BlogCard3D({ post, lang, ctaText, ...props }: BlogCard3DProps) {
 
   const handleClick = (e: ThreeEvent<MouseEvent>) => {
     e.stopPropagation();
-    // Navegación fluida hacia la ruta dinámica
+    // Navegación determinista hacia el detalle editorial
     router.push(`/${lang}/blog/${post.slug}`);
   };
 
-  // Memorización de la ruta de imagen para evitar re-calculos
+  // Resolución canónica de recursos visuales
   const imageUrl = useMemo(() => `/images/blog/${post.slug}.jpg`, [post.slug]);
 
   return (
@@ -81,8 +91,8 @@ export function BlogCard3D({ post, lang, ctaText, ...props }: BlogCard3DProps) {
       onClick={handleClick}
     >
       {/* 
-         HITBOX: Mesh invisible que actúa como plano de colisión. 
-         Garantiza que el click sea capturado en toda el área de la tarjeta.
+         CAPA DE COLISIÓN: Mesh invisible para capturar el raycasting 
+         de forma precisa en todo el volumen de la tarjeta.
       */}
       <mesh>
         <planeGeometry args={[3.2, 4.4]} />
@@ -90,8 +100,8 @@ export function BlogCard3D({ post, lang, ctaText, ...props }: BlogCard3DProps) {
       </mesh>
 
       {/* 
-         INTERFAZ DOM: Proyectada mediante matriz de transformación 3D.
-         'occlude' permite que otras geometrías tapen la tarjeta correctamente.
+         INTERFAZ HÍBRIDA: Proyección HTML en espacio 3D.
+         'occlude' garantiza que la tarjeta se oculte tras otros objetos 3D.
       */}
       <Html
         transform
@@ -103,13 +113,13 @@ export function BlogCard3D({ post, lang, ctaText, ...props }: BlogCard3DProps) {
         <aDom.div
           style={{ opacity }}
           className={cn(
-            "group flex h-full flex-col overflow-hidden rounded-[2rem] border transition-all duration-500 bg-zinc-950/90 shadow-2xl",
+            "group flex h-full flex-col overflow-hidden rounded-4xl border transition-all duration-500 bg-zinc-950/90 shadow-2xl",
             isHovered 
               ? "border-purple-500/50 shadow-[0_0_50px_rgba(168,85,247,0.2)]" 
               : "border-white/5"
           )}
         >
-          {/* Capa Visual: Imagen de Portada */}
+          {/* Visual Hook: Imagen Editorial */}
           <div className="relative h-52 w-full overflow-hidden shrink-0">
             <Image
               src={imageUrl}
@@ -122,7 +132,7 @@ export function BlogCard3D({ post, lang, ctaText, ...props }: BlogCard3DProps) {
             <div className="absolute inset-0 bg-linear-to-t from-zinc-950 via-zinc-950/20 to-transparent opacity-80" />
           </div>
 
-          {/* Capa Informativa: Contenido Editorial */}
+          {/* Metadata & Typography Layer */}
           <div className="flex grow flex-col p-8">
             <div className="mb-4">
                <span className="rounded-full bg-purple-500/10 px-3 py-1 text-[9px] font-bold uppercase tracking-[0.2em] text-purple-400 border border-purple-500/20">
@@ -139,8 +149,8 @@ export function BlogCard3D({ post, lang, ctaText, ...props }: BlogCard3DProps) {
             </p>
           </div>
 
-          {/* Capa de Acción: Footer de Tarjeta */}
-          <div className="border-t border-white/5 p-5 flex justify-between items-center bg-white/[0.02]">
+          {/* Action Footer: Feedback táctil */}
+          <div className="border-t border-white/5 p-5 flex justify-between items-center bg-white/2">
             <span className="text-[9px] text-zinc-600 font-mono uppercase tracking-[0.3em]">
               {post.metadata.published_date}
             </span>

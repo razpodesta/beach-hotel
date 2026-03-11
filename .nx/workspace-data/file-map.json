@@ -33,6 +33,10 @@
       "options": {
         "typecheck": {
           "targetName": "typecheck"
+        },
+        "build": {
+          "targetName": "build",
+          "configName": "tsconfig.lib.json"
         }
       }
     },
@@ -63,18 +67,6 @@
         "buildTargetName": "build",
         "buildDepsTargetName": "build-deps",
         "watchDepsTargetName": "watch-deps"
-      }
-    },
-    {
-      "name": "@nx/js/typescript",
-      "options": {
-        "typecheck": {
-          "targetName": "typecheck"
-        },
-        "build": {
-          "targetName": "build",
-          "configName": "tsconfig.lib.json"
-        }
       }
     }
   ],
@@ -169,6 +161,134 @@
           "hash": "6773699378602059148"
         }
       ],
+      "@metashark-cms/ui": [
+        {
+          "file": "packages/cms/ui/.babelrc",
+          "hash": "2946678488919325452"
+        },
+        {
+          "file": "packages/cms/ui/README.md",
+          "hash": "18357593699270166023"
+        },
+        {
+          "file": "packages/cms/ui/eslint.config.mjs",
+          "hash": "4114437769683499576",
+          "deps": [
+            "npm:typescript-eslint",
+            "npm:@nx/eslint-plugin",
+            "npm:eslint-plugin-react-hooks",
+            "npm:eslint-plugin-jest"
+          ]
+        },
+        {
+          "file": "packages/cms/ui/jest.config.ts",
+          "hash": "1442313602854357902"
+        },
+        {
+          "file": "packages/cms/ui/jest.setup.ts",
+          "hash": "10479406955202642599",
+          "deps": [
+            "npm:isomorphic-fetch",
+            "npm:@testing-library/jest-dom"
+          ]
+        },
+        {
+          "file": "packages/cms/ui/package.json",
+          "hash": "17538569403311526572"
+        },
+        {
+          "file": "packages/cms/ui/project.json",
+          "hash": "12208332616757225447"
+        },
+        {
+          "file": "packages/cms/ui/src/index.ts",
+          "hash": "5977848407072712979"
+        },
+        {
+          "file": "packages/cms/ui/src/lib/ui.spec.tsx",
+          "hash": "9256240028211718861",
+          "deps": [
+            "npm:@testing-library/react"
+          ]
+        },
+        {
+          "file": "packages/cms/ui/src/lib/ui.tsx",
+          "hash": "3963993538601663407"
+        },
+        {
+          "file": "packages/cms/ui/tsconfig.json",
+          "hash": "211933816755001957"
+        },
+        {
+          "file": "packages/cms/ui/tsconfig.lib.json",
+          "hash": "6322626510567673884"
+        },
+        {
+          "file": "packages/cms/ui/tsconfig.spec.json",
+          "hash": "15739949394590019158"
+        }
+      ],
+      "@razpodesta/protocol-33": [
+        {
+          "file": "packages/protocol-33/.babelrc",
+          "hash": "2946678488919325452"
+        },
+        {
+          "file": "packages/protocol-33/README.md",
+          "hash": "4870483216979629579"
+        },
+        {
+          "file": "packages/protocol-33/eslint.config.mjs",
+          "hash": "15662645796767624439",
+          "deps": [
+            "npm:@nx/eslint-plugin"
+          ]
+        },
+        {
+          "file": "packages/protocol-33/jest.config.ts",
+          "hash": "14272716150414270804"
+        },
+        {
+          "file": "packages/protocol-33/package.json",
+          "hash": "5367994494023867283"
+        },
+        {
+          "file": "packages/protocol-33/project.json",
+          "hash": "16483671085791893062"
+        },
+        {
+          "file": "packages/protocol-33/src/index.ts",
+          "hash": "8366123336307147095"
+        },
+        {
+          "file": "packages/protocol-33/src/lib/codex.ts",
+          "hash": "16595967080211509877"
+        },
+        {
+          "file": "packages/protocol-33/src/lib/engine.ts",
+          "hash": "1528754415035672242"
+        },
+        {
+          "file": "packages/protocol-33/src/lib/types.ts",
+          "hash": "1556207297016173925"
+        },
+        {
+          "file": "packages/protocol-33/tsconfig.json",
+          "hash": "6009324416508387552"
+        },
+        {
+          "file": "packages/protocol-33/tsconfig.lib.json",
+          "hash": "12324427097209147365"
+        },
+        {
+          "file": "packages/protocol-33/tsconfig.spec.json",
+          "hash": "12839377670077572367"
+        },
+        {
+          "file": "packages/protocol-33/tsconfig.tsbuildinfo",
+          "hash": "9766915850926045922"
+        }
+      ],
       "portfolio-web": [
         {
           "file": "apps/portfolio-web/.swcrc",
@@ -202,7 +322,7 @@
         },
         {
           "file": "apps/portfolio-web/middleware.ts",
-          "hash": "5865548675541329561",
+          "hash": "11476139105165324496",
           "deps": [
             "npm:next",
             "npm:@formatjs/intl-localematcher",
@@ -687,7 +807,7 @@
         },
         {
           "file": "apps/portfolio-web/src/app/[lang]/mision-y-vision/page.tsx",
-          "hash": "17338194882010410506",
+          "hash": "14872037237437000076",
           "deps": [
             "npm:react",
             "npm:next"
@@ -711,14 +831,10 @@
         },
         {
           "file": "apps/portfolio-web/src/app/[lang]/quienes-somos/page.tsx",
-          "hash": "13842279114886031687",
+          "hash": "4631331343360052750",
           "deps": [
             "npm:next"
           ]
-        },
-        {
-          "file": "apps/portfolio-web/src/app/[lang]/servicios/desarrollo-frontend/page.tsx",
-          "hash": "3767050218451762245"
         },
         {
           "file": "apps/portfolio-web/src/app/[lang]/subscribe/page.tsx",
@@ -761,21 +877,21 @@
         },
         {
           "file": "apps/portfolio-web/src/app/not-found.tsx",
-          "hash": "13200857469301497808",
+          "hash": "7986482701144334826",
           "deps": [
             "npm:next"
           ]
         },
         {
           "file": "apps/portfolio-web/src/app/sitemap.ts",
-          "hash": "11256322446041843030",
+          "hash": "7143846533881372166",
           "deps": [
             "npm:next"
           ]
         },
         {
           "file": "apps/portfolio-web/src/components/layout/Footer.tsx",
-          "hash": "15539069016539388510",
+          "hash": "7210933081703238667",
           "deps": [
             "npm:react",
             "npm:next",
@@ -785,7 +901,7 @@
         },
         {
           "file": "apps/portfolio-web/src/components/layout/Header.tsx",
-          "hash": "2562091094463048107",
+          "hash": "16633153218743097485",
           "deps": [
             "npm:react",
             "npm:next",
@@ -822,7 +938,7 @@
         },
         {
           "file": "apps/portfolio-web/src/components/projects/ProjectTechModal.tsx",
-          "hash": "7897024263738655478",
+          "hash": "10712103826268995479",
           "deps": [
             "npm:react",
             "npm:framer-motion",
@@ -873,7 +989,7 @@
         },
         {
           "file": "apps/portfolio-web/src/components/sections/homepage/AiContentSection.tsx",
-          "hash": "1737980860989765241",
+          "hash": "15774735990122665301",
           "deps": [
             "npm:react",
             "npm:framer-motion",
@@ -890,7 +1006,7 @@
         },
         {
           "file": "apps/portfolio-web/src/components/sections/homepage/BlogSection3D.tsx",
-          "hash": "13207755294231012432",
+          "hash": "1950764548034277580",
           "deps": [
             "npm:react",
             "npm:framer-motion",
@@ -911,7 +1027,7 @@
         },
         {
           "file": "apps/portfolio-web/src/components/sections/homepage/ExperienceShowcase3D.tsx",
-          "hash": "1838184754953473432",
+          "hash": "1417420947955964278",
           "deps": [
             "npm:react",
             "npm:framer-motion",
@@ -921,7 +1037,7 @@
         },
         {
           "file": "apps/portfolio-web/src/components/sections/homepage/HeroCarousel.tsx",
-          "hash": "7881519804437487774",
+          "hash": "5057649059743493482",
           "deps": [
             "npm:react",
             "npm:embla-carousel-react",
@@ -934,8 +1050,9 @@
         },
         {
           "file": "apps/portfolio-web/src/components/sections/homepage/HistorySection.tsx",
-          "hash": "3651792231322635310",
+          "hash": "10498501881648817608",
           "deps": [
+            "npm:react",
             "npm:framer-motion"
           ]
         },
@@ -987,15 +1104,17 @@
         },
         {
           "file": "apps/portfolio-web/src/components/ui/BlogCard.tsx",
-          "hash": "10371921693305231302",
+          "hash": "4962427128688237455",
           "deps": [
+            "npm:react",
             "npm:next",
-            "npm:framer-motion"
+            "npm:framer-motion",
+            "npm:lucide-react"
           ]
         },
         {
           "file": "apps/portfolio-web/src/components/ui/BlogCard3D.tsx",
-          "hash": "9811955813914772785",
+          "hash": "4167696252678833241",
           "deps": [
             "npm:react",
             "npm:next",
@@ -1059,7 +1178,7 @@
         },
         {
           "file": "apps/portfolio-web/src/components/ui/NewsletterModal.tsx",
-          "hash": "6301262894510139854",
+          "hash": "3931968823548120587",
           "deps": [
             "npm:react",
             "npm:framer-motion",
@@ -1124,11 +1243,12 @@
         },
         {
           "file": "apps/portfolio-web/src/components/ui/ThemeToggle.tsx",
-          "hash": "7464133429790737162",
+          "hash": "15870859995923786384",
           "deps": [
+            "npm:react",
             "npm:next-themes",
             "npm:lucide-react",
-            "npm:react"
+            "npm:framer-motion"
           ]
         },
         {
@@ -1170,7 +1290,7 @@
         },
         {
           "file": "apps/portfolio-web/src/lib/blog/actions.ts",
-          "hash": "1923370378163288064"
+          "hash": "16563867714416319938"
         },
         {
           "file": "apps/portfolio-web/src/lib/blog/index.ts",
@@ -1192,7 +1312,7 @@
         },
         {
           "file": "apps/portfolio-web/src/lib/get-dictionary.ts",
-          "hash": "7526254159169344424"
+          "hash": "10557962209383772139"
         },
         {
           "file": "apps/portfolio-web/src/lib/graphql-client.ts",
@@ -1222,7 +1342,7 @@
         },
         {
           "file": "apps/portfolio-web/src/lib/nav-links.ts",
-          "hash": "8739913627079616426",
+          "hash": "16324739153231340377",
           "deps": [
             "npm:lucide-react"
           ]
@@ -1455,7 +1575,7 @@
         },
         {
           "file": "apps/portfolio-web/src/lib/utils/link-helpers.ts",
-          "hash": "9408131313877908471"
+          "hash": "15612730592611731385"
         },
         {
           "file": "apps/portfolio-web/src/lib/visuals/orbital-gallery-engine.ts",
@@ -1570,7 +1690,7 @@
         },
         {
           "file": "apps/portfolio-web/src/messages/en-US/visitor_hud.json",
-          "hash": "5799014928681645831"
+          "hash": "512904088800141653"
         },
         {
           "file": "apps/portfolio-web/src/messages/es-ES/about.json",
@@ -1594,7 +1714,7 @@
         },
         {
           "file": "apps/portfolio-web/src/messages/es-ES/contact_page.json",
-          "hash": "6764166508647982459"
+          "hash": "4322004865985632541"
         },
         {
           "file": "apps/portfolio-web/src/messages/es-ES/curriculum.json",
@@ -1746,7 +1866,7 @@
         },
         {
           "file": "apps/portfolio-web/src/messages/pt-BR/lucide_page.json",
-          "hash": "3254757738382609207"
+          "hash": "453726420506776852"
         },
         {
           "file": "apps/portfolio-web/src/messages/pt-BR/maintenance.json",
@@ -1885,63 +2005,6 @@
           "hash": "1709462475149795443"
         }
       ],
-      "@razpodesta/protocol-33": [
-        {
-          "file": "packages/protocol-33/.babelrc",
-          "hash": "2946678488919325452"
-        },
-        {
-          "file": "packages/protocol-33/README.md",
-          "hash": "4870483216979629579"
-        },
-        {
-          "file": "packages/protocol-33/eslint.config.mjs",
-          "hash": "15662645796767624439",
-          "deps": [
-            "npm:@nx/eslint-plugin"
-          ]
-        },
-        {
-          "file": "packages/protocol-33/jest.config.ts",
-          "hash": "14272716150414270804"
-        },
-        {
-          "file": "packages/protocol-33/package.json",
-          "hash": "5367994494023867283"
-        },
-        {
-          "file": "packages/protocol-33/project.json",
-          "hash": "16483671085791893062"
-        },
-        {
-          "file": "packages/protocol-33/src/index.ts",
-          "hash": "8366123336307147095"
-        },
-        {
-          "file": "packages/protocol-33/src/lib/codex.ts",
-          "hash": "16595967080211509877"
-        },
-        {
-          "file": "packages/protocol-33/src/lib/engine.ts",
-          "hash": "1528754415035672242"
-        },
-        {
-          "file": "packages/protocol-33/src/lib/types.ts",
-          "hash": "1556207297016173925"
-        },
-        {
-          "file": "packages/protocol-33/tsconfig.json",
-          "hash": "6009324416508387552"
-        },
-        {
-          "file": "packages/protocol-33/tsconfig.lib.json",
-          "hash": "12324427097209147365"
-        },
-        {
-          "file": "packages/protocol-33/tsconfig.spec.json",
-          "hash": "12839377670077572367"
-        }
-      ],
       "@razpodesta/auth-shield": [
         {
           "file": "packages/auth-shield/.spec.swcrc",
@@ -2008,73 +2071,10 @@
         {
           "file": "packages/auth-shield/tsconfig.spec.json",
           "hash": "5969570393429747923"
-        }
-      ],
-      "@metashark-cms/ui": [
-        {
-          "file": "packages/cms/ui/.babelrc",
-          "hash": "2946678488919325452"
         },
         {
-          "file": "packages/cms/ui/README.md",
-          "hash": "18357593699270166023"
-        },
-        {
-          "file": "packages/cms/ui/eslint.config.mjs",
-          "hash": "4114437769683499576",
-          "deps": [
-            "npm:typescript-eslint",
-            "npm:@nx/eslint-plugin",
-            "npm:eslint-plugin-react-hooks",
-            "npm:eslint-plugin-jest"
-          ]
-        },
-        {
-          "file": "packages/cms/ui/jest.config.ts",
-          "hash": "1442313602854357902"
-        },
-        {
-          "file": "packages/cms/ui/jest.setup.ts",
-          "hash": "10479406955202642599",
-          "deps": [
-            "npm:isomorphic-fetch",
-            "npm:@testing-library/jest-dom"
-          ]
-        },
-        {
-          "file": "packages/cms/ui/package.json",
-          "hash": "17538569403311526572"
-        },
-        {
-          "file": "packages/cms/ui/project.json",
-          "hash": "12208332616757225447"
-        },
-        {
-          "file": "packages/cms/ui/src/index.ts",
-          "hash": "5977848407072712979"
-        },
-        {
-          "file": "packages/cms/ui/src/lib/ui.spec.tsx",
-          "hash": "9256240028211718861",
-          "deps": [
-            "npm:@testing-library/react"
-          ]
-        },
-        {
-          "file": "packages/cms/ui/src/lib/ui.tsx",
-          "hash": "3963993538601663407"
-        },
-        {
-          "file": "packages/cms/ui/tsconfig.json",
-          "hash": "211933816755001957"
-        },
-        {
-          "file": "packages/cms/ui/tsconfig.lib.json",
-          "hash": "6322626510567673884"
-        },
-        {
-          "file": "packages/cms/ui/tsconfig.spec.json",
-          "hash": "15739949394590019158"
+          "file": "packages/auth-shield/tsconfig.tsbuildinfo",
+          "hash": "3519690092501598265"
         }
       ],
       "@portfolio/source": [
@@ -2183,10 +2183,6 @@
           "hash": "15706242059990761052"
         },
         {
-          "file": "cls",
-          "hash": "3244421341483603138"
-        },
-        {
           "file": "eslint.config.mjs",
           "hash": "3940295225361143286",
           "deps": [
@@ -2207,7 +2203,7 @@
         },
         {
           "file": "nx.json",
-          "hash": "14749681642377368027"
+          "hash": "14751176977057679177"
         },
         {
           "file": "package.json",
@@ -2637,7 +2633,7 @@
         },
         {
           "file": "scripts/prebuild-portfolio-web.mjs",
-          "hash": "14636333977342112542"
+          "hash": "13269310563570493714"
         },
         {
           "file": "scripts/verify-build-readiness.mjs",
@@ -2675,7 +2671,7 @@
         },
         {
           "file": "tsconfig.base.json",
-          "hash": "1439055925247646076"
+          "hash": "18328012261051000396"
         },
         {
           "file": "tsconfig.json",

@@ -6,6 +6,88 @@
       "data": {
         "root": "packages/testing-utils",
         "targets": {
+          "lint": {
+            "cache": true,
+            "options": {
+              "cwd": "packages/testing-utils",
+              "command": "eslint ."
+            },
+            "inputs": [
+              "default",
+              "^default",
+              "{workspaceRoot}/eslint.config.mjs",
+              "{workspaceRoot}/packages/testing-utils/eslint.config.mjs",
+              "{workspaceRoot}/tools/eslint-rules/**/*",
+              {
+                "externalDependencies": [
+                  "eslint"
+                ]
+              }
+            ],
+            "outputs": [
+              "{options.outputFile}"
+            ],
+            "metadata": {
+              "technologies": [
+                "eslint"
+              ],
+              "description": "Runs ESLint on project",
+              "help": {
+                "command": "pnpm exec eslint --help",
+                "example": {
+                  "options": {
+                    "max-warnings": 0
+                  }
+                }
+              }
+            },
+            "executor": "nx:run-commands",
+            "configurations": {},
+            "parallelism": true
+          },
+          "test": {
+            "options": {
+              "cwd": "packages/testing-utils",
+              "env": {
+                "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
+              },
+              "command": "jest"
+            },
+            "metadata": {
+              "technologies": [
+                "jest"
+              ],
+              "description": "Run Jest Tests",
+              "help": {
+                "command": "pnpm exec jest --help",
+                "example": {
+                  "options": {
+                    "coverage": true
+                  }
+                }
+              }
+            },
+            "cache": true,
+            "inputs": [
+              "default",
+              "^production",
+              "{workspaceRoot}\\jest.preset.js",
+              {
+                "externalDependencies": [
+                  "jest"
+                ]
+              }
+            ],
+            "outputs": [
+              "{workspaceRoot}\\coverage\\packages\\testing-utils"
+            ],
+            "executor": "nx:run-commands",
+            "configurations": {},
+            "parallelism": true,
+            "dependsOn": [
+              "^build"
+            ]
+          },
           "typecheck": {
             "dependsOn": [
               "build",
@@ -17,8 +99,17 @@
             },
             "cache": true,
             "inputs": [
-              "default",
-              "^default"
+              "production",
+              "!{workspaceRoot}/node_modules",
+              "!{workspaceRoot}/tmp",
+              "!{workspaceRoot}/dist",
+              "!{workspaceRoot}/**/*.spec.ts",
+              "!{workspaceRoot}/**/*.test.ts",
+              "!{workspaceRoot}/**/*.spec.tsx",
+              "!{workspaceRoot}/**/*.test.tsx",
+              {
+                "dependentTasksOutputFiles": "**/*.d.ts"
+              }
             ],
             "outputs": [],
             "syncGenerators": [
@@ -52,7 +143,17 @@
             },
             "cache": true,
             "inputs": [
-              "production",
+              "{projectRoot}/package.json",
+              "{projectRoot}/tsconfig.json",
+              "{workspaceRoot}/tsconfig.base.json",
+              "{projectRoot}/tsconfig.lib.json",
+              "{projectRoot}/src/**/*.ts",
+              "{projectRoot}/src/**/*.tsx",
+              "!{projectRoot}/jest.config.ts",
+              "!{projectRoot}/src/**/*.spec.ts",
+              "!{projectRoot}/src/**/*.test.ts",
+              "!{projectRoot}/src/**/*.spec.tsx",
+              "!{projectRoot}/src/**/*.test.tsx",
               "^production"
             ],
             "outputs": [
@@ -101,76 +202,6 @@
             "configurations": {},
             "parallelism": true
           },
-          "lint": {
-            "cache": true,
-            "options": {
-              "cwd": "packages/testing-utils",
-              "command": "eslint ."
-            },
-            "inputs": [
-              "default",
-              "{workspaceRoot}/.eslintrc.json",
-              "{workspaceRoot}/eslint.config.mjs"
-            ],
-            "outputs": [
-              "{options.outputFile}"
-            ],
-            "metadata": {
-              "technologies": [
-                "eslint"
-              ],
-              "description": "Runs ESLint on project",
-              "help": {
-                "command": "pnpm exec eslint --help",
-                "example": {
-                  "options": {
-                    "max-warnings": 0
-                  }
-                }
-              }
-            },
-            "executor": "nx:run-commands",
-            "configurations": {},
-            "parallelism": true
-          },
-          "test": {
-            "options": {
-              "cwd": "packages/testing-utils",
-              "env": {
-                "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
-              },
-              "command": "jest"
-            },
-            "metadata": {
-              "technologies": [
-                "jest"
-              ],
-              "description": "Run Jest Tests",
-              "help": {
-                "command": "pnpm exec jest --help",
-                "example": {
-                  "options": {
-                    "coverage": true
-                  }
-                }
-              }
-            },
-            "cache": true,
-            "inputs": [
-              "default",
-              "^default",
-              "{workspaceRoot}/jest.preset.js"
-            ],
-            "outputs": [
-              "{workspaceRoot}\\coverage\\packages\\testing-utils"
-            ],
-            "executor": "nx:run-commands",
-            "configurations": {},
-            "parallelism": true,
-            "dependsOn": [
-              "build"
-            ]
-          },
           "nx-release-publish": {
             "executor": "@nx/js:release-publish",
             "dependsOn": [
@@ -213,7 +244,6 @@
         "targets": {
           "typecheck": {
             "dependsOn": [
-              "build",
               "^typecheck"
             ],
             "options": {
@@ -222,8 +252,16 @@
             },
             "cache": true,
             "inputs": [
-              "default",
-              "^default"
+              "{projectRoot}/package.json",
+              "{workspaceRoot}/tsconfig.base.json",
+              "{projectRoot}/tsconfig.json",
+              "{projectRoot}/src/**/*.ts",
+              "!{projectRoot}/jest.config.ts",
+              "!{projectRoot}/**/*.spec.ts",
+              "!{projectRoot}/**/*.test.ts",
+              {
+                "dependentTasksOutputFiles": "**/*.d.ts"
+              }
             ],
             "outputs": [
               "{projectRoot}/**/*.js",
@@ -261,64 +299,6 @@
             "configurations": {},
             "parallelism": true
           },
-          "build": {
-            "dependsOn": [
-              "^build"
-            ],
-            "options": {
-              "cwd": "packages/auth-shield",
-              "command": "tsc --build tsconfig.lib.json"
-            },
-            "cache": true,
-            "inputs": [
-              "production",
-              "^production"
-            ],
-            "outputs": [
-              "{workspaceRoot}/dist/out-tsc"
-            ],
-            "syncGenerators": [
-              "@nx/js:typescript-sync"
-            ],
-            "metadata": {
-              "technologies": [
-                "typescript"
-              ],
-              "description": "Builds the project with `tsc`.",
-              "help": {
-                "command": "pnpm exec tsc --build --help",
-                "example": {
-                  "args": [
-                    "--force"
-                  ]
-                }
-              }
-            },
-            "executor": "nx:run-commands",
-            "configurations": {},
-            "parallelism": true
-          },
-          "build-deps": {
-            "dependsOn": [
-              "^build"
-            ],
-            "configurations": {},
-            "options": {},
-            "parallelism": true,
-            "executor": "nx:noop"
-          },
-          "watch-deps": {
-            "continuous": true,
-            "dependsOn": [
-              "build-deps"
-            ],
-            "executor": "nx:run-commands",
-            "options": {
-              "command": "pnpm exec nx watch --projects @razpodesta/auth-shield --includeDependentProjects -- pnpm exec nx build-deps @razpodesta/auth-shield"
-            },
-            "configurations": {},
-            "parallelism": true
-          },
           "lint": {
             "cache": true,
             "options": {
@@ -327,8 +307,15 @@
             },
             "inputs": [
               "default",
-              "{workspaceRoot}/.eslintrc.json",
-              "{workspaceRoot}/eslint.config.mjs"
+              "^default",
+              "{workspaceRoot}/eslint.config.mjs",
+              "{workspaceRoot}/packages/auth-shield/eslint.config.mjs",
+              "{workspaceRoot}/tools/eslint-rules/**/*",
+              {
+                "externalDependencies": [
+                  "eslint"
+                ]
+              }
             ],
             "outputs": [
               "{options.outputFile}"
@@ -376,8 +363,13 @@
             "cache": true,
             "inputs": [
               "default",
-              "^default",
-              "{workspaceRoot}/jest.preset.js"
+              "^production",
+              "{workspaceRoot}\\jest.preset.js",
+              {
+                "externalDependencies": [
+                  "jest"
+                ]
+              }
             ],
             "outputs": [
               "{workspaceRoot}\\coverage\\packages\\auth-shield"
@@ -386,7 +378,7 @@
             "configurations": {},
             "parallelism": true,
             "dependsOn": [
-              "build"
+              "^build"
             ]
           },
           "nx-release-publish": {
@@ -431,7 +423,6 @@
         "targets": {
           "typecheck": {
             "dependsOn": [
-              "build",
               "^typecheck"
             ],
             "options": {
@@ -440,8 +431,16 @@
             },
             "cache": true,
             "inputs": [
-              "default",
-              "^default"
+              "{projectRoot}/package.json",
+              "{workspaceRoot}/tsconfig.base.json",
+              "{projectRoot}/tsconfig.json",
+              "{projectRoot}/src/**/*.ts",
+              "!{projectRoot}/jest.config.ts",
+              "!{projectRoot}/**/*.spec.ts",
+              "!{projectRoot}/**/*.test.ts",
+              {
+                "dependentTasksOutputFiles": "**/*.d.ts"
+              }
             ],
             "outputs": [
               "{projectRoot}/**/*.js",
@@ -479,6 +478,35 @@
             "configurations": {},
             "parallelism": true
           },
+          "lint": {
+            "executor": "@nx/eslint:lint",
+            "options": {},
+            "configurations": {},
+            "parallelism": true
+          },
+          "test": {
+            "executor": "@nx/jest:jest",
+            "outputs": [
+              "{workspaceRoot}/coverage/packages/protocol-33"
+            ],
+            "options": {
+              "jestConfig": "packages/protocol-33/jest.config.ts"
+            },
+            "configurations": {},
+            "parallelism": true,
+            "dependsOn": [
+              "^build"
+            ]
+          },
+          "nx-release-publish": {
+            "executor": "@nx/js:release-publish",
+            "dependsOn": [
+              "^nx-release-publish"
+            ],
+            "options": {},
+            "configurations": {},
+            "parallelism": true
+          },
           "build": {
             "executor": "@nx/js:tsc",
             "outputs": [
@@ -492,76 +520,6 @@
                 "packages/protocol-33/*.md"
               ]
             },
-            "configurations": {},
-            "parallelism": true,
-            "dependsOn": [
-              "^build"
-            ],
-            "inputs": [
-              "production",
-              "^production"
-            ],
-            "cache": true
-          },
-          "build-deps": {
-            "dependsOn": [
-              "^build"
-            ],
-            "configurations": {},
-            "options": {},
-            "parallelism": true,
-            "executor": "nx:noop"
-          },
-          "watch-deps": {
-            "continuous": true,
-            "dependsOn": [
-              "build-deps"
-            ],
-            "executor": "nx:run-commands",
-            "options": {
-              "command": "pnpm exec nx watch --projects @razpodesta/protocol-33 --includeDependentProjects -- pnpm exec nx build-deps @razpodesta/protocol-33"
-            },
-            "configurations": {},
-            "parallelism": true
-          },
-          "lint": {
-            "executor": "@nx/eslint:lint",
-            "options": {},
-            "configurations": {},
-            "parallelism": true,
-            "inputs": [
-              "default",
-              "{workspaceRoot}/.eslintrc.json",
-              "{workspaceRoot}/eslint.config.mjs"
-            ],
-            "cache": true
-          },
-          "test": {
-            "executor": "@nx/jest:jest",
-            "outputs": [
-              "{workspaceRoot}/coverage/packages/protocol-33"
-            ],
-            "options": {
-              "jestConfig": "packages/protocol-33/jest.config.ts"
-            },
-            "configurations": {},
-            "parallelism": true,
-            "dependsOn": [
-              "build"
-            ],
-            "inputs": [
-              "default",
-              "^default",
-              "{workspaceRoot}/jest.preset.js"
-            ],
-            "cache": true
-          },
-          "nx-release-publish": {
-            "executor": "@nx/js:release-publish",
-            "dependsOn": [
-              "^nx-release-publish"
-            ],
-            "options": {},
             "configurations": {},
             "parallelism": true
           }
@@ -616,15 +574,7 @@
               },
               "production": {}
             },
-            "parallelism": true,
-            "dependsOn": [
-              "^build"
-            ],
-            "inputs": [
-              "production",
-              "^production"
-            ],
-            "cache": true
+            "parallelism": true
           },
           "dev": {
             "continuous": true,
@@ -687,13 +637,7 @@
             "executor": "@nx/eslint:lint",
             "options": {},
             "configurations": {},
-            "parallelism": true,
-            "inputs": [
-              "default",
-              "{workspaceRoot}/.eslintrc.json",
-              "{workspaceRoot}/eslint.config.mjs"
-            ],
-            "cache": true
+            "parallelism": true
           },
           "test": {
             "executor": "@nx/jest:jest",
@@ -707,14 +651,8 @@
             "configurations": {},
             "parallelism": true,
             "dependsOn": [
-              "build"
-            ],
-            "inputs": [
-              "default",
-              "^default",
-              "{workspaceRoot}/jest.preset.js"
-            ],
-            "cache": true
+              "^build"
+            ]
           },
           "serve": {
             "executor": "@nx/next:server",
@@ -755,18 +693,33 @@
       "data": {
         "root": "packages/cms/core",
         "targets": {
+          "lint": {
+            "executor": "@nx/eslint:lint",
+            "options": {},
+            "configurations": {},
+            "parallelism": true
+          },
+          "test": {
+            "executor": "@nx/jest:jest",
+            "outputs": [
+              "{workspaceRoot}/coverage/packages/cms/core"
+            ],
+            "options": {
+              "jestConfig": "packages/cms/core/jest.config.ts"
+            },
+            "configurations": {},
+            "parallelism": true,
+            "dependsOn": [
+              "^build"
+            ]
+          },
           "typecheck": {
             "executor": "nx:run-commands",
             "options": {
               "command": "tsc -p packages/cms/core/tsconfig.lib.json --noEmit"
             },
             "configurations": {},
-            "parallelism": true,
-            "inputs": [
-              "default",
-              "^default"
-            ],
-            "cache": true
+            "parallelism": true
           },
           "build": {
             "executor": "@nx/js:tsc",
@@ -787,15 +740,7 @@
               ]
             },
             "configurations": {},
-            "parallelism": true,
-            "dependsOn": [
-              "^build"
-            ],
-            "inputs": [
-              "production",
-              "^production"
-            ],
-            "cache": true
+            "parallelism": true
           },
           "build-deps": {
             "dependsOn": [
@@ -817,38 +762,6 @@
             },
             "configurations": {},
             "parallelism": true
-          },
-          "lint": {
-            "executor": "@nx/eslint:lint",
-            "options": {},
-            "configurations": {},
-            "parallelism": true,
-            "inputs": [
-              "default",
-              "{workspaceRoot}/.eslintrc.json",
-              "{workspaceRoot}/eslint.config.mjs"
-            ],
-            "cache": true
-          },
-          "test": {
-            "executor": "@nx/jest:jest",
-            "outputs": [
-              "{workspaceRoot}/coverage/packages/cms/core"
-            ],
-            "options": {
-              "jestConfig": "packages/cms/core/jest.config.ts"
-            },
-            "configurations": {},
-            "parallelism": true,
-            "dependsOn": [
-              "build"
-            ],
-            "inputs": [
-              "default",
-              "^default",
-              "{workspaceRoot}/jest.preset.js"
-            ],
-            "cache": true
           },
           "nx-release-publish": {
             "executor": "@nx/js:release-publish",
@@ -900,7 +813,6 @@
         "targets": {
           "typecheck": {
             "dependsOn": [
-              "build",
               "^typecheck"
             ],
             "options": {
@@ -909,8 +821,17 @@
             },
             "cache": true,
             "inputs": [
-              "default",
-              "^default"
+              "{projectRoot}/package.json",
+              "{workspaceRoot}/tsconfig.base.json",
+              "{projectRoot}/tsconfig.json",
+              "{projectRoot}/src/**/*.ts",
+              "{projectRoot}/src/**/*.tsx",
+              "!{projectRoot}/jest.config.ts",
+              "!{projectRoot}/**/*.spec.ts",
+              "!{projectRoot}/**/*.test.tsx",
+              {
+                "dependentTasksOutputFiles": "**/*.d.ts"
+              }
             ],
             "outputs": [
               "{projectRoot}/dist/**/*.d.ts",
@@ -937,75 +858,11 @@
             "configurations": {},
             "parallelism": true
           },
-          "build": {
-            "dependsOn": [
-              "^build"
-            ],
-            "options": {
-              "cwd": "packages/cms/ui",
-              "command": "tsc --build tsconfig.lib.json"
-            },
-            "cache": true,
-            "inputs": [
-              "production",
-              "^production"
-            ],
-            "outputs": [
-              "{workspaceRoot}/dist/out-tsc"
-            ],
-            "syncGenerators": [
-              "@nx/js:typescript-sync"
-            ],
-            "metadata": {
-              "technologies": [
-                "typescript"
-              ],
-              "description": "Builds the project with `tsc`.",
-              "help": {
-                "command": "pnpm exec tsc --build --help",
-                "example": {
-                  "args": [
-                    "--force"
-                  ]
-                }
-              }
-            },
-            "executor": "nx:run-commands",
-            "configurations": {},
-            "parallelism": true
-          },
-          "build-deps": {
-            "dependsOn": [
-              "^build"
-            ],
-            "configurations": {},
-            "options": {},
-            "parallelism": true,
-            "executor": "nx:noop"
-          },
-          "watch-deps": {
-            "continuous": true,
-            "dependsOn": [
-              "build-deps"
-            ],
-            "executor": "nx:run-commands",
-            "options": {
-              "command": "pnpm exec nx watch --projects @metashark-cms/ui --includeDependentProjects -- pnpm exec nx build-deps @metashark-cms/ui"
-            },
-            "configurations": {},
-            "parallelism": true
-          },
           "lint": {
             "executor": "@nx/eslint:lint",
             "options": {},
             "configurations": {},
-            "parallelism": true,
-            "inputs": [
-              "default",
-              "{workspaceRoot}/.eslintrc.json",
-              "{workspaceRoot}/eslint.config.mjs"
-            ],
-            "cache": true
+            "parallelism": true
           },
           "test": {
             "executor": "@nx/jest:jest",
@@ -1018,14 +875,8 @@
             "configurations": {},
             "parallelism": true,
             "dependsOn": [
-              "build"
-            ],
-            "inputs": [
-              "default",
-              "^default",
-              "{workspaceRoot}/jest.preset.js"
-            ],
-            "cache": true
+              "^build"
+            ]
           },
           "nx-release-publish": {
             "executor": "@nx/js:release-publish",
@@ -1097,8 +948,13 @@
             "cache": true,
             "inputs": [
               "default",
-              "^default",
-              "{workspaceRoot}/jest.preset.js"
+              "^production",
+              "{projectRoot}\\jest.preset.js",
+              {
+                "externalDependencies": [
+                  "jest"
+                ]
+              }
             ],
             "outputs": [
               "{projectRoot}\\test-output\\jest\\coverage"
@@ -1107,7 +963,7 @@
             "configurations": {},
             "parallelism": true,
             "dependsOn": [
-              "build"
+              "^build"
             ]
           },
           "local-registry": {
@@ -55793,5 +55649,5 @@
   },
   "version": "6.0",
   "errors": [],
-  "computedAt": 1773250365492
+  "computedAt": 1773244953785
 }

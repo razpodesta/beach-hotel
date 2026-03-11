@@ -1,8 +1,9 @@
 /**
- * @file Header Orquestador - Hospitality & Brand Experience.
- * @version 7.0 - MetaShark Elite Standard
- * @description Orquestador de navegación global. Implementa Hydration Guard para 
- *              estados de Zustand persistentes y arquitectura modular de componentes.
+ * @file apps/portfolio-web/src/components/layout/Header.tsx
+ * @description Orquestador soberano de la cabecera (Lego System). 
+ *              Gestiona la identidad visual, navegación localized y el estado 
+ *              global de la UI con protección de hidratación.
+ * @version 10.0
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -13,25 +14,33 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Menu, Globe } from 'lucide-react';
 
-// ALIAS SOBERANOS
-import { cn } from '@/lib/utils/cn';
-import { useUIStore } from '@/lib/store/ui.store';
-import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
-import { ThemeToggle } from '@/components/ui/ThemeToggle';
-import { ColorWaveBar } from '@/components/ui/ColorWaveBar';
-import { mainNavStructure } from '@/lib/nav-links';
-import { getLocalizedHref } from '@/lib/utils/link-helpers';
-import { i18n, type Locale } from '@/config/i18n.config';
-import type { Dictionary } from '@/lib/schemas/dictionary.schema';
+/**
+ * IMPORTACIONES NIVELADAS (Rutas relativas para cumplimiento arquitectónico Nx)
+ */
+import { cn } from '../../lib/utils/cn';
+import { useUIStore } from '../../lib/store/ui.store';
+import { LanguageSwitcher } from '../ui/LanguageSwitcher';
+import { ThemeToggle } from '../ui/ThemeToggle';
+import { ColorWaveBar } from '../ui/ColorWaveBar';
+import { mainNavStructure } from '../../lib/nav-links';
+import { getLocalizedHref } from '../../lib/utils/link-helpers';
+import { i18n, type Locale, isValidLocale } from '../../config/i18n.config';
+import type { Dictionary } from '../../lib/schemas/dictionary.schema';
 
 /**
- * Componente Atómico: Identidad Visual
+ * COMPONENTE ATÓMICO: HeaderBrand
+ * Representa la identidad visual boutique del hotel.
  */
 const HeaderBrand = ({ currentLang }: { currentLang: Locale }) => (
-  <Link href={`/${currentLang}`} className="group block select-none" aria-label="Volver a Inicio">
-    <h2 className="font-signature text-3xl leading-none text-foreground transition-all duration-300 group-hover:text-primary">
+  <Link 
+    href={`/${currentLang}`} 
+    className="group block select-none outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-lg transition-all" 
+    aria-label="Volver a la recepción"
+  >
+    <h2 className="font-display text-2xl sm:text-3xl leading-none text-foreground transition-all duration-300 group-hover:text-primary">
       Beach Hotel
     </h2>
+    {/* CORRECCIÓN SINTÁCTICA: Se cierra correctamente la etiqueta span */}
     <span className="text-[9px] font-mono tracking-[0.4em] uppercase text-muted-foreground transition-colors group-hover:text-foreground block mt-0.5">
       Canasvieiras
     </span>
@@ -39,13 +48,22 @@ const HeaderBrand = ({ currentLang }: { currentLang: Locale }) => (
 );
 
 /**
- * Orquestador Principal: Header
+ * APARATO VISUAL: Header
+ * Orquestador principal de la experiencia de navegación del ecosistema.
  */
 export function Header({ dictionary }: { dictionary: Dictionary }) {
   const pathname = usePathname();
-  const currentLang = (pathname?.split('/')[1] as Locale) || i18n.defaultLocale;
+  
+  /**
+   * RESOLUCIÓN DE IDIOMA SOBERANA:
+   * Extrae el locale de la ruta y valida contra la configuración centralizada.
+   */
+  const currentLang = useMemo(() => {
+    const segments = pathname?.split('/') ?? [];
+    const candidate = segments[1];
+    return isValidLocale(candidate) ? candidate : i18n.defaultLocale;
+  }, [pathname]);
 
-  // Estado global y guardia de hidratación
   const { 
     isVisitorHudOpen, 
     toggleVisitorHud, 
@@ -53,7 +71,10 @@ export function Header({ dictionary }: { dictionary: Dictionary }) {
     hasHydrated 
   } = useUIStore();
 
-  // Consolidación de etiquetas de navegación
+  /**
+   * CONSOLIDACIÓN DE ETIQUETAS:
+   * Une los fragmentos de diccionario requeridos por la interfaz de navegación.
+   */
   const labels = useMemo(() => ({ 
     ...dictionary.header, 
     ...dictionary['nav-links'].nav_links 
@@ -61,32 +82,37 @@ export function Header({ dictionary }: { dictionary: Dictionary }) {
 
   return (
     <header 
-      className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-2xl transition-colors duration-500"
+      className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-2xl transition-all duration-500"
       role="banner"
     >
       <div className="container mx-auto px-6">
         <div className="flex h-20 items-center justify-between">
           
-          {/* 1. LADO IZQUIERDO: BRANDING */}
+          {/* 1. LADO IZQUIERDO: IDENTIDAD VISUAL */}
           <HeaderBrand currentLang={currentLang} />
 
-          {/* 2. CENTRO: NAVEGACIÓN DESKTOP */}
+          {/* 2. CENTRO: NAVEGACIÓN DESKTOP (Optimized Map) */}
           <nav className="hidden lg:flex items-center gap-1" aria-label="Navegación Principal">
-            {mainNavStructure.map((nav) => (
-              <Link
-                key={nav.labelKey}
-                href={getLocalizedHref(nav.href ?? '/', currentLang)}
-                className={cn(
-                  "flex items-center gap-2 px-5 py-2.5 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all duration-300",
-                  nav.labelKey === 'festival' 
-                    ? "bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 hover:scale-105" 
-                    : "text-foreground/70 hover:bg-muted hover:text-foreground"
-                )}
-              >
-                {nav.Icon && <nav.Icon size={14} className="opacity-70" />}
-                {labels[nav.labelKey as keyof typeof labels] || nav.labelKey}
-              </Link>
-            ))}
+            {mainNavStructure.map((nav) => {
+              const localizedHref = getLocalizedHref(nav.href ?? '/', currentLang);
+              const isActive = pathname === localizedHref;
+
+              return (
+                <Link
+                  key={nav.labelKey}
+                  href={localizedHref}
+                  aria-current={isActive ? 'page' : undefined}
+                  className={cn(
+                    "flex items-center gap-2 px-5 py-2.5 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all duration-300 outline-none focus-visible:bg-muted",
+                    isActive ? "text-primary bg-primary/5" : "text-foreground/70 hover:bg-muted hover:text-foreground",
+                    nav.labelKey === 'festival' && "bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 hover:scale-105"
+                  )}
+                >
+                  {nav.Icon && <nav.Icon size={14} className={cn("opacity-70", isActive && "opacity-100")} />}
+                  {labels[nav.labelKey as keyof typeof labels] || nav.labelKey}
+                </Link>
+              );
+            })}
           </nav>
 
           {/* 3. LADO DERECHO: ACCIONES & UTILIDADES */}
@@ -95,34 +121,35 @@ export function Header({ dictionary }: { dictionary: Dictionary }) {
               <LanguageSwitcher dictionary={dictionary.language_switcher} />
               <ThemeToggle />
               
-              {/* Botón de HUD con protección de hidratación */}
+              {/* Gatillo del Visitor HUD (Heimdall Guard para persistencia) */}
               <button
                 onClick={toggleVisitorHud}
                 className={cn(
-                  "p-2.5 rounded-full transition-all duration-300",
+                  "p-2.5 rounded-full transition-all duration-300 outline-none focus-visible:ring-2 focus-visible:ring-primary",
                   hasHydrated && isVisitorHudOpen 
                     ? "text-primary bg-primary/5" 
                     : "text-muted-foreground hover:bg-muted hover:text-foreground"
                 )}
-                aria-label="Alternar Panel de Información del Visitante"
+                aria-label="Información de clima y ubicación"
                 aria-pressed={isVisitorHudOpen}
               >
                 <Globe size={18} strokeWidth={1.5} />
               </button>
             </div>
 
+            {/* BOTÓN DE RESERVA (Main CTA) */}
             <Link 
               href={`/${currentLang}/reservas`} 
-              className="hidden sm:flex px-8 py-3 rounded-full bg-foreground text-background text-[10px] font-bold uppercase tracking-widest hover:bg-primary hover:text-primary-foreground transition-all duration-300 shadow-lg shadow-black/5 active:scale-95"
+              className="hidden sm:flex px-8 py-3 rounded-full bg-foreground text-background text-[10px] font-bold uppercase tracking-widest hover:bg-primary hover:text-primary-foreground transition-all duration-300 shadow-xl shadow-black/5 active:scale-95"
             >
               {dictionary.header.talk}
             </Link>
 
-            {/* TRIGGER MÓVIL */}
+            {/* TRIGGER MÓVIL (Touch Optimized) */}
             <button 
               onClick={toggleMobileMenu} 
-              className="lg:hidden p-3 rounded-full hover:bg-muted text-foreground transition-colors active:scale-90"
-              aria-label="Abrir Menú"
+              className="lg:hidden p-3 rounded-full hover:bg-muted text-foreground transition-colors active:scale-90 outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              aria-label="Abrir menú"
             >
               <Menu size={24} />
             </button>
@@ -130,8 +157,11 @@ export function Header({ dictionary }: { dictionary: Dictionary }) {
         </div>
       </div>
       
-      {/* Barra de energía visual decorativa */}
-      <ColorWaveBar position="bottom" variant="hotel" className="h-[2px] opacity-50" />
+      {/* 
+         BARRA DE ACENTO: 
+         Implementa h-0.5 canónico para consistencia en el motor de estilos.
+      */}
+      <ColorWaveBar position="bottom" variant="hotel" className="h-0.5 opacity-50" />
     </header>
   );
 }

@@ -1,30 +1,35 @@
 /**
- * @file Página Institucional: Misión y Visión.
- * @version 5.0 - MetaShark Elite Standard
- * @description Orquestador de la narrativa de marca. Implementa Server-Side 
- *              Dictionary loading y serialización segura de iconos para PillarCards.
+ * @file apps/portfolio-web/src/app/[lang]/mision-y-vision/page.tsx
+ * @description Orquestador de la narrativa institucional (Misión y Visión). 
+ *              Implementa carga de diccionarios en el servidor, generación de 
+ *              metadatos SEO E-E-A-T y cumplimiento estricto de fronteras Nx.
+ * @version 6.0
  * @author Raz Podestá - MetaShark Tech
  */
 
 import React from 'react';
 import type { Metadata } from 'next';
-import { type Locale } from '@/config/i18n.config';
-import { getDictionary } from '@/lib/get-dictionary';
-import { BlurText } from '@/components/razBits/BlurText';
-import { PillarCard } from '@/components/ui/PillarCard';
-import { FadeIn } from '@/components/ui/FadeIn';
-import type { VisionPillar } from '@/lib/schemas/mission_vision.schema';
 
 /**
- * Propiedades de la página (Next.js 15 asynchronous params).
+ * IMPORTACIONES NIVELADAS (Rutas relativas para cumplimiento @nx/enforce-module-boundaries)
+ */
+import { type Locale } from '../../../config/i18n.config';
+import { getDictionary } from '../../../lib/get-dictionary';
+import { BlurText } from '../../../components/razBits/BlurText';
+import { PillarCard } from '../../../components/ui/PillarCard';
+import { FadeIn } from '../../../components/ui/FadeIn';
+import type { VisionPillar } from '../../../lib/schemas/mission_vision.schema';
+
+/**
+ * Propiedades de la página con soporte para parámetros asíncronos de Next.js 15.
  */
 type MissionVisionPageProps = {
   params: Promise<{ lang: Locale }>;
 };
 
 /**
- * Generador de Metadatos de Autoridad.
- * Asegura coherencia en el Título y Descripción para SEO E-E-A-T.
+ * Orquestador de Metadatos de Autoridad.
+ * Proyecta la identidad del Beach Hotel Canasvieiras para algoritmos de búsqueda.
  */
 export async function generateMetadata(props: MissionVisionPageProps): Promise<Metadata> {
   const { lang } = await props.params;
@@ -44,13 +49,13 @@ export async function generateMetadata(props: MissionVisionPageProps): Promise<M
 
 /**
  * Mapeo canónico de identificadores de iconos.
- * Se mantienen como strings para garantizar la serialización entre Server y Client.
+ * Sincronizado con el sistema de iconos de PillarCard para asegurar serialización Server-to-Client.
  */
 const PILLAR_ICONS = ['book-open', 'brain-circuit', 'goal'] as const;
 
 /**
- * Aparato Visual: Misión y Visión
- * Implementa una narrativa dividida por un separador semántico de alta precisión.
+ * Aparato Institucional: MissionVisionPage.
+ * Renderiza la filosofía del hotel mediante una coreografía de animaciones físicas.
  */
 export default async function MissionVisionPage(props: MissionVisionPageProps) {
   const { lang } = await props.params;
@@ -61,7 +66,7 @@ export default async function MissionVisionPage(props: MissionVisionPageProps) {
     <main className="min-h-screen bg-[#050505] text-zinc-300 selection:bg-purple-500/30">
       <div className="container mx-auto px-6 py-32 sm:py-48">
         
-        {/* 1. SECCIÓN: MISIÓN (El Propósito) */}
+        {/* 1. SECCIÓN: MISIÓN (Propósito Soberano) */}
         <section className="mx-auto max-w-4xl text-center mb-32">
           <header className="mb-12">
             <span className="text-[10px] font-bold tracking-[0.4em] text-purple-500 uppercase mb-4 block">
@@ -81,10 +86,10 @@ export default async function MissionVisionPage(props: MissionVisionPageProps) {
           </FadeIn>
         </section>
 
-        {/* Separador de Élite: Línea de gradiente sutil */}
+        {/* Separador de Élite: Línea de gradiente semántica */}
         <div className="relative mx-auto my-32 h-px w-full max-w-5xl bg-linear-to-r from-transparent via-zinc-800 to-transparent" />
 
-        {/* 2. SECCIÓN: VISIÓN (El Futuro) */}
+        {/* 2. SECCIÓN: VISIÓN (Estrategia de Futuro) */}
         <section className="mx-auto max-w-6xl text-center">
           <header className="mb-20">
             <span className="text-[10px] font-bold tracking-[0.4em] text-pink-500 uppercase mb-4 block">
@@ -102,7 +107,7 @@ export default async function MissionVisionPage(props: MissionVisionPageProps) {
             </FadeIn>
           </header>
 
-          {/* GRID DE PILARES (THE GROWTH FLYWHEEL) */}
+          {/* GRID DE PILARES (Orquestación Lego) */}
           <div className="grid grid-cols-1 md:grid-cols-3 items-stretch gap-8 lg:gap-12">
             {t.vision_pillars.map((pillar: VisionPillar, index: number) => (
               <PillarCard
@@ -118,7 +123,7 @@ export default async function MissionVisionPage(props: MissionVisionPageProps) {
         </section>
       </div>
 
-      {/* Arte Decorativo de Fondo */}
+      {/* Capa Decorativa: Radial Glow */}
       <div className="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_bottom_left,rgba(168,85,247,0.05),transparent_40%)] pointer-events-none" />
     </main>
   );
