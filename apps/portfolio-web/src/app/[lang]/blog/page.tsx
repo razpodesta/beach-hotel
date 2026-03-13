@@ -1,31 +1,35 @@
 /**
  * @file apps/portfolio-web/src/app/[lang]/blog/page.tsx
- * @description Punto de entrada del Hub Editorial: The Concierge Journal. 
- *              Implementa jerarquía de lujo, SSG y cumplimiento estricto de Nx.
- * @version 9.0
+ * @description Punto de entrada del Hub Editorial (The Concierge Journal). 
+ *              Implementa jerarquía de lujo, resiliencia ante fallos de CMS y SSG.
+ * @version 10.1 - Strict Typing & Linter Hardening
  * @author Raz Podestá - MetaShark Tech
  */
 
 import type { Metadata } from 'next';
 
 /**
- * IMPORTACIONES NIVELADAS (Rutas relativas para cumplimiento @nx/enforce-module-boundaries)
+ * IMPORTACIONES NIVELADAS
+ * @pilar V: Adherencia arquitectónica mediante fronteras Nx.
  */
 import { getDictionary } from '../../../lib/get-dictionary';
 import { getAllPosts } from '../../../lib/blog';
 import { BlogCard } from '../../../components/ui/BlogCard';
 import { BlurText } from '../../../components/razBits/BlurText';
 import { type Locale, i18n } from '../../../config/i18n.config';
+import type { PostWithSlug } from '../../../lib/schemas/blog.schema';
 
 /**
- * Propiedades del orquestador de blog con soporte para Next.js 15.
+ * Propiedades del orquestador de blog.
+ * Soporte para parámetros asíncronos nativos de Next.js 15.
  */
 type BlogIndexProps = {
   params: Promise<{ lang: Locale }>;
 };
 
 /**
- * Genera parámetros estáticos para optimizar el despliegue mediante SSG.
+ * @pilar I: Sincronización SEO.
+ * Genera parámetros estáticos para que todas las variantes de idioma existan en el Edge.
  */
 export async function generateStaticParams() {
   return i18n.locales.map((lang) => ({ lang }));
@@ -33,18 +37,18 @@ export async function generateStaticParams() {
 
 /**
  * Orquestador de Metadatos de Élite.
- * Construye la identidad SEO de la revista digital.
  */
 export async function generateMetadata(props: BlogIndexProps): Promise<Metadata> {
   const { lang } = await props.params;
   const dictionary = await getDictionary(lang);
+  const t = dictionary.blog_page;
 
   return {
-    title: dictionary.blog_page.page_title,
-    description: dictionary.blog_page.page_description,
+    title: t.page_title,
+    description: t.page_description,
     openGraph: {
-      title: dictionary.blog_page.page_title,
-      description: dictionary.blog_page.page_description,
+      title: t.page_title,
+      description: t.page_description,
       type: 'website',
       siteName: 'The Concierge Journal',
     }
@@ -52,26 +56,41 @@ export async function generateMetadata(props: BlogIndexProps): Promise<Metadata>
 }
 
 /**
- * Componente principal: BlogIndexPage.
- * Gestiona la lógica editorial dividiendo el contenido en destacados y archivo.
+ * Componente principal: BlogIndexPage
+ * @description Gestiona la narrativa editorial dividiendo contenido en destacados y archivo.
+ *              Implementa Guardianes de Resiliencia para el despliegue en Vercel.
  */
 export default async function BlogIndexPage(props: BlogIndexProps) {
   const { lang } = await props.params;
   const dictionary = await getDictionary(lang);
   const t = dictionary.blog_page;
 
-  // Obtención de datos desde el adaptador soberano de CMS
-  const posts = await getAllPosts();
+  /**
+   * @pilar III: Seguridad de Tipos Absoluta.
+   * @pilar VIII: Resiliencia de Datos.
+   * Inicialización con tipo explícito para erradicar TS7034.
+   */
+  let posts: PostWithSlug[] = [];
+  try {
+    posts = await getAllPosts();
+  } catch {
+    /**
+     * @pilar X: Optional Catch Binding aplicado.
+     * @pilar IV: Telemetría Heimdall.
+     */
+    console.error('[HEIMDALL][CRITICAL] Fallo de conexión CMS en la ruta /blog.');
+  }
   
-  // Estrategia Editorial: El artículo más reciente es el "Featured"
-  const [featuredPost, ...restPosts] = posts;
+  // Lógica de segmentación segura basada en el contrato PostWithSlug
+  const hasPosts = posts.length > 0;
+  const featuredPost = hasPosts ? posts[0] : null;
+  const restPosts = hasPosts ? posts.slice(1) : [];
 
   return (
     <main className="min-h-screen bg-[#050505] text-white selection:bg-purple-500/30">
       
       {/* 1. HEADER EDITORIAL INMERSIVO */}
       <section className="relative overflow-hidden pt-40 pb-20">
-        {/* Glow atmosférico optimizado */}
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(168,85,247,0.12),transparent_60%)] pointer-events-none" />
         
         <div className="container relative z-10 mx-auto px-6 text-center">
@@ -113,7 +132,7 @@ export default async function BlogIndexPage(props: BlogIndexProps) {
           </section>
         )}
 
-        {/* 3. ARCHIVO DEL JOURNAL */}
+        {/* 3. ARCHIVO DEL JOURNAL / ESTADO VACÍO */}
         <section>
           <header className="flex items-center justify-between mb-16 border-b border-white/5 pb-8">
             <h2 className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.3em]">
@@ -137,8 +156,8 @@ export default async function BlogIndexPage(props: BlogIndexProps) {
               ))}
             </div>
           ) : !featuredPost && (
-            <div className="text-center py-48 border border-dashed border-white/5 rounded-[4rem] bg-white/[0.01]">
-              <p className="text-zinc-700 font-mono text-xs uppercase tracking-[0.5em]">
+            <div className="text-center py-48 border border-dashed border-white/5 rounded-[4rem] bg-white/1">
+              <p className="text-zinc-700 font-mono text-xs uppercase tracking-[0.5em] animate-pulse">
                 {t.empty_state}
               </p>
             </div>
@@ -146,7 +165,6 @@ export default async function BlogIndexPage(props: BlogIndexProps) {
         </section>
       </div>
 
-      {/* Decoración de fondo estructural */}
       <div className="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_bottom_right,rgba(168,85,247,0.03),transparent_40%)] pointer-events-none" />
     </main>
   );

@@ -1,8 +1,8 @@
 /**
  * @file packages/cms/core/src/payload.config.ts
  * @description Configuración central soberana de Payload CMS 3.0.
- *              Implementa resiliencia de construcción (Build-Aware) para entornos Vercel.
- * @version 2.0 - Vercel Deployment Resiliency
+ *              Implementa resiliencia de construcción (Build-Aware) y orquestación de medios.
+ * @version 2.1 - Media Integration & Build Resilience
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -12,13 +12,15 @@ import { lexicalEditor } from '@payloadcms/richtext-lexical';
 import path from 'path';
 
 /**
- * IMPORTACIONES DE COLECCIONES
+ * IMPORTACIONES DE COLECCIONES Sincronizadas
+ * @pilar I: Sincronización de infraestructura. Se añade 'Media' para sanar
+ * el error de integridad referencial detectado en Vercel.
  */
-import { Users, BlogPosts, Projects } from './collections';
+import { Users, BlogPosts, Projects, Media } from './collections';
 
 /**
  * RESOLUCIÓN DE ÁMBITO Y FASE
- * Detectamos si el proceso ocurre en Vercel o durante la compilación estática.
+ * @pilar V: Adherencia Arquitectónica.
  */
 const serverDir = process.cwd();
 const isBuildPhase = process.env.NEXT_PHASE === 'phase-production-build' || process.env.VERCEL === '1';
@@ -26,19 +28,20 @@ const isBuildPhase = process.env.NEXT_PHASE === 'phase-production-build' || proc
 /**
  * GUARDIÁN DE CONFIGURACIÓN RESILIENTE (Pilar VIII)
  * @description Permite que el build de Vercel complete su ciclo sin secretos,
- *              pero bloquea la ejecución en runtime si falta la infraestructura.
+ *              evitando el colapso del prerendering estático.
  */
 const DATABASE_URL = process.env.DATABASE_URL || '';
 const PAYLOAD_SECRET = process.env.PAYLOAD_SECRET || 'temporary-secret-for-build-purposes';
 
+// Bloqueo estricto solo en modo ejecución (Runtime)
 if (!isBuildPhase && (!process.env.DATABASE_URL || !process.env.PAYLOAD_SECRET)) {
   throw new Error(
-    `[CMS-CORE][CRITICAL] Infraestructura denegada. El servidor requiere DATABASE_URL y PAYLOAD_SECRET.`
+    `[CMS-CORE][CRITICAL] Infraestructura denegada. DATABASE_URL y PAYLOAD_SECRET son obligatorios en ejecución.`
   );
 }
 
 if (isBuildPhase && !process.env.DATABASE_URL) {
-  console.warn('[HEIMDALL][WARN] Compilación detectada sin base de datos. Generando artefacto estático...');
+  console.warn('[HEIMDALL][WARN] Compilación detectada sin base de datos activa. Operando en modo estático...');
 }
 
 /**
@@ -58,13 +61,16 @@ export default buildConfig({
     },
   },
 
-  // SSoT: Registro de colecciones
-  collections: [Users, BlogPosts, Projects],
+  /**
+   * @pilar I: Registro Íntegro de Colecciones.
+   * Se incluye Media para satisfacer las dependencias de BlogPosts.
+   */
+  collections: [Users, BlogPosts, Projects, Media],
 
   // Editor moderno Lexical
   editor: lexicalEditor(),
 
-  // Seguridad de sesión
+  // Seguridad de sesión y encriptación
   secret: PAYLOAD_SECRET,
 
   /**
@@ -80,13 +86,14 @@ export default buildConfig({
    */
   db: postgresAdapter({
     pool: {
-      // Si no hay URL durante el build, pasamos un string vacío para satisfacer el contrato
+      // Pasamos string vacío durante el build para evitar crash de conexión
       connectionString: DATABASE_URL,
       ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
     },
   }),
 
   /**
-   * @pilar X: Rendimiento. Optimización automática vía Sharp.
+   * @pilar X: Rendimiento. 
+   * Sharp se encarga de optimizar los assets de hospitalidad (Suites/Festival).
    */
 });

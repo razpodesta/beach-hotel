@@ -857,7 +857,7 @@
         },
         {
           "file": "apps/portfolio-web/src/app/[lang]/blog/page.tsx",
-          "hash": "10989118064758931881",
+          "hash": "138297287320554827",
           "deps": [
             "npm:next"
           ]
@@ -1111,7 +1111,7 @@
         },
         {
           "file": "apps/portfolio-web/src/components/sections/homepage/BlogSection3D.tsx",
-          "hash": "1950764548034277580",
+          "hash": "12484016217601721696",
           "deps": [
             "npm:react",
             "npm:framer-motion",
@@ -1209,7 +1209,7 @@
         },
         {
           "file": "apps/portfolio-web/src/components/ui/BlogCard.tsx",
-          "hash": "4962427128688237455",
+          "hash": "3483941575540292823",
           "deps": [
             "npm:react",
             "npm:next",
@@ -1219,7 +1219,7 @@
         },
         {
           "file": "apps/portfolio-web/src/components/ui/BlogCard3D.tsx",
-          "hash": "4167696252678833241",
+          "hash": "9761302914999179979",
           "deps": [
             "npm:react",
             "npm:next",
@@ -2663,10 +2663,17 @@
         },
         {
           "file": "packages/cms/core/src/collections/BlogPosts.ts",
-          "hash": "620940464670565395",
+          "hash": "6401270189114544503",
           "deps": [
             "npm:payload",
             "npm:@payloadcms/richtext-lexical"
+          ]
+        },
+        {
+          "file": "packages/cms/core/src/collections/Media.ts",
+          "hash": "17674447855820396861",
+          "deps": [
+            "npm:payload"
           ]
         },
         {
@@ -2685,7 +2692,7 @@
         },
         {
           "file": "packages/cms/core/src/collections/index.ts",
-          "hash": "13095994689196826167"
+          "hash": "5175402160033775567"
         },
         {
           "file": "packages/cms/core/src/index.ts",
@@ -2693,7 +2700,7 @@
         },
         {
           "file": "packages/cms/core/src/payload.config.ts",
-          "hash": "8391783314250864579",
+          "hash": "12137752850281167072",
           "deps": [
             "npm:payload",
             "npm:@payloadcms/db-postgres",
