@@ -2,7 +2,7 @@
  * @file packages/cms/core/src/payload.config.ts
  * @description Configuración central soberana de Payload CMS 3.0.
  *              Orquesta la persistencia en Supabase/Postgres y el esquema de datos.
- * @version 1.7 - Universal Path Resolution & Type Safety
+ * @version 1.8 - Bundler Compatibility & Path Normalization
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -12,11 +12,12 @@ import { lexicalEditor } from '@payloadcms/richtext-lexical';
 import path from 'path';
 
 /**
- * IMPORTACIONES DE COLECCIONES (ESM Compliance)
+ * IMPORTACIONES DE COLECCIONES
  * @pilar III: Seguridad de Tipos Absoluta.
- * Se utiliza la extensión .js obligatoria para cumplimiento de resolución nodenext.
+ * Se eliminan extensiones explícitas (.js) para garantizar que el Bundler 
+ * de Next.js 15 en Vercel resuelva correctamente los archivos fuente (.ts).
  */
-import { Users, BlogPosts, Projects } from './collections/index.js';
+import { Users, BlogPosts, Projects } from './collections';
 
 /**
  * GUARDIÁN DE CONFIGURACIÓN (Pilar X)
@@ -26,7 +27,7 @@ const { DATABASE_URL, PAYLOAD_SECRET } = process.env;
 
 if (!DATABASE_URL || !PAYLOAD_SECRET) {
   throw new Error(
-    `[CMS-CORE][CRITICAL] Infraestructura incompleta. Faltan: ${
+    `[CMS-CORE][CRITICAL] Variables de entorno faltantes: ${
       !DATABASE_URL ? 'DATABASE_URL ' : ''
     }${!PAYLOAD_SECRET ? 'PAYLOAD_SECRET' : ''}`
   );
@@ -35,9 +36,6 @@ if (!DATABASE_URL || !PAYLOAD_SECRET) {
 /**
  * RESOLUCIÓN DE RUTA BASE SOBERANA
  * @pilar V: Adherencia Arquitectónica.
- * Para evitar el error TS1470 (import.meta en contextos CJS), utilizamos
- * process.cwd() que en Next.js 15 apunta a la raíz de la ejecución.
- * Esto garantiza que el importMap se genere en la ubicación correcta.
  */
 const serverDir = process.cwd();
 
@@ -56,10 +54,6 @@ export default buildConfig({
     },
     meta: {
       titleSuffix: '| MetaShark CMS',
-      /** 
-       * @pilar II (Cero Regresiones): 
-       * Saneado: Se eliminan propiedades desconocidas (favicon) para cumplir con MetaConfig.
-       */
     },
   },
 
@@ -92,6 +86,6 @@ export default buildConfig({
 
   /**
    * @pilar X: Rendimiento.
-   * Sharp es detectado automáticamente para optimizar las imágenes del hotel.
+   * Sharp es requerido explícitamente para optimizar imágenes de hospitalidad.
    */
 });

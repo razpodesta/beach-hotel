@@ -1,0 +1,27 @@
+/**
+ * @file tsconfig.json (Root Orchestrator)
+ * @description Orquestador soberano de referencias de proyecto para el Monorepo.
+ *              Esencial para la sincronización del grafo de Nx y el Typecheck global.
+ * @version 2.0 - Nx Sync Recovery
+ */
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": "."
+  },
+  "files": [],
+  "include": [],
+  "references": [
+    /* 
+       @pilar V: Adherencia Arquitectónica.
+       Vinculación de todas las unidades de ejecución del monorepo.
+    */
+    { "path": "./apps/portfolio-web" },
+    { "path": "./packages/auth-shield" },
+    { "path": "./packages/cms/core" },
+    { "path": "./packages/cms/ui" },
+    { "path": "./packages/protocol-33" },
+    { "path": "./packages/testing-utils" },
+    { "path": "./tests" }
+  ]
+}

@@ -23650,6 +23650,11 @@
         "source": "@metashark/portfolio-web",
         "target": "npm:gsap",
         "type": "static"
+      },
+      {
+        "source": "@metashark/portfolio-web",
+        "target": "npm:@supabase/supabase-js",
+        "type": "static"
       }
     ],
     "@metashark/cms-core": [
@@ -56081,5 +56086,5 @@
   },
   "version": "6.0",
   "errors": [],
-  "computedAt": 1773362324296
+  "computedAt": 1773419654395
 }

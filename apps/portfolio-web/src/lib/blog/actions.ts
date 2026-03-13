@@ -2,7 +2,7 @@
  * @file apps/portfolio-web/src/lib/blog/actions.ts
  * @description Orquestador soberano de datos para el Hub Editorial (The Concierge Journal).
  *              Gestiona la comunicación con Payload CMS 3.0 y el "shaping" de entidades.
- * @version 11.0 - Optimized Query Architecture
+ * @version 11.2 - Full Syntax Integrity & Query Optimization
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -16,7 +16,7 @@ import { type PostWithSlug, postWithSlugSchema } from '../schemas/blog.schema';
 
 /**
  * CONTRATO DE INTERFAZ CMS (Bridge Interface)
- * Define la estructura esperada de los documentos crudos de Payload.
+ * Define la estructura esperada de los documentos crudos de Payload 3.0.
  */
 interface RawBlogPostEntry {
   title?: string | null;
@@ -53,12 +53,12 @@ function mapPayloadToPost(entry: unknown): PostWithSlug {
     ? (raw.author.username ?? raw.author.email?.split('@')[0] ?? 'Concierge Team')
     : 'Concierge Team';
 
-  // Saneamiento de etiquetas
+  // Saneamiento de etiquetas (Taxonomía)
   const sanitizedTags = Array.isArray(raw.tags) 
     ? raw.tags.map((t) => t.tag ?? '').filter(Boolean) 
     : [];
 
-  // Mapeo al contrato de dominio
+  // Mapeo al contrato de dominio inmutable
   const mappedData = {
     slug: raw.slug ?? 'unknown-slug',
     metadata: {
@@ -70,7 +70,7 @@ function mapPayloadToPost(entry: unknown): PostWithSlug {
     },
     /**
      * Gestión de Contenido: 
-     * Payload 3.0 puede devolver objetos Lexical. Aseguramos formato string para MDXRemote.
+     * Payload 3.0 devuelve objetos Lexical. Aseguramos formato string para compatibilidad.
      */
     content: typeof raw.content === 'string' 
       ? raw.content 
@@ -79,7 +79,7 @@ function mapPayloadToPost(entry: unknown): PostWithSlug {
 
   /**
    * @pilar I: Validación Innegociable.
-   * Si el dato no cumple el esquema, se bloquea la propagación para evitar errores de UI.
+   * Zod actúa como el guardián de la frontera de datos.
    */
   const validation = postWithSlugSchema.safeParse(mappedData);
 
@@ -152,11 +152,31 @@ export async function getPostBySlug(slug: string): Promise<PostWithSlug | null> 
 /**
  * FILTRADO TAXONÓMICO OPTIMIZADO: getPostsByTag
  * @pilar X: Performance de Élite.
- * Filtrado directo en la base de datos para evitar carga innecesaria de memoria.
  * @param {string} tagSlug - Slug de la etiqueta a buscar.
  */
 export async function getPostsByTag(tagSlug: string): Promise<PostWithSlug[]> {
   const traceId = `BLOG-FETCH-TAG-${tagSlug}`;
   
   try {
+    const config = await configPromise;
+    const payload = await getPayload({ config });
+    const normalizedTag = tagSlug.toLowerCase().trim();
+
+    const { docs } = await payload.find({
+      collection: 'blog-posts',
+      where: {
+        and: [
+          { status: { equals: 'published' } },
+          { 'tags.tag': { equals: normalizedTag } }
+        ]
+      },
+      sort: '-publishedDate',
+      limit: 50,
+    });
     
+    return docs.map(mapPayloadToPost);
+  } catch (error) {
+    console.error(`[HEIMDALL][ERROR][${traceId}] Fallo en búsqueda por tag:`, error);
+    return [];
+  }
+}
