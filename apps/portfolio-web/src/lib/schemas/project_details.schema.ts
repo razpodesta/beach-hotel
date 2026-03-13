@@ -1,58 +1,97 @@
 /**
  * @file apps/portfolio-web/src/lib/schemas/project_details.schema.ts
- * @version 4.0 - Sincronización Estricta
- * @description Sincronizado con ProjectTechModal.tsx. Ahora exporta ProjectEntity 
- *              como la SSoT para los datos de proyecto.
+ * @description Contrato soberano (SSoT) para los activos digitales y proyectos.
+ *              Sincronizado con la colección del CMS Core y el Protocolo 33.
+ * @version 5.1 - Elite Options Contract Integration
  * @author Raz Podestá - MetaShark Tech
  */
 
 import { z } from 'zod';
 
 // ============================================================================
-// 1. CONTRATO DE DATOS (DATA SSoT)
+// 1. ESQUEMAS ATÓMICOS DE SOPORTE
 // ============================================================================
 
+/**
+ * Catálogo de estilos de maquetación permitidos.
+ */
+export const ProjectLayoutStyle = z.enum([
+  'minimal', 
+  'immersive', 
+  'editorial', 
+  'corporate', 
+  'brutalist'
+]);
+
 const projectBrandingSchema = z.object({
-  primary_color: z.string(),
-  layout_style: z.enum(['minimal', 'immersive', 'editorial', 'corporate', 'brutalist']),
+  primary_color: z.string().regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, 'Formato Hex inválido'),
+  layout_style: ProjectLayoutStyle,
 });
 
 const projectBackendSchema = z.object({
-  title: z.string(),
+  title: z.string().min(1),
   description: z.string().optional().nullable(),
   features: z.array(z.string()),
 });
 
-const projectEliteOptionSchema = z.object({
-  name: z.string(),
-  detail: z.string(),
+const projectIntroductionSchema = z.object({
+  heading: z.string().min(1),
+  body: z.string().min(1),
 });
 
-// Esquema para la sección de introducción requerida por ProjectTechModal
-const projectIntroductionSchema = z.object({
-  heading: z.string(),
-  body: z.string(),
+/**
+ * Esquema para características premium del activo.
+ */
+const projectEliteOptionSchema = z.object({
+  name: z.string().min(1),
+  detail: z.string().min(1),
 });
+
+// ============================================================================
+// 2. CONTRATO DE ENTIDAD (DATA SSoT)
+// ============================================================================
 
 export const projectEntitySchema = z.object({
-  id: z.string(),
-  slug: z.string(),
-  title: z.string(),
+  // Identidad de Infraestructura
+  id: z.string().uuid().or(z.string()),
+  tenantId: z.string().min(1), 
+  status: z.enum(['draft', 'published']),
+  
+  // Metadatos de Negocio
+  slug: z.string().min(1),
+  title: z.string().min(1),
   subtitle: z.string().optional().nullable(),
-  description: z.string(),
-  imageUrl: z.string(),
-  liveUrl: z.string().optional().nullable(),
-  codeUrl: z.string().optional().nullable(),
+  description: z.string().min(1),
+  
+  // Gestión de Assets
+  imageUrl: z.string().url().or(z.string()), 
+  
+  // Enlaces y Taxonomía
+  liveUrl: z.string().url().optional().nullable().or(z.literal('#')),
+  codeUrl: z.string().url().optional().nullable(),
   tags: z.array(z.string()),
   tech_stack: z.array(z.string()),
-  introduction: projectIntroductionSchema, // Añadido para ProjectTechModal
+  
+  // Estructura Editorial (ProjectTechModal Support)
+  introduction: projectIntroductionSchema,
   backend_architecture: projectBackendSchema.optional().nullable(),
+  
+  /**
+   * @property elite_options
+   * @pilar II: Sincronización de nuevas características.
+   * Colección de implementaciones de alto nivel para el activo.
+   */
   elite_options: z.array(projectEliteOptionSchema).optional().nullable(),
+  
+  // Protocolo 33: Gamificación
+  reputationWeight: z.number().int().min(0).default(10),
+  
+  // Estética
   branding: projectBrandingSchema,
 });
 
 // ============================================================================
-// 2. CONTRATO DE INTERFAZ (UI LABELS SSoT)
+// 3. CONTRATO DE DICCIONARIO (UI LABELS)
 // ============================================================================
 
 export const projectDetailsDictionarySchema = z.object({
@@ -68,6 +107,10 @@ export const projectDetailsDictionarySchema = z.object({
   empty_state: z.string(),
 });
 
-// Inferencia de tipos estricta
+/**
+ * INFERENCIA DE TIPOS SOBERANA
+ */
 export type ProjectEntity = z.infer<typeof projectEntitySchema>;
 export type ProjectDetailsDictionary = z.infer<typeof projectDetailsDictionarySchema>;
+export type ProjectEliteOption = z.infer<typeof projectEliteOptionSchema>;
+export type ProjectLayoutStyleType = z.infer<typeof ProjectLayoutStyle>;
