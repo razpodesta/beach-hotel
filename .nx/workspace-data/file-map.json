@@ -2693,7 +2693,7 @@
         },
         {
           "file": "packages/cms/core/src/payload.config.ts",
-          "hash": "6780514188843898488",
+          "hash": "8391783314250864579",
           "deps": [
             "npm:payload",
             "npm:@payloadcms/db-postgres",
