@@ -2,7 +2,7 @@
  * @file packages/cms/core/src/payload.config.ts
  * @description Configuración central soberana de Payload CMS 3.0.
  *              Orquesta la persistencia en Supabase/Postgres y el esquema de datos.
- * @version 1.8 - Bundler Compatibility & Path Normalization
+ * @version 1.9 - Production Hardened & Bundler Ready
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -13,15 +13,14 @@ import path from 'path';
 
 /**
  * IMPORTACIONES DE COLECCIONES
- * @pilar III: Seguridad de Tipos Absoluta.
- * Se eliminan extensiones explícitas (.js) para garantizar que el Bundler 
- * de Next.js 15 en Vercel resuelva correctamente los archivos fuente (.ts).
+ * @pilar V: Se utilizan rutas sin extensión para permitir que el motor de 
+ * empaquetado de Next.js resuelva los archivos fuente .ts en Vercel.
  */
 import { Users, BlogPosts, Projects } from './collections';
 
 /**
  * GUARDIÁN DE CONFIGURACIÓN (Pilar X)
- * Validación de integridad de infraestructura antes del arranque (Fail-Fast).
+ * Validación de integridad de infraestructura antes del arranque.
  */
 const { DATABASE_URL, PAYLOAD_SECRET } = process.env;
 
@@ -36,6 +35,7 @@ if (!DATABASE_URL || !PAYLOAD_SECRET) {
 /**
  * RESOLUCIÓN DE RUTA BASE SOBERANA
  * @pilar V: Adherencia Arquitectónica.
+ * Utilizamos la raíz del proceso para mapear activos en el Monorepo.
  */
 const serverDir = process.cwd();
 
@@ -46,8 +46,9 @@ export default buildConfig({
   admin: {
     user: Users.slug,
     /**
-     * Gestión de Mapa de Importaciones (Payload 3.0 Standard)
-     * Crucial para el desacoplamiento de Server/Client en Next.js 15.
+     * Gestión de Mapa de Importaciones (Payload 3.0 Stable)
+     * Proporciona la ruta física necesaria para generar el grafo de dependencias
+     * del panel administrativo en entornos Serverless.
      */
     importMap: {
       baseDir: path.resolve(serverDir, 'packages/cms/core'),
@@ -57,28 +58,31 @@ export default buildConfig({
     },
   },
 
-  // SSoT: Definición de colecciones soberanas del ecosistema
+  // SSoT: Registro de colecciones innegociables
   collections: [Users, BlogPosts, Projects],
 
-  // Editor de texto rico basado en Lexical
+  // Editor moderno basado en Lexical
   editor: lexicalEditor(),
 
-  // Clave secreta para encriptación de datos y sesiones
+  // Clave maestra para seguridad de tokens y sesiones
   secret: PAYLOAD_SECRET,
 
-  // Orquestación de tipos para consumo en portfolio-web
+  /**
+   * @pilar III: Seguridad de Tipos Absoluta.
+   * Generación de tipos ambientales para sincronización con portfolio-web.
+   */
   typescript: {
     outputFile: path.resolve(serverDir, 'packages/cms/core/payload-types.ts'),
   },
 
   /**
-   * ADAPTADOR DE BASE DE DATOS (Supabase / Postgres)
+   * ADAPTADOR DE PERSISTENCIA (Supabase Optimized)
    */
   db: postgresAdapter({
     pool: {
       connectionString: DATABASE_URL,
       /**
-       * Seguridad SSL: Requerido para Supabase Poolers en producción.
+       * Protocolo SSL: Obligatorio para conexiones remotas seguras.
        */
       ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
     },
@@ -86,6 +90,6 @@ export default buildConfig({
 
   /**
    * @pilar X: Rendimiento.
-   * Sharp es requerido explícitamente para optimizar imágenes de hospitalidad.
+   * Sharp se encarga de la optimización de activos del hotel y festival.
    */
 });

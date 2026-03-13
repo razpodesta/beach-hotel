@@ -2622,15 +2622,15 @@
         },
         {
           "file": "packages/cms/core/src/collections/index.ts",
-          "hash": "10387382831896336925"
+          "hash": "13095994689196826167"
         },
         {
           "file": "packages/cms/core/src/index.ts",
-          "hash": "12295057058771151854"
+          "hash": "8827420268908940624"
         },
         {
           "file": "packages/cms/core/src/payload.config.ts",
-          "hash": "6494053041661063001",
+          "hash": "6780514188843898488",
           "deps": [
             "npm:payload",
             "npm:@payloadcms/db-postgres",
@@ -2639,7 +2639,7 @@
         },
         {
           "file": "packages/cms/core/tsconfig.json",
-          "hash": "16742580003290846884"
+          "hash": "8317828428320121955"
         },
         {
           "file": "packages/cms/core/tsconfig.lib.json",
