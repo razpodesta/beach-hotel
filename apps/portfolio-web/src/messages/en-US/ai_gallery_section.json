@@ -3,6 +3,9 @@
   "title": "AI Visual Synth",
   "subtitle": "Explore a curated collection of algorithmically generated assets. Photorealism, perfect typography, and stylistic consistency, orchestrated by our sovereign CMS.",
   "overlay_indicator": "LIVE RENDER • WEBGL 2.0",
+  "drag_label": "DRAG TO ORBIT",
+  "item_prefix": "ASSET",
+  "error_fallback": "VISUAL ENGINE NOT SUPPORTED ON THIS BROWSER",
   "footer_prompt": "Advanced Prompt Engineering",
   "footer_upscaling": "8K Upscaling & Optimization",
   "items": {

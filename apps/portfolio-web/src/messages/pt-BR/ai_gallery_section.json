@@ -3,6 +3,9 @@
   "title": "Sintetizador Visual IA",
   "subtitle": "Explore uma coleção curada de ativos gerados algoritmicamente. Fotorrealismo, tipografia perfeita e consistência estilística, orquestrados pelo nosso CMS soberano.",
   "overlay_indicator": "RENDER AO VIVO • WEBGL 2.0",
+  "drag_label": "ARRASTAR PARA ORBITAR",
+  "item_prefix": "ATIVO",
+  "error_fallback": "MOTOR VISUAL NÃO SUPORTADO NESTE NAVEGADOR",
   "footer_prompt": "Engenharia de Prompts Avançada",
   "footer_upscaling": "Upscaling 8K e Otimização",
   "items": {

@@ -1,8 +1,8 @@
 /**
  * @file apps/portfolio-web/src/app/[lang]/blog/tag/[slug]/page.tsx
  * @description Orquestador de archivo por etiquetas (taxonomía) del Concierge Journal.
- *              Implementa SSG, metadatos semánticos y cumplimiento estricto de arquitectura Nx.
- * @version 5.0
+ *              Implementa SSG, resiliencia Next.js 15 e integridad de tipos absoluta.
+ * @version 6.1 - Strict Typing & Linter Hardening
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -10,57 +10,70 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
 /**
- * IMPORTACIONES NIVELADAS (Rutas relativas para cumplimiento @nx/enforce-module-boundaries)
+ * IMPORTACIONES NIVELADAS
+ * @pilar V: Adherencia arquitectónica mediante fronteras Nx.
  */
 import { type Locale, i18n } from '../../../../../config/i18n.config';
 import { getDictionary } from '../../../../../lib/get-dictionary';
 import { getPostsByTag, getAllPosts } from '../../../../../lib/blog';
 import { BlogCard } from '../../../../../components/ui/BlogCard';
 import { BlurText } from '../../../../../components/razBits/BlurText';
+import type { PostWithSlug } from '../../../../../lib/schemas/blog.schema';
 
 /**
- * Propiedades de la página con soporte para parámetros asíncronos de Next.js 15.
+ * Propiedades de la página con soporte para parámetros asíncronos (Next.js 15).
  */
 type TagPageProps = {
   params: Promise<{ slug: string; lang: Locale }>;
 };
 
 /**
- * Genera parámetros estáticos (SSG) para todas las combinaciones de idioma y etiqueta.
- * Garantiza que las páginas de archivo se sirvan instantáneamente desde la caché del Edge.
+ * @pilar I: Sincronización de Rutas Estáticas.
+ * Genera el mapa de etiquetas para pre-renderizado. 
+ * Resiliente a fallos de base de datos en fase de build.
  */
 export async function generateStaticParams() {
-  const posts = await getAllPosts();
-  const tags = new Set<string>();
-  
-  posts.forEach(post => {
-    post.metadata.tags.forEach(tag => {
-      // Normalización de slugs para URLs consistentes
-      tags.add(tag.toLowerCase().trim().replace(/\s+/g, '-'));
-    });
-  });
+  try {
+    const posts = await getAllPosts();
+    if (!posts || posts.length === 0) return [];
 
-  return i18n.locales.flatMap((lang) =>
-    Array.from(tags).map((tagSlug) => ({
-      lang,
-      slug: tagSlug,
-    }))
-  );
+    const tags = new Set<string>();
+    posts.forEach(post => {
+      post.metadata.tags.forEach(tag => {
+        // Normalización para URLs consistentes (kebab-case)
+        tags.add(tag.toLowerCase().trim().replace(/\s+/g, '-'));
+      });
+    });
+
+    return i18n.locales.flatMap((lang) =>
+      Array.from(tags).map((tagSlug) => ({
+        lang,
+        slug: tagSlug,
+      }))
+    );
+  } catch {
+    /**
+     * @pilar X: Optional Catch Binding para higiene de linter.
+     */
+    console.error('[HEIMDALL][STATIC-GEN] Fallo al generar rutas de etiquetas.');
+    return [];
+  }
 }
 
 /**
- * Orquestador de Metadatos: Genera títulos y descripciones SEO localizados.
+ * Orquestador de Metadatos Soberano.
  */
 export async function generateMetadata(props: TagPageProps): Promise<Metadata> {
   const { lang, slug } = await props.params;
   const dictionary = await getDictionary(lang);
-  const tagName = decodeURIComponent(slug).replace(/-/g, ' ');
   
+  // Saneamiento visual del nombre de la etiqueta
+  const tagName = decodeURIComponent(slug).replace(/-/g, ' ');
   const blogName = dictionary.header.personal_portfolio;
 
   return {
     title: `${tagName.toUpperCase()} | Archivos | ${blogName}`,
-    description: `${dictionary.blog_page.page_description} - Explorando artículos sobre ${tagName}.`,
+    description: `${dictionary.blog_page.page_description} - Artículos seleccionados sobre ${tagName}.`,
     alternates: {
       canonical: `/${lang}/blog/tag/${slug}`,
     },
@@ -72,21 +85,32 @@ export async function generateMetadata(props: TagPageProps): Promise<Metadata> {
 }
 
 /**
- * Componente principal: TagArchivePage.
- * Renderiza el listado de artículos filtrados con una estética editorial inmersiva.
+ * APARATO PRINCIPAL: TagArchivePage
  */
 export default async function TagArchivePage(props: TagPageProps) {
   const { lang, slug } = await props.params;
   const dictionary = await getDictionary(lang);
-  const posts = await getPostsByTag(slug);
+  const t = dictionary.blog_page;
 
-  // Si no hay artículos para esta etiqueta, forzamos un 404 semántico.
-  if (!posts || posts.length === 0) {
+  /**
+   * @pilar III: Seguridad de Tipos Absoluta.
+   * @pilar VIII: Resiliencia de Datos.
+   * Inicialización tipada para erradicar el error TS7034.
+   */
+  let posts: PostWithSlug[] = [];
+  try {
+    posts = await getPostsByTag(slug);
+  } catch {
+    console.error(`[HEIMDALL][ERROR] Fallo en recuperación de tag: ${slug}`);
+    posts = [];
+  }
+
+  // Si no hay artículos en runtime, activamos el protocolo 404 (Pilar VIII)
+  if (posts.length === 0) {
     notFound();
   }
 
   const tagName = slug.replace(/-/g, ' ');
-  const t = dictionary.blog_page;
 
   return (
     <main className="min-h-screen bg-[#050505] text-white pt-32 pb-24 selection:bg-purple-500/30">
@@ -106,7 +130,8 @@ export default async function TagArchivePage(props: TagPageProps) {
           />
           
           <p className="text-zinc-500 font-sans text-lg md:text-xl max-w-2xl mx-auto font-light leading-relaxed">
-            {`Una curaduría exclusiva de ${posts.length} ${posts.length === 1 ? 'artículo' : 'artículos'} centrados en la sofisticación de ${tagName}.`}
+            {posts.length} {posts.length === 1 ? 'artículo disponible' : 'artículos disponibles'} 
+            {` bajo la curaduría de ${tagName}.`}
           </p>
         </header>
 
@@ -123,15 +148,14 @@ export default async function TagArchivePage(props: TagPageProps) {
           ))}
         </div>
 
-        {/* FOOTER DE NAVEGACIÓN (Resiliencia) */}
-        <div className="mt-32 pt-12 border-t border-white/5 flex justify-center">
-            <p className="text-[10px] font-mono text-zinc-700 tracking-[0.3em] uppercase">
+        {/* FOOTER DE NAVEGACIÓN (Luxury Detail) */}
+        <div className="mt-32 pt-12 border-t border-white/5 flex flex-col items-center gap-4">
+            <p className="text-[10px] font-mono text-zinc-800 tracking-[0.3em] uppercase">
                 Beach Hotel Canasvieiras • Editorial Department
             </p>
         </div>
       </div>
 
-      {/* Decoración de fondo estructural (Glow sutil) */}
       <div className="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_center,rgba(168,85,247,0.03),transparent_70%)] pointer-events-none" />
     </main>
   );

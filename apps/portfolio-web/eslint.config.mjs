@@ -1,8 +1,10 @@
-// RUTA: /apps/portfolio-web/eslint.config.mjs
-// VERSIÓN: Definitiva 5.0 ("Guardián de la Vanguardia y las Pruebas")
-// DESCRIPCIÓN: Se añade una nueva capa de configuración específica para Jest,
-//              aplicando las reglas recomendadas por 'eslint-plugin-jest'
-//              únicamente a los archivos de prueba.
+/**
+ * @file apps/portfolio-web/eslint.config.mjs
+ * @description Constitución de Calidad Estática para el orquestador Web.
+ *              Integra reglas de Next.js Core Web Vitals, React Hooks y Jest.
+ * @version 6.0 - Next.js 15 Stable Sync (Flat Config)
+ * @author Raz Podestá - MetaShark Tech
+ */
 
 import baseConfig from '../../eslint.config.mjs';
 import tseslint from 'typescript-eslint';
@@ -11,61 +13,74 @@ import reactHooksPlugin from 'eslint-plugin-react-hooks';
 import jestPlugin from 'eslint-plugin-jest';
 
 export default tseslint.config(
-  // 1. HERENCIA: Hereda toda la configuración base de la raíz.
+  // 1. HERENCIA SOBERANA: Se asumen las reglas base del Monorepo Nx.
   ...baseConfig,
 
-  // 2. CONFIGURACIÓN DE TYPESCRIPT: Aplica reglas recomendadas al código fuente.
-  {
-    files: ['src/**/*.ts', 'src/**/*.tsx'],
-    rules: {
-      ...tseslint.configs.recommended.rules,
-    },
-  },
-
-  // 3. ESPECIALIZACIÓN DE NEXT.JS: Añade las reglas y plugins específicos para Next.js.
+  // 2. CAPA DE CÓDIGO FUENTE (Next.js & React)
   {
     files: ['src/**/*.ts', 'src/**/*.tsx'],
     plugins: {
+      /* 
+         @pilar V: Adherencia Arquitectónica.
+         Vinculación directa del plugin para evitar colisiones de parsers.
+      */
       '@next/next': nextPlugin,
+      'react-hooks': reactHooksPlugin,
     },
     rules: {
+      // Reglas Recomendadas de Next.js
       ...nextPlugin.configs.recommended.rules,
+      // Reglas de Élite para Performance (LCP, CLS, INP)
       ...nextPlugin.configs['core-web-vitals'].rules,
+      // Reglas de integridad de Hooks
+      ...reactHooksPlugin.configs.recommended.rules,
+      
+      // Ajustes de Élite: Desactivamos la advertencia de links internos 
+      // ya que Next.js 15 gestiona esto nativamente mediante tipos.
       '@next/next/no-html-link-for-pages': 'off',
+      
+      // @pilar III: Seguridad de Tipos Absoluta.
+      '@typescript-eslint/no-explicit-any': 'error',
+      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
     },
   },
 
-  // 4. CAPA DE REACT HOOKS: Refuerza las reglas de los hooks.
+  // 3. CAPA DE PRUEBAS (Arquitectura de Espejo)
   {
-    files: ['src/**/*.ts', 'src/**/*.tsx'],
+    files: [
+      '**/*.spec.ts', 
+      '**/*.spec.tsx', 
+      '**/*.test.ts', 
+      '**/*.test.tsx'
+    ],
     plugins: {
-        'react-hooks': reactHooksPlugin,
-    },
-    rules: reactHooksPlugin.configs.recommended.rules,
-  },
-
-  // 5. CAPA DE PRUEBAS (JEST): Aplica la configuración de Jest a los archivos de especificaciones.
-  {
-    files: ['specs/**/*.spec.ts', 'specs/**/*.spec.tsx'],
-    plugins: {
-        jest: jestPlugin,
-    },
-    rules: {
-        ...jestPlugin.configs.recommended.rules,
+      jest: jestPlugin,
     },
     languageOptions: {
       globals: {
         ...jestPlugin.environments.globals.globals,
-      }
-    }
-  },
-
-  // 6. ANULACIONES QUIRÚRGICAS: Excepciones para archivos de configuración.
-  {
-    files: ['next.config.js', 'postcss.config.js'],
+      },
+    },
     rules: {
-      '@typescript-eslint/no-var-requires': 'off',
-      '@typescript-eslint/no-require-imports': 'off',
+      ...jestPlugin.configs.recommended.rules,
+      // @pilar X: Higiene en Tests.
+      'jest/no-disabled-tests': 'warn',
+      'jest/no-focused-tests': 'error',
+      'jest/no-identical-title': 'error',
     },
   },
+
+  // 4. ANULACIONES QUIRÚRGICAS (Config Files)
+  {
+    files: ['next.config.js', 'postcss.config.js', 'tailwind.config.js'],
+    languageOptions: {
+      parserOptions: {
+        sourceType: 'script', // Estos archivos son CommonJS en Node.js
+      },
+    },
+    rules: {
+      '@typescript-eslint/no-require-imports': 'off',
+      '@typescript-eslint/no-var-requires': 'off',
+    },
+  }
 );

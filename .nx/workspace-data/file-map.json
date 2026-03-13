@@ -360,7 +360,7 @@
         },
         {
           "file": "apps/portfolio-web/eslint.config.mjs",
-          "hash": "1983342572454620730",
+          "hash": "8483354195070991969",
           "deps": [
             "npm:typescript-eslint",
             "npm:@next/eslint-plugin-next",
@@ -848,7 +848,7 @@
         },
         {
           "file": "apps/portfolio-web/src/app/[lang]/blog/[slug]/page.tsx",
-          "hash": "3515713782934103565",
+          "hash": "17843499073623557371",
           "deps": [
             "npm:next",
             "npm:next-mdx-remote",
@@ -864,7 +864,7 @@
         },
         {
           "file": "apps/portfolio-web/src/app/[lang]/blog/tag/[slug]/page.tsx",
-          "hash": "16358429168254984781",
+          "hash": "9898391688591807904",
           "deps": [
             "npm:next"
           ]
@@ -1076,11 +1076,12 @@
         },
         {
           "file": "apps/portfolio-web/src/components/razBits/OrbitalGallery.tsx",
-          "hash": "13732123381071447897",
+          "hash": "3372310824190907143",
           "deps": [
             "npm:react",
             "npm:gl-matrix",
-            "npm:framer-motion"
+            "npm:framer-motion",
+            "npm:lucide-react"
           ]
         },
         {
@@ -1094,7 +1095,7 @@
         },
         {
           "file": "apps/portfolio-web/src/components/sections/homepage/AiContentSection.tsx",
-          "hash": "15774735990122665301",
+          "hash": "8857171284269753436",
           "deps": [
             "npm:react",
             "npm:framer-motion",
@@ -1399,7 +1400,7 @@
         },
         {
           "file": "apps/portfolio-web/src/lib/blog/actions.ts",
-          "hash": "18239013805507202742",
+          "hash": "13211641428323493980",
           "deps": [
             "npm:payload",
             "@metashark/cms-core"
@@ -1546,7 +1547,7 @@
         },
         {
           "file": "apps/portfolio-web/src/lib/schemas/homepage.schema.ts",
-          "hash": "11714833132716074596",
+          "hash": "5668222767556575815",
           "deps": [
             "npm:zod"
           ]
@@ -1704,7 +1705,7 @@
         },
         {
           "file": "apps/portfolio-web/src/messages/en-US/ai_gallery_section.json",
-          "hash": "16994259213813782732"
+          "hash": "17518567682656288689"
         },
         {
           "file": "apps/portfolio-web/src/messages/en-US/blog_page.json",
@@ -1812,7 +1813,7 @@
         },
         {
           "file": "apps/portfolio-web/src/messages/es-ES/ai_gallery_section.json",
-          "hash": "119206057601192401"
+          "hash": "12372312377129681254"
         },
         {
           "file": "apps/portfolio-web/src/messages/es-ES/blog_page.json",
@@ -1928,7 +1929,7 @@
         },
         {
           "file": "apps/portfolio-web/src/messages/pt-BR/ai_gallery_section.json",
-          "hash": "2110855274438600971"
+          "hash": "12066572298168333311"
         },
         {
           "file": "apps/portfolio-web/src/messages/pt-BR/blog_page.json",
@@ -2040,7 +2041,7 @@
         },
         {
           "file": "apps/portfolio-web/tsconfig.tsbuildinfo",
-          "hash": "4779437351068996514"
+          "hash": "3472178992841893246"
         }
       ],
       "@portfolio/source": [
@@ -2168,6 +2169,10 @@
           ]
         },
         {
+          "file": "nx",
+          "hash": "3244421341483603138"
+        },
+        {
           "file": "nx.json",
           "hash": "14751176977057679177"
         },
@@ -2292,6 +2297,10 @@
             "npm:uuid",
             "npm:zustand"
           ]
+        },
+        {
+          "file": "pnpm",
+          "hash": "3244421341483603138"
         },
         {
           "file": "pnpm-lock.yaml",
@@ -2717,7 +2726,7 @@
         },
         {
           "file": "packages/cms/core/tsconfig.tsbuildinfo",
-          "hash": "17625534407698323391"
+          "hash": "10611428456138163272"
         }
       ],
       "tests": [
