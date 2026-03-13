@@ -133,6 +133,110 @@
           "hash": "1592622775211130803"
         }
       ],
+      "@metashark/testing-utils": [
+        {
+          "file": "packages/testing-utils/.spec.swcrc",
+          "hash": "18201067170784284381"
+        },
+        {
+          "file": "packages/testing-utils/README.md",
+          "hash": "16269602868918243062"
+        },
+        {
+          "file": "packages/testing-utils/eslint.config.mjs",
+          "hash": "685157097331647975",
+          "deps": [
+            "npm:jsonc-eslint-parser"
+          ]
+        },
+        {
+          "file": "packages/testing-utils/package.json",
+          "hash": "3835705025411571502",
+          "deps": [
+            "npm:react",
+            "npm:react-dom",
+            "npm:@faker-js/faker",
+            "npm:msw",
+            "npm:@testing-library/react",
+            "npm:next-themes",
+            "npm:tslib"
+          ]
+        },
+        {
+          "file": "packages/testing-utils/project.json",
+          "hash": "5887306272548612965"
+        },
+        {
+          "file": "packages/testing-utils/src/index.d.ts",
+          "hash": "8407376922395440544"
+        },
+        {
+          "file": "packages/testing-utils/src/index.ts",
+          "hash": "10496210136792617449"
+        },
+        {
+          "file": "packages/testing-utils/src/lib/factories/user.factory.d.ts",
+          "hash": "16152805565536285395"
+        },
+        {
+          "file": "packages/testing-utils/src/lib/factories/user.factory.ts",
+          "hash": "16366464358184771164",
+          "deps": [
+            "npm:@faker-js/faker"
+          ]
+        },
+        {
+          "file": "packages/testing-utils/src/lib/mocks/handlers.d.ts",
+          "hash": "6456558549446067856"
+        },
+        {
+          "file": "packages/testing-utils/src/lib/mocks/handlers.ts",
+          "hash": "6682892904495886246"
+        },
+        {
+          "file": "packages/testing-utils/src/lib/mocks/server.d.ts",
+          "hash": "879230018059988503",
+          "deps": [
+            "npm:msw"
+          ]
+        },
+        {
+          "file": "packages/testing-utils/src/lib/mocks/server.ts",
+          "hash": "5072969720175049260",
+          "deps": [
+            "npm:msw"
+          ]
+        },
+        {
+          "file": "packages/testing-utils/src/lib/rendering/custom-render.d.ts",
+          "hash": "16330743998609248232",
+          "deps": [
+            "npm:react",
+            "npm:@testing-library/react"
+          ]
+        },
+        {
+          "file": "packages/testing-utils/src/lib/rendering/custom-render.tsx",
+          "hash": "5941408186728530533",
+          "deps": [
+            "npm:react",
+            "npm:@testing-library/react",
+            "npm:next-themes"
+          ]
+        },
+        {
+          "file": "packages/testing-utils/src/lib/testing-utils.ts",
+          "hash": "16045256856501043472"
+        },
+        {
+          "file": "packages/testing-utils/tsconfig.json",
+          "hash": "12804883564201542009"
+        },
+        {
+          "file": "packages/testing-utils/tsconfig.lib.json",
+          "hash": "94856704134188621"
+        }
+      ],
       "@metashark/auth-shield": [
         {
           "file": "packages/auth-shield/README.md",
@@ -195,6 +299,58 @@
         {
           "file": "packages/auth-shield/tsconfig.lib.json",
           "hash": "10316145138534235478"
+        }
+      ],
+      "@metashark/protocol-33": [
+        {
+          "file": "packages/protocol-33/.babelrc",
+          "hash": "2946678488919325452"
+        },
+        {
+          "file": "packages/protocol-33/README.md",
+          "hash": "4870483216979629579"
+        },
+        {
+          "file": "packages/protocol-33/eslint.config.mjs",
+          "hash": "15662645796767624439",
+          "deps": [
+            "npm:@nx/eslint-plugin"
+          ]
+        },
+        {
+          "file": "packages/protocol-33/package.json",
+          "hash": "10093570297047164634",
+          "deps": [
+            "npm:tslib"
+          ]
+        },
+        {
+          "file": "packages/protocol-33/project.json",
+          "hash": "14794796273506873640"
+        },
+        {
+          "file": "packages/protocol-33/src/index.ts",
+          "hash": "8366123336307147095"
+        },
+        {
+          "file": "packages/protocol-33/src/lib/codex.ts",
+          "hash": "16595967080211509877"
+        },
+        {
+          "file": "packages/protocol-33/src/lib/engine.ts",
+          "hash": "1528754415035672242"
+        },
+        {
+          "file": "packages/protocol-33/src/lib/types.ts",
+          "hash": "1556207297016173925"
+        },
+        {
+          "file": "packages/protocol-33/tsconfig.json",
+          "hash": "14029388898024817359"
+        },
+        {
+          "file": "packages/protocol-33/tsconfig.lib.json",
+          "hash": "9779397125517379911"
         }
       ],
       "@metashark/portfolio-web": [
@@ -880,7 +1036,7 @@
         },
         {
           "file": "apps/portfolio-web/src/components/projects/ProjectTechModal.tsx",
-          "hash": "11785050946663033926",
+          "hash": "5960253811306495811",
           "deps": [
             "npm:react",
             "npm:framer-motion",
@@ -1147,9 +1303,10 @@
         },
         {
           "file": "apps/portfolio-web/src/components/ui/PrintButton.tsx",
-          "hash": "14538020884249402939",
+          "hash": "2336633306832681860",
           "deps": [
             "npm:react",
+            "npm:framer-motion",
             "npm:lucide-react"
           ]
         },
@@ -1205,7 +1362,7 @@
         },
         {
           "file": "apps/portfolio-web/src/components/ui/VisitorHud.tsx",
-          "hash": "13223635841434653619",
+          "hash": "15565634402764762137",
           "deps": [
             "npm:react",
             "npm:framer-motion",
@@ -1254,7 +1411,7 @@
         },
         {
           "file": "apps/portfolio-web/src/lib/contexts/WidgetContext.tsx",
-          "hash": "12824906563685923661",
+          "hash": "15832151387283597800",
           "deps": [
             "npm:react"
           ]
@@ -1883,49 +2040,7 @@
         },
         {
           "file": "apps/portfolio-web/tsconfig.tsbuildinfo",
-          "hash": "13936161137173654562"
-        }
-      ],
-      "tests": [
-        {
-          "file": "tests/apps/portfolio-web/components/LiveStatusTicker.spec.d.ts",
-          "hash": "12345030752168512035"
-        },
-        {
-          "file": "tests/apps/portfolio-web/components/LiveStatusTicker.spec.ts",
-          "hash": "5146797763067713204"
-        },
-        {
-          "file": "tests/jest.config.d.ts",
-          "hash": "14347416049980239594"
-        },
-        {
-          "file": "tests/jest.config.ts",
-          "hash": "17982218132478925057"
-        },
-        {
-          "file": "tests/project.json",
-          "hash": "18252000667970237050"
-        },
-        {
-          "file": "tests/tsconfig.json",
-          "hash": "4312882149050565909"
-        },
-        {
-          "file": "tests/tsconfig.tsbuildinfo",
-          "hash": "6220978849717010336"
-        },
-        {
-          "file": "tests/verify-resolution.spec.d.ts",
-          "hash": "3883705457471955508"
-        },
-        {
-          "file": "tests/verify-resolution.spec.tsx",
-          "hash": "17601935515958187401",
-          "deps": [
-            "npm:react",
-            "@metashark/cms-core"
-          ]
+          "hash": "4779437351068996514"
         }
       ],
       "@portfolio/source": [
@@ -2515,58 +2630,6 @@
           "hash": "2624760228153769692"
         }
       ],
-      "@metashark/protocol-33": [
-        {
-          "file": "packages/protocol-33/.babelrc",
-          "hash": "2946678488919325452"
-        },
-        {
-          "file": "packages/protocol-33/README.md",
-          "hash": "4870483216979629579"
-        },
-        {
-          "file": "packages/protocol-33/eslint.config.mjs",
-          "hash": "15662645796767624439",
-          "deps": [
-            "npm:@nx/eslint-plugin"
-          ]
-        },
-        {
-          "file": "packages/protocol-33/package.json",
-          "hash": "10093570297047164634",
-          "deps": [
-            "npm:tslib"
-          ]
-        },
-        {
-          "file": "packages/protocol-33/project.json",
-          "hash": "14794796273506873640"
-        },
-        {
-          "file": "packages/protocol-33/src/index.ts",
-          "hash": "8366123336307147095"
-        },
-        {
-          "file": "packages/protocol-33/src/lib/codex.ts",
-          "hash": "16595967080211509877"
-        },
-        {
-          "file": "packages/protocol-33/src/lib/engine.ts",
-          "hash": "1528754415035672242"
-        },
-        {
-          "file": "packages/protocol-33/src/lib/types.ts",
-          "hash": "1556207297016173925"
-        },
-        {
-          "file": "packages/protocol-33/tsconfig.json",
-          "hash": "14029388898024817359"
-        },
-        {
-          "file": "packages/protocol-33/tsconfig.lib.json",
-          "hash": "9779397125517379911"
-        }
-      ],
       "@metashark/cms-core": [
         {
           "file": "packages/cms/core/README.md",
@@ -2650,108 +2713,46 @@
           "hash": "17625534407698323391"
         }
       ],
-      "@metashark/testing-utils": [
+      "tests": [
         {
-          "file": "packages/testing-utils/.spec.swcrc",
-          "hash": "18201067170784284381"
+          "file": "tests/apps/portfolio-web/components/LiveStatusTicker.spec.d.ts",
+          "hash": "12345030752168512035"
         },
         {
-          "file": "packages/testing-utils/README.md",
-          "hash": "16269602868918243062"
+          "file": "tests/apps/portfolio-web/components/LiveStatusTicker.spec.ts",
+          "hash": "5146797763067713204"
         },
         {
-          "file": "packages/testing-utils/eslint.config.mjs",
-          "hash": "685157097331647975",
-          "deps": [
-            "npm:jsonc-eslint-parser"
-          ]
+          "file": "tests/jest.config.d.ts",
+          "hash": "14347416049980239594"
         },
         {
-          "file": "packages/testing-utils/package.json",
-          "hash": "3835705025411571502",
-          "deps": [
-            "npm:react",
-            "npm:react-dom",
-            "npm:@faker-js/faker",
-            "npm:msw",
-            "npm:@testing-library/react",
-            "npm:next-themes",
-            "npm:tslib"
-          ]
+          "file": "tests/jest.config.ts",
+          "hash": "17982218132478925057"
         },
         {
-          "file": "packages/testing-utils/project.json",
-          "hash": "5887306272548612965"
+          "file": "tests/project.json",
+          "hash": "18252000667970237050"
         },
         {
-          "file": "packages/testing-utils/src/index.d.ts",
-          "hash": "8407376922395440544"
+          "file": "tests/tsconfig.json",
+          "hash": "4312882149050565909"
         },
         {
-          "file": "packages/testing-utils/src/index.ts",
-          "hash": "10496210136792617449"
+          "file": "tests/tsconfig.tsbuildinfo",
+          "hash": "6220978849717010336"
         },
         {
-          "file": "packages/testing-utils/src/lib/factories/user.factory.d.ts",
-          "hash": "16152805565536285395"
+          "file": "tests/verify-resolution.spec.d.ts",
+          "hash": "3883705457471955508"
         },
         {
-          "file": "packages/testing-utils/src/lib/factories/user.factory.ts",
-          "hash": "16366464358184771164",
-          "deps": [
-            "npm:@faker-js/faker"
-          ]
-        },
-        {
-          "file": "packages/testing-utils/src/lib/mocks/handlers.d.ts",
-          "hash": "6456558549446067856"
-        },
-        {
-          "file": "packages/testing-utils/src/lib/mocks/handlers.ts",
-          "hash": "6682892904495886246"
-        },
-        {
-          "file": "packages/testing-utils/src/lib/mocks/server.d.ts",
-          "hash": "879230018059988503",
-          "deps": [
-            "npm:msw"
-          ]
-        },
-        {
-          "file": "packages/testing-utils/src/lib/mocks/server.ts",
-          "hash": "5072969720175049260",
-          "deps": [
-            "npm:msw"
-          ]
-        },
-        {
-          "file": "packages/testing-utils/src/lib/rendering/custom-render.d.ts",
-          "hash": "16330743998609248232",
+          "file": "tests/verify-resolution.spec.tsx",
+          "hash": "17601935515958187401",
           "deps": [
             "npm:react",
-            "npm:@testing-library/react"
+            "@metashark/cms-core"
           ]
-        },
-        {
-          "file": "packages/testing-utils/src/lib/rendering/custom-render.tsx",
-          "hash": "5941408186728530533",
-          "deps": [
-            "npm:react",
-            "npm:@testing-library/react",
-            "npm:next-themes"
-          ]
-        },
-        {
-          "file": "packages/testing-utils/src/lib/testing-utils.ts",
-          "hash": "16045256856501043472"
-        },
-        {
-          "file": "packages/testing-utils/tsconfig.json",
-          "hash": "12804883564201542009"
-        },
-        {
-          "file": "packages/testing-utils/tsconfig.lib.json",
-          "hash": "94856704134188621"
         }
       ]
     }

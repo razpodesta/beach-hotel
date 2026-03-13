@@ -1,8 +1,9 @@
 /**
  * @file apps/portfolio-web/src/components/projects/ProjectTechModal.tsx
  * @description Escaparate de ingeniería avanzada para activos digitales.
- *              Orquesta la visualización de arquitectura, tech stack y opciones de élite.
- * @version 5.2 - Explicit Type Iteration & Safety
+ *              Orquesta la visualización de arquitectura y opciones de élite.
+ *              Implementa tipado puro sin 'any' sincronizado con el esquema v5.2.
+ * @version 6.1 - Zero Any Compliance (Pilar III)
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -14,27 +15,42 @@ import { X, Cpu, ShieldCheck, Layers, Zap, Star, Layout, Crown } from 'lucide-re
 
 /**
  * IMPORTACIONES NIVELADAS
+ * @pilar V: Adherencia arquitectónica mediante rutas relativas internas.
  */
 import { cn } from '../../lib/utils/cn';
-import type { ProjectEntity } from '../../lib/schemas/project_details.schema';
+import type { ProjectEntity, ProjectEliteOption } from '../../lib/schemas/project_details.schema';
+
+/**
+ * SUB-APARATO ATÓMICO: EliteOptionCard
+ * @pilar IX: Componentización granular para optimizar ciclos de renderizado.
+ */
+const EliteOptionCard = ({ option }: { option: ProjectEliteOption }) => (
+  <div className="p-5 rounded-2xl border border-white/5 bg-zinc-900/20 group hover:bg-zinc-900/40 transition-all">
+    <p className="text-xs text-white font-bold mb-1 flex items-center gap-2">
+      <span className="h-1 w-1 rounded-full bg-yellow-500" /> {option.name}
+    </p>
+    <p className="text-xs text-zinc-500 leading-relaxed font-sans">{option.detail}</p>
+  </div>
+);
 
 interface ProjectTechModalProps {
-  /** Entidad del proyecto validada por el contrato de Zod */
+  /** Entidad del proyecto validada por el contrato soberano de Zod */
   data: ProjectEntity;
 }
 
 /**
- * Aparato Visual: ProjectTechModal
+ * APARATO PRINCIPAL: ProjectTechModal
  */
 export function ProjectTechModal({ data }: ProjectTechModalProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   /**
    * @pilar IV: Observabilidad (Heimdall).
+   * Registro forense de interacción visual.
    */
   const trackOpening = useCallback(() => {
     if (data) {
-      console.log(`[HEIMDALL][UX] Interacción: Modal de Ingeniería -> ${data.title}`);
+      console.log(`[HEIMDALL][UX] Modal Proyectos -> Entrada: ${data.title}`);
       setIsOpen(true);
     }
   }, [data]);
@@ -44,7 +60,7 @@ export function ProjectTechModal({ data }: ProjectTechModalProps) {
     return () => clearTimeout(timer);
   }, [trackOpening]);
 
-  // @pilar VIII: Guardia de Resiliencia
+  // @pilar VIII: Guardia de Resiliencia ante datos nulos
   if (!data) return null;
 
   return (
@@ -58,7 +74,6 @@ export function ProjectTechModal({ data }: ProjectTechModalProps) {
           role="dialog"
           aria-modal="true"
           aria-labelledby="modal-title"
-          aria-describedby="modal-description"
           onClick={() => setIsOpen(false)}
         >
           <motion.div
@@ -75,7 +90,7 @@ export function ProjectTechModal({ data }: ProjectTechModalProps) {
             {/* 1. HEADER: BRANDING DINÁMICO */}
             <header className="relative h-48 w-full overflow-hidden bg-zinc-900">
               <div 
-                className="absolute inset-0 opacity-30 transition-colors duration-1000"
+                className="absolute inset-0 opacity-30 transition-opacity duration-1000"
                 style={{ 
                   background: `radial-gradient(circle at top left, ${data.branding.primary_color}, transparent)` 
                 }} 
@@ -83,14 +98,14 @@ export function ProjectTechModal({ data }: ProjectTechModalProps) {
               
               <button
                 onClick={() => setIsOpen(false)}
-                className="absolute right-8 top-8 z-30 rounded-full bg-black/40 p-3 text-white backdrop-blur-2xl hover:bg-white hover:text-black transition-all active:scale-90 border border-white/10 outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
-                aria-label="Cerrar especificaciones"
+                className="absolute right-8 top-8 z-30 rounded-full bg-black/40 p-3 text-white backdrop-blur-2xl hover:bg-white hover:text-black transition-all border border-white/10 outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
+                aria-label="Cerrar modal"
               >
                 <X size={20} />
               </button>
 
               <div className="absolute bottom-0 left-0 p-10 z-10">
-                <div className="flex items-center gap-4 mb-4">
+                <div className="flex flex-wrap items-center gap-4 mb-4">
                   <div className="inline-flex items-center gap-2 rounded-full border border-purple-500/30 bg-purple-500/10 px-4 py-1 text-[9px] font-bold uppercase tracking-[0.3em] text-purple-400 backdrop-blur-md">
                     <Cpu size={12} /> Ingeniería de Élite
                   </div>
@@ -104,14 +119,14 @@ export function ProjectTechModal({ data }: ProjectTechModalProps) {
               </div>
             </header>
 
-            {/* 2. BODY: GRID DE ESPECIFICACIONES */}
-            <div className="max-h-[65vh] overflow-y-auto p-10 space-y-12 scrollbar-hide custom-scrollbar">
+            {/* 2. BODY: DESGLOSE TÉCNICO */}
+            <div className="max-h-[60vh] overflow-y-auto p-10 space-y-12 custom-scrollbar">
               
               <section className="space-y-4">
                 <h3 className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-500">
-                  <Zap size={16} className="text-purple-500" /> Objetivo del Activo
+                  <Zap size={16} className="text-purple-500" /> Objetivo del Sistema
                 </h3>
-                <div className="rounded-3xl border border-white/5 bg-white/2 p-8 transition-colors hover:border-white/10" id="modal-description">
+                <div className="rounded-3xl border border-white/5 bg-white/2 p-8">
                   <h4 className="mb-3 font-bold text-zinc-100 text-lg">{data.introduction.heading}</h4>
                   <p className="text-base leading-relaxed text-zinc-400 font-sans font-light italic">
                     "{data.introduction.body}"
@@ -120,29 +135,28 @@ export function ProjectTechModal({ data }: ProjectTechModalProps) {
               </section>
 
               <div className="grid gap-12 md:grid-cols-2">
+                {/* Tech Stack */}
                 <section>
                   <h3 className="mb-6 flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-500">
                     <Layers size={16} className="text-pink-500" /> Infrastructure Stack
                   </h3>
                   <div className="flex flex-wrap gap-2">
-                    {data.tech_stack.map((tech: string) => (
-                      <span 
-                        key={tech} 
-                        className="rounded-xl border border-white/5 bg-zinc-900/50 px-4 py-2.5 text-xs font-mono font-medium text-zinc-300 hover:border-pink-500/30 transition-colors"
-                      >
+                    {data.tech_stack.map((tech) => (
+                      <span key={tech} className="rounded-xl border border-white/5 bg-zinc-900/50 px-4 py-2.5 text-xs font-mono text-zinc-300">
                         {tech}
                       </span>
                     ))}
                   </div>
                 </section>
 
+                {/* Arquitectura Backend */}
                 {data.backend_architecture && (
                   <section>
                     <h3 className="mb-6 flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-500">
                       <ShieldCheck size={16} className="text-blue-500" /> {data.backend_architecture.title}
                     </h3>
                     <ul className="space-y-4">
-                      {data.backend_architecture.features.map((feat: string, i: number) => (
+                      {data.backend_architecture.features.map((feat, i) => (
                         <li key={i} className="flex items-start gap-4 text-sm text-zinc-400 font-sans">
                           <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-blue-500 shadow-[0_0_8px_#3b82f6]" />
                           {feat}
@@ -154,28 +168,23 @@ export function ProjectTechModal({ data }: ProjectTechModalProps) {
               </div>
 
               {/* 
-                 @pilar II: Opciones de Élite. 
-                 Se implementa un Type Guard manual para evitar el error TS2339 
-                 mientras se sincroniza el esquema físico.
+                 @pilar III: Opciones de Élite. 
+                 Saneado: Eliminado casting 'as any'. El contrato es ahora nativo.
               */}
-              {(data as any).elite_options && (data as any).elite_options.length > 0 && (
+              {data.elite_options && data.elite_options.length > 0 && (
                 <section className="pt-4 border-t border-white/5">
                   <h3 className="mb-6 flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-500">
                     <Crown size={16} className="text-yellow-500" /> Elite Deployment Options
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {(data as any).elite_options.map((option: { name: string; detail: string }) => (
-                      <div key={option.name} className="p-5 rounded-2xl border border-white/5 bg-zinc-900/20 group hover:bg-zinc-900/40 transition-all">
-                        <p className="text-xs text-white font-bold mb-1 flex items-center gap-2">
-                           <span className="h-1 w-1 rounded-full bg-yellow-500" /> {option.name}
-                        </p>
-                        <p className="text-xs text-zinc-500 leading-relaxed font-sans">{option.detail}</p>
-                      </div>
+                    {data.elite_options.map((option: ProjectEliteOption) => (
+                      <EliteOptionCard key={option.name} option={option} />
                     ))}
                   </div>
                 </section>
               )}
 
+              {/* Gobernanza */}
               <section className="pt-4">
                 <h3 className="mb-6 flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-500">
                   <Layout size={16} className="text-cyan-500" /> Governance & Layout
@@ -200,7 +209,7 @@ export function ProjectTechModal({ data }: ProjectTechModalProps) {
             <footer className="border-t border-white/5 bg-white/2 p-8">
               <button
                 onClick={() => setIsOpen(false)}
-                className="w-full rounded-2xl bg-white py-5 text-[10px] font-bold uppercase tracking-[0.5em] text-black hover:bg-purple-600 hover:text-white transition-all duration-500 shadow-2xl active:scale-[0.98] outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
+                className="w-full rounded-2xl bg-white py-5 text-[10px] font-bold uppercase tracking-[0.5em] text-black hover:bg-purple-600 hover:text-white transition-all duration-500 shadow-2xl active:scale-[0.98] outline-none"
               >
                 Cerrar Protocolo Técnico
               </button>
