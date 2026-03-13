@@ -1,0 +1,38 @@
+{
+  "name": "@metashark/auth-shield",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/auth-shield/src",
+  "projectType": "library",
+  "tags": ["scope:shared", "type:logic"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/auth-shield",
+        "main": "packages/auth-shield/src/index.ts",
+        "tsConfig": "packages/auth-shield/tsconfig.lib.json",
+        "assets": ["packages/auth-shield/*.md"],
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/packages/auth-shield"],
+      "options": {
+        "jestConfig": "packages/auth-shield/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc -p packages/auth-shield/tsconfig.lib.json --noEmit",
+        "forwardAllArgs": true
+      }
+    }
+  }
+}

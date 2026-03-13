@@ -1,9 +1,9 @@
 {
-  "name": "@razpodesta/protocol-33",
+  "name": "@metashark/protocol-33",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/protocol-33/src",
   "projectType": "library",
-  "tags": ["scope:shared", "type:util"],
+  "tags": ["scope:shared", "type:logic"],
   "targets": {
     "build": {
       "executor": "@nx/js:tsc",
@@ -12,7 +12,8 @@
         "outputPath": "dist/packages/protocol-33",
         "main": "packages/protocol-33/src/index.ts",
         "tsConfig": "packages/protocol-33/tsconfig.lib.json",
-        "assets": ["packages/protocol-33/*.md"]
+        "assets": ["packages/protocol-33/*.md"],
+        "updateBuildableProjectDepsInPackageJson": true
       }
     },
     "lint": {
@@ -22,7 +23,15 @@
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/packages/protocol-33"],
       "options": {
-        "jestConfig": "packages/protocol-33/jest.config.ts"
+        "jestConfig": "packages/protocol-33/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc -p packages/protocol-33/tsconfig.lib.json --noEmit",
+        "forwardAllArgs": true
       }
     }
   }

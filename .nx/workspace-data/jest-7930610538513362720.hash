@@ -1,5 +1,5 @@
 {
-  "16809901045302949598": {
+  "6268399918068227560": {
     "targets": {
       "test": {
         "command": "jest",
@@ -40,7 +40,7 @@
       }
     }
   },
-  "17330700993024818055": {
+  "766494972482917777": {
     "targets": {
       "test": {
         "command": "jest",
@@ -81,1405 +81,11 @@
       }
     }
   },
-  "7441856093930250995": {
+  "15758050392561919195": {
     "targets": {
       "test": {
         "command": "jest",
         "options": {
-          "cwd": "packages/auth-shield",
-          "env": {
-            "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
-          }
-        },
-        "metadata": {
-          "technologies": [
-            "jest"
-          ],
-          "description": "Run Jest Tests",
-          "help": {
-            "command": "pnpm exec jest --help",
-            "example": {
-              "options": {
-                "coverage": true
-              }
-            }
-          }
-        },
-        "cache": true,
-        "inputs": [
-          "default",
-          "^production",
-          "{workspaceRoot}\\jest.preset.js",
-          {
-            "externalDependencies": [
-              "jest"
-            ]
-          }
-        ],
-        "outputs": [
-          "{workspaceRoot}\\coverage\\packages\\auth-shield"
-        ]
-      }
-    }
-  },
-  "15340101863274531473": {
-    "targets": {
-      "test": {
-        "command": "jest",
-        "options": {
-          "cwd": "packages/cms/core",
-          "env": {
-            "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
-          }
-        },
-        "metadata": {
-          "technologies": [
-            "jest"
-          ],
-          "description": "Run Jest Tests",
-          "help": {
-            "command": "pnpm exec jest --help",
-            "example": {
-              "options": {
-                "coverage": true
-              }
-            }
-          }
-        },
-        "cache": true,
-        "inputs": [
-          "default",
-          "^production",
-          "{workspaceRoot}\\jest.preset.js",
-          {
-            "externalDependencies": [
-              "jest"
-            ]
-          }
-        ],
-        "outputs": [
-          "{workspaceRoot}\\coverage\\packages\\cms\\core"
-        ]
-      }
-    }
-  },
-  "2898141309737291888": {
-    "targets": {
-      "test": {
-        "command": "jest",
-        "options": {
-          "cwd": "packages/cms/ui",
-          "env": {
-            "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
-          }
-        },
-        "metadata": {
-          "technologies": [
-            "jest"
-          ],
-          "description": "Run Jest Tests",
-          "help": {
-            "command": "pnpm exec jest --help",
-            "example": {
-              "options": {
-                "coverage": true
-              }
-            }
-          }
-        },
-        "cache": true,
-        "inputs": [
-          "default",
-          "^production",
-          "{workspaceRoot}\\jest.preset.js",
-          {
-            "externalDependencies": [
-              "jest"
-            ]
-          }
-        ],
-        "outputs": [
-          "{workspaceRoot}\\coverage\\packages\\cms\\ui"
-        ]
-      }
-    }
-  },
-  "3395135365882720388": {
-    "targets": {
-      "test": {
-        "command": "jest",
-        "options": {
-          "cwd": "packages/protocol-33",
-          "env": {
-            "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
-          }
-        },
-        "metadata": {
-          "technologies": [
-            "jest"
-          ],
-          "description": "Run Jest Tests",
-          "help": {
-            "command": "pnpm exec jest --help",
-            "example": {
-              "options": {
-                "coverage": true
-              }
-            }
-          }
-        },
-        "cache": true,
-        "inputs": [
-          "default",
-          "^production",
-          "{workspaceRoot}\\jest.preset.js",
-          {
-            "externalDependencies": [
-              "jest"
-            ]
-          }
-        ],
-        "outputs": [
-          "{workspaceRoot}\\coverage\\packages\\protocol-33"
-        ]
-      }
-    }
-  },
-  "17365006053504016410": {
-    "targets": {
-      "test": {
-        "command": "jest",
-        "options": {
-          "cwd": "packages/testing-utils",
-          "env": {
-            "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
-          }
-        },
-        "metadata": {
-          "technologies": [
-            "jest"
-          ],
-          "description": "Run Jest Tests",
-          "help": {
-            "command": "pnpm exec jest --help",
-            "example": {
-              "options": {
-                "coverage": true
-              }
-            }
-          }
-        },
-        "cache": true,
-        "inputs": [
-          "default",
-          "^production",
-          "{workspaceRoot}\\jest.preset.js",
-          {
-            "externalDependencies": [
-              "jest"
-            ]
-          }
-        ],
-        "outputs": [
-          "{workspaceRoot}\\coverage\\packages\\testing-utils"
-        ]
-      }
-    }
-  },
-  "14224236341222823892": {
-    "targets": {
-      "test": {
-        "command": "jest",
-        "options": {
-          "cwd": "apps/portfolio-web",
-          "env": {
-            "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
-          }
-        },
-        "metadata": {
-          "technologies": [
-            "jest"
-          ],
-          "description": "Run Jest Tests",
-          "help": {
-            "command": "pnpm exec jest --help",
-            "example": {
-              "options": {
-                "coverage": true
-              }
-            }
-          }
-        },
-        "cache": true,
-        "inputs": [
-          "default",
-          "^production",
-          "{workspaceRoot}\\jest.preset.js",
-          {
-            "externalDependencies": [
-              "jest"
-            ]
-          }
-        ],
-        "outputs": [
-          "{workspaceRoot}\\coverage\\apps\\portfolio-web"
-        ]
-      }
-    }
-  },
-  "5155926620925993067": {
-    "targets": {
-      "test": {
-        "command": "jest",
-        "options": {
-          "cwd": ".",
-          "env": {
-            "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
-          }
-        },
-        "metadata": {
-          "technologies": [
-            "jest"
-          ],
-          "description": "Run Jest Tests",
-          "help": {
-            "command": "pnpm exec jest --help",
-            "example": {
-              "options": {
-                "coverage": true
-              }
-            }
-          }
-        },
-        "cache": true,
-        "inputs": [
-          "default",
-          "^production",
-          "{projectRoot}\\jest.preset.js",
-          {
-            "externalDependencies": [
-              "jest"
-            ]
-          }
-        ],
-        "outputs": [
-          "{projectRoot}\\test-output\\jest\\coverage"
-        ]
-      }
-    }
-  },
-  "11492210254321977814": {
-    "targets": {
-      "test": {
-        "command": "jest",
-        "options": {
-          "cwd": ".",
-          "env": {
-            "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
-          }
-        },
-        "metadata": {
-          "technologies": [
-            "jest"
-          ],
-          "description": "Run Jest Tests",
-          "help": {
-            "command": "pnpm exec jest --help",
-            "example": {
-              "options": {
-                "coverage": true
-              }
-            }
-          }
-        },
-        "cache": true,
-        "inputs": [
-          "default",
-          "^production",
-          "{projectRoot}\\jest.preset.js",
-          {
-            "externalDependencies": [
-              "jest"
-            ]
-          }
-        ],
-        "outputs": [
-          "{projectRoot}\\test-output\\jest\\coverage"
-        ]
-      }
-    }
-  },
-  "17800246820032722456": {
-    "targets": {
-      "test": {
-        "command": "jest",
-        "options": {
-          "cwd": ".",
-          "env": {
-            "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
-          }
-        },
-        "metadata": {
-          "technologies": [
-            "jest"
-          ],
-          "description": "Run Jest Tests",
-          "help": {
-            "command": "pnpm exec jest --help",
-            "example": {
-              "options": {
-                "coverage": true
-              }
-            }
-          }
-        },
-        "cache": true,
-        "inputs": [
-          "default",
-          "^production",
-          "{projectRoot}\\jest.preset.js",
-          {
-            "externalDependencies": [
-              "jest"
-            ]
-          }
-        ],
-        "outputs": [
-          "{projectRoot}\\test-output\\jest\\coverage"
-        ]
-      }
-    }
-  },
-  "7592619572227291964": {
-    "targets": {
-      "test": {
-        "command": "jest",
-        "options": {
-          "cwd": ".",
-          "env": {
-            "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
-          }
-        },
-        "metadata": {
-          "technologies": [
-            "jest"
-          ],
-          "description": "Run Jest Tests",
-          "help": {
-            "command": "pnpm exec jest --help",
-            "example": {
-              "options": {
-                "coverage": true
-              }
-            }
-          }
-        },
-        "cache": true,
-        "inputs": [
-          "default",
-          "^production",
-          "{projectRoot}\\jest.preset.js",
-          {
-            "externalDependencies": [
-              "jest"
-            ]
-          }
-        ],
-        "outputs": [
-          "{projectRoot}\\test-output\\jest\\coverage"
-        ]
-      }
-    }
-  },
-  "17928402167298644926": {
-    "targets": {
-      "test": {
-        "command": "jest",
-        "options": {
-          "cwd": "packages/cms/core",
-          "env": {
-            "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
-          }
-        },
-        "metadata": {
-          "technologies": [
-            "jest"
-          ],
-          "description": "Run Jest Tests",
-          "help": {
-            "command": "pnpm exec jest --help",
-            "example": {
-              "options": {
-                "coverage": true
-              }
-            }
-          }
-        },
-        "cache": true,
-        "inputs": [
-          "default",
-          "^production",
-          "{workspaceRoot}\\jest.preset.js",
-          {
-            "externalDependencies": [
-              "jest"
-            ]
-          }
-        ],
-        "outputs": [
-          "{workspaceRoot}\\coverage\\packages\\cms\\core"
-        ]
-      }
-    }
-  },
-  "66983087303443271": {
-    "targets": {
-      "test": {
-        "command": "jest",
-        "options": {
-          "cwd": "apps/portfolio-web",
-          "env": {
-            "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
-          }
-        },
-        "metadata": {
-          "technologies": [
-            "jest"
-          ],
-          "description": "Run Jest Tests",
-          "help": {
-            "command": "pnpm exec jest --help",
-            "example": {
-              "options": {
-                "coverage": true
-              }
-            }
-          }
-        },
-        "cache": true,
-        "inputs": [
-          "default",
-          "^production",
-          "{workspaceRoot}\\jest.preset.js",
-          {
-            "externalDependencies": [
-              "jest"
-            ]
-          }
-        ],
-        "outputs": [
-          "{workspaceRoot}\\coverage\\apps\\portfolio-web"
-        ]
-      }
-    }
-  },
-  "9938950010243103902": {
-    "targets": {
-      "test": {
-        "command": "jest",
-        "options": {
-          "cwd": ".",
-          "env": {
-            "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
-          }
-        },
-        "metadata": {
-          "technologies": [
-            "jest"
-          ],
-          "description": "Run Jest Tests",
-          "help": {
-            "command": "pnpm exec jest --help",
-            "example": {
-              "options": {
-                "coverage": true
-              }
-            }
-          }
-        },
-        "cache": true,
-        "inputs": [
-          "default",
-          "^production",
-          "{projectRoot}\\jest.preset.js",
-          {
-            "externalDependencies": [
-              "jest"
-            ]
-          }
-        ],
-        "outputs": [
-          "{projectRoot}\\test-output\\jest\\coverage"
-        ]
-      }
-    }
-  },
-  "4229280447671202412": {
-    "targets": {
-      "test": {
-        "command": "jest",
-        "options": {
-          "cwd": ".",
-          "env": {
-            "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
-          }
-        },
-        "metadata": {
-          "technologies": [
-            "jest"
-          ],
-          "description": "Run Jest Tests",
-          "help": {
-            "command": "pnpm exec jest --help",
-            "example": {
-              "options": {
-                "coverage": true
-              }
-            }
-          }
-        },
-        "cache": true,
-        "inputs": [
-          "default",
-          "^production",
-          "{projectRoot}\\jest.preset.js",
-          {
-            "externalDependencies": [
-              "jest"
-            ]
-          }
-        ],
-        "outputs": [
-          "{projectRoot}\\test-output\\jest\\coverage"
-        ]
-      }
-    }
-  },
-  "18043305278231591866": {
-    "targets": {
-      "test": {
-        "command": "jest",
-        "options": {
-          "cwd": ".",
-          "env": {
-            "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
-          }
-        },
-        "metadata": {
-          "technologies": [
-            "jest"
-          ],
-          "description": "Run Jest Tests",
-          "help": {
-            "command": "pnpm exec jest --help",
-            "example": {
-              "options": {
-                "coverage": true
-              }
-            }
-          }
-        },
-        "cache": true,
-        "inputs": [
-          "default",
-          "^production",
-          "{projectRoot}\\jest.preset.js",
-          {
-            "externalDependencies": [
-              "jest"
-            ]
-          }
-        ],
-        "outputs": [
-          "{projectRoot}\\test-output\\jest\\coverage"
-        ]
-      }
-    }
-  },
-  "3933524586636801489": {
-    "targets": {
-      "test": {
-        "command": "jest",
-        "options": {
-          "cwd": ".",
-          "env": {
-            "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
-          }
-        },
-        "metadata": {
-          "technologies": [
-            "jest"
-          ],
-          "description": "Run Jest Tests",
-          "help": {
-            "command": "pnpm exec jest --help",
-            "example": {
-              "options": {
-                "coverage": true
-              }
-            }
-          }
-        },
-        "cache": true,
-        "inputs": [
-          "default",
-          "^production",
-          "{projectRoot}\\jest.preset.js",
-          {
-            "externalDependencies": [
-              "jest"
-            ]
-          }
-        ],
-        "outputs": [
-          "{projectRoot}\\test-output\\jest\\coverage"
-        ]
-      }
-    }
-  },
-  "17342918328593439052": {
-    "targets": {
-      "test": {
-        "command": "jest",
-        "options": {
-          "cwd": ".",
-          "env": {
-            "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
-          }
-        },
-        "metadata": {
-          "technologies": [
-            "jest"
-          ],
-          "description": "Run Jest Tests",
-          "help": {
-            "command": "pnpm exec jest --help",
-            "example": {
-              "options": {
-                "coverage": true
-              }
-            }
-          }
-        },
-        "cache": true,
-        "inputs": [
-          "default",
-          "^production",
-          "{projectRoot}\\jest.preset.js",
-          {
-            "externalDependencies": [
-              "jest"
-            ]
-          }
-        ],
-        "outputs": [
-          "{projectRoot}\\test-output\\jest\\coverage"
-        ]
-      }
-    }
-  },
-  "7703649968883215348": {
-    "targets": {
-      "test": {
-        "command": "jest",
-        "options": {
-          "cwd": "packages/cms/core",
-          "env": {
-            "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
-          }
-        },
-        "metadata": {
-          "technologies": [
-            "jest"
-          ],
-          "description": "Run Jest Tests",
-          "help": {
-            "command": "pnpm exec jest --help",
-            "example": {
-              "options": {
-                "coverage": true
-              }
-            }
-          }
-        },
-        "cache": true,
-        "inputs": [
-          "default",
-          "^production",
-          "{workspaceRoot}\\jest.preset.js",
-          {
-            "externalDependencies": [
-              "jest"
-            ]
-          }
-        ],
-        "outputs": [
-          "{workspaceRoot}\\coverage\\packages\\cms\\core"
-        ]
-      }
-    }
-  },
-  "290707374000663927": {
-    "targets": {
-      "test": {
-        "command": "jest",
-        "options": {
-          "cwd": "apps/portfolio-web",
-          "env": {
-            "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
-          }
-        },
-        "metadata": {
-          "technologies": [
-            "jest"
-          ],
-          "description": "Run Jest Tests",
-          "help": {
-            "command": "pnpm exec jest --help",
-            "example": {
-              "options": {
-                "coverage": true
-              }
-            }
-          }
-        },
-        "cache": true,
-        "inputs": [
-          "default",
-          "^production",
-          "{workspaceRoot}\\jest.preset.js",
-          {
-            "externalDependencies": [
-              "jest"
-            ]
-          }
-        ],
-        "outputs": [
-          "{workspaceRoot}\\coverage\\apps\\portfolio-web"
-        ]
-      }
-    }
-  },
-  "17410279511491021799": {
-    "targets": {
-      "test": {
-        "command": "jest",
-        "options": {
-          "cwd": ".",
-          "env": {
-            "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
-          }
-        },
-        "metadata": {
-          "technologies": [
-            "jest"
-          ],
-          "description": "Run Jest Tests",
-          "help": {
-            "command": "pnpm exec jest --help",
-            "example": {
-              "options": {
-                "coverage": true
-              }
-            }
-          }
-        },
-        "cache": true,
-        "inputs": [
-          "default",
-          "^production",
-          "{projectRoot}\\jest.preset.js",
-          {
-            "externalDependencies": [
-              "jest"
-            ]
-          }
-        ],
-        "outputs": [
-          "{projectRoot}\\test-output\\jest\\coverage"
-        ]
-      }
-    }
-  },
-  "16076963361513117498": {
-    "targets": {
-      "test": {
-        "command": "jest",
-        "options": {
-          "cwd": ".",
-          "env": {
-            "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
-          }
-        },
-        "metadata": {
-          "technologies": [
-            "jest"
-          ],
-          "description": "Run Jest Tests",
-          "help": {
-            "command": "pnpm exec jest --help",
-            "example": {
-              "options": {
-                "coverage": true
-              }
-            }
-          }
-        },
-        "cache": true,
-        "inputs": [
-          "default",
-          "^production",
-          "{projectRoot}\\jest.preset.js",
-          {
-            "externalDependencies": [
-              "jest"
-            ]
-          }
-        ],
-        "outputs": [
-          "{projectRoot}\\test-output\\jest\\coverage"
-        ]
-      }
-    }
-  },
-  "18000374854394626023": {
-    "targets": {
-      "test": {
-        "command": "jest",
-        "options": {
-          "cwd": "apps/portfolio-web",
-          "env": {
-            "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
-          }
-        },
-        "metadata": {
-          "technologies": [
-            "jest"
-          ],
-          "description": "Run Jest Tests",
-          "help": {
-            "command": "pnpm exec jest --help",
-            "example": {
-              "options": {
-                "coverage": true
-              }
-            }
-          }
-        },
-        "cache": true,
-        "inputs": [
-          "default",
-          "^production",
-          "{workspaceRoot}\\jest.preset.js",
-          {
-            "externalDependencies": [
-              "jest"
-            ]
-          }
-        ],
-        "outputs": [
-          "{workspaceRoot}\\coverage\\apps\\portfolio-web"
-        ]
-      }
-    }
-  },
-  "8435996141105546273": {
-    "targets": {
-      "test": {
-        "command": "jest",
-        "options": {
-          "cwd": ".",
-          "env": {
-            "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
-          }
-        },
-        "metadata": {
-          "technologies": [
-            "jest"
-          ],
-          "description": "Run Jest Tests",
-          "help": {
-            "command": "pnpm exec jest --help",
-            "example": {
-              "options": {
-                "coverage": true
-              }
-            }
-          }
-        },
-        "cache": true,
-        "inputs": [
-          "default",
-          "^production",
-          "{projectRoot}\\jest.preset.js",
-          {
-            "externalDependencies": [
-              "jest"
-            ]
-          }
-        ],
-        "outputs": [
-          "{projectRoot}\\test-output\\jest\\coverage"
-        ]
-      }
-    }
-  },
-  "13486927197902386983": {
-    "targets": {
-      "test": {
-        "command": "jest",
-        "options": {
-          "cwd": ".",
-          "env": {
-            "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
-          }
-        },
-        "metadata": {
-          "technologies": [
-            "jest"
-          ],
-          "description": "Run Jest Tests",
-          "help": {
-            "command": "pnpm exec jest --help",
-            "example": {
-              "options": {
-                "coverage": true
-              }
-            }
-          }
-        },
-        "cache": true,
-        "inputs": [
-          "default",
-          "^production",
-          "{projectRoot}\\jest.preset.js",
-          {
-            "externalDependencies": [
-              "jest"
-            ]
-          }
-        ],
-        "outputs": [
-          "{projectRoot}\\test-output\\jest\\coverage"
-        ]
-      }
-    }
-  },
-  "15347867301028017455": {
-    "targets": {
-      "test": {
-        "command": "jest",
-        "options": {
-          "cwd": ".",
-          "env": {
-            "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
-          }
-        },
-        "metadata": {
-          "technologies": [
-            "jest"
-          ],
-          "description": "Run Jest Tests",
-          "help": {
-            "command": "pnpm exec jest --help",
-            "example": {
-              "options": {
-                "coverage": true
-              }
-            }
-          }
-        },
-        "cache": true,
-        "inputs": [
-          "default",
-          "^production",
-          "{projectRoot}\\jest.preset.js",
-          {
-            "externalDependencies": [
-              "jest"
-            ]
-          }
-        ],
-        "outputs": [
-          "{projectRoot}\\test-output\\jest\\coverage"
-        ]
-      }
-    }
-  },
-  "11237417245902840605": {
-    "targets": {
-      "test": {
-        "command": "jest",
-        "options": {
-          "cwd": "packages/cms/core",
-          "env": {
-            "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
-          }
-        },
-        "metadata": {
-          "technologies": [
-            "jest"
-          ],
-          "description": "Run Jest Tests",
-          "help": {
-            "command": "pnpm exec jest --help",
-            "example": {
-              "options": {
-                "coverage": true
-              }
-            }
-          }
-        },
-        "cache": true,
-        "inputs": [
-          "default",
-          "^production",
-          "{workspaceRoot}\\jest.preset.js",
-          {
-            "externalDependencies": [
-              "jest"
-            ]
-          }
-        ],
-        "outputs": [
-          "{workspaceRoot}\\coverage\\packages\\cms\\core"
-        ]
-      }
-    }
-  },
-  "2177023807763165766": {
-    "targets": {
-      "test": {
-        "command": "jest",
-        "options": {
-          "cwd": "apps/portfolio-web",
-          "env": {
-            "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
-          }
-        },
-        "metadata": {
-          "technologies": [
-            "jest"
-          ],
-          "description": "Run Jest Tests",
-          "help": {
-            "command": "pnpm exec jest --help",
-            "example": {
-              "options": {
-                "coverage": true
-              }
-            }
-          }
-        },
-        "cache": true,
-        "inputs": [
-          "default",
-          "^production",
-          "{workspaceRoot}\\jest.preset.js",
-          {
-            "externalDependencies": [
-              "jest"
-            ]
-          }
-        ],
-        "outputs": [
-          "{workspaceRoot}\\coverage\\apps\\portfolio-web"
-        ]
-      }
-    }
-  },
-  "7175197051755957493": {
-    "targets": {
-      "test": {
-        "command": "jest",
-        "options": {
-          "cwd": ".",
-          "env": {
-            "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
-          }
-        },
-        "metadata": {
-          "technologies": [
-            "jest"
-          ],
-          "description": "Run Jest Tests",
-          "help": {
-            "command": "pnpm exec jest --help",
-            "example": {
-              "options": {
-                "coverage": true
-              }
-            }
-          }
-        },
-        "cache": true,
-        "inputs": [
-          "default",
-          "^production",
-          "{projectRoot}\\jest.preset.js",
-          {
-            "externalDependencies": [
-              "jest"
-            ]
-          }
-        ],
-        "outputs": [
-          "{projectRoot}\\test-output\\jest\\coverage"
-        ]
-      }
-    }
-  },
-  "6036096461349840381": {
-    "targets": {
-      "test": {
-        "command": "jest",
-        "options": {
-          "cwd": ".",
-          "env": {
-            "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
-          }
-        },
-        "metadata": {
-          "technologies": [
-            "jest"
-          ],
-          "description": "Run Jest Tests",
-          "help": {
-            "command": "pnpm exec jest --help",
-            "example": {
-              "options": {
-                "coverage": true
-              }
-            }
-          }
-        },
-        "cache": true,
-        "inputs": [
-          "default",
-          "^production",
-          "{projectRoot}\\jest.preset.js",
-          {
-            "externalDependencies": [
-              "jest"
-            ]
-          }
-        ],
-        "outputs": [
-          "{projectRoot}\\test-output\\jest\\coverage"
-        ]
-      }
-    }
-  },
-  "6803540133886744824": {
-    "targets": {
-      "test": {
-        "command": "jest",
-        "options": {
-          "cwd": "apps/portfolio-web",
-          "env": {
-            "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
-          }
-        },
-        "metadata": {
-          "technologies": [
-            "jest"
-          ],
-          "description": "Run Jest Tests",
-          "help": {
-            "command": "pnpm exec jest --help",
-            "example": {
-              "options": {
-                "coverage": true
-              }
-            }
-          }
-        },
-        "cache": true,
-        "inputs": [
-          "default",
-          "^production",
-          "{workspaceRoot}\\jest.preset.js",
-          {
-            "externalDependencies": [
-              "jest"
-            ]
-          }
-        ],
-        "outputs": [
-          "{workspaceRoot}\\coverage\\apps\\portfolio-web"
-        ]
-      }
-    }
-  },
-  "9861917492943874333": {
-    "targets": {
-      "test": {
-        "command": "jest",
-        "options": {
-          "cwd": ".",
-          "env": {
-            "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
-          }
-        },
-        "metadata": {
-          "technologies": [
-            "jest"
-          ],
-          "description": "Run Jest Tests",
-          "help": {
-            "command": "pnpm exec jest --help",
-            "example": {
-              "options": {
-                "coverage": true
-              }
-            }
-          }
-        },
-        "cache": true,
-        "inputs": [
-          "default",
-          "^production",
-          "{projectRoot}\\jest.preset.js",
-          {
-            "externalDependencies": [
-              "jest"
-            ]
-          }
-        ],
-        "outputs": [
-          "{projectRoot}\\test-output\\jest\\coverage"
-        ]
-      }
-    }
-  },
-  "6423249886588467111": {
-    "targets": {
-      "test": {
-        "command": "jest",
-        "options": {
-          "cwd": "apps/portfolio-web",
-          "env": {
-            "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
-          }
-        },
-        "metadata": {
-          "technologies": [
-            "jest"
-          ],
-          "description": "Run Jest Tests",
-          "help": {
-            "command": "pnpm exec jest --help",
-            "example": {
-              "options": {
-                "coverage": true
-              }
-            }
-          }
-        },
-        "cache": true,
-        "inputs": [
-          "default",
-          "^production",
-          "{workspaceRoot}\\jest.preset.js",
-          {
-            "externalDependencies": [
-              "jest"
-            ]
-          }
-        ],
-        "outputs": [
-          "{workspaceRoot}\\coverage\\apps\\portfolio-web"
-        ]
-      }
-    }
-  },
-  "14162538168063474556": {
-    "targets": {
-      "test": {
-        "command": "jest",
-        "options": {
-          "cwd": ".",
-          "env": {
-            "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
-          }
-        },
-        "metadata": {
-          "technologies": [
-            "jest"
-          ],
-          "description": "Run Jest Tests",
-          "help": {
-            "command": "pnpm exec jest --help",
-            "example": {
-              "options": {
-                "coverage": true
-              }
-            }
-          }
-        },
-        "cache": true,
-        "inputs": [
-          "default",
-          "^production",
-          "{projectRoot}\\jest.preset.js",
-          {
-            "externalDependencies": [
-              "jest"
-            ]
-          }
-        ],
-        "outputs": [
-          "{projectRoot}\\test-output\\jest\\coverage"
-        ]
-      }
-    }
-  },
-  "16453843820399634193": {
-    "targets": {
-      "test": {
-        "command": "jest",
-        "options": {
-          "cwd": "apps/portfolio-web",
-          "env": {
-            "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
-          }
-        },
-        "metadata": {
-          "technologies": [
-            "jest"
-          ],
-          "description": "Run Jest Tests",
-          "help": {
-            "command": "pnpm exec jest --help",
-            "example": {
-              "options": {
-                "coverage": true
-              }
-            }
-          }
-        },
-        "cache": true,
-        "inputs": [
-          "default",
-          "^production",
-          "{workspaceRoot}\\jest.preset.js",
-          {
-            "externalDependencies": [
-              "jest"
-            ]
-          }
-        ],
-        "outputs": [
-          "{workspaceRoot}\\coverage\\apps\\portfolio-web"
-        ]
-      }
-    }
-  },
-  "16324811000637514065": {
-    "targets": {
-      "test": {
-        "command": "jest",
-        "options": {
           "cwd": ".",
           "env": {
             "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
@@ -1516,7 +122,7 @@
       }
     }
   },
-  "13528393962406513976": {
+  "8929224965100284957": {
     "targets": {
       "test": {
         "command": "jest",
@@ -1557,7 +163,7 @@
       }
     }
   },
-  "8002238381870007835": {
+  "6721273586777175919": {
     "targets": {
       "test": {
         "command": "jest",
@@ -1598,7 +204,7 @@
       }
     }
   },
-  "5216747126961341474": {
+  "10554854046859738303": {
     "targets": {
       "test": {
         "command": "jest",
@@ -1639,7 +245,7 @@
       }
     }
   },
-  "6661673513041194905": {
+  "15532995598296275573": {
     "targets": {
       "test": {
         "command": "jest",
@@ -1680,7 +286,7 @@
       }
     }
   },
-  "4545261132721623441": {
+  "16877115113684025014": {
     "targets": {
       "test": {
         "command": "jest",
@@ -1721,7 +327,7 @@
       }
     }
   },
-  "9561382702980013183": {
+  "5507846871055459769": {
     "targets": {
       "test": {
         "command": "jest",
@@ -1762,7 +368,7 @@
       }
     }
   },
-  "2640024547417628575": {
+  "12480703088486689107": {
     "targets": {
       "test": {
         "command": "jest",
@@ -1803,7 +409,7 @@
       }
     }
   },
-  "15346858523463044476": {
+  "6289399942119326153": {
     "targets": {
       "test": {
         "command": "jest",
@@ -1840,52 +446,11 @@
         ],
         "outputs": [
           "{projectRoot}\\test-output\\jest\\coverage"
-        ]
-      }
-    }
-  },
-  "15324705933052186566": {
-    "targets": {
-      "test": {
-        "command": "jest",
-        "options": {
-          "cwd": "apps/portfolio-web",
-          "env": {
-            "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
-          }
-        },
-        "metadata": {
-          "technologies": [
-            "jest"
-          ],
-          "description": "Run Jest Tests",
-          "help": {
-            "command": "pnpm exec jest --help",
-            "example": {
-              "options": {
-                "coverage": true
-              }
-            }
-          }
-        },
-        "cache": true,
-        "inputs": [
-          "default",
-          "^production",
-          "{workspaceRoot}\\jest.preset.js",
-          {
-            "externalDependencies": [
-              "jest"
-            ]
-          }
-        ],
-        "outputs": [
-          "{workspaceRoot}\\coverage\\apps\\portfolio-web"
         ]
       }
     }
   },
-  "12201422389402087132": {
+  "14140868061784869880": {
     "targets": {
       "test": {
         "command": "jest",
@@ -1926,7 +491,7 @@
       }
     }
   },
-  "4610668698863660733": {
+  "12873665127967176838": {
     "targets": {
       "test": {
         "command": "jest",
@@ -1963,52 +528,11 @@
         ],
         "outputs": [
           "{projectRoot}\\test-output\\jest\\coverage"
-        ]
-      }
-    }
-  },
-  "3765970602392129780": {
-    "targets": {
-      "test": {
-        "command": "jest",
-        "options": {
-          "cwd": "apps/portfolio-web",
-          "env": {
-            "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
-          }
-        },
-        "metadata": {
-          "technologies": [
-            "jest"
-          ],
-          "description": "Run Jest Tests",
-          "help": {
-            "command": "pnpm exec jest --help",
-            "example": {
-              "options": {
-                "coverage": true
-              }
-            }
-          }
-        },
-        "cache": true,
-        "inputs": [
-          "default",
-          "^production",
-          "{workspaceRoot}\\jest.preset.js",
-          {
-            "externalDependencies": [
-              "jest"
-            ]
-          }
-        ],
-        "outputs": [
-          "{workspaceRoot}\\coverage\\apps\\portfolio-web"
         ]
       }
     }
   },
-  "12531355430536469042": {
+  "14597186133446314775": {
     "targets": {
       "test": {
         "command": "jest",
@@ -2045,52 +569,11 @@
         ],
         "outputs": [
           "{projectRoot}\\test-output\\jest\\coverage"
-        ]
-      }
-    }
-  },
-  "1646948146604210944": {
-    "targets": {
-      "test": {
-        "command": "jest",
-        "options": {
-          "cwd": "apps/portfolio-web",
-          "env": {
-            "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
-          }
-        },
-        "metadata": {
-          "technologies": [
-            "jest"
-          ],
-          "description": "Run Jest Tests",
-          "help": {
-            "command": "pnpm exec jest --help",
-            "example": {
-              "options": {
-                "coverage": true
-              }
-            }
-          }
-        },
-        "cache": true,
-        "inputs": [
-          "default",
-          "^production",
-          "{workspaceRoot}\\jest.preset.js",
-          {
-            "externalDependencies": [
-              "jest"
-            ]
-          }
-        ],
-        "outputs": [
-          "{workspaceRoot}\\coverage\\apps\\portfolio-web"
         ]
       }
     }
   },
-  "7693941128344946353": {
+  "3507396631731198917": {
     "targets": {
       "test": {
         "command": "jest",
@@ -2131,52 +614,11 @@
       }
     }
   },
-  "11449088676611918998": {
+  "3723055970311300333": {
     "targets": {
       "test": {
         "command": "jest",
         "options": {
-          "cwd": "apps/portfolio-web",
-          "env": {
-            "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
-          }
-        },
-        "metadata": {
-          "technologies": [
-            "jest"
-          ],
-          "description": "Run Jest Tests",
-          "help": {
-            "command": "pnpm exec jest --help",
-            "example": {
-              "options": {
-                "coverage": true
-              }
-            }
-          }
-        },
-        "cache": true,
-        "inputs": [
-          "default",
-          "^production",
-          "{workspaceRoot}\\jest.preset.js",
-          {
-            "externalDependencies": [
-              "jest"
-            ]
-          }
-        ],
-        "outputs": [
-          "{workspaceRoot}\\coverage\\apps\\portfolio-web"
-        ]
-      }
-    }
-  },
-  "4925054811368902195": {
-    "targets": {
-      "test": {
-        "command": "jest",
-        "options": {
           "cwd": ".",
           "env": {
             "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
@@ -2209,52 +651,11 @@
         ],
         "outputs": [
           "{projectRoot}\\test-output\\jest\\coverage"
-        ]
-      }
-    }
-  },
-  "9270591133656199953": {
-    "targets": {
-      "test": {
-        "command": "jest",
-        "options": {
-          "cwd": "apps/portfolio-web",
-          "env": {
-            "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
-          }
-        },
-        "metadata": {
-          "technologies": [
-            "jest"
-          ],
-          "description": "Run Jest Tests",
-          "help": {
-            "command": "pnpm exec jest --help",
-            "example": {
-              "options": {
-                "coverage": true
-              }
-            }
-          }
-        },
-        "cache": true,
-        "inputs": [
-          "default",
-          "^production",
-          "{workspaceRoot}\\jest.preset.js",
-          {
-            "externalDependencies": [
-              "jest"
-            ]
-          }
-        ],
-        "outputs": [
-          "{workspaceRoot}\\coverage\\apps\\portfolio-web"
         ]
       }
     }
   },
-  "6756430950666108084": {
+  "1339912556740114569": {
     "targets": {
       "test": {
         "command": "jest",
@@ -2295,12 +696,12 @@
       }
     }
   },
-  "10787044360512960481": {
+  "17880982833375472966": {
     "targets": {
       "test": {
         "command": "jest",
         "options": {
-          "cwd": "apps/portfolio-web",
+          "cwd": "tests",
           "env": {
             "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
           }
@@ -2330,13 +731,11 @@
             ]
           }
         ],
-        "outputs": [
-          "{workspaceRoot}\\coverage\\apps\\portfolio-web"
-        ]
+        "outputs": []
       }
     }
   },
-  "12388263599046596945": {
+  "615207775906310613": {
     "targets": {
       "test": {
         "command": "jest",
@@ -2377,12 +776,12 @@
       }
     }
   },
-  "11438978487266765031": {
+  "15694640452234848147": {
     "targets": {
       "test": {
         "command": "jest",
         "options": {
-          "cwd": "apps/portfolio-web",
+          "cwd": "tests",
           "env": {
             "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
           }
@@ -2412,59 +811,16 @@
             ]
           }
         ],
-        "outputs": [
-          "{workspaceRoot}\\coverage\\apps\\portfolio-web"
-        ]
+        "outputs": []
       }
     }
   },
-  "2743571174052334126": {
+  "8469083486536374509": {
     "targets": {
       "test": {
         "command": "jest",
         "options": {
           "cwd": ".",
-          "env": {
-            "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
-          }
-        },
-        "metadata": {
-          "technologies": [
-            "jest"
-          ],
-          "description": "Run Jest Tests",
-          "help": {
-            "command": "pnpm exec jest --help",
-            "example": {
-              "options": {
-                "coverage": true
-              }
-            }
-          }
-        },
-        "cache": true,
-        "inputs": [
-          "default",
-          "^production",
-          "{projectRoot}\\jest.preset.js",
-          {
-            "externalDependencies": [
-              "jest"
-            ]
-          }
-        ],
-        "outputs": [
-          "{projectRoot}\\test-output\\jest\\coverage"
-        ]
-      }
-    }
-  },
-  "18049520076119588365": {
-    "targets": {
-      "test": {
-        "command": "jest",
-        "options": {
-          "cwd": "apps/portfolio-web",
           "env": {
             "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
           }
@@ -2487,7 +843,7 @@
         "inputs": [
           "default",
           "^production",
-          "{workspaceRoot}\\jest.preset.js",
+          "{projectRoot}\\jest.preset.js",
           {
             "externalDependencies": [
               "jest"
@@ -2495,17 +851,17 @@
           }
         ],
         "outputs": [
-          "{workspaceRoot}\\coverage\\apps\\portfolio-web"
+          "{projectRoot}\\test-output\\jest\\coverage"
         ]
       }
     }
   },
-  "5487267848250616965": {
+  "5005076660275632141": {
     "targets": {
       "test": {
         "command": "jest",
         "options": {
-          "cwd": ".",
+          "cwd": "tests",
           "env": {
             "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
           }
@@ -2528,20 +884,18 @@
         "inputs": [
           "default",
           "^production",
-          "{projectRoot}\\jest.preset.js",
+          "{workspaceRoot}\\jest.preset.js",
           {
             "externalDependencies": [
               "jest"
             ]
           }
         ],
-        "outputs": [
-          "{projectRoot}\\test-output\\jest\\coverage"
-        ]
+        "outputs": []
       }
     }
   },
-  "9481029182744242557": {
+  "3719482233868379587": {
     "targets": {
       "test": {
         "command": "jest",
@@ -2582,7 +936,7 @@
       }
     }
   },
-  "9466371261076393985": {
+  "13175784603037788176": {
     "targets": {
       "test": {
         "command": "jest",
@@ -2623,7 +977,7 @@
       }
     }
   },
-  "5291494571922186546": {
+  "10285567512832237029": {
     "targets": {
       "test": {
         "command": "jest",
@@ -2664,7 +1018,7 @@
       }
     }
   },
-  "2580362121197405721": {
+  "7222311960742319067": {
     "targets": {
       "test": {
         "command": "jest",
@@ -2705,7 +1059,7 @@
       }
     }
   },
-  "13118930756040634976": {
+  "11095425517242511943": {
     "targets": {
       "test": {
         "command": "jest",
@@ -2746,7 +1100,7 @@
       }
     }
   },
-  "18419018703672103522": {
+  "11438712408150670290": {
     "targets": {
       "test": {
         "command": "jest",
@@ -2787,7 +1141,7 @@
       }
     }
   },
-  "13842392783921265054": {
+  "7172906123426716402": {
     "targets": {
       "test": {
         "command": "jest",
@@ -2828,7 +1182,7 @@
       }
     }
   },
-  "12078053570559793081": {
+  "6435406316502486821": {
     "targets": {
       "test": {
         "command": "jest",
@@ -2869,7 +1223,7 @@
       }
     }
   },
-  "13655546860066100548": {
+  "11248254116079591514": {
     "targets": {
       "test": {
         "command": "jest",
@@ -2910,7 +1264,7 @@
       }
     }
   },
-  "6456770226797169100": {
+  "10451341217492337883": {
     "targets": {
       "test": {
         "command": "jest",
@@ -2951,12 +1305,12 @@
       }
     }
   },
-  "16493709881278712662": {
+  "15931857144302628014": {
     "targets": {
       "test": {
         "command": "jest",
         "options": {
-          "cwd": ".",
+          "cwd": "apps/portfolio-web",
           "env": {
             "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
           }
@@ -2979,7 +1333,7 @@
         "inputs": [
           "default",
           "^production",
-          "{projectRoot}\\jest.preset.js",
+          "{workspaceRoot}\\jest.preset.js",
           {
             "externalDependencies": [
               "jest"
@@ -2987,17 +1341,17 @@
           }
         ],
         "outputs": [
-          "{projectRoot}\\test-output\\jest\\coverage"
+          "{workspaceRoot}\\coverage\\apps\\portfolio-web"
         ]
       }
     }
   },
-  "12600544052236208126": {
+  "13589624182120254240": {
     "targets": {
       "test": {
         "command": "jest",
         "options": {
-          "cwd": "apps/portfolio-web",
+          "cwd": ".",
           "env": {
             "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
           }
@@ -3020,7 +1374,7 @@
         "inputs": [
           "default",
           "^production",
-          "{workspaceRoot}\\jest.preset.js",
+          "{projectRoot}\\jest.preset.js",
           {
             "externalDependencies": [
               "jest"
@@ -3028,17 +1382,17 @@
           }
         ],
         "outputs": [
-          "{workspaceRoot}\\coverage\\apps\\portfolio-web"
+          "{projectRoot}\\test-output\\jest\\coverage"
         ]
       }
     }
   },
-  "18284252436326911764": {
+  "2517124025479097097": {
     "targets": {
       "test": {
         "command": "jest",
         "options": {
-          "cwd": ".",
+          "cwd": "apps/portfolio-web",
           "env": {
             "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
           }
@@ -3061,7 +1415,7 @@
         "inputs": [
           "default",
           "^production",
-          "{projectRoot}\\jest.preset.js",
+          "{workspaceRoot}\\jest.preset.js",
           {
             "externalDependencies": [
               "jest"
@@ -3069,17 +1423,17 @@
           }
         ],
         "outputs": [
-          "{projectRoot}\\test-output\\jest\\coverage"
+          "{workspaceRoot}\\coverage\\apps\\portfolio-web"
         ]
       }
     }
   },
-  "17571476718554848887": {
+  "903138205931420463": {
     "targets": {
       "test": {
         "command": "jest",
         "options": {
-          "cwd": "apps/portfolio-web",
+          "cwd": ".",
           "env": {
             "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
           }
@@ -3102,7 +1456,7 @@
         "inputs": [
           "default",
           "^production",
-          "{workspaceRoot}\\jest.preset.js",
+          "{projectRoot}\\jest.preset.js",
           {
             "externalDependencies": [
               "jest"
@@ -3110,17 +1464,17 @@
           }
         ],
         "outputs": [
-          "{workspaceRoot}\\coverage\\apps\\portfolio-web"
+          "{projectRoot}\\test-output\\jest\\coverage"
         ]
       }
     }
   },
-  "10558520203785708817": {
+  "11571932182003419482": {
     "targets": {
       "test": {
         "command": "jest",
         "options": {
-          "cwd": ".",
+          "cwd": "apps/portfolio-web",
           "env": {
             "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
           }
@@ -3143,7 +1497,7 @@
         "inputs": [
           "default",
           "^production",
-          "{projectRoot}\\jest.preset.js",
+          "{workspaceRoot}\\jest.preset.js",
           {
             "externalDependencies": [
               "jest"
@@ -3151,17 +1505,17 @@
           }
         ],
         "outputs": [
-          "{projectRoot}\\test-output\\jest\\coverage"
+          "{workspaceRoot}\\coverage\\apps\\portfolio-web"
         ]
       }
     }
   },
-  "6889285404705558299": {
+  "9908750441214082020": {
     "targets": {
       "test": {
         "command": "jest",
         "options": {
-          "cwd": "apps/portfolio-web",
+          "cwd": ".",
           "env": {
             "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
           }
@@ -3184,7 +1538,7 @@
         "inputs": [
           "default",
           "^production",
-          "{workspaceRoot}\\jest.preset.js",
+          "{projectRoot}\\jest.preset.js",
           {
             "externalDependencies": [
               "jest"
@@ -3192,12 +1546,12 @@
           }
         ],
         "outputs": [
-          "{workspaceRoot}\\coverage\\apps\\portfolio-web"
+          "{projectRoot}\\test-output\\jest\\coverage"
         ]
       }
     }
   },
-  "5511052453906730192": {
+  "4067277407623864333": {
     "targets": {
       "test": {
         "command": "jest",
@@ -3238,7 +1592,7 @@
       }
     }
   },
-  "2519380709385630661": {
+  "12751504042151675365": {
     "targets": {
       "test": {
         "command": "jest",
@@ -3279,7 +1633,7 @@
       }
     }
   },
-  "7929696144255259076": {
+  "7576325038982031029": {
     "targets": {
       "test": {
         "command": "jest",
@@ -3320,7 +1674,7 @@
       }
     }
   },
-  "12135492958913019727": {
+  "10834279886722120510": {
     "targets": {
       "test": {
         "command": "jest",
@@ -3361,7 +1715,7 @@
       }
     }
   },
-  "2778953211130226153": {
+  "3892419116907912615": {
     "targets": {
       "test": {
         "command": "jest",
@@ -3402,7 +1756,7 @@
       }
     }
   },
-  "6012281797305103150": {
+  "16726677154899519914": {
     "targets": {
       "test": {
         "command": "jest",
@@ -3443,7 +1797,7 @@
       }
     }
   },
-  "3045469427582035655": {
+  "15382487505448071551": {
     "targets": {
       "test": {
         "command": "jest",
@@ -3484,7 +1838,7 @@
       }
     }
   },
-  "9353752864753940921": {
+  "9841300928358138162": {
     "targets": {
       "test": {
         "command": "jest",
@@ -3525,7 +1879,7 @@
       }
     }
   },
-  "6787176386565287289": {
+  "7206525847751599873": {
     "targets": {
       "test": {
         "command": "jest",
@@ -3566,7 +1920,7 @@
       }
     }
   },
-  "1841362564754908144": {
+  "7582827516826916393": {
     "targets": {
       "test": {
         "command": "jest",
@@ -3607,7 +1961,7 @@
       }
     }
   },
-  "46618458232973556": {
+  "10989094836709851558": {
     "targets": {
       "test": {
         "command": "jest",
@@ -3644,52 +1998,11 @@
         ],
         "outputs": [
           "{projectRoot}\\test-output\\jest\\coverage"
-        ]
-      }
-    }
-  },
-  "126543763532544860": {
-    "targets": {
-      "test": {
-        "command": "jest",
-        "options": {
-          "cwd": "apps/portfolio-web",
-          "env": {
-            "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
-          }
-        },
-        "metadata": {
-          "technologies": [
-            "jest"
-          ],
-          "description": "Run Jest Tests",
-          "help": {
-            "command": "pnpm exec jest --help",
-            "example": {
-              "options": {
-                "coverage": true
-              }
-            }
-          }
-        },
-        "cache": true,
-        "inputs": [
-          "default",
-          "^production",
-          "{workspaceRoot}\\jest.preset.js",
-          {
-            "externalDependencies": [
-              "jest"
-            ]
-          }
-        ],
-        "outputs": [
-          "{workspaceRoot}\\coverage\\apps\\portfolio-web"
         ]
       }
     }
   },
-  "713951429571029870": {
+  "5205709962821457616": {
     "targets": {
       "test": {
         "command": "jest",
@@ -3730,7 +2043,7 @@
       }
     }
   },
-  "4282525770253786767": {
+  "60878433284935342": {
     "targets": {
       "test": {
         "command": "jest",
@@ -3771,7 +2084,7 @@
       }
     }
   },
-  "6099320578547668130": {
+  "4396731776120284088": {
     "targets": {
       "test": {
         "command": "jest",
@@ -3812,7 +2125,7 @@
       }
     }
   },
-  "5412930071297422225": {
+  "721053944521047585": {
     "targets": {
       "test": {
         "command": "jest",
@@ -3853,7 +2166,7 @@
       }
     }
   },
-  "3832896076377032514": {
+  "3913400893812666071": {
     "targets": {
       "test": {
         "command": "jest",
@@ -3894,12 +2207,12 @@
       }
     }
   },
-  "15512743910449271041": {
+  "17343552888018890176": {
     "targets": {
       "test": {
         "command": "jest",
         "options": {
-          "cwd": "apps/portfolio-web",
+          "cwd": "tests",
           "env": {
             "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
           }
@@ -3929,13 +2242,11 @@
             ]
           }
         ],
-        "outputs": [
-          "{workspaceRoot}\\coverage\\apps\\portfolio-web"
-        ]
+        "outputs": []
       }
     }
   },
-  "7494070327807422993": {
+  "13831762346186770715": {
     "targets": {
       "test": {
         "command": "jest",
@@ -3976,7 +2287,7 @@
       }
     }
   },
-  "4755548219902700349": {
+  "4875919571852686723": {
     "targets": {
       "test": {
         "command": "jest",
@@ -4017,7 +2328,7 @@
       }
     }
   },
-  "893674285975458916": {
+  "11076754706759288251": {
     "targets": {
       "test": {
         "command": "jest",
@@ -4058,12 +2369,12 @@
       }
     }
   },
-  "18439062033436788116": {
+  "17344198572170514406": {
     "targets": {
       "test": {
         "command": "jest",
         "options": {
-          "cwd": "apps/portfolio-web",
+          "cwd": ".",
           "env": {
             "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
           }
@@ -4086,7 +2397,7 @@
         "inputs": [
           "default",
           "^production",
-          "{workspaceRoot}\\jest.preset.js",
+          "{projectRoot}\\jest.preset.js",
           {
             "externalDependencies": [
               "jest"
@@ -4094,17 +2405,17 @@
           }
         ],
         "outputs": [
-          "{workspaceRoot}\\coverage\\apps\\portfolio-web"
+          "{projectRoot}\\test-output\\jest\\coverage"
         ]
       }
     }
   },
-  "10448532656047636600": {
+  "3257151652308766020": {
     "targets": {
       "test": {
         "command": "jest",
         "options": {
-          "cwd": ".",
+          "cwd": "tests",
           "env": {
             "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
           }
@@ -4127,25 +2438,23 @@
         "inputs": [
           "default",
           "^production",
-          "{projectRoot}\\jest.preset.js",
+          "{workspaceRoot}\\jest.preset.js",
           {
             "externalDependencies": [
               "jest"
             ]
           }
         ],
-        "outputs": [
-          "{projectRoot}\\test-output\\jest\\coverage"
-        ]
+        "outputs": []
       }
     }
   },
-  "10348236296492583679": {
+  "17625730217428642512": {
     "targets": {
       "test": {
         "command": "jest",
         "options": {
-          "cwd": "apps/portfolio-web",
+          "cwd": ".",
           "env": {
             "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
           }
@@ -4168,7 +2477,7 @@
         "inputs": [
           "default",
           "^production",
-          "{workspaceRoot}\\jest.preset.js",
+          "{projectRoot}\\jest.preset.js",
           {
             "externalDependencies": [
               "jest"
@@ -4176,17 +2485,17 @@
           }
         ],
         "outputs": [
-          "{workspaceRoot}\\coverage\\apps\\portfolio-web"
+          "{projectRoot}\\test-output\\jest\\coverage"
         ]
       }
     }
   },
-  "8303725084529695269": {
+  "6655810189448862917": {
     "targets": {
       "test": {
         "command": "jest",
         "options": {
-          "cwd": ".",
+          "cwd": "apps/portfolio-web",
           "env": {
             "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
           }
@@ -4209,7 +2518,7 @@
         "inputs": [
           "default",
           "^production",
-          "{projectRoot}\\jest.preset.js",
+          "{workspaceRoot}\\jest.preset.js",
           {
             "externalDependencies": [
               "jest"
@@ -4217,17 +2526,17 @@
           }
         ],
         "outputs": [
-          "{projectRoot}\\test-output\\jest\\coverage"
+          "{workspaceRoot}\\coverage\\apps\\portfolio-web"
         ]
       }
     }
   },
-  "14041656979807253390": {
+  "10421597452044633574": {
     "targets": {
       "test": {
         "command": "jest",
         "options": {
-          "cwd": "apps/portfolio-web",
+          "cwd": ".",
           "env": {
             "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
           }
@@ -4250,7 +2559,7 @@
         "inputs": [
           "default",
           "^production",
-          "{workspaceRoot}\\jest.preset.js",
+          "{projectRoot}\\jest.preset.js",
           {
             "externalDependencies": [
               "jest"
@@ -4258,17 +2567,17 @@
           }
         ],
         "outputs": [
-          "{workspaceRoot}\\coverage\\apps\\portfolio-web"
+          "{projectRoot}\\test-output\\jest\\coverage"
         ]
       }
     }
   },
-  "18385209012126309986": {
+  "9514212589281356904": {
     "targets": {
       "test": {
         "command": "jest",
         "options": {
-          "cwd": ".",
+          "cwd": "tests",
           "env": {
             "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
           }
@@ -4291,25 +2600,23 @@
         "inputs": [
           "default",
           "^production",
-          "{projectRoot}\\jest.preset.js",
+          "{workspaceRoot}\\jest.preset.js",
           {
             "externalDependencies": [
               "jest"
             ]
           }
         ],
-        "outputs": [
-          "{projectRoot}\\test-output\\jest\\coverage"
-        ]
+        "outputs": []
       }
     }
   },
-  "3662577207264038862": {
+  "12351984781043215781": {
     "targets": {
       "test": {
         "command": "jest",
         "options": {
-          "cwd": "apps/portfolio-web",
+          "cwd": ".",
           "env": {
             "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
           }
@@ -4332,7 +2639,7 @@
         "inputs": [
           "default",
           "^production",
-          "{workspaceRoot}\\jest.preset.js",
+          "{projectRoot}\\jest.preset.js",
           {
             "externalDependencies": [
               "jest"
@@ -4340,12 +2647,12 @@
           }
         ],
         "outputs": [
-          "{workspaceRoot}\\coverage\\apps\\portfolio-web"
+          "{projectRoot}\\test-output\\jest\\coverage"
         ]
       }
     }
   },
-  "11645364750316524971": {
+  "11276208173967880099": {
     "targets": {
       "test": {
         "command": "jest",
@@ -4386,12 +2693,12 @@
       }
     }
   },
-  "15812863691429541672": {
+  "11896711085340041470": {
     "targets": {
       "test": {
         "command": "jest",
         "options": {
-          "cwd": "apps/portfolio-web",
+          "cwd": ".",
           "env": {
             "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
           }
@@ -4414,7 +2721,7 @@
         "inputs": [
           "default",
           "^production",
-          "{workspaceRoot}\\jest.preset.js",
+          "{projectRoot}\\jest.preset.js",
           {
             "externalDependencies": [
               "jest"
@@ -4422,12 +2729,12 @@
           }
         ],
         "outputs": [
-          "{workspaceRoot}\\coverage\\apps\\portfolio-web"
+          "{projectRoot}\\test-output\\jest\\coverage"
         ]
       }
     }
   },
-  "15476701687540765359": {
+  "10109741969453506631": {
     "targets": {
       "test": {
         "command": "jest",
@@ -4468,12 +2775,12 @@
       }
     }
   },
-  "369110475813375602": {
+  "3842067411511564320": {
     "targets": {
       "test": {
         "command": "jest",
         "options": {
-          "cwd": "apps/portfolio-web",
+          "cwd": ".",
           "env": {
             "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
           }
@@ -4496,7 +2803,7 @@
         "inputs": [
           "default",
           "^production",
-          "{workspaceRoot}\\jest.preset.js",
+          "{projectRoot}\\jest.preset.js",
           {
             "externalDependencies": [
               "jest"
@@ -4504,12 +2811,12 @@
           }
         ],
         "outputs": [
-          "{workspaceRoot}\\coverage\\apps\\portfolio-web"
+          "{projectRoot}\\test-output\\jest\\coverage"
         ]
       }
     }
   },
-  "2573775866001046717": {
+  "7499334057974800199": {
     "targets": {
       "test": {
         "command": "jest",
@@ -4550,12 +2857,12 @@
       }
     }
   },
-  "4365721041377547762": {
+  "1585683303856445563": {
     "targets": {
       "test": {
         "command": "jest",
         "options": {
-          "cwd": "apps/portfolio-web",
+          "cwd": ".",
           "env": {
             "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
           }
@@ -4578,7 +2885,7 @@
         "inputs": [
           "default",
           "^production",
-          "{workspaceRoot}\\jest.preset.js",
+          "{projectRoot}\\jest.preset.js",
           {
             "externalDependencies": [
               "jest"
@@ -4586,12 +2893,12 @@
           }
         ],
         "outputs": [
-          "{workspaceRoot}\\coverage\\apps\\portfolio-web"
+          "{projectRoot}\\test-output\\jest\\coverage"
         ]
       }
     }
   },
-  "9092443783023493099": {
+  "13259061462561177341": {
     "targets": {
       "test": {
         "command": "jest",
@@ -4632,7 +2939,7 @@
       }
     }
   },
-  "13732204811310784004": {
+  "1450470873012781108": {
     "targets": {
       "test": {
         "command": "jest",
@@ -4673,7 +2980,7 @@
       }
     }
   },
-  "12252917733727674250": {
+  "4256059938070287807": {
     "targets": {
       "test": {
         "command": "jest",
@@ -4714,12 +3021,12 @@
       }
     }
   },
-  "4733402830021327198": {
+  "15112621871764274006": {
     "targets": {
       "test": {
         "command": "jest",
         "options": {
-          "cwd": "apps/portfolio-web",
+          "cwd": ".",
           "env": {
             "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
           }
@@ -4742,7 +3049,7 @@
         "inputs": [
           "default",
           "^production",
-          "{workspaceRoot}\\jest.preset.js",
+          "{projectRoot}\\jest.preset.js",
           {
             "externalDependencies": [
               "jest"
@@ -4750,12 +3057,12 @@
           }
         ],
         "outputs": [
-          "{workspaceRoot}\\coverage\\apps\\portfolio-web"
+          "{projectRoot}\\test-output\\jest\\coverage"
         ]
       }
     }
   },
-  "756111053622248574": {
+  "13439336379911654170": {
     "targets": {
       "test": {
         "command": "jest",
@@ -4796,7 +3103,7 @@
       }
     }
   },
-  "13890248881508821117": {
+  "11586762200721536385": {
     "targets": {
       "test": {
         "command": "jest",
@@ -4837,7 +3144,7 @@
       }
     }
   },
-  "13222928263954566052": {
+  "10223872787299923255": {
     "targets": {
       "test": {
         "command": "jest",
@@ -4878,7 +3185,7 @@
       }
     }
   },
-  "11499011810305599175": {
+  "16923290355346149566": {
     "targets": {
       "test": {
         "command": "jest",
@@ -4919,7 +3226,7 @@
       }
     }
   },
-  "4075854730875466424": {
+  "2189730900825343515": {
     "targets": {
       "test": {
         "command": "jest",
@@ -4960,7 +3267,7 @@
       }
     }
   },
-  "9591571349080696395": {
+  "484042911523955078": {
     "targets": {
       "test": {
         "command": "jest",
@@ -5001,7 +3308,7 @@
       }
     }
   },
-  "3153802427194701806": {
+  "13792414034525119966": {
     "targets": {
       "test": {
         "command": "jest",
@@ -5038,52 +3345,11 @@
         ],
         "outputs": [
           "{projectRoot}\\test-output\\jest\\coverage"
-        ]
-      }
-    }
-  },
-  "5412897119194171928": {
-    "targets": {
-      "test": {
-        "command": "jest",
-        "options": {
-          "cwd": "apps/portfolio-web",
-          "env": {
-            "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
-          }
-        },
-        "metadata": {
-          "technologies": [
-            "jest"
-          ],
-          "description": "Run Jest Tests",
-          "help": {
-            "command": "pnpm exec jest --help",
-            "example": {
-              "options": {
-                "coverage": true
-              }
-            }
-          }
-        },
-        "cache": true,
-        "inputs": [
-          "default",
-          "^production",
-          "{workspaceRoot}\\jest.preset.js",
-          {
-            "externalDependencies": [
-              "jest"
-            ]
-          }
-        ],
-        "outputs": [
-          "{workspaceRoot}\\coverage\\apps\\portfolio-web"
         ]
       }
     }
   },
-  "5160495610811704759": {
+  "13603621220536473522": {
     "targets": {
       "test": {
         "command": "jest",
@@ -5124,12 +3390,12 @@
       }
     }
   },
-  "7978279380873443202": {
+  "15456019823829424060": {
     "targets": {
       "test": {
         "command": "jest",
         "options": {
-          "cwd": "apps/portfolio-web",
+          "cwd": ".",
           "env": {
             "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
           }
@@ -5152,7 +3418,7 @@
         "inputs": [
           "default",
           "^production",
-          "{workspaceRoot}\\jest.preset.js",
+          "{projectRoot}\\jest.preset.js",
           {
             "externalDependencies": [
               "jest"
@@ -5160,12 +3426,12 @@
           }
         ],
         "outputs": [
-          "{workspaceRoot}\\coverage\\apps\\portfolio-web"
+          "{projectRoot}\\test-output\\jest\\coverage"
         ]
       }
     }
   },
-  "16343105275436806230": {
+  "5511332019742594593": {
     "targets": {
       "test": {
         "command": "jest",
@@ -5206,7 +3472,7 @@
       }
     }
   },
-  "2364651026714918190": {
+  "14748299215723938165": {
     "targets": {
       "test": {
         "command": "jest",
@@ -5247,7 +3513,7 @@
       }
     }
   },
-  "16167674226620416878": {
+  "14053266913321652183": {
     "targets": {
       "test": {
         "command": "jest",
@@ -5288,12 +3554,12 @@
       }
     }
   },
-  "9738917924197443342": {
+  "16338470972403673345": {
     "targets": {
       "test": {
         "command": "jest",
         "options": {
-          "cwd": "apps/portfolio-web",
+          "cwd": ".",
           "env": {
             "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
           }
@@ -5316,7 +3582,7 @@
         "inputs": [
           "default",
           "^production",
-          "{workspaceRoot}\\jest.preset.js",
+          "{projectRoot}\\jest.preset.js",
           {
             "externalDependencies": [
               "jest"
@@ -5324,12 +3590,12 @@
           }
         ],
         "outputs": [
-          "{workspaceRoot}\\coverage\\apps\\portfolio-web"
+          "{projectRoot}\\test-output\\jest\\coverage"
         ]
       }
     }
   },
-  "10535647953089209813": {
+  "9007348559182544321": {
     "targets": {
       "test": {
         "command": "jest",
@@ -5370,7 +3636,7 @@
       }
     }
   },
-  "10152282363184921010": {
+  "7771943696533156790": {
     "targets": {
       "test": {
         "command": "jest",
@@ -5411,7 +3677,7 @@
       }
     }
   },
-  "150722841585610364": {
+  "7080967963662390108": {
     "targets": {
       "test": {
         "command": "jest",
@@ -5452,7 +3718,7 @@
       }
     }
   },
-  "10681689120165467013": {
+  "11019414077437072914": {
     "targets": {
       "test": {
         "command": "jest",
@@ -5493,7 +3759,7 @@
       }
     }
   },
-  "2541543585151377544": {
+  "6043166516912857111": {
     "targets": {
       "test": {
         "command": "jest",
@@ -5534,7 +3800,7 @@
       }
     }
   },
-  "16642923373756862710": {
+  "9301809139332478820": {
     "targets": {
       "test": {
         "command": "jest",
@@ -5575,7 +3841,7 @@
       }
     }
   },
-  "2285279300686840693": {
+  "10171544819095475002": {
     "targets": {
       "test": {
         "command": "jest",
@@ -5616,7 +3882,7 @@
       }
     }
   },
-  "14080703748506121675": {
+  "1539678657166771934": {
     "targets": {
       "test": {
         "command": "jest",
@@ -5657,7 +3923,7 @@
       }
     }
   },
-  "7831445761641237922": {
+  "13857942565860888850": {
     "targets": {
       "test": {
         "command": "jest",
@@ -5698,7 +3964,7 @@
       }
     }
   },
-  "14234463448302429174": {
+  "13193710366821505603": {
     "targets": {
       "test": {
         "command": "jest",
@@ -5739,7 +4005,7 @@
       }
     }
   },
-  "14715556812592145865": {
+  "17694886871313863265": {
     "targets": {
       "test": {
         "command": "jest",
@@ -5780,7 +4046,7 @@
       }
     }
   },
-  "13283343725986302851": {
+  "15016927053085864227": {
     "targets": {
       "test": {
         "command": "jest",
@@ -5821,7 +4087,7 @@
       }
     }
   },
-  "10697692915664334000": {
+  "371052300757069410": {
     "targets": {
       "test": {
         "command": "jest",
@@ -5862,7 +4128,7 @@
       }
     }
   },
-  "3264870791100079482": {
+  "7063511162710870497": {
     "targets": {
       "test": {
         "command": "jest",
@@ -5903,7 +4169,7 @@
       }
     }
   },
-  "14450276561209903695": {
+  "15080555843203583154": {
     "targets": {
       "test": {
         "command": "jest",
@@ -5944,7 +4210,7 @@
       }
     }
   },
-  "9350504798519930851": {
+  "14259686590269513439": {
     "targets": {
       "test": {
         "command": "jest",
@@ -5985,7 +4251,7 @@
       }
     }
   },
-  "8708013506252469800": {
+  "3727002872099074608": {
     "targets": {
       "test": {
         "command": "jest",
@@ -6026,12 +4292,12 @@
       }
     }
   },
-  "15842587882243207597": {
+  "8464691465274739270": {
     "targets": {
       "test": {
         "command": "jest",
         "options": {
-          "cwd": "apps/portfolio-web",
+          "cwd": ".",
           "env": {
             "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
           }
@@ -6054,7 +4320,7 @@
         "inputs": [
           "default",
           "^production",
-          "{workspaceRoot}\\jest.preset.js",
+          "{projectRoot}\\jest.preset.js",
           {
             "externalDependencies": [
               "jest"
@@ -6062,12 +4328,12 @@
           }
         ],
         "outputs": [
-          "{workspaceRoot}\\coverage\\apps\\portfolio-web"
+          "{projectRoot}\\test-output\\jest\\coverage"
         ]
       }
     }
   },
-  "5162505365937512317": {
+  "8506452664653717069": {
     "targets": {
       "test": {
         "command": "jest",
@@ -6108,12 +4374,12 @@
       }
     }
   },
-  "11026162001798988878": {
+  "12323227557382402070": {
     "targets": {
       "test": {
         "command": "jest",
         "options": {
-          "cwd": "apps/portfolio-web",
+          "cwd": ".",
           "env": {
             "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
           }
@@ -6136,7 +4402,7 @@
         "inputs": [
           "default",
           "^production",
-          "{workspaceRoot}\\jest.preset.js",
+          "{projectRoot}\\jest.preset.js",
           {
             "externalDependencies": [
               "jest"
@@ -6144,12 +4410,12 @@
           }
         ],
         "outputs": [
-          "{workspaceRoot}\\coverage\\apps\\portfolio-web"
+          "{projectRoot}\\test-output\\jest\\coverage"
         ]
       }
     }
   },
-  "18030934380617165354": {
+  "11620695962012927229": {
     "targets": {
       "test": {
         "command": "jest",
@@ -6190,12 +4456,12 @@
       }
     }
   },
-  "5265220363152617339": {
+  "16728540168664310621": {
     "targets": {
       "test": {
         "command": "jest",
         "options": {
-          "cwd": "apps/portfolio-web",
+          "cwd": ".",
           "env": {
             "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
           }
@@ -6218,7 +4484,7 @@
         "inputs": [
           "default",
           "^production",
-          "{workspaceRoot}\\jest.preset.js",
+          "{projectRoot}\\jest.preset.js",
           {
             "externalDependencies": [
               "jest"
@@ -6226,12 +4492,12 @@
           }
         ],
         "outputs": [
-          "{workspaceRoot}\\coverage\\apps\\portfolio-web"
+          "{projectRoot}\\test-output\\jest\\coverage"
         ]
       }
     }
   },
-  "16396299990544018465": {
+  "12580374063893310012": {
     "targets": {
       "test": {
         "command": "jest",
@@ -6272,12 +4538,12 @@
       }
     }
   },
-  "3324563227431040501": {
+  "14013316883004841331": {
     "targets": {
       "test": {
         "command": "jest",
         "options": {
-          "cwd": "apps/portfolio-web",
+          "cwd": ".",
           "env": {
             "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
           }
@@ -6300,7 +4566,7 @@
         "inputs": [
           "default",
           "^production",
-          "{workspaceRoot}\\jest.preset.js",
+          "{projectRoot}\\jest.preset.js",
           {
             "externalDependencies": [
               "jest"
@@ -6308,12 +4574,12 @@
           }
         ],
         "outputs": [
-          "{workspaceRoot}\\coverage\\apps\\portfolio-web"
+          "{projectRoot}\\test-output\\jest\\coverage"
         ]
       }
     }
   },
-  "869445489588920646": {
+  "11316467553691350861": {
     "targets": {
       "test": {
         "command": "jest",
@@ -6354,7 +4620,7 @@
       }
     }
   },
-  "7006318369190765147": {
+  "644212346731782073": {
     "targets": {
       "test": {
         "command": "jest",
@@ -6395,7 +4661,7 @@
       }
     }
   },
-  "16363922314008239366": {
+  "5406699007779764108": {
     "targets": {
       "test": {
         "command": "jest",
@@ -6436,7 +4702,7 @@
       }
     }
   },
-  "9378293363037873067": {
+  "16635767696507668178": {
     "targets": {
       "test": {
         "command": "jest",
@@ -6477,7 +4743,7 @@
       }
     }
   },
-  "10034015683410315933": {
+  "3114520882825942080": {
     "targets": {
       "test": {
         "command": "jest",
@@ -6518,7 +4784,7 @@
       }
     }
   },
-  "16294579999034038681": {
+  "1863964851173891832": {
     "targets": {
       "test": {
         "command": "jest",
@@ -6559,7 +4825,7 @@
       }
     }
   },
-  "14947232881661585782": {
+  "6278110378684981382": {
     "targets": {
       "test": {
         "command": "jest",
@@ -6600,7 +4866,7 @@
       }
     }
   },
-  "16255535831476398850": {
+  "15747099298336028132": {
     "targets": {
       "test": {
         "command": "jest",
@@ -6641,7 +4907,7 @@
       }
     }
   },
-  "17387373759006131682": {
+  "8074650835722894326": {
     "targets": {
       "test": {
         "command": "jest",
@@ -6682,12 +4948,12 @@
       }
     }
   },
-  "1592057063612345177": {
+  "3005067416108216479": {
     "targets": {
       "test": {
         "command": "jest",
         "options": {
-          "cwd": ".",
+          "cwd": "apps/portfolio-web",
           "env": {
             "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
           }
@@ -6710,7 +4976,7 @@
         "inputs": [
           "default",
           "^production",
-          "{projectRoot}\\jest.preset.js",
+          "{workspaceRoot}\\jest.preset.js",
           {
             "externalDependencies": [
               "jest"
@@ -6718,17 +4984,17 @@
           }
         ],
         "outputs": [
-          "{projectRoot}\\test-output\\jest\\coverage"
+          "{workspaceRoot}\\coverage\\apps\\portfolio-web"
         ]
       }
     }
   },
-  "5303643267245259240": {
+  "14334189719412522145": {
     "targets": {
       "test": {
         "command": "jest",
         "options": {
-          "cwd": "packages/protocol-33",
+          "cwd": ".",
           "env": {
             "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
           }
@@ -6751,7 +5017,7 @@
         "inputs": [
           "default",
           "^production",
-          "{workspaceRoot}\\jest.preset.js",
+          "{projectRoot}\\jest.preset.js",
           {
             "externalDependencies": [
               "jest"
@@ -6759,17 +5025,17 @@
           }
         ],
         "outputs": [
-          "{workspaceRoot}\\coverage\\packages\\protocol-33"
+          "{projectRoot}\\test-output\\jest\\coverage"
         ]
       }
     }
   },
-  "9933355248249722873": {
+  "7441904218385995772": {
     "targets": {
       "test": {
         "command": "jest",
         "options": {
-          "cwd": ".",
+          "cwd": "apps/portfolio-web",
           "env": {
             "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
           }
@@ -6792,7 +5058,7 @@
         "inputs": [
           "default",
           "^production",
-          "{projectRoot}\\jest.preset.js",
+          "{workspaceRoot}\\jest.preset.js",
           {
             "externalDependencies": [
               "jest"
@@ -6800,17 +5066,17 @@
           }
         ],
         "outputs": [
-          "{projectRoot}\\test-output\\jest\\coverage"
+          "{workspaceRoot}\\coverage\\apps\\portfolio-web"
         ]
       }
     }
   },
-  "15920420640504273242": {
+  "5065874216055287237": {
     "targets": {
       "test": {
         "command": "jest",
         "options": {
-          "cwd": "packages/auth-shield",
+          "cwd": ".",
           "env": {
             "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
           }
@@ -6833,7 +5099,7 @@
         "inputs": [
           "default",
           "^production",
-          "{workspaceRoot}\\jest.preset.js",
+          "{projectRoot}\\jest.preset.js",
           {
             "externalDependencies": [
               "jest"
@@ -6841,12 +5107,12 @@
           }
         ],
         "outputs": [
-          "{workspaceRoot}\\coverage\\packages\\auth-shield"
+          "{projectRoot}\\test-output\\jest\\coverage"
         ]
       }
     }
   },
-  "6442512951479503755": {
+  "9259240298080282561": {
     "targets": {
       "test": {
         "command": "jest",
@@ -6887,12 +5153,12 @@
       }
     }
   },
-  "17029076196969696000": {
+  "8925369948313220119": {
     "targets": {
       "test": {
         "command": "jest",
         "options": {
-          "cwd": ".",
+          "cwd": "apps/portfolio-web",
           "env": {
             "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
           }
@@ -6915,7 +5181,7 @@
         "inputs": [
           "default",
           "^production",
-          "{projectRoot}\\jest.preset.js",
+          "{workspaceRoot}\\jest.preset.js",
           {
             "externalDependencies": [
               "jest"
@@ -6923,12 +5189,12 @@
           }
         ],
         "outputs": [
-          "{projectRoot}\\test-output\\jest\\coverage"
+          "{workspaceRoot}\\coverage\\apps\\portfolio-web"
         ]
       }
     }
   },
-  "15669231772723993746": {
+  "13012200430211132810": {
     "targets": {
       "test": {
         "command": "jest",
@@ -6969,7 +5235,7 @@
       }
     }
   },
-  "5170892484211231237": {
+  "6106580786500517690": {
     "targets": {
       "test": {
         "command": "jest",
@@ -7010,7 +5276,7 @@
       }
     }
   },
-  "10786117284788809423": {
+  "9736024238253409008": {
     "targets": {
       "test": {
         "command": "jest",

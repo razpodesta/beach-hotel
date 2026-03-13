@@ -1,26 +1,50 @@
-// RUTA: packages/cms/core/src/collections/Projects.ts
-
 /**
- * @file Colección: Projects (Catálogo de Ingeniería de Élite)
- * @version 2.0 - CMS-Driven Architecture
- * @description Define la estructura completa de un proyecto. 
- *              Incluye branding dinámico y especificaciones técnicas profundas.
- * @author Raz Podestá - MetaShark Tech
+ * @file packages/cms/core/src/collections/Projects.ts
+ * @version 4.0 - Multi-Tenant SaaS Core
+ * @description Colección soberana para activos digitales.
  */
 
-import { CollectionConfig } from 'payload';
+import { type CollectionConfig } from 'payload';
+import { multiTenantReadAccess, multiTenantWriteAccess } from './Access.js';
 
 export const Projects: CollectionConfig = {
   slug: 'projects',
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'status', 'updatedAt'],
-    group: 'Portfolio',
+    defaultColumns: ['title', 'status', 'tenantId', 'updatedAt'],
+    group: 'Portafolio & Activos',
   },
   access: {
-    read: () => true, // Público para el portafolio
+    read: multiTenantReadAccess,
+    create: ({ req: { user } }) => !!user,
+    update: multiTenantWriteAccess,
+    delete: multiTenantWriteAccess,
+  },
+  hooks: {
+    beforeChange: [
+      ({ req, data, operation }) => {
+        // Asegura que el tenantId se asigne solo en creación
+        if (operation === 'create' && req.user) {
+          data.tenantId = req.user.tenantId;
+        }
+        return data;
+      },
+    ],
   },
   fields: [
+    {
+      name: 'tenantId',
+      type: 'text',
+      index: true,
+      admin: { position: 'sidebar', readOnly: true },
+    },
+    {
+      name: 'status',
+      type: 'select',
+      options: ['draft', 'published'],
+      defaultValue: 'draft',
+      admin: { position: 'sidebar' },
+    },
     {
       type: 'tabs',
       tabs: [
@@ -28,48 +52,26 @@ export const Projects: CollectionConfig = {
           label: 'Información General',
           fields: [
             { name: 'title', type: 'text', required: true },
-            { name: 'subtitle', type: 'text' },
+            { name: 'slug', type: 'text', unique: true, required: true, index: true },
             { name: 'description', type: 'textarea', required: true },
-            { name: 'status', type: 'select', options: ['draft', 'published'], defaultValue: 'published' },
-            { name: 'imageUrl', type: 'upload', relationTo: 'media', required: true },
+            { name: 'imageUrl', type: 'text', required: true },
+            {
+              type: 'row',
+              fields: [
+                { name: 'liveUrl', type: 'text' },
+                { name: 'codeUrl', type: 'text' },
+              ]
+            }
           ],
         },
         {
-          label: 'Arquitectura Técnica',
+          label: 'Métrica de Protocolo 33',
           fields: [
             { 
-              name: 'tech_stack', 
-              type: 'array', 
-              fields: [{ name: 'tech', type: 'text' }] 
-            },
-            {
-              name: 'backend_architecture',
-              type: 'group',
-              fields: [
-                { name: 'title', type: 'text' },
-                { name: 'features', type: 'array', fields: [{ name: 'feature', type: 'text' }] }
-              ]
-            }
-          ]
-        },
-        {
-          label: 'Elite Options & Branding',
-          fields: [
-            {
-              name: 'elite_options',
-              type: 'array',
-              fields: [
-                { name: 'name', type: 'text' },
-                { name: 'detail', type: 'text' }
-              ]
-            },
-            {
-              name: 'branding',
-              type: 'group',
-              fields: [
-                { name: 'primary_color', type: 'text', defaultValue: '#7c3aed' },
-                { name: 'layout_style', type: 'select', options: ['minimal', 'immersive', 'editorial', 'corporate'] }
-              ]
+              name: 'reputationWeight', 
+              type: 'number', 
+              defaultValue: 10,
+              admin: { description: 'Peso de reputación que aporta este activo al Tenant.' }
             }
           ]
         }

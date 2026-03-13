@@ -1,22 +1,13 @@
 /**
  * @file apps/portfolio-web/src/lib/nav-links.ts
- * @description Fuente única de verdad para la estructura de navegación del ecosistema.
- *              Define los enlaces del Header y las columnas del Footer.
- * @version 2.0
+ * @version 2.1 - Contrato de Navegación Recursiva
+ * @description Fuente única de verdad tipada para la navegación del ecosistema.
  * @author Raz Podestá - MetaShark Tech
  */
 
 import { 
-  Hotel, 
-  Sparkles, 
-  BedDouble, 
-  History, 
-  MessageSquare, 
-  MapPin,
-  ShieldCheck,
-  FileText,
-  LayoutGrid,
-  Laptop
+  Hotel, Sparkles, BedDouble, History, MessageSquare, MapPin,
+  ShieldCheck, FileText, LayoutGrid, Laptop
 } from 'lucide-react';
 import { type LucideIcon } from 'lucide-react';
 
@@ -26,6 +17,14 @@ export interface NavLink {
   Icon?: LucideIcon;
 }
 
+/**
+ * Interfaz recursiva para soportar menús desplegables anidados.
+ */
+export interface NavItem extends NavLink {
+  children?: NavLink[];
+  isNested?: boolean;
+}
+
 export interface FooterColumn {
   columnKey: string;
   links: NavLink[];
@@ -33,16 +32,18 @@ export interface FooterColumn {
 
 /**
  * Estructura de navegación principal (Header)
+ * Tipada explícitamente con NavItem para habilitar children.
  */
-export const mainNavStructure = [
+export const mainNavStructure: NavItem[] = [
   { 
     labelKey: 'hotel', 
+    href: '#',
+    Icon: Hotel,
+    isNested: true,
     children: [
       { labelKey: 'habitaciones', href: '/#rooms', Icon: BedDouble },
       { labelKey: 'historia', href: '/quienes-somos', Icon: History },
     ], 
-    isNested: true, 
-    Icon: Hotel 
   },
   { labelKey: 'festival', href: '/festival', Icon: Sparkles }, 
   { labelKey: 'ubicacion', href: '/#location', Icon: MapPin },
@@ -51,7 +52,6 @@ export const mainNavStructure = [
 
 /**
  * Estructura de navegación del pie de página (Footer)
- * Las llaves 'columnKey' deben existir en dictionary.footer
  */
 export const footerNavStructure: FooterColumn[] = [
   {

@@ -1,12 +1,17 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
+    "baseUrl": ".",
     "composite": true,
-    "outDir": "../../../dist/out-tsc",
+    "outDir": "../../../dist/packages/cms/ui",
     "emitDeclarationOnly": false,
-    "tsBuildInfoFile": "../../../dist/out-tsc/packages/cms/ui/tsconfig.lib.tsbuildinfo"
+    "tsBuildInfoFile": "../../../dist/packages/cms/ui/tsconfig.lib.tsbuildinfo"
   },
-  "include": ["src/**/*.js", "src/**/*.jsx", "src/**/*.ts", "src/**/*.tsx"],
+  "include": [
+    "src/**/*.ts", 
+    "src/**/*.tsx", 
+    "src/**/*.d.ts"
+  ],
   "exclude": [
     "jest.config.ts",
     "src/**/*.spec.ts",

@@ -1,0 +1,38 @@
+{
+  "name": "@metashark/testing-utils",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/testing-utils/src",
+  "projectType": "library",
+  "tags": ["scope:shared", "type:util"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/testing-utils",
+        "main": "packages/testing-utils/src/index.ts",
+        "tsConfig": "packages/testing-utils/tsconfig.lib.json",
+        "assets": ["packages/testing-utils/*.md"],
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/packages/testing-utils"],
+      "options": {
+        "jestConfig": "packages/testing-utils/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc -p packages/testing-utils/tsconfig.lib.json --noEmit",
+        "forwardAllArgs": true
+      }
+    }
+  }
+}

@@ -1,12 +1,15 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "outDir": "../../dist/out-tsc",
+    "baseUrl": ".",
+    "composite": true,
+    "outDir": "../../../dist/packages/testing-utils",
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
     "inlineSources": true,
-    "types": ["node", "react", "react-dom"],
+    "tsBuildInfoFile": "../../../dist/packages/testing-utils/tsconfig.lib.tsbuildinfo",
+    "types": ["node", "jest", "react", "react-dom"],
     "lib": ["es2022", "dom", "dom.iterable"]
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"],

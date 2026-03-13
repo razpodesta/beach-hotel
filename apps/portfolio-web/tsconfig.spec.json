@@ -4,7 +4,7 @@
     "outDir": "../../dist/out-tsc",
     "module": "commonjs",
     "types": ["jest", "node", "react", "react-dom"],
-    "jsx": "react"
+    "jsx": "react-jsx"
   },
   "include": [
     "jest.config.ts",
@@ -14,7 +14,18 @@
     "src/**/*.test.tsx",
     "src/**/*.spec.tsx",
     "src/**/*.d.ts",
-    "../../tests/apps/cms-admin/**/*.spec.ts",
-    "../../tests/apps/cms-admin/**/*.spec.tsx"
+    /* 
+       @pilar V: Alineación con la Arquitectura de Espejo.
+       Se eliminan referencias a proyectos desacoplados (cms-admin).
+    */
+    "../../tests/apps/portfolio-web/**/*.spec.ts",
+    "../../tests/apps/portfolio-web/**/*.spec.tsx"
+  ],
+  "exclude": [
+    "../../packages/cms/core/src/payload.config.ts" 
+    /* 
+       @pilar VIII: Resiliencia. 
+       Excluimos el archivo ESM conflictivo del contexto de validación CJS de los tests.
+    */
   ]
 }

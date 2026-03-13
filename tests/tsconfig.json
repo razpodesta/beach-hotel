@@ -1,25 +1,21 @@
 {
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
-    // CRÍTICO: Apunta a la raíz del monorepo para que los paths '@metashark-cms/*' funcionen
-    "baseUrl": "..",
-
-    // Configuración para Tests de UI
-    "module": "esnext",
-    "moduleResolution": "bundler",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["../apps/portfolio-web/src/*"],
+      "@metashark/cms-core/*": ["../packages/cms/core/src/*"],
+      "@portfolio/testing-utils": ["../packages/testing-utils/src/index.ts"]
+    },
+    "module": "commonjs",
+    "moduleResolution": "node",
     "jsx": "react-jsx",
-
-    "noEmit": true,
-    "allowJs": true,
-    "esModuleInterop": true,
-
-    // Tipos globales necesarios para los tests
     "types": ["node", "jest", "@testing-library/jest-dom", "react", "react-dom"]
   },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    "../jest.config.ts",
-    "../jest.preset.js"
+  "include": ["**/*.ts", "**/*.tsx"],
+  "references": [
+    {
+      "path": "../packages/cms/core"
+    }
   ]
 }

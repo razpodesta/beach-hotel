@@ -1,22 +1,31 @@
-// RUTA: apps/portfolio-web/src/app/api/payload/[[...slug]]/route.ts
 /**
- * @file Manejador de API Dinámica - Payload CMS 3.0
- * @version 3.1
- * @description Punto de entrada para las funciones de servidor de Payload.
- *              Utiliza el nuevo alias de monorepo @metashark/cms-core/config.
+ * @file apps/portfolio-web/src/app/api/payload/[[...slug]]/route.ts
+ * @description Orquestador soberano de la API de Payload CMS 3.0.
+ *              Implementa manejadores explícitos con paso directo de configuración.
+ * @version 6.1 - Strict Payload 3.0 Stable Contract
+ * @author Raz Podestá - MetaShark Tech
  */
 
-import { handleServerFunctions } from '@payloadcms/next/functions';
+import { 
+  REST_GET, 
+  REST_POST, 
+  REST_OPTIONS, 
+  REST_PATCH, 
+  REST_DELETE, 
+  REST_PUT 
+} from '@payloadcms/next/routes';
+// @pilar V: Vinculación de infraestructura mediante alias soberano.
 import config from '@metashark/cms-core/config';
 
 /**
- * Orquestador de peticiones del CMS.
- * Se exportan los métodos HTTP estándar que Payload necesita para su API REST.
+ * EXPORTACIÓN DE HANDLERS EXPLÍCITOS
+ * @pilar III: Se elimina el objeto envoltorio { config } para pasar la 
+ * configuración directamente, cumpliendo con la firma de SanitizedConfig.
  */
-export const GET = handleServerFunctions({ config });
-export const POST = handleServerFunctions({ config });
-export const PUT = handleServerFunctions({ config });
-export const PATCH = handleServerFunctions({ config });
-export const DELETE = handleServerFunctions({ config });
-export const OPTIONS = handleServerFunctions({ config });
-export const HEAD = handleServerFunctions({ config });
+
+export const GET = REST_GET(config);
+export const POST = REST_POST(config);
+export const OPTIONS = REST_OPTIONS(config);
+export const PATCH = REST_PATCH(config);
+export const DELETE = REST_DELETE(config);
+export const PUT = REST_PUT(config);

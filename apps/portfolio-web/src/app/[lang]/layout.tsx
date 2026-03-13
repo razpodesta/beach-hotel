@@ -1,11 +1,20 @@
-// RUTA: apps/portfolio-web/src/app/[lang]/layout.tsx
-// VERSIÓN: 26.0 - Integración Tipográfica Soberana
-// DESCRIPCIÓN: Layout con Google Inter, Dicaten y Clash Display inyectados como variables CSS.
+/**
+ * @file apps/portfolio-web/src/app/[lang]/layout.tsx
+ * @description Orquestador del Shell Principal. Inyecta tipografía soberana,
+ *              providers y aparatos de telemetría global.
+ * @version 27.0 - Type-Safe Telemetry Injection
+ * @author Raz Podestá - MetaShark Tech
+ */
 
 import React, { Suspense } from 'react';
 import type { Metadata } from 'next';
+
+// IMPORTACIONES DE INFRAESTRUCTRURA
 import { i18n, type Locale } from '../../config/i18n.config';
 import { getDictionary } from '../../lib/get-dictionary';
+import { fontInter, fontSignature, fontClashDisplay } from '../../lib/fonts';
+
+// COMPONENTES LEGO
 import { Providers } from '../../components/layout/Providers';
 import { Header } from '../../components/layout/Header';
 import { Footer } from '../../components/layout/Footer';
@@ -14,18 +23,21 @@ import { NewsletterModal } from '../../components/ui/NewsletterModal';
 import { VisitorHud } from '../../components/ui/VisitorHud';
 import { NavigationTracker } from '../../components/layout/NavigationTracker';
 
-// Importamos el motor de fuentes que creamos
-import { fontInter, fontSignature, fontClashDisplay } from '../../lib/fonts';
-
 import '../global.css';
 
-// Variables combinadas para el body
+// Consolidación de variables CSS de tipografía
 const fontVariables = `${fontInter.variable} ${fontSignature.variable} ${fontClashDisplay.variable}`;
 
+/**
+ * Genera parámetros estáticos para SSG de todos los idiomas.
+ */
 export async function generateStaticParams() {
   return i18n.locales.map((locale) => ({ lang: locale }));
 }
 
+/**
+ * Orquestador de Metadatos Soberano.
+ */
 export async function generateMetadata({ params }: { params: Promise<{ lang: Locale }> }): Promise<Metadata> {
   const { lang: currentLanguage } = await params;
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:4200';
@@ -49,6 +61,9 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: Loc
   };
 }
 
+/**
+ * Aparato de Shell: RootLayout
+ */
 export default async function RootLayout({
   children,
   params,
@@ -64,12 +79,15 @@ export default async function RootLayout({
       <head />
       <body className={`${fontVariables} font-sans antialiased`}>
         <Providers>
+            {/* Seguimiento de comportamiento Nos3 ready */}
             <Suspense fallback={null}>
               <NavigationTracker />
             </Suspense>
 
             <div className="flex min-h-screen flex-col">
               <Header dictionary={dictionary} />
+              
+              {/* Telemetría Global con tipado validado contra system_status.schema */}
               <SystemStatusTicker dictionary={dictionary.system_status} />
 
               <main className="grow relative z-0">

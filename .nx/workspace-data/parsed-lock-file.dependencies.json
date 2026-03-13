@@ -8221,6 +8221,101 @@
   },
   {
     "source": "npm:@payloadcms/next",
+    "target": "npm:next@15.2.5",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/next",
+    "target": "npm:path-to-regexp@6.3.0",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/next",
+    "target": "npm:payload",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/next",
+    "target": "npm:qs-esm",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/next",
+    "target": "npm:sass@1.77.4",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/next",
+    "target": "npm:uuid@10.0.0",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/next",
+    "target": "npm:@dnd-kit/core",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/next",
+    "target": "npm:@dnd-kit/modifiers",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/next",
+    "target": "npm:@dnd-kit/sortable",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/next",
+    "target": "npm:@payloadcms/graphql",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/next",
+    "target": "npm:@payloadcms/translations",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/next",
+    "target": "npm:@payloadcms/ui",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/next",
+    "target": "npm:busboy",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/next",
+    "target": "npm:dequal",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/next",
+    "target": "npm:file-type@19.3.0",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/next",
+    "target": "npm:graphql",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/next",
+    "target": "npm:graphql-http",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/next",
+    "target": "npm:graphql-playground-html",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/next",
+    "target": "npm:http-status",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/next",
     "target": "npm:next",
     "type": "static"
   },
@@ -8420,8 +8515,313 @@
     "type": "static"
   },
   {
+    "source": "npm:@payloadcms/richtext-lexical",
+    "target": "npm:@faceless-ui/modal",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/richtext-lexical",
+    "target": "npm:@faceless-ui/scroll-info",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/richtext-lexical",
+    "target": "npm:@lexical/clipboard",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/richtext-lexical",
+    "target": "npm:@lexical/headless",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/richtext-lexical",
+    "target": "npm:@lexical/html",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/richtext-lexical",
+    "target": "npm:@lexical/link",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/richtext-lexical",
+    "target": "npm:@lexical/list",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/richtext-lexical",
+    "target": "npm:@lexical/mark",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/richtext-lexical",
+    "target": "npm:@lexical/react",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/richtext-lexical",
+    "target": "npm:@lexical/rich-text",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/richtext-lexical",
+    "target": "npm:@lexical/selection",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/richtext-lexical",
+    "target": "npm:@lexical/table",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/richtext-lexical",
+    "target": "npm:@lexical/utils",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/richtext-lexical",
+    "target": "npm:@payloadcms/next",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/richtext-lexical",
+    "target": "npm:@payloadcms/translations",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/richtext-lexical",
+    "target": "npm:@payloadcms/ui",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/richtext-lexical",
+    "target": "npm:@types/uuid",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/richtext-lexical",
+    "target": "npm:acorn",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/richtext-lexical",
+    "target": "npm:bson-objectid",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/richtext-lexical",
+    "target": "npm:csstype@3.1.3",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/richtext-lexical",
+    "target": "npm:dequal",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/richtext-lexical",
+    "target": "npm:escape-html",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/richtext-lexical",
+    "target": "npm:jsox",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/richtext-lexical",
+    "target": "npm:lexical",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/richtext-lexical",
+    "target": "npm:mdast-util-from-markdown@2.0.2",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/richtext-lexical",
+    "target": "npm:mdast-util-mdx-jsx@3.1.3",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/richtext-lexical",
+    "target": "npm:micromark-extension-mdx-jsx@3.0.1",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/richtext-lexical",
+    "target": "npm:payload",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/richtext-lexical",
+    "target": "npm:qs-esm",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/richtext-lexical",
+    "target": "npm:react",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/richtext-lexical",
+    "target": "npm:react-dom",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/richtext-lexical",
+    "target": "npm:react-error-boundary@4.1.2",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/richtext-lexical",
+    "target": "npm:ts-essentials",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/richtext-lexical",
+    "target": "npm:uuid@10.0.0",
+    "type": "static"
+  },
+  {
     "source": "npm:@payloadcms/translations",
     "target": "npm:date-fns@4.1.0",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/ui",
+    "target": "npm:@date-fns/tz",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/ui",
+    "target": "npm:@dnd-kit/core",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/ui",
+    "target": "npm:@dnd-kit/sortable",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/ui",
+    "target": "npm:@dnd-kit/utilities",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/ui",
+    "target": "npm:@faceless-ui/modal",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/ui",
+    "target": "npm:@faceless-ui/scroll-info",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/ui",
+    "target": "npm:@faceless-ui/window-info",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/ui",
+    "target": "npm:@monaco-editor/react",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/ui",
+    "target": "npm:@payloadcms/translations",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/ui",
+    "target": "npm:bson-objectid",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/ui",
+    "target": "npm:date-fns@4.1.0",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/ui",
+    "target": "npm:dequal",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/ui",
+    "target": "npm:md5",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/ui",
+    "target": "npm:next@15.2.5",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/ui",
+    "target": "npm:object-to-formdata",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/ui",
+    "target": "npm:payload",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/ui",
+    "target": "npm:qs-esm",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/ui",
+    "target": "npm:react",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/ui",
+    "target": "npm:react-datepicker",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/ui",
+    "target": "npm:react-dom",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/ui",
+    "target": "npm:react-image-crop",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/ui",
+    "target": "npm:react-select",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/ui",
+    "target": "npm:scheduler@0.25.0",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/ui",
+    "target": "npm:sonner",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/ui",
+    "target": "npm:ts-essentials",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/ui",
+    "target": "npm:use-context-selector",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/ui",
+    "target": "npm:uuid@10.0.0",
     "type": "static"
   },
   {
@@ -10380,6 +10780,11 @@
     "type": "static"
   },
   {
+    "source": "npm:@types/bcryptjs",
+    "target": "npm:bcryptjs",
+    "type": "static"
+  },
+  {
     "source": "npm:@types/body-parser",
     "target": "npm:@types/connect",
     "type": "static"
@@ -10557,6 +10962,16 @@
   {
     "source": "npm:@types/jsdom",
     "target": "npm:parse5@7.3.0",
+    "type": "static"
+  },
+  {
+    "source": "npm:@types/jsonwebtoken",
+    "target": "npm:@types/ms",
+    "type": "static"
+  },
+  {
+    "source": "npm:@types/jsonwebtoken",
+    "target": "npm:@types/node",
     "type": "static"
   },
   {
@@ -13245,6 +13660,21 @@
     "type": "static"
   },
   {
+    "source": "npm:cookies-next@5.1.0",
+    "target": "npm:cookie@1.1.1",
+    "type": "static"
+  },
+  {
+    "source": "npm:cookies-next@5.1.0",
+    "target": "npm:next@15.2.5",
+    "type": "static"
+  },
+  {
+    "source": "npm:cookies-next@5.1.0",
+    "target": "npm:react",
+    "type": "static"
+  },
+  {
     "source": "npm:cookies-next",
     "target": "npm:cookie@1.1.1",
     "type": "static"
@@ -13496,7 +13926,7 @@
   },
   {
     "source": "npm:css-minimizer-webpack-plugin",
-    "target": "npm:esbuild@0.25.12",
+    "target": "npm:esbuild@0.27.3",
     "type": "static"
   },
   {
@@ -14822,6 +15252,16 @@
   {
     "source": "npm:esbuild-register",
     "target": "npm:esbuild@0.25.12",
+    "type": "static"
+  },
+  {
+    "source": "npm:esbuild-register",
+    "target": "npm:debug@4.4.3",
+    "type": "static"
+  },
+  {
+    "source": "npm:esbuild-register",
+    "target": "npm:esbuild@0.27.3",
     "type": "static"
   },
   {
@@ -20025,6 +20465,11 @@
     "type": "static"
   },
   {
+    "source": "npm:lucide-react@0.454.0",
+    "target": "npm:react",
+    "type": "static"
+  },
+  {
     "source": "npm:lucide-react",
     "target": "npm:react",
     "type": "static"
@@ -21510,8 +21955,108 @@
     "type": "static"
   },
   {
+    "source": "npm:next@15.2.5",
+    "target": "npm:@next/env@15.2.5",
+    "type": "static"
+  },
+  {
+    "source": "npm:next@15.2.5",
+    "target": "npm:@swc/counter",
+    "type": "static"
+  },
+  {
+    "source": "npm:next@15.2.5",
+    "target": "npm:@swc/helpers@0.5.15",
+    "type": "static"
+  },
+  {
+    "source": "npm:next@15.2.5",
+    "target": "npm:busboy",
+    "type": "static"
+  },
+  {
+    "source": "npm:next@15.2.5",
+    "target": "npm:caniuse-lite",
+    "type": "static"
+  },
+  {
+    "source": "npm:next@15.2.5",
+    "target": "npm:postcss@8.4.31",
+    "type": "static"
+  },
+  {
+    "source": "npm:next@15.2.5",
+    "target": "npm:react",
+    "type": "static"
+  },
+  {
+    "source": "npm:next@15.2.5",
+    "target": "npm:react-dom",
+    "type": "static"
+  },
+  {
+    "source": "npm:next@15.2.5",
+    "target": "npm:styled-jsx",
+    "type": "static"
+  },
+  {
+    "source": "npm:next@15.2.5",
+    "target": "npm:@next/swc-darwin-arm64",
+    "type": "static"
+  },
+  {
+    "source": "npm:next@15.2.5",
+    "target": "npm:@next/swc-darwin-x64",
+    "type": "static"
+  },
+  {
+    "source": "npm:next@15.2.5",
+    "target": "npm:@next/swc-linux-arm64-gnu",
+    "type": "static"
+  },
+  {
+    "source": "npm:next@15.2.5",
+    "target": "npm:@next/swc-linux-arm64-musl",
+    "type": "static"
+  },
+  {
+    "source": "npm:next@15.2.5",
+    "target": "npm:@next/swc-linux-x64-gnu",
+    "type": "static"
+  },
+  {
+    "source": "npm:next@15.2.5",
+    "target": "npm:@next/swc-linux-x64-musl",
+    "type": "static"
+  },
+  {
+    "source": "npm:next@15.2.5",
+    "target": "npm:@next/swc-win32-arm64-msvc",
+    "type": "static"
+  },
+  {
+    "source": "npm:next@15.2.5",
+    "target": "npm:@next/swc-win32-x64-msvc",
+    "type": "static"
+  },
+  {
+    "source": "npm:next@15.2.5",
+    "target": "npm:@playwright/test",
+    "type": "static"
+  },
+  {
+    "source": "npm:next@15.2.5",
+    "target": "npm:sass@1.97.3",
+    "type": "static"
+  },
+  {
+    "source": "npm:next@15.2.5",
+    "target": "npm:sharp@0.33.5",
+    "type": "static"
+  },
+  {
     "source": "npm:next",
-    "target": "npm:@next/env",
+    "target": "npm:@next/env@15.2.9",
     "type": "static"
   },
   {
@@ -22821,7 +23366,7 @@
   },
   {
     "source": "npm:payload",
-    "target": "npm:@next/env",
+    "target": "npm:@next/env@15.2.9",
     "type": "static"
   },
   {
@@ -26936,7 +27481,7 @@
   },
   {
     "source": "npm:terser-webpack-plugin",
-    "target": "npm:esbuild@0.25.12",
+    "target": "npm:esbuild@0.27.3",
     "type": "static"
   },
   {
@@ -27231,7 +27776,7 @@
   },
   {
     "source": "npm:ts-jest",
-    "target": "npm:esbuild@0.25.12",
+    "target": "npm:esbuild@0.27.3",
     "type": "static"
   },
   {
@@ -27416,7 +27961,7 @@
   },
   {
     "source": "npm:tsx",
-    "target": "npm:get-tsconfig@4.8.1",
+    "target": "npm:get-tsconfig@4.13.6",
     "type": "static"
   },
   {
@@ -27966,7 +28511,7 @@
   },
   {
     "source": "npm:verdaccio-htpasswd",
-    "target": "npm:bcryptjs",
+    "target": "npm:bcryptjs@2.4.3",
     "type": "static"
   },
   {

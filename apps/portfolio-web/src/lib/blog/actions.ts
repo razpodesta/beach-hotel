@@ -1,155 +1,162 @@
 /**
  * @file apps/portfolio-web/src/lib/blog/actions.ts
- * @description Orquestador soberano de datos para el Concierge Journal. 
- *              Implementa adaptadores de integridad para Payload CMS 3.0 con 
- *              validación Zod y erradicación total de tipos 'any'.
- * @version 8.0
+ * @description Orquestador soberano de datos para el Hub Editorial (The Concierge Journal).
+ *              Gestiona la comunicación con Payload CMS 3.0 y el "shaping" de entidades.
+ * @version 11.0 - Optimized Query Architecture
  * @author Raz Podestá - MetaShark Tech
  */
 
-import { fetchGraphQL } from '../graphql-client';
+import { getPayload } from 'payload';
+/**
+ * @pilar V: Adherencia Arquitectónica.
+ * Vinculación mediante alias soberano definido en la Constitución (tsconfig.base.json).
+ */
+import configPromise from '@metashark/cms-core/config';
 import { type PostWithSlug, postWithSlugSchema } from '../schemas/blog.schema';
 
 /**
- * Interfaz técnica que modela el contrato de datos crudos de GraphQL.
- * Provee seguridad de tipos desde la captura hasta la transformación.
+ * CONTRATO DE INTERFAZ CMS (Bridge Interface)
+ * Define la estructura esperada de los documentos crudos de Payload.
  */
 interface RawBlogPostEntry {
-  title?: string;
-  slug?: string;
-  description?: string;
-  content?: string | Record<string, unknown>;
-  publishedDate?: string;
-  author?: {
-    username?: string;
-  } | null;
-  tags?: Array<{
-    tag: string;
-  }> | null;
+  title?: string | null;
+  slug?: string | null;
+  description?: string | null;
+  content?: unknown;
+  publishedDate?: string | null;
+  author?: { username?: string; email?: string } | string | null;
+  tags?: Array<{ tag?: string | null }> | null;
+  status?: 'draft' | 'published' | null;
 }
 
 /**
- * Respuesta tipada de la consulta GraphQL para BlogPosts.
- */
-interface BlogPostsResponse {
-  BlogPosts: {
-    docs: RawBlogPostEntry[];
-  };
-}
-
-/**
- * Función "Shaper": Transforma y valida la entrada del CMS al dominio de la aplicación.
- * 
- * @param {unknown} entry - Datos provenientes de la consulta GraphQL.
- * @returns {PostWithSlug} Objeto validado por el contrato soberano de Zod.
- * @throws {Error} Si la integridad de los datos es inaceptable.
+ * FUNCIÓN SHAPER: mapPayloadToPost
+ * @pilar III: Seguridad de Tipos Absoluta.
+ * Transforma y valida la entrada cruda del CMS al dominio tipado de la aplicación.
+ * @param {unknown} entry - Documento crudo proveniente de la base de datos.
+ * @returns {PostWithSlug} Objeto saneado y validado por el contrato de Zod.
  */
 function mapPayloadToPost(entry: unknown): PostWithSlug {
-  // 1. Guardia de Tipo: Verificación de integridad estructural.
-  if (typeof entry !== 'object' || entry === null) {
-    throw new Error('[Blog-Adapter] Payload inválido: Se esperaba un objeto no nulo.');
+  const traceId = `SHAPER-${Date.now()}`;
+
+  if (!entry || typeof entry !== 'object') {
+    throw new Error(`[HEIMDALL][${traceId}] Entrada de CMS inválida.`);
   }
 
-  // Cast seguro a la interfaz técnica (Sin 'any').
   const raw = entry as RawBlogPostEntry;
 
-  // 2. Construcción del objeto de dominio (Shaping).
+  /**
+   * @pilar VIII: Resiliencia.
+   * Lógica de extracción de autoría con fallbacks seguros.
+   */
+  const authorName = (typeof raw.author === 'object' && raw.author !== null)
+    ? (raw.author.username ?? raw.author.email?.split('@')[0] ?? 'Concierge Team')
+    : 'Concierge Team';
+
+  // Saneamiento de etiquetas
+  const sanitizedTags = Array.isArray(raw.tags) 
+    ? raw.tags.map((t) => t.tag ?? '').filter(Boolean) 
+    : [];
+
+  // Mapeo al contrato de dominio
   const mappedData = {
     slug: raw.slug ?? 'unknown-slug',
     metadata: {
       title: raw.title ?? 'Untitled Post',
       description: raw.description ?? '',
-      author: raw.author?.username ?? 'Concierge Team',
+      author: authorName,
       published_date: raw.publishedDate ?? new Date().toISOString(),
-      tags: Array.isArray(raw.tags) ? raw.tags.map((t) => t.tag) : [],
+      tags: sanitizedTags,
     },
     /**
-     * Gestión de Contenido Lexical/Markdown:
-     * Si Payload devuelve un objeto (Lexical JSON), lo serializamos para su transporte.
+     * Gestión de Contenido: 
+     * Payload 3.0 puede devolver objetos Lexical. Aseguramos formato string para MDXRemote.
      */
-    content: typeof raw.content === 'object' 
-      ? JSON.stringify(raw.content) 
-      : (raw.content ?? ''),
+    content: typeof raw.content === 'string' 
+      ? raw.content 
+      : JSON.stringify(raw.content ?? ''),
   };
 
-  // 3. Validación SSoT: El contrato de Zod es la ley.
+  /**
+   * @pilar I: Validación Innegociable.
+   * Si el dato no cumple el esquema, se bloquea la propagación para evitar errores de UI.
+   */
   const validation = postWithSlugSchema.safeParse(mappedData);
 
   if (!validation.success) {
     console.error(
-      `[HEIMDALL][DATA-VIOLATION] Fallo de esquema en post [${mappedData.slug}]:`,
+      `[HEIMDALL][DATA-VIOLATION][${traceId}] Fallo de esquema en: ${mappedData.slug}`,
       validation.error.flatten().fieldErrors
     );
-    throw new Error(`[Blog-Adapter] Integridad de datos comprometida.`);
+    throw new Error(`[Blog-Shaper] Integridad comprometida para el slug: ${mappedData.slug}`);
   }
 
   return validation.data;
 }
 
 /**
- * Recupera el inventario completo de artículos publicados.
- * Implementa un ciclo de recuperación (Resilience) para evitar caídas en cascada.
- * 
- * @returns {Promise<PostWithSlug[]>} Lista de artículos procesados y validados.
+ * RECUPERACIÓN SOBERANA: getAllPosts
+ * Obtiene el inventario de artículos publicados con orden cronológico inverso.
  */
 export async function getAllPosts(): Promise<PostWithSlug[]> {
-  const query = `
-    query GetAllPosts {
-      BlogPosts(where: { status: { equals: "published" } }, limit: 100) {
-        docs {
-          title
-          slug
-          description
-          content
-          author { username }
-          publishedDate
-          tags { tag }
-        }
-      }
-    }
-  `;
+  const traceId = `BLOG-FETCH-ALL-${Date.now()}`;
   
   try {
-    const response = await fetchGraphQL<BlogPostsResponse>(query);
-    const docs = response?.BlogPosts?.docs ?? [];
+    const config = await configPromise;
+    const payload = await getPayload({ config });
+    
+    const { docs } = await payload.find({
+      collection: 'blog-posts',
+      where: { 
+        status: { equals: 'published' } 
+      },
+      sort: '-publishedDate', // @pilar XII: UX - Priorizar contenido fresco
+      limit: 100,
+      depth: 1,
+    });
     
     return docs.map(mapPayloadToPost);
   } catch (error) {
-    console.error('[Blog-Actions][HEIMDALL] Fallo en getAllPosts, activando protocolo de emergencia:', error);
-    return []; // Resiliencia: La aplicación continúa funcionando sin contenido dinámico.
+    console.error(`[HEIMDALL][CRITICAL][${traceId}] Fallo en getAllPosts:`, error);
+    return [];
   }
 }
 
 /**
- * Recupera un artículo individual mediante su identificador semántico.
- * 
- * @param {string} slug - El identificador único del artículo.
- * @returns {Promise<PostWithSlug | null>} El artículo procesado o nulo si no se localiza.
+ * RECUPERACIÓN INDIVIDUAL: getPostBySlug
+ * @param {string} slug - Identificador semántico del artículo.
  */
 export async function getPostBySlug(slug: string): Promise<PostWithSlug | null> {
-  const query = `
-    query GetPostBySlug($slug: String!) {
-      BlogPosts(where: { slug: { equals: $slug } }, limit: 1) {
-        docs {
-          title
-          slug
-          description
-          content
-          author { username }
-          publishedDate
-          tags { tag }
-        }
-      }
-    }
-  `;
+  const traceId = `BLOG-FETCH-SLUG-${slug}`;
   
   try {
-    const response = await fetchGraphQL<BlogPostsResponse>(query, { slug });
-    const post = response?.BlogPosts?.docs?.[0];
+    const config = await configPromise;
+    const payload = await getPayload({ config });
     
-    return post ? mapPayloadToPost(post) : null;
+    const { docs } = await payload.find({
+      collection: 'blog-posts',
+      where: { 
+        slug: { equals: slug },
+        status: { equals: 'published' }
+      },
+      limit: 1,
+    });
+    
+    return docs[0] ? mapPayloadToPost(docs[0]) : null;
   } catch (error) {
-    console.error(`[Blog-Actions][HEIMDALL] Error de recuperación para slug [${slug}]:`, error);
+    console.error(`[HEIMDALL][ERROR][${traceId}] Error al recuperar artículo:`, error);
     return null;
   }
 }
+
+/**
+ * FILTRADO TAXONÓMICO OPTIMIZADO: getPostsByTag
+ * @pilar X: Performance de Élite.
+ * Filtrado directo en la base de datos para evitar carga innecesaria de memoria.
+ * @param {string} tagSlug - Slug de la etiqueta a buscar.
+ */
+export async function getPostsByTag(tagSlug: string): Promise<PostWithSlug[]> {
+  const traceId = `BLOG-FETCH-TAG-${tagSlug}`;
+  
+  try {
+    

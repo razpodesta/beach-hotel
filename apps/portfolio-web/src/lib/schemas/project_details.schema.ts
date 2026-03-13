@@ -1,54 +1,73 @@
+/**
+ * @file apps/portfolio-web/src/lib/schemas/project_details.schema.ts
+ * @version 4.0 - Sincronización Estricta
+ * @description Sincronizado con ProjectTechModal.tsx. Ahora exporta ProjectEntity 
+ *              como la SSoT para los datos de proyecto.
+ * @author Raz Podestá - MetaShark Tech
+ */
+
 import { z } from 'zod';
 
-// Esquema para características técnicas individuales (Upselling técnico)
-const featureSchema = z.object({
-  name: z.string(),
-  detail: z.string(),
-});
+// ============================================================================
+// 1. CONTRATO DE DATOS (DATA SSoT)
+// ============================================================================
 
-// Esquema para configuración de diseño (Branding por proyecto)
-const designConfigSchema = z.object({
-  font_heading: z.string(),
-  font_body: z.string(),
+const projectBrandingSchema = z.object({
   primary_color: z.string(),
   layout_style: z.enum(['minimal', 'immersive', 'editorial', 'corporate', 'brutalist']),
 });
 
-// Esquema de características de IA (Opcional)
-const aiFeaturesSchema = z.object({
-  enabled: z.boolean(),
-  description: z.string().optional(),
-  capabilities: z.array(z.string()).optional(),
-});
-
-// Esquema para la arquitectura del backend
-const backendArchitectureSchema = z.object({
+const projectBackendSchema = z.object({
   title: z.string(),
-  description: z.string(),
+  description: z.string().optional().nullable(),
   features: z.array(z.string()),
 });
 
-// Esquema para la introducción narrativa
-const introductionSchema = z.object({
+const projectEliteOptionSchema = z.object({
+  name: z.string(),
+  detail: z.string(),
+});
+
+// Esquema para la sección de introducción requerida por ProjectTechModal
+const projectIntroductionSchema = z.object({
   heading: z.string(),
   body: z.string(),
 });
 
-export const projectDetailItemSchema = z.object({
+export const projectEntitySchema = z.object({
   id: z.string(),
+  slug: z.string(),
   title: z.string(),
-  subtitle: z.string(),
-  introduction: introductionSchema,
+  subtitle: z.string().optional().nullable(),
+  description: z.string(),
+  imageUrl: z.string(),
+  liveUrl: z.string().optional().nullable(),
+  codeUrl: z.string().optional().nullable(),
+  tags: z.array(z.string()),
   tech_stack: z.array(z.string()),
-  backend_architecture: backendArchitectureSchema,
-  elite_options: z.array(featureSchema),
-  ai_features: aiFeaturesSchema.optional(),
-  ui_sections: z.array(z.string()),
-  branding: designConfigSchema,
+  introduction: projectIntroductionSchema, // Añadido para ProjectTechModal
+  backend_architecture: projectBackendSchema.optional().nullable(),
+  elite_options: z.array(projectEliteOptionSchema).optional().nullable(),
+  branding: projectBrandingSchema,
 });
 
-// Esquema para el diccionario completo (Record de slugs a detalles)
-export const projectDetailsDictionarySchema = z.record(z.string(), projectDetailItemSchema);
+// ============================================================================
+// 2. CONTRATO DE INTERFAZ (UI LABELS SSoT)
+// ============================================================================
 
-export type ProjectDetailItem = z.infer<typeof projectDetailItemSchema>;
+export const projectDetailsDictionarySchema = z.object({
+  section_title: z.string(),
+  section_subtitle: z.string(),
+  label_live_demo: z.string(),
+  label_source_code: z.string(),
+  label_tech_stack: z.string(),
+  label_backend_arch: z.string(),
+  label_elite_options: z.string(),
+  label_objective: z.string(),
+  label_close_modal: z.string(),
+  empty_state: z.string(),
+});
+
+// Inferencia de tipos estricta
+export type ProjectEntity = z.infer<typeof projectEntitySchema>;
 export type ProjectDetailsDictionary = z.infer<typeof projectDetailsDictionarySchema>;

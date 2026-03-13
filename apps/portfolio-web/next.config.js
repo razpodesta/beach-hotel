@@ -5,11 +5,16 @@ const { withPayload } = require('@payloadcms/next/withPayload');
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'standalone',
+  // Sincronizado con el namespace @metashark/ definido en tsconfig.base.json y package.json
   transpilePackages: [
-    '@metashark-cms/ui',
-    '@metashark-cms/core',
-    '@razpodesta/protocol-33',
-    '@razpodesta/auth-shield'
+    '@metashark/cms-ui',
+    '@metashark/cms-core',
+    '@metashark/protocol-33',
+    '@metashark/auth-shield',
+    'payload',
+    '@payloadcms/next',
+    '@payloadcms/db-postgres',
+    '@payloadcms/richtext-lexical'
   ],
   images: {
     remotePatterns: [
@@ -20,5 +25,4 @@ const nextConfig = {
   },
 };
 
-// Se envuelve primero con withNx y luego con withPayload
 module.exports = withPayload(withNx(nextConfig));

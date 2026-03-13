@@ -1,20 +1,40 @@
 {
   "extends": "../../../tsconfig.base.json",
   "compilerOptions": {
+    /* 
+       @pilar V: Normalización de BaseUrl. 
+       Alineamos el paquete con la raíz del monorepo para que los alias 
+       de la base sean interpretados sin desplazamientos.
+    */
+    "baseUrl": ".",
+    "rootDir": ".",
+    
+    /* 
+       @pilar III: Seguridad de Tipos y ESM 
+       Payload 3.0 requiere compatibilidad estricta con NodeNext.
+    */
     "module": "nodenext",
     "moduleResolution": "nodenext",
     "declaration": true,
     "declarationMap": true,
+    "composite": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "types": ["node"]
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["jest.config.ts", "**/*.spec.ts", "**/*.test.ts"],
+  "include": [
+    "src/**/*.ts", 
+    "payload-types.ts" // Inclusión del contrato de datos generado por Payload
+  ],
+  "exclude": [
+    "jest.config.ts", 
+    "src/**/*.spec.ts", 
+    "src/**/*.test.ts",
+    "dist"
+  ],
   "references": [
     {
       "path": "./tsconfig.lib.json"
-    },
-    {
-      "path": "./tsconfig.spec.json"
     }
   ]
 }

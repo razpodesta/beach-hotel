@@ -1,48 +1,62 @@
+/**
+ * @file apps/portfolio-web/jest.setup.ts
+ * @description Configuración del entorno de pruebas JSDOM. 
+ *              Implementa polyfills de infraestructura y mocks de APIs del navegador.
+ * @version 3.0 - Elite Test Environment
+ */
+
 import { TextEncoder, TextDecoder } from 'util';
 import { TransformStream, ReadableStream } from 'node:stream/web';
 import 'isomorphic-fetch';
 import '@testing-library/jest-dom';
 
-// --- POLYFILLS (Node vs JSDOM types) ---
-/* eslint-disable @typescript-eslint/no-explicit-any */
-global.TextEncoder = TextEncoder as any;
-global.TextDecoder = TextDecoder as any;
-global.TransformStream = TransformStream as any;
-global.ReadableStream = ReadableStream as any;
-/* eslint-enable @typescript-eslint/no-explicit-any */
+/**
+ * @pilar VIII (Resiliencia): Inyección de Polyfills Globales.
+ * Necesario para compatibilidad con librerías que consumen streams y encoding en JSDOM.
+ */
+Object.assign(global, {
+  TextEncoder,
+  TextDecoder,
+  TransformStream,
+  ReadableStream,
+});
 
-// --- MOCK WINDOW.MATCHMEDIA ---
+/**
+ * MOCK: window.matchMedia
+ * Requerido para pruebas de UI con lógica responsiva.
+ */
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
-  value: (query: string) => ({
+  value: jest.fn().mockImplementation((query: string) => ({
     matches: false,
     media: query,
     onchange: null,
-    /* eslint-disable @typescript-eslint/no-empty-function */
-    addListener: () => {},
-    removeListener: () => {},
-    addEventListener: () => {},
-    removeEventListener: () => {},
-    /* eslint-enable @typescript-eslint/no-empty-function */
-    dispatchEvent: () => false,
-  }),
+    addListener: jest.fn(), // Deprecated
+    removeListener: jest.fn(), // Deprecated
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+    dispatchEvent: jest.fn(),
+  })),
 });
 
-// --- MOCK INTERSECTION OBSERVER ---
+/**
+ * MOCK: IntersectionObserver
+ * @pilar XII: UX - Esencial para componentes con animaciones on-scroll.
+ */
 class IntersectionObserverMock {
   readonly root: Element | null = null;
   readonly rootMargin: string = '';
   readonly thresholds: ReadonlyArray<number> = [];
-
-  /* eslint-disable @typescript-eslint/no-empty-function */
-  disconnect() {}
-  observe() {}
-  takeRecords(): IntersectionObserverEntry[] { return []; }
-  unobserve() {}
-  /* eslint-enable @typescript-eslint/no-empty-function */
+  disconnect = jest.fn();
+  observe = jest.fn();
+  takeRecords = jest.fn(() => []);
+  unobserve = jest.fn();
 }
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-global.IntersectionObserver = IntersectionObserverMock as any;
-window.IntersectionObserver = IntersectionObserverMock as any;
-/* eslint-enable @typescript-eslint/no-explicit-any */
+Object.defineProperty(window, 'IntersectionObserver', {
+  writable: true,
+  configurable: true,
+  value: IntersectionObserverMock,
+});
+
+global.IntersectionObserver = IntersectionObserverMock as unknown as typeof IntersectionObserver;

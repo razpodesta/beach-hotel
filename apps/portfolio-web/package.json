@@ -1,0 +1,44 @@
+{
+  "name": "@metashark/portfolio-web",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Orquestador Web de Élite - Beach Hotel Canasvieiras & Pride Escape 2026",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@metashark/cms-core": "workspace:*",
+    "@metashark/cms-ui": "workspace:*",
+    "@metashark/auth-shield": "workspace:*",
+    "@metashark/protocol-33": "workspace:*",
+    "next": "15.2.5",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "payload": "^3.79.0",
+    "@payloadcms/next": "^3.79.0",
+    "@payloadcms/db-postgres": "^3.79.0",
+    "@payloadcms/richtext-lexical": "^3.79.0",
+    "zod": "^3.24.0",
+    "lucide-react": "^0.454.0",
+    "framer-motion": "^12.0.0",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.0.0",
+    "zustand": "^5.0.0",
+    "cookies-next": "^5.0.0",
+    "isomorphic-fetch": "^3.0.0"
+  },
+  "devDependencies": {
+    "@metashark/testing-utils": "workspace:*",
+    "@types/node": "^20.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "typescript": "^5.7.0",
+    "tailwindcss": "^4.0.0",
+    "@tailwindcss/postcss": "^4.0.0",
+    "autoprefixer": "^10.4.0",
+    "postcss": "^8.4.0"
+  }
+}

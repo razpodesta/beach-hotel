@@ -2,17 +2,14 @@
   "version": "6.0",
   "nxVersion": "22.0.2",
   "pathMappings": {
-    "@/*": [
-      "apps/portfolio-web/src/*"
-    ],
-    "@metashark/cms-core": [
-      "packages/cms/core/src/index.ts"
-    ],
     "@metashark/cms-core/config": [
       "packages/cms/core/src/payload.config.ts"
     ],
     "@metashark/cms-core/collections": [
       "packages/cms/core/src/collections/index.ts"
+    ],
+    "@metashark/cms-core": [
+      "packages/cms/core/src/index.ts"
     ],
     "@metashark/cms-ui": [
       "packages/cms/ui/src/index.ts"
@@ -25,6 +22,9 @@
     ],
     "@metashark/testing-utils": [
       "packages/testing-utils/src/index.ts"
+    ],
+    "@metashark/cms-core/*": [
+      "packages/cms/core/src/*"
     ]
   },
   "nxJsonPlugins": [
@@ -73,7 +73,590 @@
   "fileMap": {
     "nonProjectFiles": [],
     "projectFileMap": {
-      "@portfolio/testing-utils": [
+      "@portfolio/source": [
+        {
+          "file": ".docs/_BITACORA.md",
+          "hash": "2776345074122703811"
+        },
+        {
+          "file": ".docs/_comandos-pruebas.md",
+          "hash": "13314093648529043584"
+        },
+        {
+          "file": ".docs/architecture/components/blog-3d-carousel.md",
+          "hash": "15706010781041578364"
+        },
+        {
+          "file": ".docs/directrices-obligatorias.md",
+          "hash": "16869097269984572535"
+        },
+        {
+          "file": ".docs/gamificacion-protocolo-33.md",
+          "hash": "336340992717856454"
+        },
+        {
+          "file": ".docs/interaccion-y-experiencia.md",
+          "hash": "14375201034930603262"
+        },
+        {
+          "file": ".docs/manifesto-arquitectura.md",
+          "hash": "156104386792555757"
+        },
+        {
+          "file": ".docs/manifiesto-calidad-codigo.md",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": ".docs/manifiesto-estado-global.md",
+          "hash": "15409691075961879946"
+        },
+        {
+          "file": ".docs/manifiesto-pruebas.md",
+          "hash": "9089472829749803146"
+        },
+        {
+          "file": ".docs/manifiesto-rutas.md",
+          "hash": "11508314177086664130"
+        },
+        {
+          "file": ".docs/manifiesto-tipografia.md",
+          "hash": "6887385811548216196"
+        },
+        {
+          "file": ".docs/manifiesto-typescript.md",
+          "hash": "14203087382636848344"
+        },
+        {
+          "file": ".docs/manifiestos/MANIFIESTO_GRANULARIZACION.md",
+          "hash": "13813018271421610771"
+        },
+        {
+          "file": ".docs/manifiestos/manifiesto-pwa-mobile-first.md",
+          "hash": "167485563005080612"
+        },
+        {
+          "file": ".docs/metodologia-arquitectura-librerias.md",
+          "hash": "17845732686467809039"
+        },
+        {
+          "file": ".docs/politicas-cookies.md",
+          "hash": "10245747344559098440"
+        },
+        {
+          "file": ".docs/posicionamiento-seo-obligatorio.md",
+          "hash": "15794258972312383831"
+        },
+        {
+          "file": ".docs/project-blueprints/plataformas-hoteleras.md",
+          "hash": "5767628520123410042"
+        },
+        {
+          "file": ".docs/protocolo-auditoria-elite.md",
+          "hash": "4869371507036709285"
+        },
+        {
+          "file": ".docs/protocolo-resolucion-errores-elite.md",
+          "hash": "12538566749147497669"
+        },
+        {
+          "file": ".github/workflows/ci.yml",
+          "hash": "7725873038738926441"
+        },
+        {
+          "file": ".gitignore",
+          "hash": "8203853149744356463"
+        },
+        {
+          "file": ".prettierignore",
+          "hash": "14688272390704683536"
+        },
+        {
+          "file": ".prettierrc",
+          "hash": "16267754514737964994"
+        },
+        {
+          "file": "README.md",
+          "hash": "15706242059990761052"
+        },
+        {
+          "file": "eslint.config.mjs",
+          "hash": "3940295225361143286",
+          "deps": [
+            "npm:@nx/eslint-plugin"
+          ]
+        },
+        {
+          "file": "jest.config.ts",
+          "hash": "860990485679511336"
+        },
+        {
+          "file": "jest.preset.js",
+          "hash": "2522204644006015562",
+          "deps": [
+            "npm:ts-jest",
+            "npm:@nx/jest"
+          ]
+        },
+        {
+          "file": "nx.json",
+          "hash": "14751176977057679177"
+        },
+        {
+          "file": "package.json",
+          "hash": "16660484168148674463",
+          "deps": [
+            "npm:@babel/core",
+            "npm:@babel/preset-react",
+            "npm:@babel/preset-typescript",
+            "npm:@eslint/compat",
+            "npm:@eslint/eslintrc",
+            "npm:@eslint/js",
+            "npm:@faker-js/faker",
+            "npm:@icons-pack/react-simple-icons",
+            "npm:@next/eslint-plugin-next",
+            "npm:@nx/devkit",
+            "npm:@nx/eslint",
+            "npm:@nx/eslint-plugin",
+            "npm:@nx/jest",
+            "npm:@nx/js",
+            "npm:@nx/next",
+            "npm:@nx/playwright",
+            "npm:@nx/react",
+            "npm:@nx/rollup",
+            "npm:@playwright/test",
+            "npm:@rollup/plugin-url",
+            "npm:@svgr/rollup",
+            "npm:@swc-node/register",
+            "npm:@swc/cli",
+            "npm:@swc/core",
+            "npm:@swc/helpers",
+            "npm:@swc/jest",
+            "npm:@tailwindcss/postcss",
+            "npm:@testing-library/dom",
+            "npm:@testing-library/jest-dom",
+            "npm:@testing-library/react",
+            "npm:@types/bcryptjs",
+            "npm:@types/jest",
+            "npm:@types/jsonwebtoken",
+            "npm:@types/negotiator",
+            "npm:@types/node",
+            "npm:@types/qrcode",
+            "npm:@types/react",
+            "npm:@types/react-dom",
+            "npm:@types/three",
+            "npm:autoprefixer",
+            "npm:babel-jest",
+            "npm:concurrently",
+            "npm:core-js",
+            "npm:eslint",
+            "npm:eslint-plugin-import",
+            "npm:eslint-plugin-jest",
+            "npm:eslint-plugin-jsx-a11y",
+            "npm:eslint-plugin-playwright",
+            "npm:eslint-plugin-react",
+            "npm:eslint-plugin-react-hooks",
+            "npm:jest",
+            "npm:jest-environment-jsdom",
+            "npm:jest-environment-node",
+            "npm:jest-util",
+            "npm:jsonc-eslint-parser",
+            "npm:msw",
+            "npm:nx",
+            "npm:postcss",
+            "npm:prettier",
+            "npm:rollup",
+            "npm:schema-dts",
+            "npm:tailwindcss",
+            "npm:ts-jest",
+            "npm:ts-node",
+            "npm:tslib",
+            "npm:typescript",
+            "npm:typescript-eslint",
+            "npm:verdaccio",
+            "npm:zod",
+            "npm:@apollo/client",
+            "npm:@emotion/react",
+            "npm:@emotion/styled",
+            "npm:@formatjs/intl-localematcher",
+            "npm:@hookform/resolvers",
+            "npm:@payloadcms/db-postgres",
+            "npm:@payloadcms/next",
+            "npm:@payloadcms/richtext-lexical",
+            "npm:@react-spring/three",
+            "npm:@react-spring/web",
+            "npm:@react-three/drei",
+            "npm:@react-three/fiber",
+            "npm:@supabase/ssr",
+            "npm:@supabase/supabase-js",
+            "npm:@use-gesture/react",
+            "npm:bcryptjs",
+            "npm:class-variance-authority",
+            "npm:clsx",
+            "npm:cookies-next",
+            "npm:embla-carousel",
+            "npm:embla-carousel-autoplay",
+            "npm:embla-carousel-fade",
+            "npm:embla-carousel-react",
+            "npm:focus-trap-react",
+            "npm:framer-motion",
+            "npm:gl-matrix",
+            "npm:graphql",
+            "npm:gsap",
+            "npm:isomorphic-fetch",
+            "npm:jsonwebtoken",
+            "npm:lucide-react",
+            "npm:negotiator",
+            "npm:next",
+            "npm:next-mdx-remote",
+            "npm:next-themes",
+            "npm:payload",
+            "npm:postprocessing",
+            "npm:qrcode",
+            "npm:react",
+            "npm:react-dom",
+            "npm:react-hook-form",
+            "npm:react-icons",
+            "npm:sharp",
+            "npm:tailwind-merge",
+            "npm:three",
+            "npm:uuid",
+            "npm:zustand"
+          ]
+        },
+        {
+          "file": "pnpm-lock.yaml",
+          "hash": "2219810053016191503"
+        },
+        {
+          "file": "pnpm-workspace.yaml",
+          "hash": "1775007445863075620"
+        },
+        {
+          "file": "scripts/audit-typescript-integrity.mjs",
+          "hash": "15145441463593403610"
+        },
+        {
+          "file": "scripts/debug-test-paths.js",
+          "hash": "5866746104991935630"
+        },
+        {
+          "file": "scripts/diagnosis/supabase/check-connection.ts",
+          "hash": "8515134816395095391",
+          "deps": [
+            "npm:pg",
+            "npm:dotenv"
+          ]
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_044011287198.jpg",
+          "hash": "13599835536717189110"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_044012411939.jpg",
+          "hash": "413204514160501580"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_044013842366.jpg",
+          "hash": "9701948116049843792"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_044014254535.jpg",
+          "hash": "6418059962706647064"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_044014788678.jpg",
+          "hash": "16806149686913092610"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_044015718492.jpg",
+          "hash": "10813103919258493410"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_044018657446.jpg",
+          "hash": "2200210280286654006"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_04401922987.jpg",
+          "hash": "11374916472290602581"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_05079.jpg",
+          "hash": "7008379019161968046"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_174733251068262da026fc43831201331425740.jpg",
+          "hash": "2986873116781864582"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_174733251068262da026fc43831201331446261.jpg",
+          "hash": "8540294326770454724"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_174733251068262da026fc43831201333016603.jpg",
+          "hash": "10775655622485577359"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_174733251068262da026fc4383120133403295.jpg",
+          "hash": "6067434627666991042"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_174733251068262da026fc43831201335950951.jpg",
+          "hash": "5416566329420314512"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_174733251068262da026fc43831201336575920.jpg",
+          "hash": "2900262610872842604"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_174733251068262da026fc43831201336788855.jpg",
+          "hash": "2036554455781626416"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_174733251068262da026fc43831201338457320.jpg",
+          "hash": "3282586306236028590"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_174733251068262da026fc43831201339347055.jpg",
+          "hash": "10179972369210218535"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_174733251068262da029ad7161210530.jpg",
+          "hash": "17349929969966531683"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_174735280925839616.jpg",
+          "hash": "18151071432230145712"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_174835857124042086.jpg",
+          "hash": "16514583857038129995"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_258861470434.jpg",
+          "hash": "10900993669519672445"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_25886223185.jpg",
+          "hash": "307842782162618955"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_258865135467.jpg",
+          "hash": "3565987830833483409"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_258865776309.jpg",
+          "hash": "3746639177234835919"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_258866978797.jpg",
+          "hash": "12858043604599989973"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_25886711589.jpg",
+          "hash": "4937989568917933954"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_258867686571.jpg",
+          "hash": "4557925716066855129"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_31934219885.jpg",
+          "hash": "3204261743700178435"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_319344233994.jpg",
+          "hash": "14151937905419163008"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_31934507529.jpg",
+          "hash": "13392325055791490700"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_31934591025.jpg",
+          "hash": "1360909181874633296"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_319346049082.jpg",
+          "hash": "6707887340012877051"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_319346107358.jpg",
+          "hash": "12363166224323169674"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_319346883041.jpg",
+          "hash": "3155444242076770621"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_319349031286.jpg",
+          "hash": "17588546762717117461"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_3193491601.jpg",
+          "hash": "580667141722325556"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_347792394133.jpg",
+          "hash": "6073494607131578797"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_347792751775.jpg",
+          "hash": "7943765154615946027"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_347794051680.jpg",
+          "hash": "3199797834212768597"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_5371669912.jpg",
+          "hash": "1139820548716684555"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_537168097589.jpg",
+          "hash": "16679272529415091459"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_793223482082.jpg",
+          "hash": "4879833218332798927"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_793225830806.jpg",
+          "hash": "15969648045133041399"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_793227049912.jpg",
+          "hash": "10214101003236996757"
+        },
+        {
+          "file": "scripts/downloaded_assets/2611202_1_793227453220.jpg",
+          "hash": "17581414459054754021"
+        },
+        {
+          "file": "scripts/downloaded_assets/homepage/gallery-2.jpg",
+          "hash": "8420839051032950235"
+        },
+        {
+          "file": "scripts/downloaded_assets/homepage/slider-1-floripa.jpg",
+          "hash": "1966176199901508523"
+        },
+        {
+          "file": "scripts/downloaded_assets/homepage/slider-3-salvador.jpg",
+          "hash": "6892085014632894368"
+        },
+        {
+          "file": "scripts/downloaded_assets/iconos/2611202_1_174854224590487802.png",
+          "hash": "4763389873611974577"
+        },
+        {
+          "file": "scripts/downloaded_assets/iconos/2611202_1_174948144115203071.png",
+          "hash": "6461656931200573646"
+        },
+        {
+          "file": "scripts/downloaded_assets/iconos/2611202_1_174948144115213733.png",
+          "hash": "9220741446145392843"
+        },
+        {
+          "file": "scripts/downloaded_assets/iconos/2611202_1_174948144115236464.png",
+          "hash": "16918486392011015316"
+        },
+        {
+          "file": "scripts/downloaded_assets/iconos/2611202_1_174948144115241776.png",
+          "hash": "5662799661289037756"
+        },
+        {
+          "file": "scripts/downloaded_assets/iconos/2611202_1_174948144115261034.png",
+          "hash": "18031733908842153361"
+        },
+        {
+          "file": "scripts/downloaded_assets/iconos/2611202_1_19549.png",
+          "hash": "10923841351601164288"
+        },
+        {
+          "file": "scripts/downloaded_assets/iconos/2611202_1_29262.png",
+          "hash": "6522009401094846609"
+        },
+        {
+          "file": "scripts/downloaded_assets/iconos/2611202_1_34687.png",
+          "hash": "14253556636724544523"
+        },
+        {
+          "file": "scripts/downloaded_assets/iconos/2611202_1_36379.png",
+          "hash": "6380318779121147756"
+        },
+        {
+          "file": "scripts/downloaded_assets/iconos/2611202_1_73883.gif",
+          "hash": "11778468997219707847"
+        },
+        {
+          "file": "scripts/downloaded_assets/iconos/2611202_1_87163.png",
+          "hash": "18312365495643688587"
+        },
+        {
+          "file": "scripts/downloaded_assets/iconos/Date.png",
+          "hash": "10195557020158335376"
+        },
+        {
+          "file": "scripts/downloaded_assets/iconos/cta-anim-whatsapp.gif",
+          "hash": "11778468997219707847"
+        },
+        {
+          "file": "scripts/downloaded_assets/iconos/icon-instagram.png",
+          "hash": "16918486392011015316"
+        },
+        {
+          "file": "scripts/downloaded_assets/iconos/icon-whatsapp.png",
+          "hash": "5662799661289037756"
+        },
+        {
+          "file": "scripts/downloaded_assets/logos/favicon.png",
+          "hash": "13048722742456448825"
+        },
+        {
+          "file": "scripts/downloaded_assets/logos/logo-footer.png",
+          "hash": "13832451218670876258"
+        },
+        {
+          "file": "scripts/downloaded_assets/logos/logo-header-desktop.png",
+          "hash": "8654916221470033765"
+        },
+        {
+          "file": "scripts/downloaded_assets/logos/logo-header-mobile.png",
+          "hash": "5195448956750898467"
+        },
+        {
+          "file": "scripts/downloader.bat",
+          "hash": "18336626221456820500"
+        },
+        {
+          "file": "scripts/optimizar.ps1",
+          "hash": "17474276735156832386"
+        },
+        {
+          "file": "scripts/prebuild-portfolio-web.mjs",
+          "hash": "13269310563570493714"
+        },
+        {
+          "file": "scripts/verify-build-readiness.mjs",
+          "hash": "11863945486363005086"
+        },
+        {
+          "file": "scripts/verify-config-integrity.mjs",
+          "hash": "15040230663727894099"
+        },
+        {
+          "file": "scripts/verify-path-aliases.mjs",
+          "hash": "969225611843486136"
+        },
+        {
+          "file": "tsconfig.base.json",
+          "hash": "9549250696983686917"
+        },
+        {
+          "file": "tsconfig.spec.json",
+          "hash": "2624760228153769692"
+        }
+      ],
+      "@metashark/testing-utils": [
         {
           "file": "packages/testing-utils/.spec.swcrc",
           "hash": "18201067170784284381"
@@ -90,32 +673,33 @@
           ]
         },
         {
-          "file": "packages/testing-utils/jest.config.ts",
-          "hash": "4941506416480583414"
-        },
-        {
-          "file": "packages/testing-utils/jest.setup.ts",
-          "hash": "2188842514027630305",
-          "deps": [
-            "npm:isomorphic-fetch"
-          ]
-        },
-        {
           "file": "packages/testing-utils/package.json",
-          "hash": "11326666231651205992",
+          "hash": "3835705025411571502",
           "deps": [
             "npm:react",
             "npm:react-dom",
-            "npm:tslib",
             "npm:@faker-js/faker",
             "npm:msw",
             "npm:@testing-library/react",
-            "npm:next-themes"
+            "npm:next-themes",
+            "npm:tslib"
           ]
+        },
+        {
+          "file": "packages/testing-utils/project.json",
+          "hash": "5887306272548612965"
+        },
+        {
+          "file": "packages/testing-utils/src/index.d.ts",
+          "hash": "8407376922395440544"
         },
         {
           "file": "packages/testing-utils/src/index.ts",
           "hash": "10496210136792617449"
+        },
+        {
+          "file": "packages/testing-utils/src/lib/factories/user.factory.d.ts",
+          "hash": "16152805565536285395"
         },
         {
           "file": "packages/testing-utils/src/lib/factories/user.factory.ts",
@@ -125,14 +709,33 @@
           ]
         },
         {
+          "file": "packages/testing-utils/src/lib/mocks/handlers.d.ts",
+          "hash": "6456558549446067856"
+        },
+        {
           "file": "packages/testing-utils/src/lib/mocks/handlers.ts",
           "hash": "6682892904495886246"
+        },
+        {
+          "file": "packages/testing-utils/src/lib/mocks/server.d.ts",
+          "hash": "879230018059988503",
+          "deps": [
+            "npm:msw"
+          ]
         },
         {
           "file": "packages/testing-utils/src/lib/mocks/server.ts",
           "hash": "5072969720175049260",
           "deps": [
             "npm:msw"
+          ]
+        },
+        {
+          "file": "packages/testing-utils/src/lib/rendering/custom-render.d.ts",
+          "hash": "16330743998609248232",
+          "deps": [
+            "npm:react",
+            "npm:@testing-library/react"
           ]
         },
         {
@@ -150,146 +753,14 @@
         },
         {
           "file": "packages/testing-utils/tsconfig.json",
-          "hash": "16125344141381690932"
+          "hash": "12804883564201542009"
         },
         {
           "file": "packages/testing-utils/tsconfig.lib.json",
-          "hash": "16555308295615761668"
-        },
-        {
-          "file": "packages/testing-utils/tsconfig.spec.json",
-          "hash": "6773699378602059148"
+          "hash": "94856704134188621"
         }
       ],
-      "@metashark-cms/ui": [
-        {
-          "file": "packages/cms/ui/.babelrc",
-          "hash": "2946678488919325452"
-        },
-        {
-          "file": "packages/cms/ui/README.md",
-          "hash": "18357593699270166023"
-        },
-        {
-          "file": "packages/cms/ui/eslint.config.mjs",
-          "hash": "4114437769683499576",
-          "deps": [
-            "npm:typescript-eslint",
-            "npm:@nx/eslint-plugin",
-            "npm:eslint-plugin-react-hooks",
-            "npm:eslint-plugin-jest"
-          ]
-        },
-        {
-          "file": "packages/cms/ui/jest.config.ts",
-          "hash": "1442313602854357902"
-        },
-        {
-          "file": "packages/cms/ui/jest.setup.ts",
-          "hash": "10479406955202642599",
-          "deps": [
-            "npm:isomorphic-fetch",
-            "npm:@testing-library/jest-dom"
-          ]
-        },
-        {
-          "file": "packages/cms/ui/package.json",
-          "hash": "17538569403311526572"
-        },
-        {
-          "file": "packages/cms/ui/project.json",
-          "hash": "12208332616757225447"
-        },
-        {
-          "file": "packages/cms/ui/src/index.ts",
-          "hash": "5977848407072712979"
-        },
-        {
-          "file": "packages/cms/ui/src/lib/ui.spec.tsx",
-          "hash": "9256240028211718861",
-          "deps": [
-            "npm:@testing-library/react"
-          ]
-        },
-        {
-          "file": "packages/cms/ui/src/lib/ui.tsx",
-          "hash": "3963993538601663407"
-        },
-        {
-          "file": "packages/cms/ui/tsconfig.json",
-          "hash": "211933816755001957"
-        },
-        {
-          "file": "packages/cms/ui/tsconfig.lib.json",
-          "hash": "6322626510567673884"
-        },
-        {
-          "file": "packages/cms/ui/tsconfig.spec.json",
-          "hash": "15739949394590019158"
-        }
-      ],
-      "@razpodesta/protocol-33": [
-        {
-          "file": "packages/protocol-33/.babelrc",
-          "hash": "2946678488919325452"
-        },
-        {
-          "file": "packages/protocol-33/README.md",
-          "hash": "4870483216979629579"
-        },
-        {
-          "file": "packages/protocol-33/eslint.config.mjs",
-          "hash": "15662645796767624439",
-          "deps": [
-            "npm:@nx/eslint-plugin"
-          ]
-        },
-        {
-          "file": "packages/protocol-33/jest.config.ts",
-          "hash": "14272716150414270804"
-        },
-        {
-          "file": "packages/protocol-33/package.json",
-          "hash": "5367994494023867283"
-        },
-        {
-          "file": "packages/protocol-33/project.json",
-          "hash": "16483671085791893062"
-        },
-        {
-          "file": "packages/protocol-33/src/index.ts",
-          "hash": "8366123336307147095"
-        },
-        {
-          "file": "packages/protocol-33/src/lib/codex.ts",
-          "hash": "16595967080211509877"
-        },
-        {
-          "file": "packages/protocol-33/src/lib/engine.ts",
-          "hash": "1528754415035672242"
-        },
-        {
-          "file": "packages/protocol-33/src/lib/types.ts",
-          "hash": "1556207297016173925"
-        },
-        {
-          "file": "packages/protocol-33/tsconfig.json",
-          "hash": "6009324416508387552"
-        },
-        {
-          "file": "packages/protocol-33/tsconfig.lib.json",
-          "hash": "12324427097209147365"
-        },
-        {
-          "file": "packages/protocol-33/tsconfig.spec.json",
-          "hash": "12839377670077572367"
-        },
-        {
-          "file": "packages/protocol-33/tsconfig.tsbuildinfo",
-          "hash": "9766915850926045922"
-        }
-      ],
-      "portfolio-web": [
+      "@metashark/portfolio-web": [
         {
           "file": "apps/portfolio-web/.swcrc",
           "hash": "2742566327615098680"
@@ -310,11 +781,11 @@
         },
         {
           "file": "apps/portfolio-web/jest.config.ts",
-          "hash": "15047670514656310864"
+          "hash": "7695765716224021683"
         },
         {
           "file": "apps/portfolio-web/jest.setup.ts",
-          "hash": "9451624703001438765",
+          "hash": "14739424342483023847",
           "deps": [
             "npm:isomorphic-fetch",
             "npm:@testing-library/jest-dom"
@@ -322,7 +793,7 @@
         },
         {
           "file": "apps/portfolio-web/middleware.ts",
-          "hash": "11476139105165324496",
+          "hash": "11623370519537837205",
           "deps": [
             "npm:next",
             "npm:@formatjs/intl-localematcher",
@@ -335,10 +806,44 @@
         },
         {
           "file": "apps/portfolio-web/next.config.js",
-          "hash": "8824732211104273292",
+          "hash": "4904343044332354285",
           "deps": [
             "npm:@nx/next",
             "npm:@payloadcms/next"
+          ]
+        },
+        {
+          "file": "apps/portfolio-web/package.json",
+          "hash": "7720320594815188688",
+          "deps": [
+            "@metashark/testing-utils",
+            "npm:@types/node",
+            "npm:@types/react",
+            "npm:@types/react-dom",
+            "npm:typescript",
+            "npm:tailwindcss",
+            "npm:@tailwindcss/postcss",
+            "npm:autoprefixer",
+            "npm:postcss",
+            "@metashark/cms-core",
+            "@metashark/cms-ui",
+            "@metashark/auth-shield",
+            "@metashark/protocol-33",
+            "npm:next",
+            "npm:react",
+            "npm:react-dom",
+            "npm:payload",
+            "npm:@payloadcms/next",
+            "npm:@payloadcms/db-postgres",
+            "npm:@payloadcms/richtext-lexical",
+            "npm:zod",
+            "npm:lucide-react",
+            "npm:framer-motion",
+            "npm:clsx",
+            "npm:tailwind-merge",
+            "npm:zustand",
+            "npm:cookies-next",
+            "npm:isomorphic-fetch"
           ]
         },
         {
@@ -354,7 +859,7 @@
         },
         {
           "file": "apps/portfolio-web/project.json",
-          "hash": "7678880221673671464"
+          "hash": "16079734721216640090"
         },
         {
           "file": "apps/portfolio-web/public/Logo-portfolio-png.png",
@@ -777,7 +1282,7 @@
         },
         {
           "file": "apps/portfolio-web/src/app/[lang]/layout.tsx",
-          "hash": "9355716264635122083",
+          "hash": "9905110353253472133",
           "deps": [
             "npm:react",
             "npm:next"
@@ -823,7 +1328,7 @@
         },
         {
           "file": "apps/portfolio-web/src/app/[lang]/page.tsx",
-          "hash": "7109924754303041687",
+          "hash": "4788561409463916690",
           "deps": [
             "npm:react",
             "npm:next"
@@ -842,10 +1347,10 @@
         },
         {
           "file": "apps/portfolio-web/src/app/api/payload/[[...slug]]/route.ts",
-          "hash": "11686620085037545137",
+          "hash": "15412072405436152983",
           "deps": [
             "npm:@payloadcms/next",
-            "@metashark-cms/core"
+            "@metashark/cms-core"
           ]
         },
         {
@@ -938,7 +1443,7 @@
         },
         {
           "file": "apps/portfolio-web/src/components/projects/ProjectTechModal.tsx",
-          "hash": "10712103826268995479",
+          "hash": "11454447398737820475",
           "deps": [
             "npm:react",
             "npm:framer-motion",
@@ -998,7 +1503,7 @@
         },
         {
           "file": "apps/portfolio-web/src/components/sections/homepage/AmenitiesMarquee.tsx",
-          "hash": "535507812181361642",
+          "hash": "3179943914260310697",
           "deps": [
             "npm:react",
             "npm:lucide-react"
@@ -1058,7 +1563,7 @@
         },
         {
           "file": "apps/portfolio-web/src/components/sections/homepage/LiveStatusTicker.tsx",
-          "hash": "10630138243626240599",
+          "hash": "17822761160555421534",
           "deps": [
             "npm:react",
             "npm:lucide-react"
@@ -1170,7 +1675,7 @@
         },
         {
           "file": "apps/portfolio-web/src/components/ui/NestedDropdownContent.tsx",
-          "hash": "13763701650630338836",
+          "hash": "13798594732445565058",
           "deps": [
             "npm:next",
             "npm:lucide-react"
@@ -1231,7 +1736,10 @@
         },
         {
           "file": "apps/portfolio-web/src/components/ui/SystemStatusTicker.tsx",
-          "hash": "10498827270167745359"
+          "hash": "7355378607761235213",
+          "deps": [
+            "npm:react"
+          ]
         },
         {
           "file": "apps/portfolio-web/src/components/ui/TestimonialCard.tsx",
@@ -1290,7 +1798,11 @@
         },
         {
           "file": "apps/portfolio-web/src/lib/blog/actions.ts",
-          "hash": "16563867714416319938"
+          "hash": "13261046412361739276",
+          "deps": [
+            "npm:payload",
+            "@metashark/cms-core"
+          ]
         },
         {
           "file": "apps/portfolio-web/src/lib/blog/index.ts",
@@ -1313,10 +1825,6 @@
         {
           "file": "apps/portfolio-web/src/lib/get-dictionary.ts",
           "hash": "10557962209383772139"
-        },
-        {
-          "file": "apps/portfolio-web/src/lib/graphql-client.ts",
-          "hash": "14046808983532381801"
         },
         {
           "file": "apps/portfolio-web/src/lib/hooks/use-infinite-carousel-animation.ts",
@@ -1342,7 +1850,7 @@
         },
         {
           "file": "apps/portfolio-web/src/lib/nav-links.ts",
-          "hash": "16324739153231340377",
+          "hash": "14420823404749882386",
           "deps": [
             "npm:lucide-react"
           ]
@@ -1388,7 +1896,7 @@
         },
         {
           "file": "apps/portfolio-web/src/lib/schemas/dictionary.schema.ts",
-          "hash": "2440868891358315156",
+          "hash": "10601664615856504610",
           "deps": [
             "npm:zod"
           ]
@@ -1416,7 +1924,7 @@
         },
         {
           "file": "apps/portfolio-web/src/lib/schemas/header.schema.ts",
-          "hash": "7781447869449191235",
+          "hash": "5891427349719804859",
           "deps": [
             "npm:zod"
           ]
@@ -1450,6 +1958,10 @@
           ]
         },
         {
+          "file": "apps/portfolio-web/src/lib/schemas/index.ts",
+          "hash": "14178461718677585936"
+        },
+        {
           "file": "apps/portfolio-web/src/lib/schemas/language_switcher.schema.ts",
           "hash": "16990282183990765977",
           "deps": [
@@ -1479,7 +1991,7 @@
         },
         {
           "file": "apps/portfolio-web/src/lib/schemas/nav-links.schema.ts",
-          "hash": "4512932407470154212",
+          "hash": "11144819511631419578",
           "deps": [
             "npm:zod"
           ]
@@ -1500,7 +2012,7 @@
         },
         {
           "file": "apps/portfolio-web/src/lib/schemas/project_details.schema.ts",
-          "hash": "17432113590009970722",
+          "hash": "13377654173046574229",
           "deps": [
             "npm:zod"
           ]
@@ -1528,14 +2040,14 @@
         },
         {
           "file": "apps/portfolio-web/src/lib/schemas/system_status.schema.ts",
-          "hash": "16714513026168124699",
+          "hash": "15435004869460644381",
           "deps": [
             "npm:zod"
           ]
         },
         {
           "file": "apps/portfolio-web/src/lib/schemas/value_proposition.schema.ts",
-          "hash": "6254212146065776304",
+          "hash": "14495651381056508744",
           "deps": [
             "npm:zod"
           ]
@@ -1549,7 +2061,7 @@
         },
         {
           "file": "apps/portfolio-web/src/lib/store/ui.store.ts",
-          "hash": "13714644282442425269",
+          "hash": "13072322509249490827",
           "deps": [
             "npm:zustand"
           ]
@@ -1666,7 +2178,7 @@
         },
         {
           "file": "apps/portfolio-web/src/messages/en-US/project_details.json",
-          "hash": "10739298962622066585"
+          "hash": "11115460023431912897"
         },
         {
           "file": "apps/portfolio-web/src/messages/en-US/quien_soy.json",
@@ -1782,7 +2294,7 @@
         },
         {
           "file": "apps/portfolio-web/src/messages/es-ES/project_details.json",
-          "hash": "2444927263185792611"
+          "hash": "16734358233394266507"
         },
         {
           "file": "apps/portfolio-web/src/messages/es-ES/quien_soy.json",
@@ -1890,11 +2402,7 @@
         },
         {
           "file": "apps/portfolio-web/src/messages/pt-BR/project_details.json",
-          "hash": "12861156217339255154"
-        },
-        {
-          "file": "apps/portfolio-web/src/messages/pt-BR/quien_soy.json",
-          "hash": "2574231428604447607"
+          "hash": "15841892645740849990"
         },
         {
           "file": "apps/portfolio-web/src/messages/pt-BR/server_error.json",
@@ -1922,94 +2430,18 @@
         },
         {
           "file": "apps/portfolio-web/tsconfig.json",
-          "hash": "3361320073043671630"
+          "hash": "15031837476550980733"
         },
         {
           "file": "apps/portfolio-web/tsconfig.spec.json",
-          "hash": "3163259711715585231"
+          "hash": "16681345130246249682"
+        },
+        {
+          "file": "apps/portfolio-web/tsconfig.tsbuildinfo",
+          "hash": "4239075313246797358"
         }
       ],
-      "@metashark-cms/core": [
-        {
-          "file": "packages/cms/core/.spec.swcrc",
-          "hash": "18201067170784284381"
-        },
-        {
-          "file": "packages/cms/core/README.md",
-          "hash": "15554027265428607455"
-        },
-        {
-          "file": "packages/cms/core/eslint.config.mjs",
-          "hash": "12190544393852254075",
-          "deps": [
-            "npm:typescript-eslint",
-            "npm:eslint-plugin-jest"
-          ]
-        },
-        {
-          "file": "packages/cms/core/jest.config.ts",
-          "hash": "2358219154569139498"
-        },
-        {
-          "file": "packages/cms/core/package.json",
-          "hash": "12710286029624708065",
-          "deps": [
-            "npm:tslib"
-          ]
-        },
-        {
-          "file": "packages/cms/core/project.json",
-          "hash": "6796844063559981091"
-        },
-        {
-          "file": "packages/cms/core/src/collections/BlogPosts.ts",
-          "hash": "13965440209013390639",
-          "deps": [
-            "npm:payload",
-            "npm:@payloadcms/richtext-lexical"
-          ]
-        },
-        {
-          "file": "packages/cms/core/src/collections/Projects.ts",
-          "hash": "6372172002150720852",
-          "deps": [
-            "npm:payload"
-          ]
-        },
-        {
-          "file": "packages/cms/core/src/collections/Users.ts",
-          "hash": "17786790073154940549",
-          "deps": [
-            "npm:payload"
-          ]
-        },
-        {
-          "file": "packages/cms/core/src/collections/index.ts",
-          "hash": "10387382831896336925"
-        },
-        {
-          "file": "packages/cms/core/src/payload.config.ts",
-          "hash": "9862783454777538126",
-          "deps": [
-            "npm:payload",
-            "npm:@payloadcms/db-postgres",
-            "npm:@payloadcms/richtext-lexical"
-          ]
-        },
-        {
-          "file": "packages/cms/core/tsconfig.json",
-          "hash": "5353785037169149986"
-        },
-        {
-          "file": "packages/cms/core/tsconfig.lib.json",
-          "hash": "1709462475149795443"
-        }
-      ],
-      "@razpodesta/auth-shield": [
-        {
-          "file": "packages/auth-shield/.spec.swcrc",
-          "hash": "18201067170784284381"
-        },
+      "@metashark/auth-shield": [
         {
           "file": "packages/auth-shield/README.md",
           "hash": "8699780366713087146"
@@ -2025,15 +2457,19 @@
           ]
         },
         {
-          "file": "packages/auth-shield/jest.config.ts",
-          "hash": "4349398581879204341"
-        },
-        {
           "file": "packages/auth-shield/package.json",
-          "hash": "15522226633707814978",
+          "hash": "22378432989394394",
           "deps": [
+            "npm:@types/bcryptjs",
+            "npm:@types/jsonwebtoken",
+            "npm:bcryptjs",
+            "npm:jsonwebtoken",
             "npm:tslib"
           ]
+        },
+        {
+          "file": "packages/auth-shield/project.json",
+          "hash": "4925871394781037072"
         },
         {
           "file": "packages/auth-shield/src/index.ts",
@@ -2062,627 +2498,251 @@
         },
         {
           "file": "packages/auth-shield/tsconfig.json",
-          "hash": "6009324416508387552"
+          "hash": "14597098418009976553"
         },
         {
           "file": "packages/auth-shield/tsconfig.lib.json",
-          "hash": "15756904185632667197"
-        },
-        {
-          "file": "packages/auth-shield/tsconfig.spec.json",
-          "hash": "5969570393429747923"
-        },
-        {
-          "file": "packages/auth-shield/tsconfig.tsbuildinfo",
-          "hash": "3519690092501598265"
+          "hash": "10316145138534235478"
         }
       ],
-      "@portfolio/source": [
+      "@metashark/cms-core": [
         {
-          "file": ".docs/_BITACORA.md",
-          "hash": "2874484614731796832"
+          "file": "packages/cms/core/README.md",
+          "hash": "15554027265428607455"
         },
         {
-          "file": ".docs/_comandos-pruebas.md",
-          "hash": "13314093648529043584"
+          "file": "packages/cms/core/eslint.config.mjs",
+          "hash": "12190544393852254075",
+          "deps": [
+            "npm:typescript-eslint",
+            "npm:eslint-plugin-jest"
+          ]
         },
         {
-          "file": ".docs/architecture/components/blog-3d-carousel.md",
-          "hash": "15706010781041578364"
+          "file": "packages/cms/core/package.json",
+          "hash": "1776120112147790959",
+          "deps": [
+            "npm:tslib"
+          ]
         },
         {
-          "file": ".docs/directrices-obligatorias.md",
-          "hash": "16869097269984572535"
+          "file": "packages/cms/core/project.json",
+          "hash": "15176425134223315432"
         },
         {
-          "file": ".docs/gamificacion-protocolo-33.md",
-          "hash": "336340992717856454"
+          "file": "packages/cms/core/src/collections/Access.ts",
+          "hash": "14374533376345870092",
+          "deps": [
+            "npm:payload"
+          ]
         },
         {
-          "file": ".docs/interaccion-y-experiencia.md",
-          "hash": "14375201034930603262"
+          "file": "packages/cms/core/src/collections/BlogPosts.ts",
+          "hash": "13965440209013390639",
+          "deps": [
+            "npm:payload",
+            "npm:@payloadcms/richtext-lexical"
+          ]
         },
         {
-          "file": ".docs/manifesto-arquitectura.md",
-          "hash": "156104386792555757"
+          "file": "packages/cms/core/src/collections/Projects.ts",
+          "hash": "7029505891580102092",
+          "deps": [
+            "npm:payload"
+          ]
         },
         {
-          "file": ".docs/manifiesto-calidad-codigo.md",
-          "hash": "3244421341483603138"
+          "file": "packages/cms/core/src/collections/Users.ts",
+          "hash": "17786790073154940549",
+          "deps": [
+            "npm:payload"
+          ]
         },
         {
-          "file": ".docs/manifiesto-estado-global.md",
-          "hash": "15409691075961879946"
+          "file": "packages/cms/core/src/collections/index.ts",
+          "hash": "10387382831896336925"
         },
         {
-          "file": ".docs/manifiesto-pruebas.md",
-          "hash": "9089472829749803146"
+          "file": "packages/cms/core/src/index.ts",
+          "hash": "12295057058771151854"
         },
         {
-          "file": ".docs/manifiesto-rutas.md",
-          "hash": "11508314177086664130"
+          "file": "packages/cms/core/src/payload.config.ts",
+          "hash": "8859667596809597548",
+          "deps": [
+            "npm:payload",
+            "npm:@payloadcms/db-postgres",
+            "npm:@payloadcms/richtext-lexical"
+          ]
         },
         {
-          "file": ".docs/manifiesto-tipografia.md",
-          "hash": "6887385811548216196"
+          "file": "packages/cms/core/tsconfig.json",
+          "hash": "16742580003290846884"
         },
         {
-          "file": ".docs/manifiesto-typescript.md",
-          "hash": "14203087382636848344"
+          "file": "packages/cms/core/tsconfig.lib.json",
+          "hash": "8774739362798239026"
         },
         {
-          "file": ".docs/manifiestos/MANIFIESTO_GRANULARIZACION.md",
-          "hash": "13813018271421610771"
+          "file": "packages/cms/core/tsconfig.tsbuildinfo",
+          "hash": "4546664273055232379"
+        }
+      ],
+      "@metashark/protocol-33": [
+        {
+          "file": "packages/protocol-33/.babelrc",
+          "hash": "2946678488919325452"
         },
         {
-          "file": ".docs/manifiestos/manifiesto-pwa-mobile-first.md",
-          "hash": "167485563005080612"
+          "file": "packages/protocol-33/README.md",
+          "hash": "4870483216979629579"
         },
         {
-          "file": ".docs/metodologia-arquitectura-librerias.md",
-          "hash": "17845732686467809039"
-        },
-        {
-          "file": ".docs/politicas-cookies.md",
-          "hash": "10245747344559098440"
-        },
-        {
-          "file": ".docs/posicionamiento-seo-obligatorio.md",
-          "hash": "15794258972312383831"
-        },
-        {
-          "file": ".docs/project-blueprints/plataformas-hoteleras.md",
-          "hash": "5767628520123410042"
-        },
-        {
-          "file": ".docs/protocolo-auditoria-elite.md",
-          "hash": "4869371507036709285"
-        },
-        {
-          "file": ".docs/protocolo-resolucion-errores-elite.md",
-          "hash": "12538566749147497669"
-        },
-        {
-          "file": ".github/workflows/ci.yml",
-          "hash": "7725873038738926441"
-        },
-        {
-          "file": ".gitignore",
-          "hash": "8203853149744356463"
-        },
-        {
-          "file": ".prettierignore",
-          "hash": "14688272390704683536"
-        },
-        {
-          "file": ".prettierrc",
-          "hash": "16267754514737964994"
-        },
-        {
-          "file": "README.md",
-          "hash": "15706242059990761052"
-        },
-        {
-          "file": "eslint.config.mjs",
-          "hash": "3940295225361143286",
+          "file": "packages/protocol-33/eslint.config.mjs",
+          "hash": "15662645796767624439",
           "deps": [
             "npm:@nx/eslint-plugin"
           ]
         },
         {
-          "file": "jest.config.ts",
-          "hash": "860990485679511336"
-        },
-        {
-          "file": "jest.preset.js",
-          "hash": "2522204644006015562",
+          "file": "packages/protocol-33/package.json",
+          "hash": "10093570297047164634",
           "deps": [
-            "npm:ts-jest",
-            "npm:@nx/jest"
+            "npm:tslib"
           ]
         },
         {
-          "file": "nx.json",
-          "hash": "14751176977057679177"
+          "file": "packages/protocol-33/project.json",
+          "hash": "14794796273506873640"
         },
         {
-          "file": "package.json",
-          "hash": "6683134680295559804",
-          "deps": [
-            "npm:@babel/core",
-            "npm:@babel/preset-react",
-            "npm:@babel/preset-typescript",
-            "npm:@eslint/compat",
-            "npm:@eslint/eslintrc",
-            "npm:@eslint/js",
-            "npm:@faker-js/faker",
-            "npm:@icons-pack/react-simple-icons",
-            "npm:@next/eslint-plugin-next",
-            "npm:@nx/devkit",
-            "npm:@nx/eslint",
-            "npm:@nx/eslint-plugin",
-            "npm:@nx/jest",
-            "npm:@nx/js",
-            "npm:@nx/next",
-            "npm:@nx/playwright",
-            "npm:@nx/react",
-            "npm:@nx/rollup",
-            "npm:@playwright/test",
-            "npm:@rollup/plugin-url",
-            "npm:@svgr/rollup",
-            "npm:@swc-node/register",
-            "npm:@swc/cli",
-            "npm:@swc/core",
-            "npm:@swc/helpers",
-            "npm:@swc/jest",
-            "npm:@tailwindcss/postcss",
-            "npm:@testing-library/dom",
-            "npm:@testing-library/jest-dom",
-            "npm:@testing-library/react",
-            "npm:@types/jest",
-            "npm:@types/negotiator",
-            "npm:@types/node",
-            "npm:@types/qrcode",
-            "npm:@types/react",
-            "npm:@types/react-dom",
-            "npm:@types/three",
-            "npm:autoprefixer",
-            "npm:babel-jest",
-            "npm:concurrently",
-            "npm:core-js",
-            "npm:eslint",
-            "npm:eslint-plugin-import",
-            "npm:eslint-plugin-jest",
-            "npm:eslint-plugin-jsx-a11y",
-            "npm:eslint-plugin-playwright",
-            "npm:eslint-plugin-react",
-            "npm:eslint-plugin-react-hooks",
-            "npm:jest",
-            "npm:jest-environment-jsdom",
-            "npm:jest-environment-node",
-            "npm:jest-util",
-            "npm:jsonc-eslint-parser",
-            "npm:msw",
-            "npm:nx",
-            "npm:postcss",
-            "npm:prettier",
-            "npm:rollup",
-            "npm:schema-dts",
-            "npm:tailwindcss",
-            "npm:ts-jest",
-            "npm:ts-node",
-            "npm:tslib",
-            "npm:typescript",
-            "npm:typescript-eslint",
-            "npm:verdaccio",
-            "npm:zod",
-            "npm:@apollo/client",
-            "npm:@emotion/react",
-            "npm:@emotion/styled",
-            "npm:@formatjs/intl-localematcher",
-            "npm:@hookform/resolvers",
-            "npm:@payloadcms/db-postgres",
-            "npm:@payloadcms/next",
-            "npm:@payloadcms/richtext-lexical",
-            "npm:@react-spring/three",
-            "npm:@react-spring/web",
-            "npm:@react-three/drei",
-            "npm:@react-three/fiber",
-            "npm:@supabase/ssr",
-            "npm:@supabase/supabase-js",
-            "npm:@use-gesture/react",
-            "npm:class-variance-authority",
-            "npm:clsx",
-            "npm:cookies-next",
-            "npm:embla-carousel",
-            "npm:embla-carousel-autoplay",
-            "npm:embla-carousel-fade",
-            "npm:embla-carousel-react",
-            "npm:focus-trap-react",
-            "npm:framer-motion",
-            "npm:gl-matrix",
-            "npm:graphql",
-            "npm:gsap",
-            "npm:isomorphic-fetch",
-            "npm:lucide-react",
-            "npm:negotiator",
-            "npm:next",
-            "npm:next-mdx-remote",
-            "npm:next-themes",
-            "npm:payload",
-            "npm:postprocessing",
-            "npm:qrcode",
-            "npm:react",
-            "npm:react-dom",
-            "npm:react-hook-form",
-            "npm:react-icons",
-            "npm:sharp",
-            "npm:tailwind-merge",
-            "npm:three",
-            "npm:uuid",
-            "npm:zustand"
-          ]
+          "file": "packages/protocol-33/src/index.ts",
+          "hash": "8366123336307147095"
         },
         {
-          "file": "pnpm-lock.yaml",
-          "hash": "11552293880909469085"
+          "file": "packages/protocol-33/src/lib/codex.ts",
+          "hash": "16595967080211509877"
         },
         {
-          "file": "pnpm-workspace.yaml",
-          "hash": "15800875520565575530"
+          "file": "packages/protocol-33/src/lib/engine.ts",
+          "hash": "1528754415035672242"
         },
         {
-          "file": "scripts/audit-typescript-integrity.mjs",
-          "hash": "15145441463593403610"
+          "file": "packages/protocol-33/src/lib/types.ts",
+          "hash": "1556207297016173925"
         },
         {
-          "file": "scripts/debug-test-paths.js",
-          "hash": "5866746104991935630"
+          "file": "packages/protocol-33/tsconfig.json",
+          "hash": "14029388898024817359"
         },
         {
-          "file": "scripts/diagnosis/supabase/check-connection.ts",
-          "hash": "8515134816395095391",
-          "deps": [
-            "npm:pg",
-            "npm:dotenv"
-          ]
-        },
-        {
-          "file": "scripts/downloaded_assets/2611202_1_044011287198.jpg",
-          "hash": "13599835536717189110"
-        },
-        {
-          "file": "scripts/downloaded_assets/2611202_1_044012411939.jpg",
-          "hash": "413204514160501580"
-        },
-        {
-          "file": "scripts/downloaded_assets/2611202_1_044013842366.jpg",
-          "hash": "9701948116049843792"
-        },
-        {
-          "file": "scripts/downloaded_assets/2611202_1_044014254535.jpg",
-          "hash": "6418059962706647064"
-        },
-        {
-          "file": "scripts/downloaded_assets/2611202_1_044014788678.jpg",
-          "hash": "16806149686913092610"
-        },
-        {
-          "file": "scripts/downloaded_assets/2611202_1_044015718492.jpg",
-          "hash": "10813103919258493410"
-        },
-        {
-          "file": "scripts/downloaded_assets/2611202_1_044018657446.jpg",
-          "hash": "2200210280286654006"
-        },
-        {
-          "file": "scripts/downloaded_assets/2611202_1_04401922987.jpg",
-          "hash": "11374916472290602581"
-        },
-        {
-          "file": "scripts/downloaded_assets/2611202_1_05079.jpg",
-          "hash": "7008379019161968046"
-        },
-        {
-          "file": "scripts/downloaded_assets/2611202_1_174733251068262da026fc43831201331425740.jpg",
-          "hash": "2986873116781864582"
-        },
-        {
-          "file": "scripts/downloaded_assets/2611202_1_174733251068262da026fc43831201331446261.jpg",
-          "hash": "8540294326770454724"
-        },
-        {
-          "file": "scripts/downloaded_assets/2611202_1_174733251068262da026fc43831201333016603.jpg",
-          "hash": "10775655622485577359"
-        },
-        {
-          "file": "scripts/downloaded_assets/2611202_1_174733251068262da026fc4383120133403295.jpg",
-          "hash": "6067434627666991042"
-        },
-        {
-          "file": "scripts/downloaded_assets/2611202_1_174733251068262da026fc43831201335950951.jpg",
-          "hash": "5416566329420314512"
-        },
-        {
-          "file": "scripts/downloaded_assets/2611202_1_174733251068262da026fc43831201336575920.jpg",
-          "hash": "2900262610872842604"
-        },
-        {
-          "file": "scripts/downloaded_assets/2611202_1_174733251068262da026fc43831201336788855.jpg",
-          "hash": "2036554455781626416"
-        },
-        {
-          "file": "scripts/downloaded_assets/2611202_1_174733251068262da026fc43831201338457320.jpg",
-          "hash": "3282586306236028590"
-        },
-        {
-          "file": "scripts/downloaded_assets/2611202_1_174733251068262da026fc43831201339347055.jpg",
-          "hash": "10179972369210218535"
-        },
-        {
-          "file": "scripts/downloaded_assets/2611202_1_174733251068262da029ad7161210530.jpg",
-          "hash": "17349929969966531683"
-        },
-        {
-          "file": "scripts/downloaded_assets/2611202_1_174735280925839616.jpg",
-          "hash": "18151071432230145712"
-        },
-        {
-          "file": "scripts/downloaded_assets/2611202_1_174835857124042086.jpg",
-          "hash": "16514583857038129995"
-        },
-        {
-          "file": "scripts/downloaded_assets/2611202_1_258861470434.jpg",
-          "hash": "10900993669519672445"
-        },
-        {
-          "file": "scripts/downloaded_assets/2611202_1_25886223185.jpg",
-          "hash": "307842782162618955"
-        },
-        {
-          "file": "scripts/downloaded_assets/2611202_1_258865135467.jpg",
-          "hash": "3565987830833483409"
-        },
-        {
-          "file": "scripts/downloaded_assets/2611202_1_258865776309.jpg",
-          "hash": "3746639177234835919"
-        },
-        {
-          "file": "scripts/downloaded_assets/2611202_1_258866978797.jpg",
-          "hash": "12858043604599989973"
-        },
-        {
-          "file": "scripts/downloaded_assets/2611202_1_25886711589.jpg",
-          "hash": "4937989568917933954"
-        },
-        {
-          "file": "scripts/downloaded_assets/2611202_1_258867686571.jpg",
-          "hash": "4557925716066855129"
-        },
-        {
-          "file": "scripts/downloaded_assets/2611202_1_31934219885.jpg",
-          "hash": "3204261743700178435"
-        },
-        {
-          "file": "scripts/downloaded_assets/2611202_1_319344233994.jpg",
-          "hash": "14151937905419163008"
-        },
-        {
-          "file": "scripts/downloaded_assets/2611202_1_31934507529.jpg",
-          "hash": "13392325055791490700"
-        },
-        {
-          "file": "scripts/downloaded_assets/2611202_1_31934591025.jpg",
-          "hash": "1360909181874633296"
-        },
-        {
-          "file": "scripts/downloaded_assets/2611202_1_319346049082.jpg",
-          "hash": "6707887340012877051"
-        },
-        {
-          "file": "scripts/downloaded_assets/2611202_1_319346107358.jpg",
-          "hash": "12363166224323169674"
-        },
-        {
-          "file": "scripts/downloaded_assets/2611202_1_319346883041.jpg",
-          "hash": "3155444242076770621"
-        },
-        {
-          "file": "scripts/downloaded_assets/2611202_1_319349031286.jpg",
-          "hash": "17588546762717117461"
-        },
-        {
-          "file": "scripts/downloaded_assets/2611202_1_3193491601.jpg",
-          "hash": "580667141722325556"
-        },
-        {
-          "file": "scripts/downloaded_assets/2611202_1_347792394133.jpg",
-          "hash": "6073494607131578797"
-        },
-        {
-          "file": "scripts/downloaded_assets/2611202_1_347792751775.jpg",
-          "hash": "7943765154615946027"
-        },
-        {
-          "file": "scripts/downloaded_assets/2611202_1_347794051680.jpg",
-          "hash": "3199797834212768597"
-        },
-        {
-          "file": "scripts/downloaded_assets/2611202_1_5371669912.jpg",
-          "hash": "1139820548716684555"
-        },
-        {
-          "file": "scripts/downloaded_assets/2611202_1_537168097589.jpg",
-          "hash": "16679272529415091459"
-        },
-        {
-          "file": "scripts/downloaded_assets/2611202_1_793223482082.jpg",
-          "hash": "4879833218332798927"
-        },
-        {
-          "file": "scripts/downloaded_assets/2611202_1_793225830806.jpg",
-          "hash": "15969648045133041399"
-        },
-        {
-          "file": "scripts/downloaded_assets/2611202_1_793227049912.jpg",
-          "hash": "10214101003236996757"
-        },
-        {
-          "file": "scripts/downloaded_assets/2611202_1_793227453220.jpg",
-          "hash": "17581414459054754021"
-        },
-        {
-          "file": "scripts/downloaded_assets/homepage/gallery-2.jpg",
-          "hash": "8420839051032950235"
-        },
-        {
-          "file": "scripts/downloaded_assets/homepage/slider-1-floripa.jpg",
-          "hash": "1966176199901508523"
-        },
-        {
-          "file": "scripts/downloaded_assets/homepage/slider-3-salvador.jpg",
-          "hash": "6892085014632894368"
-        },
-        {
-          "file": "scripts/downloaded_assets/iconos/2611202_1_174854224590487802.png",
-          "hash": "4763389873611974577"
-        },
-        {
-          "file": "scripts/downloaded_assets/iconos/2611202_1_174948144115203071.png",
-          "hash": "6461656931200573646"
-        },
-        {
-          "file": "scripts/downloaded_assets/iconos/2611202_1_174948144115213733.png",
-          "hash": "9220741446145392843"
-        },
-        {
-          "file": "scripts/downloaded_assets/iconos/2611202_1_174948144115236464.png",
-          "hash": "16918486392011015316"
-        },
-        {
-          "file": "scripts/downloaded_assets/iconos/2611202_1_174948144115241776.png",
-          "hash": "5662799661289037756"
-        },
-        {
-          "file": "scripts/downloaded_assets/iconos/2611202_1_174948144115261034.png",
-          "hash": "18031733908842153361"
-        },
-        {
-          "file": "scripts/downloaded_assets/iconos/2611202_1_19549.png",
-          "hash": "10923841351601164288"
-        },
-        {
-          "file": "scripts/downloaded_assets/iconos/2611202_1_29262.png",
-          "hash": "6522009401094846609"
-        },
-        {
-          "file": "scripts/downloaded_assets/iconos/2611202_1_34687.png",
-          "hash": "14253556636724544523"
-        },
-        {
-          "file": "scripts/downloaded_assets/iconos/2611202_1_36379.png",
-          "hash": "6380318779121147756"
-        },
-        {
-          "file": "scripts/downloaded_assets/iconos/2611202_1_73883.gif",
-          "hash": "11778468997219707847"
-        },
-        {
-          "file": "scripts/downloaded_assets/iconos/2611202_1_87163.png",
-          "hash": "18312365495643688587"
-        },
-        {
-          "file": "scripts/downloaded_assets/iconos/Date.png",
-          "hash": "10195557020158335376"
-        },
-        {
-          "file": "scripts/downloaded_assets/iconos/cta-anim-whatsapp.gif",
-          "hash": "11778468997219707847"
-        },
-        {
-          "file": "scripts/downloaded_assets/iconos/icon-instagram.png",
-          "hash": "16918486392011015316"
-        },
-        {
-          "file": "scripts/downloaded_assets/iconos/icon-whatsapp.png",
-          "hash": "5662799661289037756"
-        },
-        {
-          "file": "scripts/downloaded_assets/logos/favicon.png",
-          "hash": "13048722742456448825"
-        },
-        {
-          "file": "scripts/downloaded_assets/logos/logo-footer.png",
-          "hash": "13832451218670876258"
-        },
-        {
-          "file": "scripts/downloaded_assets/logos/logo-header-desktop.png",
-          "hash": "8654916221470033765"
-        },
-        {
-          "file": "scripts/downloaded_assets/logos/logo-header-mobile.png",
-          "hash": "5195448956750898467"
-        },
-        {
-          "file": "scripts/downloader.bat",
-          "hash": "18336626221456820500"
-        },
-        {
-          "file": "scripts/optimizar.ps1",
-          "hash": "17474276735156832386"
-        },
-        {
-          "file": "scripts/prebuild-portfolio-web.mjs",
-          "hash": "13269310563570493714"
-        },
+          "file": "packages/protocol-33/tsconfig.lib.json",
+          "hash": "9779397125517379911"
+        }
+      ],
+      "tests": [
         {
-          "file": "scripts/verify-build-readiness.mjs",
-          "hash": "11863945486363005086"
+          "file": "tests/apps/portfolio-web/components/LiveStatusTicker.spec.d.ts",
+          "hash": "12345030752168512035"
         },
         {
-          "file": "scripts/verify-config-integrity.mjs",
-          "hash": "15040230663727894099"
+          "file": "tests/apps/portfolio-web/components/LiveStatusTicker.spec.ts",
+          "hash": "5146797763067713204"
         },
         {
-          "file": "scripts/verify-path-aliases.mjs",
-          "hash": "969225611843486136"
+          "file": "tests/jest.config.d.ts",
+          "hash": "14347416049980239594"
         },
         {
-          "file": "tests/apps/cms-admin/smoke.spec.tsx",
-          "hash": "11209399778899478933",
-          "deps": [
-            "npm:react",
-            "@portfolio/testing-utils"
-          ]
+          "file": "tests/jest.config.ts",
+          "hash": "17982218132478925057"
         },
         {
-          "file": "tests/apps/portfolio-web/architecture.spec.tsx",
-          "hash": "2057675374389277225",
-          "deps": [
-            "npm:react",
-            "npm:@testing-library/react",
-            "@portfolio/testing-utils",
-            "portfolio-web"
-          ]
+          "file": "tests/project.json",
+          "hash": "18252000667970237050"
         },
         {
           "file": "tests/tsconfig.json",
-          "hash": "459056823417845939"
+          "hash": "4312882149050565909"
         },
         {
-          "file": "tsconfig.base.json",
-          "hash": "18328012261051000396"
+          "file": "tests/tsconfig.tsbuildinfo",
+          "hash": "6220978849717010336"
         },
         {
-          "file": "tsconfig.json",
-          "hash": "1379983966652230747"
+          "file": "tests/verify-resolution.spec.d.ts",
+          "hash": "3883705457471955508"
         },
         {
-          "file": "tsconfig.spec.json",
-          "hash": "3091195692643263037"
+          "file": "tests/verify-resolution.spec.tsx",
+          "hash": "17601935515958187401",
+          "deps": [
+            "npm:react",
+            "@metashark/cms-core"
+          ]
+        }
+      ],
+      "@metashark/cms-ui": [
+        {
+          "file": "packages/cms/ui/.babelrc",
+          "hash": "2946678488919325452"
+        },
+        {
+          "file": "packages/cms/ui/README.md",
+          "hash": "18357593699270166023"
+        },
+        {
+          "file": "packages/cms/ui/eslint.config.mjs",
+          "hash": "4114437769683499576",
+          "deps": [
+            "npm:typescript-eslint",
+            "npm:@nx/eslint-plugin",
+            "npm:eslint-plugin-react-hooks",
+            "npm:eslint-plugin-jest"
+          ]
+        },
+        {
+          "file": "packages/cms/ui/package.json",
+          "hash": "4701944403437537181",
+          "deps": [
+            "npm:react",
+            "npm:react-dom",
+            "npm:tslib"
+          ]
+        },
+        {
+          "file": "packages/cms/ui/project.json",
+          "hash": "15889734692093299863"
+        },
+        {
+          "file": "packages/cms/ui/src/global.d.ts",
+          "hash": "8542922407867793838"
+        },
+        {
+          "file": "packages/cms/ui/src/index.ts",
+          "hash": "13138043179646365498"
+        },
+        {
+          "file": "packages/cms/ui/src/lib/ui.module.css",
+          "hash": "16284973153410006232"
+        },
+        {
+          "file": "packages/cms/ui/src/lib/ui.tsx",
+          "hash": "2955557269356164072",
+          "deps": [
+            "npm:react"
+          ]
+        },
+        {
+          "file": "packages/cms/ui/tsconfig.json",
+          "hash": "14726781996516255406"
+        },
+        {
+          "file": "packages/cms/ui/tsconfig.lib.json",
+          "hash": "1592622775211130803"
         }
       ]
     }
   },
-  "externalNodesHash": "2008942951005678387"
+  "externalNodesHash": "5513157207850648438"
 }

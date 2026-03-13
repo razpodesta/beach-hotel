@@ -1,20 +1,32 @@
 {
-  "name": "@metashark-cms/core",
+  "name": "@metashark/cms-core",
   "version": "0.0.1",
-  "type": "module",
-  "main": "./src/payload.config.ts",
-  "types": "./src/payload.config.ts",
+
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
   "exports": {
-    "./package.json": "./package.json",
     ".": {
-      "import": "./src/collections/index.js",
-      "types": "./src/collections/index.ts"
+      "types": "./src/index.ts",
+      "import": "./src/index.ts",
+      "default": "./dist/index.js"
     },
-    "./payload.config": {
+
+    "./config": {
+      "types": "./src/payload.config.ts",
       "import": "./src/payload.config.ts",
-      "types": "./src/payload.config.ts"
-    }
+      "default": "./dist/payload.config.js"
+    },
+    "./collections": {
+      "types": "./src/collections/index.ts",
+      "import": "./src/collections/index.ts",
+      "default": "./dist/collections/index.js"
+    },
+    "./package.json": "./package.json"
   },
+  "files": [
+    "dist",
+    "src"
+  ],
   "dependencies": {
     "tslib": "^2.3.0"
   }

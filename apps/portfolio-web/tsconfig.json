@@ -8,31 +8,46 @@
     "allowJs": true,
     "noEmit": true,
     "incremental": true,
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "strict": true,
+    "plugins": [{ "name": "next" }],
+    /* 
+       @pilar V: Restauración de Alias Soberanos.
+       Debido a que TS no combina 'paths', debemos incluir tanto los alias 
+       locales como los del monorepo para asegurar la resolución.
+    */
     "paths": {
-      "@/*": [
-        "src/*"
-      ]
+      "@/*": ["./src/*"],
+      "@metashark/cms-core/config": ["../../packages/cms/core/src/payload.config.ts"],
+      "@metashark/cms-core/collections": ["../../packages/cms/core/src/collections/index.ts"],
+      "@metashark/cms-core": ["../../packages/cms/core/src/index.ts"],
+      "@metashark/cms-ui": ["../../packages/cms/ui/src/index.ts"],
+      "@metashark/protocol-33": ["../../packages/protocol-33/src/index.ts"],
+      "@metashark/auth-shield": ["../../packages/auth-shield/src/index.ts"],
+      "@metashark/testing-utils": ["../../packages/testing-utils/src/index.ts"]
     }
   },
   "include": [
-    "**/*.ts",
-    "**/*.tsx",
+    "next-env.d.ts", 
     ".next/types/**/*.ts",
-    "next-env.d.ts",
-    "../../dist/apps/portfolio-web/.next/types/**/*.ts"
+    "**/*.ts", 
+    "**/*.tsx"
   ],
   "exclude": [
     "node_modules",
+    ".next",
+    "dist",
     "jest.config.ts",
-    "jest.setup.ts",
     "**/*.spec.ts",
-    "**/*.spec.tsx",
-    "**/*.test.ts",
-    "**/*.test.tsx"
+    "**/*.spec.tsx"
+  ],
+  "references": [
+    { "path": "../../packages/protocol-33" },
+    { "path": "../../packages/auth-shield" },
+    { "path": "../../packages/cms/ui" },
+    { "path": "../../packages/cms/core" },
+    { "path": "../../packages/testing-utils" }
   ]
 }

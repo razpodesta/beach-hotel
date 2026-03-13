@@ -1,8 +1,6 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "rootDir": ".",
-    "baseUrl": ".",
     "target": "es2022",
     "module": "esnext",
     "moduleResolution": "bundler",
@@ -19,38 +17,26 @@
     "noPropertyAccessFromIndexSignature": false,
     "paths": {
       /* 
-         ALIAS DE APLICACIÓN:
-         Uso exclusivo dentro de apps/portfolio-web 
+         Mapeos Específicos (Prioridad Alta) 
+         @pilar V: Se colocan primero para evitar colisiones con comodines.
       */
-      "@/*": ["apps/portfolio-web/src/*"],
-      
-      /* 
-         DOMINIO @METASHARK: CMS CORE
-         Sincronizado con Payload CMS 3.0 e importaciones ESM 
-      */
-      "@metashark/cms-core": ["packages/cms/core/src/index.ts"],
       "@metashark/cms-core/config": ["packages/cms/core/src/payload.config.ts"],
       "@metashark/cms-core/collections": ["packages/cms/core/src/collections/index.ts"],
       
       /* 
-         DOMINIO @METASHARK: COMPONENTES & LÓGICA
-         Mapeo directo a los puntos de entrada (Barrels)
+         Mapeos de Paquetes (Entry Points) 
       */
+      "@metashark/cms-core": ["packages/cms/core/src/index.ts"],
       "@metashark/cms-ui": ["packages/cms/ui/src/index.ts"],
       "@metashark/protocol-33": ["packages/protocol-33/src/index.ts"],
       "@metashark/auth-shield": ["packages/auth-shield/src/index.ts"],
-      
-      /* INFRAESTRUCTURA DE PRUEBAS */
-      "@metashark/testing-utils": ["packages/testing-utils/src/index.ts"]
+      "@metashark/testing-utils": ["packages/testing-utils/src/index.ts"],
+
+      /* 
+         Mapeos Generales (Catch-all)
+      */
+      "@metashark/cms-core/*": ["packages/cms/core/src/*"]
     }
   },
-  "exclude": [
-    "node_modules",
-    "tmp",
-    "dist",
-    "**/*.spec.ts",
-    "**/*.test.ts",
-    "**/*.spec.tsx",
-    "**/*.test.tsx"
-  ]
+  "exclude": ["node_modules", "tmp", "dist"]
 }

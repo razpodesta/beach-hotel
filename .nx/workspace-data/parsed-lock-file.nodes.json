@@ -4067,9 +4067,18 @@
       "hash": "sha512-SeDnOO0Tk7Okiq6DbXmmBODgOAb9dp9gjlphokTUxmt8U3liIP1ZsozBahH69j/RJv+Rfs6IwUKHTgQYJ/HBAw=="
     }
   },
-  "npm:@next/env": {
+  "npm:@next/env@15.2.5": {
     "type": "npm",
-    "name": "npm:@next/env",
+    "name": "npm:@next/env@15.2.5",
+    "data": {
+      "version": "15.2.5",
+      "packageName": "@next/env",
+      "hash": "sha512-uWkCf9C8wKTyQjqrNk+BA7eL3LOQdhL+xlmJUf2O85RM4lbzwBwot3Sqv2QGe/RGnc3zysIf1oJdtq9S00pkmQ=="
+    }
+  },
+  "npm:@next/env@15.2.9": {
+    "type": "npm",
+    "name": "npm:@next/env@15.2.9",
     "data": {
       "version": "15.2.9",
       "packageName": "@next/env",
@@ -6479,6 +6488,15 @@
       "hash": "sha512-8PvcXf70gTDZBgt9ptxJ8elBeBjcLOAcOtoO/mPJjtji1+CdGbHgm77om1GrsPxsiE+uXIpNSK64UYaIwQXd4Q=="
     }
   },
+  "npm:@types/bcryptjs": {
+    "type": "npm",
+    "name": "npm:@types/bcryptjs",
+    "data": {
+      "version": "3.0.0",
+      "packageName": "@types/bcryptjs",
+      "hash": "sha512-WRZOuCuaz8UcZZE4R5HXTco2goQSI2XxjGY3hbM/xDvwmqFWd4ivooImsMx65OKM6CtNKbnZ5YL+YwAwK7c1dg=="
+    }
+  },
   "npm:@types/body-parser": {
     "type": "npm",
     "name": "npm:@types/body-parser",
@@ -6738,6 +6756,15 @@
       "version": "0.0.29",
       "packageName": "@types/json5",
       "hash": "sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ=="
+    }
+  },
+  "npm:@types/jsonwebtoken": {
+    "type": "npm",
+    "name": "npm:@types/jsonwebtoken",
+    "data": {
+      "version": "9.0.10",
+      "packageName": "@types/jsonwebtoken",
+      "hash": "sha512-asx5hIG9Qmf/1oStypjanR7iKTv0gXQ1Ov/jfrX6kS/EO0OFni8orbmGCn0672NHR3kXHwpAwR+B368ZGN/2rA=="
     }
   },
   "npm:@types/lodash": {
@@ -8774,13 +8801,22 @@
       "hash": "sha512-qeFIXtP4MSoi6NLqO12WfqARWWuCKi2Rn/9hJLEmtB5yTNr9DqFWkJRCf2qShWzPeAMRnOgCrq0sg/KLv5ES9w=="
     }
   },
-  "npm:bcryptjs": {
+  "npm:bcryptjs@2.4.3": {
     "type": "npm",
-    "name": "npm:bcryptjs",
+    "name": "npm:bcryptjs@2.4.3",
     "data": {
       "version": "2.4.3",
       "packageName": "bcryptjs",
       "hash": "sha512-V/Hy/X9Vt7f3BbPJEi8BdVFMByHi+jNXrYkW3huaybV/kQ0KJg0Y6PkEMbn+zeT+i+SiKZ/HMqJGIIt4LZDqNQ=="
+    }
+  },
+  "npm:bcryptjs": {
+    "type": "npm",
+    "name": "npm:bcryptjs",
+    "data": {
+      "version": "3.0.3",
+      "packageName": "bcryptjs",
+      "hash": "sha512-GlF5wPWnSa/X5LKM1o0wz0suXIINz1iHRLvTS+sLyi7XPbe5ycmYI3DlZqVGZZtDgl4DmasFg7gOB3JYbphV5g=="
     }
   },
   "npm:bidi-js": {
@@ -9744,6 +9780,15 @@
       "version": "1.1.1",
       "packageName": "cookie",
       "hash": "sha512-ei8Aos7ja0weRpFzJnEA9UHJ/7XQmqglbRwnf2ATjcB9Wq874VKH9kfjjirM6UhU2/E5fFYadylyhFldcqSidQ=="
+    }
+  },
+  "npm:cookies-next@5.1.0": {
+    "type": "npm",
+    "name": "npm:cookies-next@5.1.0",
+    "data": {
+      "version": "5.1.0",
+      "packageName": "cookies-next",
+      "hash": "sha512-9Ekne+q8hfziJtnT9c1yDUBqT0eDMGgPrfPl4bpR3xwQHLTd/8gbSf6+IEkP/pjGsDZt1TGbC6emYmFYRbIXwQ=="
     }
   },
   "npm:cookies-next": {
@@ -15083,6 +15128,15 @@
       "hash": "sha512-jumlc0BIUrS3qJGgIkWZsyfAM7NCWiBcCDhnd+3NNM5KbBmLTgHVfWBcg6W+rLUsIpzpERPsvwUP7CckAQSOoA=="
     }
   },
+  "npm:lucide-react@0.454.0": {
+    "type": "npm",
+    "name": "npm:lucide-react@0.454.0",
+    "data": {
+      "version": "0.454.0",
+      "packageName": "lucide-react",
+      "hash": "sha512-hw7zMDwykCLnEzgncEEjHeA6+45aeEzRYuKHuyRSOPkhko+J3ySGjGIzu+mmMfDFG1vazHepMaYFYHbTFAZAAQ=="
+    }
+  },
   "npm:lucide-react": {
     "type": "npm",
     "name": "npm:lucide-react",
@@ -16080,6 +16134,15 @@
       "version": "0.4.6",
       "packageName": "next-themes",
       "hash": "sha512-pZvgD5L0IEvX5/9GWyHMf3m8BKiVQwsCMHfoFosXtXBMnaS0ZnIJ9ST4b4NqLVKDEm8QBxoNNGNaBv2JNF6XNA=="
+    }
+  },
+  "npm:next@15.2.5": {
+    "type": "npm",
+    "name": "npm:next@15.2.5",
+    "data": {
+      "version": "15.2.5",
+      "packageName": "next",
+      "hash": "sha512-LlqS8ljc7RWR3riUwxB5+14v7ULAa5EuLUyarD/sFgXPd6Hmmscg8DXcu9hDdh5atybrIDVBrFhjDpRIQo/4pQ=="
     }
   },
   "npm:next": {
@@ -22092,6 +22155,15 @@
       "version": "4.0.2",
       "packageName": "zod-validation-error",
       "hash": "sha512-Q6/nZLe6jxuU80qb/4uJ4t5v2VEZ44lzQjPDhYJNztRQ4wyWc6VF3D3Kb/fAuPetZQnhS3hnajCf9CsWesghLQ=="
+    }
+  },
+  "npm:zod@3.25.76": {
+    "type": "npm",
+    "name": "npm:zod@3.25.76",
+    "data": {
+      "version": "3.25.76",
+      "packageName": "zod",
+      "hash": "sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ=="
     }
   },
   "npm:zod": {

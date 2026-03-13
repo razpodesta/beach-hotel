@@ -1,9 +1,7 @@
 /**
  * @file apps/portfolio-web/src/components/projects/ProjectTechModal.tsx
- * @description Modal de especificaciones técnicas avanzadas. Proyecta la autoridad 
- *              técnica del proyecto mediante un desglose arquitectónico detallado.
- *              Implementa animaciones físicas y tokens de diseño Tailwind v4.
- * @version 3.0
+ * @description Modal de especificaciones técnicas avanzadas.
+ * @version 4.0
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -14,27 +12,22 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Cpu, ShieldCheck, Layers, Zap } from 'lucide-react';
 
 /**
- * IMPORTACIONES NIVELADAS (Rutas relativas para cumplimiento Nx)
+ * IMPORTACIONES NIVELADAS
  */
 import { cn } from '../../lib/utils/cn';
-import type { ProjectDetailItem } from '../../lib/schemas/project_details.schema';
+import type { ProjectEntity } from '../../lib/schemas/project_details.schema';
 
 interface ProjectTechModalProps {
-  /** Objeto de datos que contiene la configuración de marca y arquitectura del proyecto */
-  data: ProjectDetailItem;
+  /** Objeto de datos que contiene la configuración de arquitectura del proyecto */
+  data: ProjectEntity;
 }
 
 /**
  * Aparato Visual: ProjectTechModal
- * Orquesta la presentación de la "Caja Negra" técnica de cada desarrollo de élite.
  */
 export function ProjectTechModal({ data }: ProjectTechModalProps) {
   const [isOpen, setIsOpen] = useState(false);
 
-  /**
-   * Disparador de atención: Abre el modal automáticamente tras un breve delay
-   * para invitar al usuario a profundizar en la ingeniería.
-   */
   useEffect(() => {
     const timer = setTimeout(() => setIsOpen(true), 1500);
     return () => clearTimeout(timer);
@@ -64,9 +57,7 @@ export function ProjectTechModal({ data }: ProjectTechModalProps) {
             )}
             onClick={(e) => e.stopPropagation()}
           >
-            {/* 1. CABECERA: Identidad de Proyecto */}
             <header className="relative h-40 w-full overflow-hidden bg-zinc-900">
-              {/* Overlay de color dinámico basado en el branding del proyecto */}
               <div 
                 className="absolute inset-0 opacity-20 transition-colors duration-1000"
                 style={{ backgroundColor: data.branding.primary_color }} 
@@ -90,10 +81,8 @@ export function ProjectTechModal({ data }: ProjectTechModalProps) {
               </div>
             </header>
 
-            {/* 2. CONTENIDO: Desglose Técnico */}
             <div className="max-h-[60vh] overflow-y-auto p-8 space-y-10 scrollbar-thin scrollbar-thumb-white/10 custom-scrollbar">
               
-              {/* Sección: Propósito Arquitectónico */}
               <section className="space-y-4">
                 <h3 className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.3em] text-purple-500">
                   <Zap size={16} /> Objetivo del Sistema
@@ -104,14 +93,13 @@ export function ProjectTechModal({ data }: ProjectTechModalProps) {
                 </div>
               </section>
 
-              {/* Grid: Stack y Backend */}
               <div className="grid gap-10 md:grid-cols-2">
                 <section>
                   <h3 className="mb-5 flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.3em] text-pink-500">
                     <Layers size={16} /> Tech Stack
                   </h3>
                   <div className="flex flex-wrap gap-2">
-                    {data.tech_stack.map((tech) => (
+                    {data.tech_stack.map((tech: string) => (
                       <span 
                         key={tech} 
                         className="rounded-xl border border-white/5 bg-zinc-900 px-4 py-2 text-xs font-mono font-medium text-zinc-300"
@@ -124,10 +112,10 @@ export function ProjectTechModal({ data }: ProjectTechModalProps) {
 
                 <section>
                   <h3 className="mb-5 flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.3em] text-blue-500">
-                    <ShieldCheck size={16} /> {data.backend_architecture.title}
+                    <ShieldCheck size={16} /> {data.backend_architecture?.title ?? 'Arquitectura Backend'}
                   </h3>
                   <ul className="space-y-3">
-                    {data.backend_architecture.features.map((feat, i) => (
+                    {data.backend_architecture?.features.map((feat: string, i: number) => (
                       <li key={i} className="flex items-start gap-3 text-xs text-zinc-500 font-sans">
                         <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-blue-500" />
                         {feat}
@@ -138,7 +126,6 @@ export function ProjectTechModal({ data }: ProjectTechModalProps) {
               </div>
             </div>
 
-            {/* 3. FOOTER: Conversión */}
             <footer className="border-t border-white/5 bg-white/1 p-6">
               <button
                 onClick={() => setIsOpen(false)}

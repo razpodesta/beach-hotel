@@ -1,11 +1,16 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
+    "baseUrl": ".",
     "composite": true,
-    "outDir": "../../dist/out-tsc",
+    "outDir": "../../../dist/packages/protocol-33",
     "emitDeclarationOnly": false,
-    "tsBuildInfoFile": "../../dist/out-tsc/packages/protocol-33/tsconfig.lib.tsbuildinfo"
+    "tsBuildInfoFile": "../../../dist/packages/protocol-33/tsconfig.lib.tsbuildinfo"
   },
   "include": ["src/**/*.ts"],
-  "exclude": ["jest.config.ts", "**/*.spec.ts", "**/*.test.ts"]
+  "exclude": [
+    "jest.config.ts",
+    "**/*.spec.ts",
+    "**/*.test.ts"
+  ]
 }
