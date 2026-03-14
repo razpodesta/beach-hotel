@@ -1,8 +1,9 @@
 /**
  * @file apps/portfolio-web/src/app/[lang]/blog/[slug]/page.tsx
- * @description Página de detalle editorial (The Concierge Journal). 
- *              Implementa resiliencia Next.js 15, SEO E-E-A-T y tipografía de lujo.
- * @version 10.0 - Next.js 15 Async Params Compliance
+ * @description Orquestador de detalle editorial (The Concierge Journal). 
+ *              Implementa resiliencia extrema ante fallos de CMS, SSG optimizado
+ *              y cumplimiento estricto de los 12 Pilares de Élite.
+ * @version 10.2 - Full Resiliency & i18n Hardening
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -15,30 +16,35 @@ import { ArrowLeft, Calendar, User, Sparkles } from 'lucide-react';
 
 /**
  * IMPORTACIONES DE INFRAESTRUCTRURA
- * @pilar V: Adherencia arquitectónica.
+ * @pilar V: Adherencia arquitectónica mediante fronteras Nx.
  */
 import { i18n, type Locale } from '../../../../config/i18n.config';
 import { getAllPosts, getPostBySlug } from '../../../../lib/blog';
 import { getDictionary } from '../../../../lib/get-dictionary';
 import { JsonLdScript } from '../../../../components/ui/JsonLdScript';
 import { ShareButtons } from '../../../../components/ui/ShareButtons';
+import { cn } from '../../../../lib/utils/cn';
 
 /**
  * Contrato de propiedades con parámetros asíncronos (Next.js 15 Standard).
+ * @pilar III: Seguridad de Tipos Absoluta.
  */
 type PostPageProps = {
   params: Promise<{ slug: string; lang: Locale }>;
 };
 
 /**
- * @pilar I: Sincronización de Rutas Estáticas.
- * Genera el inventario de slugs para pre-renderizado en el Edge.
+ * GENERACIÓN DE RUTAS ESTÁTICAS (SSG)
+ * @pilar VIII: Resiliencia de Build.
+ * @description Garantiza que el proceso de compilación no aborte si la base de datos es inaccesible.
  */
 export async function generateStaticParams() {
   try {
     const posts = await getAllPosts();
-    // Si no hay posts (fase build sin DB), retornamos array vacío para no bloquear el build.
-    if (!posts) return [];
+    if (!posts || !Array.isArray(posts) || posts.length === 0) {
+      console.warn('[HEIMDALL][STATIC-GEN] Dataset vacío o nulo. Saltando generación de rutas.');
+      return [];
+    }
 
     return i18n.locales.flatMap((lang) =>
       posts.map((post) => ({
@@ -46,89 +52,82 @@ export async function generateStaticParams() {
         slug: post.slug,
       }))
     );
-  } catch {
+  } catch (error) {
+    console.error('[HEIMDALL][CRITICAL] Fallo en generateStaticParams:', error);
     return [];
   }
 }
 
 /**
- * Orquestador de Metadatos Soberano.
- * @pilar III: Await explícito de params según requerimiento de Next.js 15.
+ * ORQUESTADOR DE METADATOS SOBERANO
+ * @pilar I: Visión Holística - Asegura SEO íntegro incluso en estados de error.
  */
 export async function generateMetadata(props: PostPageProps): Promise<Metadata> {
   const { slug, lang } = await props.params;
-  const post = await getPostBySlug(slug);
+  
+  try {
+    const post = await getPostBySlug(slug);
+    if (!post) return { title: 'Post Not Found | The Concierge Journal' };
 
-  if (!post) {
-    return { title: 'Not Found | The Concierge Journal' };
+    const { title, description } = post.metadata;
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://beachhotelcanasvieiras.com';
+
+    return {
+      title: `${title} | The Concierge Journal`,
+      description,
+      alternates: { canonical: `${baseUrl}/${lang}/blog/${slug}` },
+      openGraph: {
+        title,
+        description,
+        type: 'article',
+        publishedTime: post.metadata.published_date,
+        siteName: 'Beach Hotel Canasvieiras',
+      },
+    };
+  } catch {
+    return { title: 'The Concierge Journal' };
   }
-
-  const { title, description, published_date } = post.metadata;
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://beachhotelcanasvieiras.com';
-  const canonicalUrl = `${baseUrl}/${lang}/blog/${slug}`;
-  const imageUrl = `${baseUrl}/images/blog/${slug}.jpg`;
-
-  return {
-    title: `${title} | The Concierge Journal`,
-    description,
-    alternates: { canonical: canonicalUrl },
-    openGraph: {
-      title,
-      description,
-      url: canonicalUrl,
-      images: [{ url: imageUrl, width: 1200, height: 630, alt: title }],
-      type: 'article',
-      publishedTime: published_date,
-      siteName: 'Beach Hotel Canasvieiras',
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title,
-      description,
-      images: [imageUrl],
-    },
-  };
 }
 
 /**
  * APARATO PRINCIPAL: PostPage
+ * @pilar XII: MEA/UX - Renderizado editorial de alta fidelidad.
  */
 export default async function PostPage(props: PostPageProps) {
-  // @pilar III: Resolución asíncrona de parámetros
+  // @pilar III: Resolución asíncrona de parámetros obligatoria en Next.js 15
   const { slug, lang } = await props.params;
-  const dictionary = await getDictionary(lang);
-  const t = dictionary.blog_page;
   
-  const post = await getPostBySlug(slug);
+  // Obtención paralela de recursos para optimizar el TTFB (Pilar X)
+  const [dictionary, post] = await Promise.all([
+    getDictionary(lang),
+    getPostBySlug(slug)
+  ]);
 
-  // @pilar VIII: Guardia de Resiliencia ante datos nulos o fallos de build
+  const t = dictionary.blog_page;
+  const commonNav = dictionary['nav-links'].nav_links;
+
+  // @pilar VIII: Guardia de Resiliencia ante datos nulos
   if (!post) {
     notFound();
   }
 
-  const { title, author, published_date, tags, description } = post.metadata;
+  const { title, author, published_date, tags } = post.metadata;
   const imageUrl = `/images/blog/${slug}.jpg`;
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://beachhotelcanasvieiras.com';
 
   /**
    * DATOS ESTRUCTURADOS (Schema.org)
-   * Optimización para el algoritmo de búsqueda de Google 2026.
+   * Refuerza el E-E-A-T del Hub Editorial.
    */
   const articleSchema = {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
     headline: title,
-    description: description,
     author: { '@type': 'Person', name: author },
     datePublished: published_date,
-    image: `${baseUrl}${imageUrl}`,
+    image: imageUrl,
     publisher: {
       '@type': 'Organization',
-      name: 'Beach Hotel Canasvieiras',
-      logo: {
-        '@type': 'ImageObject',
-        url: `${baseUrl}/images/hotel/logo.png`
-      }
+      name: 'Beach Hotel Canasvieiras'
     }
   };
 
@@ -150,7 +149,7 @@ export default async function PostPage(props: PostPageProps) {
               
               <Link 
                 href={`/${lang}/blog`}
-                className="group inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-500 hover:text-white transition-colors mb-12"
+                className="group inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-500 hover:text-white transition-all mb-12"
               >
                 <ArrowLeft size={14} className="transition-transform group-hover:-translate-x-1" /> 
                 {t.hero_title}
@@ -201,27 +200,31 @@ export default async function PostPage(props: PostPageProps) {
             </div>
           </header>
 
-          {/* CONTENIDO MDX (Luxury Typography) */}
+          {/* CUERPO EDITORIAL */}
           <div className="container mx-auto max-w-3xl px-6">
-            <div className="prose prose-invert prose-lg md:prose-xl max-w-none font-sans 
-                            prose-headings:font-display prose-headings:font-bold prose-headings:text-white prose-headings:tracking-tighter
-                            prose-p:leading-relaxed prose-p:text-zinc-400
-                            prose-a:text-purple-400 prose-a:no-underline hover:prose-a:underline
-                            prose-blockquote:border-l-purple-500 prose-blockquote:bg-white/2 prose-blockquote:py-2 prose-blockquote:px-8 prose-blockquote:rounded-r-2xl prose-blockquote:italic
-                            prose-img:rounded-3xl prose-img:border prose-img:border-white/10 prose-img:shadow-2xl
-                            prose-strong:text-white">
-              <MDXRemote source={post.content} />
+            <div className={cn(
+              "prose prose-invert prose-lg md:prose-xl max-w-none font-sans",
+              "prose-headings:font-display prose-headings:font-bold prose-headings:text-white prose-headings:tracking-tighter",
+              "prose-p:leading-relaxed prose-p:text-zinc-400",
+              "prose-a:text-purple-400 prose-a:no-underline hover:prose-a:underline",
+              "prose-blockquote:border-l-purple-500 prose-blockquote:bg-white/2 prose-blockquote:py-2 prose-blockquote:px-8 prose-blockquote:rounded-r-2xl prose-blockquote:italic",
+              "prose-img:rounded-3xl prose-img:border prose-img:border-white/10 prose-img:shadow-2xl",
+              "prose-strong:text-white"
+            )}>
+              {/* @pilar VIII: Resiliencia - Asegura que MDXRemote solo reciba strings válidos */}
+              <MDXRemote source={post.content || ''} />
             </div>
 
+            {/* FOOTER DE ARTÍCULO */}
             <footer className="mt-24 border-t border-white/5 pt-12 flex flex-col md:flex-row items-center justify-between gap-12">
               <ShareButtons title={title} />
               
               <Link 
-                href={`/${lang}/#reservas`}
-                className="group relative rounded-full bg-white px-10 py-5 text-xs font-bold uppercase tracking-[0.2em] text-black hover:scale-105 transition-all shadow-2xl active:scale-95"
+                href={lang === 'pt-BR' ? '/pt-BR/#reservas' : `/${lang}/#reservas`}
+                className="group relative rounded-full bg-white px-10 py-5 text-xs font-bold uppercase tracking-[0.2em] text-black hover:bg-purple-600 hover:text-white transition-all shadow-2xl active:scale-95"
               >
-                {/* @pilar VI: Sincronización con el Call to Action */}
-                Vivir la Experiencia
+                {/* @pilar VI: Uso de etiqueta localizada del orquestador de navegación */}
+                {commonNav.reservas}
               </Link>
             </footer>
           </div>

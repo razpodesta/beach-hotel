@@ -1,9 +1,11 @@
 {
   "page_title": "Concierge Journal | Beach Hotel Canasvieiras",
-  "page_description": "Descubra os segredos mais bem guardados da ilha, guias exclusivos de vida noturna e novidades sobre o Pride Escape.",
+  "page_description": "Descubra os segredos mais bem guardados da ilha, guias exclusivos de vida noturna e novidades do Pride Escape.",
   "hero_title": "The Concierge Journal",
   "featured_title": "Leitura em Destaque",
   "all_posts_title": "Últimas Novidades",
   "read_more_cta": "Ler Artigo",
-  "empty_state": "Nenhum artigo disponível no momento. Fique ligado."
+  "empty_state": "Não há artigos disponíveis no momento. Fique conectado.",
+  "tag_results_singular": "Um artigo disponível sob a curadoria de",
+  "tag_results_plural": "Artigos selecionados sob a curadoria de"
 }

@@ -848,7 +848,7 @@
         },
         {
           "file": "apps/portfolio-web/src/app/[lang]/blog/[slug]/page.tsx",
-          "hash": "17843499073623557371",
+          "hash": "17718763414016584751",
           "deps": [
             "npm:next",
             "npm:next-mdx-remote",
@@ -864,7 +864,7 @@
         },
         {
           "file": "apps/portfolio-web/src/app/[lang]/blog/tag/[slug]/page.tsx",
-          "hash": "9898391688591807904",
+          "hash": "10039155944084363134",
           "deps": [
             "npm:next"
           ]
@@ -999,11 +999,12 @@
         },
         {
           "file": "apps/portfolio-web/src/components/layout/Header.tsx",
-          "hash": "16633153218743097485",
+          "hash": "8082961184583759314",
           "deps": [
             "npm:react",
             "npm:next",
-            "npm:lucide-react"
+            "npm:lucide-react",
+            "npm:framer-motion"
           ]
         },
         {
@@ -1220,7 +1221,7 @@
         },
         {
           "file": "apps/portfolio-web/src/components/ui/BlogCard3D.tsx",
-          "hash": "9761302914999179979",
+          "hash": "10588262711385531115",
           "deps": [
             "npm:react",
             "npm:next",
@@ -1384,15 +1385,15 @@
         },
         {
           "file": "apps/portfolio-web/src/dictionaries/en-US.json",
-          "hash": "2381263081744808889"
+          "hash": "8158571732122579041"
         },
         {
           "file": "apps/portfolio-web/src/dictionaries/es-ES.json",
-          "hash": "4785205281986426795"
+          "hash": "14721606831478600151"
         },
         {
           "file": "apps/portfolio-web/src/dictionaries/pt-BR.json",
-          "hash": "18055610020014383730"
+          "hash": "7574179762413797443"
         },
         {
           "file": "apps/portfolio-web/src/lib/blog-api.ts",
@@ -1477,7 +1478,7 @@
         },
         {
           "file": "apps/portfolio-web/src/lib/schemas/blog.schema.ts",
-          "hash": "15329018309645953631",
+          "hash": "15952106261885880697",
           "deps": [
             "npm:zod"
           ]
@@ -1709,7 +1710,7 @@
         },
         {
           "file": "apps/portfolio-web/src/messages/en-US/blog_page.json",
-          "hash": "12909133406013480321"
+          "hash": "10977805091875186714"
         },
         {
           "file": "apps/portfolio-web/src/messages/en-US/cocreation_page.json",
@@ -1817,7 +1818,7 @@
         },
         {
           "file": "apps/portfolio-web/src/messages/es-ES/blog_page.json",
-          "hash": "16505639533035677241"
+          "hash": "14218310786097016424"
         },
         {
           "file": "apps/portfolio-web/src/messages/es-ES/cocreation_page.json",
@@ -1933,7 +1934,7 @@
         },
         {
           "file": "apps/portfolio-web/src/messages/pt-BR/blog_page.json",
-          "hash": "16461861744051526776"
+          "hash": "16901729497434628551"
         },
         {
           "file": "apps/portfolio-web/src/messages/pt-BR/cocreation_page.json",
@@ -2612,7 +2613,7 @@
         },
         {
           "file": "scripts/prebuild-portfolio-web.mjs",
-          "hash": "13269310563570493714"
+          "hash": "10687386359005876918"
         },
         {
           "file": "scripts/verify-build-readiness.mjs",

@@ -1,8 +1,8 @@
 /**
  * @file apps/portfolio-web/src/app/[lang]/blog/tag/[slug]/page.tsx
  * @description Orquestador de archivo por etiquetas (taxonomía) del Concierge Journal.
- *              Implementa SSG, resiliencia Next.js 15 e integridad de tipos absoluta.
- * @version 6.1 - Strict Typing & Linter Hardening
+ *              Implementa SSG, resiliencia Next.js 15 y normalización de tipos para Media.
+ * @version 6.3 - Nullability Normalization & TS Sync
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -21,16 +21,15 @@ import { BlurText } from '../../../../../components/razBits/BlurText';
 import type { PostWithSlug } from '../../../../../lib/schemas/blog.schema';
 
 /**
- * Propiedades de la página con soporte para parámetros asíncronos (Next.js 15).
+ * Propiedades de la página con soporte para parámetros asíncronos (Next.js 15 Standard).
  */
 type TagPageProps = {
   params: Promise<{ slug: string; lang: Locale }>;
 };
 
 /**
- * @pilar I: Sincronización de Rutas Estáticas.
- * Genera el mapa de etiquetas para pre-renderizado. 
- * Resiliente a fallos de base de datos en fase de build.
+ * GENERACIÓN DE RUTAS ESTÁTICAS (SSG)
+ * @pilar VIII: Resiliencia de Build.
  */
 export async function generateStaticParams() {
   try {
@@ -40,7 +39,7 @@ export async function generateStaticParams() {
     const tags = new Set<string>();
     posts.forEach(post => {
       post.metadata.tags.forEach(tag => {
-        // Normalización para URLs consistentes (kebab-case)
+        // Normalización kebab-case para URLs SEO-Friendly
         tags.add(tag.toLowerCase().trim().replace(/\s+/g, '-'));
       });
     });
@@ -51,36 +50,29 @@ export async function generateStaticParams() {
         slug: tagSlug,
       }))
     );
-  } catch {
-    /**
-     * @pilar X: Optional Catch Binding para higiene de linter.
-     */
-    console.error('[HEIMDALL][STATIC-GEN] Fallo al generar rutas de etiquetas.');
+  } catch (error) {
+    console.error('[HEIMDALL][STATIC-GEN] Error crítico en rutas de etiquetas:', error);
     return [];
   }
 }
 
 /**
  * Orquestador de Metadatos Soberano.
+ * @pilar III: Resolución asíncrona de parámetros.
  */
 export async function generateMetadata(props: TagPageProps): Promise<Metadata> {
   const { lang, slug } = await props.params;
   const dictionary = await getDictionary(lang);
   
-  // Saneamiento visual del nombre de la etiqueta
   const tagName = decodeURIComponent(slug).replace(/-/g, ' ');
   const blogName = dictionary.header.personal_portfolio;
 
   return {
-    title: `${tagName.toUpperCase()} | Archivos | ${blogName}`,
-    description: `${dictionary.blog_page.page_description} - Artículos seleccionados sobre ${tagName}.`,
+    title: `${tagName.toUpperCase()} | ${blogName}`,
+    description: `${dictionary.blog_page.page_description} - Curaduría: ${tagName}.`,
     alternates: {
       canonical: `/${lang}/blog/tag/${slug}`,
     },
-    openGraph: {
-      title: `${tagName.toUpperCase()} | The Concierge Journal`,
-      type: 'website',
-    }
   };
 }
 
@@ -89,73 +81,82 @@ export async function generateMetadata(props: TagPageProps): Promise<Metadata> {
  */
 export default async function TagArchivePage(props: TagPageProps) {
   const { lang, slug } = await props.params;
-  const dictionary = await getDictionary(lang);
-  const t = dictionary.blog_page;
 
   /**
-   * @pilar III: Seguridad de Tipos Absoluta.
-   * @pilar VIII: Resiliencia de Datos.
-   * Inicialización tipada para erradicar el error TS7034.
+   * @pilar X: Rendimiento de Élite.
+   * Ejecución paralela para minimizar el Time to First Byte (TTFB).
    */
-  let posts: PostWithSlug[] = [];
-  try {
-    posts = await getPostsByTag(slug);
-  } catch {
-    console.error(`[HEIMDALL][ERROR] Fallo en recuperación de tag: ${slug}`);
-    posts = [];
-  }
+  const [dictionary, posts] = await Promise.all([
+    getDictionary(lang),
+    getPostsByTag(slug)
+  ]);
 
-  // Si no hay artículos en runtime, activamos el protocolo 404 (Pilar VIII)
-  if (posts.length === 0) {
+  // @pilar VIII: Guardia de Resiliencia ante nulos o fallos del CMS
+  if (!posts || posts.length === 0) {
     notFound();
   }
 
+  const t = dictionary.blog_page;
   const tagName = slug.replace(/-/g, ' ');
+
+  /**
+   * @pilar VI: Lógica i18n Soberana.
+   * Pluralización dinámica basada en tokens del diccionario.
+   */
+  const resultsCount = posts.length;
+  const descriptionTemplate = resultsCount === 1 
+    ? t.tag_results_singular 
+    : t.tag_results_plural;
 
   return (
     <main className="min-h-screen bg-[#050505] text-white pt-32 pb-24 selection:bg-purple-500/30">
       <div className="container mx-auto px-6">
         
-        {/* ENCABEZADO DE SECCIÓN EDITORIAL */}
+        {/* ENCABEZADO EDITORIAL */}
         <header className="mx-auto max-w-4xl text-center mb-24">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-purple-500/5 border border-purple-500/10 text-[10px] font-bold tracking-[0.4em] text-purple-400 uppercase mb-8 animate-fade-in">
+          <div className="inline-flex items-center gap-2 px-6 py-2 rounded-full bg-purple-500/5 border border-white/10 text-[10px] font-bold tracking-[0.4em] text-purple-400 uppercase mb-10 animate-fade-in">
             {t.all_posts_title}
           </div>
           
           <BlurText
             text={tagName.toUpperCase()}
-            className="font-display text-5xl md:text-8xl font-bold tracking-tighter text-white justify-center mb-8"
+            className="font-display text-5xl md:text-8xl font-bold tracking-tighter text-white justify-center mb-10"
             animateBy="letters"
             delay={50}
           />
           
           <p className="text-zinc-500 font-sans text-lg md:text-xl max-w-2xl mx-auto font-light leading-relaxed">
-            {posts.length} {posts.length === 1 ? 'artículo disponible' : 'artículos disponibles'} 
-            {` bajo la curaduría de ${tagName}.`}
+            {`${descriptionTemplate} ${tagName}.`}
           </p>
         </header>
 
-        {/* GRID DINÁMICO DE TARJETAS */}
-        <div className="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-3">
-          {posts.map((post) => (
+        {/* GRID DINÁMICO: Sincronizado con BlogCard v4.1 */}
+        <div className="grid grid-cols-1 gap-x-12 gap-y-20 md:grid-cols-2 lg:grid-cols-3">
+          {posts.map((post: PostWithSlug) => (
             <BlogCard
               key={post.slug}
               post={post.metadata}
               slug={post.slug}
               lang={lang}
               ctaText={t.read_more_cta}
+              /**
+               * @pilar III: Resolución de Error TS2322. 
+               * Normalizamos 'null' a 'undefined' para cumplir con el contrato de BlogCardProps.
+               */
+              customImage={post.metadata.ogImage ?? undefined} 
             />
           ))}
         </div>
 
-        {/* FOOTER DE NAVEGACIÓN (Luxury Detail) */}
-        <div className="mt-32 pt-12 border-t border-white/5 flex flex-col items-center gap-4">
+        {/* FOOTER DE MARCA */}
+        <div className="mt-32 pt-12 border-t border-white/5 flex flex-col items-center">
             <p className="text-[10px] font-mono text-zinc-800 tracking-[0.3em] uppercase">
-                Beach Hotel Canasvieiras • Editorial Department
+                Beach Hotel Canasvieiras • Editorial Sanctuary
             </p>
         </div>
       </div>
 
+      {/* Decoración Estructural Atmosférica */}
       <div className="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_center,rgba(168,85,247,0.03),transparent_70%)] pointer-events-none" />
     </main>
   );

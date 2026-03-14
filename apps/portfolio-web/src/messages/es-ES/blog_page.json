@@ -5,5 +5,7 @@
   "featured_title": "Lectura Destacada",
   "all_posts_title": "Últimas Novedades",
   "read_more_cta": "Leer Artículo",
-  "empty_state": "No hay artículos disponibles en este momento. Mantente conectado."
+  "empty_state": "No hay artículos disponibles en este momento. Mantente conectado.",
+  "tag_results_singular": "Un artículo disponible bajo la curaduría de",
+  "tag_results_plural": "Artículos seleccionados bajo la curaduría de"
 }
