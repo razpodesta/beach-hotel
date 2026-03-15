@@ -2,7 +2,7 @@
  * @file apps/portfolio-web/src/app/[lang]/layout.tsx
  * @description Orquestador del Shell Principal. Refactorizado para Build-Safety (SSG).
  *              Protege los Client Components con Suspense y límites de renderizado.
- * @version 27.1 - Build Resilient Layout
+ * @version 27.2 - Build-Safe Resilience
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -65,22 +65,21 @@ export default async function RootLayout({
   return (
     <html lang={lang} suppressHydrationWarning>
       <head />
+      {/* Añadido min-h-screen para prevenir layout shift */}
       <body className={`${fontVariables} font-sans antialiased min-h-screen`}>
         <Providers>
             {/* 
-               @pilar VIII: Resiliencia de Renderizado. 
-               La Suspense actúa como un 'Error Boundary' estático durante el build,
-               evitando que el acceso a contextos de cliente en componentes 
-               no montados detenga el proceso.
+               Aparatos de Cliente Blindados:
+               Se mantienen dentro de Providers pero fuera del flujo crítico de servidores.
+               El uso de Suspense y la lógica interna de los componentes (ya refactorizada 
+               con useIsMounted/useSyncExternalStore) evita el error de useContext nulo.
             */}
             <Suspense fallback={null}>
               <NavigationTracker />
             </Suspense>
 
             <div className="flex min-h-screen flex-col">
-              <Suspense fallback={null}>
-                <Header dictionary={dictionary} />
-              </Suspense>
+              <Header dictionary={dictionary} />
               
               <Suspense fallback={null}>
                 <SystemStatusTicker dictionary={dictionary.system_status} />
@@ -99,9 +98,6 @@ export default async function RootLayout({
 
             <Suspense fallback={null}>
               <NewsletterModal />
-            </Suspense>
-
-            <Suspense fallback={null}>
               <VisitorHud dictionary={dictionary.visitor_hud} />
             </Suspense>
         </Providers>

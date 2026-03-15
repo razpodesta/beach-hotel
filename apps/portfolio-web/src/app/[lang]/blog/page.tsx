@@ -1,12 +1,14 @@
 /**
  * @file apps/portfolio-web/src/app/[lang]/blog/page.tsx
- * @description Orquestador del Hub Editorial (The Concierge Journal). 
- *              Refactorizado para resiliencia absoluta en build estático.
- * @version 10.2 - Build-Safe Resilience
+ * @description Orquestador del Hub Editorial. 
+ *              Refactorizado para Build-Safety: Protección de componentes con 
+ *              Suspense y lógica de renderizado condicional.
+ * @version 10.4 - Prerender-Safe Architecture
  * @author Raz Podestá - MetaShark Tech
  */
 
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
 import { getDictionary } from '../../../lib/get-dictionary';
 import { getAllPosts } from '../../../lib/blog';
 import { BlogCard } from '../../../components/ui/BlogCard';
@@ -44,7 +46,6 @@ export default async function BlogIndexPage(props: BlogIndexProps) {
   const dictionary = await getDictionary(lang);
   const t = dictionary.blog_page;
 
-  // @pilar VIII: Resiliencia de datos absoluta.
   let posts: PostWithSlug[] = [];
   let isCmsAvailable = true;
 
@@ -52,7 +53,7 @@ export default async function BlogIndexPage(props: BlogIndexProps) {
     posts = await getAllPosts();
   } catch (error) {
     isCmsAvailable = false;
-    console.error('[HEIMDALL][CRITICAL] CMS Inaccesible durante el renderizado.', error);
+    console.error('[HEIMDALL][CRITICAL] CMS Inaccesible.', error);
   }
   
   const hasPosts = posts.length > 0;
@@ -62,24 +63,30 @@ export default async function BlogIndexPage(props: BlogIndexProps) {
   return (
     <main className="min-h-screen bg-[#050505] text-white selection:bg-purple-500/30">
       
-      {/* 1. HEADER EDITORIAL */}
       <section className="relative overflow-hidden pt-40 pb-20">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(168,85,247,0.12),transparent_60%)] pointer-events-none" />
         <div className="container relative z-10 mx-auto px-6 text-center">
           <span className="inline-flex items-center gap-2 py-2 px-6 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold tracking-[0.4em] text-zinc-400 uppercase mb-10 backdrop-blur-xl animate-fade-in">
             {dictionary.header.personal_portfolio}
           </span>
-          <BlurText
-            text={t.hero_title.toUpperCase()}
-            className="font-display text-5xl md:text-8xl font-bold justify-center mb-10 tracking-tighter text-white"
-            delay={40}
-            animateBy="letters"
-          />
+          
+          {/* @pilar VIII: Protección de BlurText contra acceso a contexto en Server-side Build */}
+          <Suspense fallback={<div className="h-20 w-full" />}>
+            <BlurText
+              text={t.hero_title.toUpperCase()}
+              className="font-display text-5xl md:text-8xl font-bold justify-center mb-10 tracking-tighter text-white"
+              delay={40}
+              animateBy="letters"
+            />
+          </Suspense>
+          
+          <p className="max-w-2xl mx-auto text-zinc-500 text-lg md:text-2xl leading-relaxed font-sans font-light">
+            {t.page_description}
+          </p>
         </div>
       </section>
 
       <div className="container mx-auto px-6 pb-32">
-        {/* 2. GESTIÓN DE ESTADOS: Sincronización con disponibilidad de CMS */}
         {!isCmsAvailable ? (
              <div className="text-center py-48 border border-white/5 rounded-[4rem] bg-zinc-900/20">
                 <p className="text-zinc-400 font-mono text-sm uppercase tracking-[0.3em]">
@@ -134,6 +141,8 @@ export default async function BlogIndexPage(props: BlogIndexProps) {
           </>
         )}
       </div>
+
+      <div className="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_bottom_right,rgba(168,85,247,0.03),transparent_40%)] pointer-events-none" />
     </main>
   );
 }
