@@ -1,20 +1,18 @@
 /**
  * @file apps/portfolio-web/src/app/[lang]/layout.tsx
- * @description Orquestador del Shell Principal. Inyecta tipografía soberana,
- *              providers y aparatos de telemetría global.
- * @version 27.0 - Type-Safe Telemetry Injection
+ * @description Orquestador del Shell Principal. Refactorizado para Build-Safety (SSG).
+ *              Protege los Client Components con Suspense y límites de renderizado.
+ * @version 27.1 - Build Resilient Layout
  * @author Raz Podestá - MetaShark Tech
  */
 
 import React, { Suspense } from 'react';
 import type { Metadata } from 'next';
 
-// IMPORTACIONES DE INFRAESTRUCTRURA
 import { i18n, type Locale } from '../../config/i18n.config';
 import { getDictionary } from '../../lib/get-dictionary';
 import { fontInter, fontSignature, fontClashDisplay } from '../../lib/fonts';
 
-// COMPONENTES LEGO
 import { Providers } from '../../components/layout/Providers';
 import { Header } from '../../components/layout/Header';
 import { Footer } from '../../components/layout/Footer';
@@ -25,19 +23,12 @@ import { NavigationTracker } from '../../components/layout/NavigationTracker';
 
 import '../global.css';
 
-// Consolidación de variables CSS de tipografía
 const fontVariables = `${fontInter.variable} ${fontSignature.variable} ${fontClashDisplay.variable}`;
 
-/**
- * Genera parámetros estáticos para SSG de todos los idiomas.
- */
 export async function generateStaticParams() {
   return i18n.locales.map((locale) => ({ lang: locale }));
 }
 
-/**
- * Orquestador de Metadatos Soberano.
- */
 export async function generateMetadata({ params }: { params: Promise<{ lang: Locale }> }): Promise<Metadata> {
   const { lang: currentLanguage } = await params;
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:4200';
@@ -52,7 +43,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: Loc
       template: '%s | Raz Podestá',
       default: 'Raz Podestá | Portafolio & Ecosistema Digital',
     },
-    description: 'Explora un ecosistema digital en evolución. Desarrollo web, IA y estrategia.',
+    description: 'Explora un ecosistema digital en evolución.',
     metadataBase: new URL(baseUrl),
     alternates: {
       canonical: `${baseUrl}/${currentLanguage}`,
@@ -61,9 +52,6 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: Loc
   };
 }
 
-/**
- * Aparato de Shell: RootLayout
- */
 export default async function RootLayout({
   children,
   params,
@@ -77,18 +65,26 @@ export default async function RootLayout({
   return (
     <html lang={lang} suppressHydrationWarning>
       <head />
-      <body className={`${fontVariables} font-sans antialiased`}>
+      <body className={`${fontVariables} font-sans antialiased min-h-screen`}>
         <Providers>
-            {/* Seguimiento de comportamiento Nos3 ready */}
+            {/* 
+               @pilar VIII: Resiliencia de Renderizado. 
+               La Suspense actúa como un 'Error Boundary' estático durante el build,
+               evitando que el acceso a contextos de cliente en componentes 
+               no montados detenga el proceso.
+            */}
             <Suspense fallback={null}>
               <NavigationTracker />
             </Suspense>
 
             <div className="flex min-h-screen flex-col">
-              <Header dictionary={dictionary} />
+              <Suspense fallback={null}>
+                <Header dictionary={dictionary} />
+              </Suspense>
               
-              {/* Telemetría Global con tipado validado contra system_status.schema */}
-              <SystemStatusTicker dictionary={dictionary.system_status} />
+              <Suspense fallback={null}>
+                <SystemStatusTicker dictionary={dictionary.system_status} />
+              </Suspense>
 
               <main className="grow relative z-0">
                 {children}
@@ -105,7 +101,9 @@ export default async function RootLayout({
               <NewsletterModal />
             </Suspense>
 
-            <VisitorHud dictionary={dictionary.visitor_hud} />
+            <Suspense fallback={null}>
+              <VisitorHud dictionary={dictionary.visitor_hud} />
+            </Suspense>
         </Providers>
       </body>
     </html>

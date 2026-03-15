@@ -1,24 +1,18 @@
 /**
  * @file apps/portfolio-web/src/components/layout/Header.tsx
- * @description Orquestador soberano de la cabecera (Lego System). 
- *              Gestiona la identidad visual, navegación localizada, estados anidados
- *              y telemetría Heimdall para el flujo de conversión.
- * @version 11.1 - ESLint Hardening & Atomic Hydration
+ * @description Orquestador soberano de la cabecera. Refactorizado para Build-Safety (SSG).
+ *              Protege el acceso a Zustand mediante el flag 'hasHydrated'.
+ * @version 11.2 - Hydration-Safe State Access
  * @author Raz Podestá - MetaShark Tech
  */
 
 'use client';
 
-import React, { useMemo, useCallback, useSyncExternalStore } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Menu, Globe, ChevronDown } from 'lucide-react';
-import { motion } from 'framer-motion';
 
-/**
- * IMPORTACIONES NIVELADAS
- * @pilar V: Adherencia arquitectónica mediante fronteras Nx.
- */
 import { cn } from '../../lib/utils/cn';
 import { useUIStore } from '../../lib/store/ui.store';
 import { LanguageSwitcher } from '../ui/LanguageSwitcher';
@@ -31,36 +25,8 @@ import { getLocalizedHref } from '../../lib/utils/link-helpers';
 import { i18n, isValidLocale } from '../../config/i18n.config';
 import type { Dictionary } from '../../lib/schemas/dictionary.schema';
 
-/**
- * Hook de Hidratación Atómica
- * @pilar VIII: Previene "Hydration Mismatch" bajo estándar React 19.
- * @pilar X: Saneado para evitar funciones vacías prohibidas por el linter.
- */
-function useIsMounted(): boolean {
-  const subscribe = useCallback(() => {
-    const unsubscribe = () => {
-      /* Intencionalmente vacío: Estado de montaje estático en cliente */
-    };
-    return unsubscribe;
-  }, []);
-
-  return useSyncExternalStore(
-    subscribe, 
-    () => true,  // Valor en Cliente
-    () => false // Valor en Servidor
-  );
-}
-
-/**
- * COMPONENTE ATÓMICO: HeaderBrand
- * Representa la identidad visual premium del hotel.
- */
 const HeaderBrand = ({ currentLang }: { currentLang: string }) => (
-  <Link 
-    href={`/${currentLang}`} 
-    className="group block select-none outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-lg transition-all" 
-    aria-label="Volver a la recepción"
-  >
+  <Link href={`/${currentLang}`} className="group block select-none outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-lg transition-all" aria-label="Volver a la recepción">
     <h2 className="font-display text-2xl sm:text-3xl leading-none text-foreground transition-all duration-300 group-hover:text-primary">
       Beach Hotel
     </h2>
@@ -70,11 +36,7 @@ const HeaderBrand = ({ currentLang }: { currentLang: string }) => (
   </Link>
 );
 
-/**
- * APARATO VISUAL: Header
- */
 export function Header({ dictionary }: { dictionary: Dictionary }) {
-  const isMounted = useIsMounted();
   const pathname = usePathname();
   
   // Resolución de idioma soberana
@@ -84,8 +46,13 @@ export function Header({ dictionary }: { dictionary: Dictionary }) {
     return isValidLocale(candidate) ? candidate : i18n.defaultLocale;
   }, [pathname]);
 
+  /**
+   * @pilar VIII: Guardia de Hidratación (Zustand).
+   * Evitamos acceder a los métodos del store hasta que 'hasHydrated' sea true.
+   */
   const { 
     isVisitorHudOpen, 
+    hasHydrated,
     toggleVisitorHud, 
     toggleMobileMenu,
   } = useUIStore();
@@ -95,72 +62,43 @@ export function Header({ dictionary }: { dictionary: Dictionary }) {
     ...dictionary['nav-links'].nav_links 
   }), [dictionary]);
 
-  /**
-   * TELEMETRÍA: trackNavInteraction
-   * @pilar IV: Registro forense de navegación principal.
-   */
   const trackNavInteraction = useCallback((label: string) => {
-    console.log(`[HEIMDALL][UX] Navegación: ${label} | Path: ${pathname}`);
-  }, [pathname]);
+    console.log(`[HEIMDALL][UX] Navegación: ${label}`);
+  }, []);
 
   return (
-    <header 
-      className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-2xl transition-all duration-500"
-      role="banner"
-    >
+    <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-2xl transition-all duration-500" role="banner">
       <div className="container mx-auto px-6">
         <div className="flex h-20 items-center justify-between">
           
           <HeaderBrand currentLang={currentLang} />
 
-          {/* NAVEGACIÓN DESKTOP: SOPORTE RECURSIVO (Pilar I) */}
           <nav className="hidden lg:flex items-center gap-1" aria-label="Navegación Principal">
             {mainNavStructure.map((nav: NavItem) => {
               const localizedHref = getLocalizedHref(nav.href ?? '/', currentLang);
               const isActive = pathname === localizedHref;
-              const hasChildren = nav.children && nav.children.length > 0;
-
-              if (hasChildren) {
+              
+              if (nav.children?.length) {
                 return (
-                  <DropdownMenu
-                    key={nav.labelKey}
-                    trigger={
+                  <DropdownMenu key={nav.labelKey} trigger={
                       <button className="flex items-center gap-2 px-5 py-2.5 rounded-full text-[10px] font-bold uppercase tracking-widest text-foreground/70 hover:bg-muted hover:text-foreground transition-all outline-none">
                         {nav.Icon && <nav.Icon size={14} className="opacity-70" />}
                         {labels[nav.labelKey as keyof typeof labels] || nav.labelKey}
                         <ChevronDown size={12} className="opacity-40" />
                       </button>
-                    }
-                  >
-                    <NestedDropdownContent 
-                      links={nav.children as NavItem[]} 
-                      dictionary={labels as unknown as Record<string, string>} 
-                    />
+                    }>
+                    <NestedDropdownContent links={nav.children as NavItem[]} dictionary={labels as unknown as Record<string, string>} />
                   </DropdownMenu>
                 );
               }
 
               return (
-                <Link
-                  key={nav.labelKey}
-                  href={localizedHref}
-                  onClick={() => trackNavInteraction(nav.labelKey)}
-                  className={cn(
+                <Link key={nav.labelKey} href={localizedHref} onClick={() => trackNavInteraction(nav.labelKey)} className={cn(
                     "relative flex items-center gap-2 px-5 py-2.5 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all duration-300 outline-none",
-                    isActive ? "text-primary bg-primary/5" : "text-foreground/70 hover:bg-muted hover:text-foreground",
-                    nav.labelKey === 'festival' && "bg-primary/10 text-primary border border-primary/20 hover:scale-105"
-                  )}
-                >
+                    isActive ? "text-primary bg-primary/5" : "text-foreground/70 hover:bg-muted hover:text-foreground"
+                  )}>
                   {nav.Icon && <nav.Icon size={14} className={cn("opacity-70", isActive && "opacity-100")} />}
                   {labels[nav.labelKey as keyof typeof labels] || nav.labelKey}
-                  
-                  {isActive && (
-                    <motion.div 
-                      layoutId="header-active-pill"
-                      className="absolute inset-0 rounded-full border border-primary/20 -z-10"
-                      transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                    />
-                  )}
                 </Link>
               );
             })}
@@ -171,39 +109,25 @@ export function Header({ dictionary }: { dictionary: Dictionary }) {
               <LanguageSwitcher dictionary={dictionary.language_switcher} />
               <ThemeToggle />
               
+              {/* @pilar VIII: Protección del botón Hud */}
               <button
                 onClick={toggleVisitorHud}
+                disabled={!hasHydrated}
                 className={cn(
                   "p-2.5 rounded-full transition-all duration-300 outline-none",
-                  isMounted && isVisitorHudOpen 
-                    ? "text-primary bg-primary/5" 
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  hasHydrated && isVisitorHudOpen ? "text-primary bg-primary/5" : "text-muted-foreground hover:bg-muted hover:text-foreground"
                 )}
-                aria-label="Información de clima"
               >
                 <Globe size={18} strokeWidth={1.5} />
               </button>
             </div>
 
-            <Link 
-              href={getLocalizedHref('/#reservas', currentLang)}
-              onClick={() => trackNavInteraction('reservas_cta')}
-              className="hidden sm:flex px-8 py-3 rounded-full bg-foreground text-background text-[10px] font-bold uppercase tracking-widest hover:bg-primary hover:text-primary-foreground transition-all duration-500 shadow-xl active:scale-95"
-            >
-              {dictionary.header.talk}
-            </Link>
-
-            <button 
-              onClick={toggleMobileMenu} 
-              className="lg:hidden p-3 rounded-full hover:bg-muted text-foreground transition-colors active:scale-90 outline-none"
-              aria-label="Menú"
-            >
+            <button onClick={toggleMobileMenu} className="lg:hidden p-3 rounded-full hover:bg-muted text-foreground transition-colors active:scale-90 outline-none">
               <Menu size={24} />
             </button>
           </div>
         </div>
       </div>
-      
       <ColorWaveBar position="bottom" variant="hotel" className="h-0.5 opacity-30" />
     </header>
   );

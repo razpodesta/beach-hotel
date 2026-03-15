@@ -1,57 +1,63 @@
 /**
  * @file apps/portfolio-web/src/components/ui/NewsletterModal.tsx
  * @description Orquestador de captación de leads mediante modal emergente persistente.
- *              Implementa control de cookies para evitar la saturación del usuario (UX),
- *              animaciones físicas y cumplimiento estricto de fronteras de Nx.
- * @version 6.0
+ *              Refactorizado para Build-Safety: acceso diferido a cookies.
+ * @version 6.2 - Linter Compliant Edition
  * @author Raz Podestá - MetaShark Tech
  */
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useSyncExternalStore } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 import { getCookie, setCookie } from 'cookies-next';
 
-/**
- * IMPORTACIONES NIVELADAS (Cumplimiento @nx/enforce-module-boundaries)
- */
 import { NewsletterForm } from '../shared/NewsletterForm';
 
 const COOKIE_NAME = 'newsletter_modal_seen';
 
 /**
- * Aparato de UI: NewsletterModal
- * Gestiona el ciclo de vida de la invitación al ecosistema digital.
+ * Hook de Hidratación de Élite: Garantiza que la lógica de cookies
+ * solo se ejecute tras el montaje en cliente.
  */
+function useIsMounted(): boolean {
+  const subscribe = useCallback(() => {
+    return () => {
+      // Intencionalmente vacío: Estado de montaje estático en cliente.
+      // Comentario necesario para satisfacer la regla 'no-empty-function' de ESLint.
+    };
+  }, []);
+
+  return useSyncExternalStore(subscribe, () => true, () => false);
+}
+
 export function NewsletterModal() {
+  const isMounted = useIsMounted();
   const [isOpen, setIsOpen] = useState(false);
 
-  /**
-   * Lógica de activación: Verifica la existencia de la cookie de sesión 
-   * para disparar el modal tras un delay de cortesía (5s).
-   */
   useEffect(() => {
+    // Solo accedemos a las cookies si estamos montados en el cliente
+    if (!isMounted) return;
+
     const hasSeen = getCookie(COOKIE_NAME);
     if (!hasSeen) {
       const timer = setTimeout(() => setIsOpen(true), 5000);
       return () => clearTimeout(timer);
     }
-  }, []);
+  }, [isMounted]);
 
-  /**
-   * Cierre y Persistencia: Marca al usuario para no volver a mostrar el modal
-   * por un periodo de 1 año (UX de Élite).
-   */
   const handleClose = () => {
     setCookie(COOKIE_NAME, 'true', { 
-      maxAge: 60 * 60 * 24 * 365, // 1 Año
+      maxAge: 60 * 60 * 24 * 365,
       path: '/',
       sameSite: 'lax'
     });
     setIsOpen(false);
   };
+
+  // No renderizamos el modal si no estamos montados para evitar parpadeos de build
+  if (!isMounted) return null;
 
   return (
     <AnimatePresence>
@@ -73,7 +79,6 @@ export function NewsletterModal() {
             className="relative w-full max-w-md overflow-hidden rounded-4xl border border-white/10 bg-zinc-950 shadow-3xl"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Botón de Cierre Boutique */}
             <button
               onClick={handleClose}
               className="absolute right-4 top-4 z-20 rounded-full bg-white/5 p-2 text-zinc-400 transition-all hover:bg-white hover:text-black active:scale-90"
@@ -82,12 +87,10 @@ export function NewsletterModal() {
               <X size={20} />
             </button>
 
-            {/* Inyección del Formulario Atómico */}
             <div className="relative z-10">
                <NewsletterForm />
             </div>
 
-            {/* Efecto decorativo de fondo */}
             <div className="absolute -bottom-12 -right-12 h-64 w-64 rounded-full bg-purple-500/10 blur-3xl pointer-events-none" />
           </motion.div>
         </motion.div>
