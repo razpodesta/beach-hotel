@@ -91,3 +91,68 @@ Para que el despliegue en Vercel sea un "reloj suizo" sin regresiones, los pasos
 [ ] Validación de Assets Públicos: Verificar que las imágenes referenciadas en MOCK_POSTS y MOCK_PROJECTS existan en la carpeta /public (actualmente algunas reportaron 404 al intentar cargar desde el dashboard).
 [ ] Auditoría Final de Environment: Verificar las variables en el Dashboard de Vercel (DATABASE_URL, PAYLOAD_SECRET) contra nuestro script scripts/supabase/check-connection.ts.
 [ ] Build Final: Ejecución de vercel-build (que corre prebuild + build).
+
+---
+
+BITÁCORA DE EVOLUCIÓN: Beach Hotel Canasvieiras & Fest 2026
+Estatus: Infraestructura de Datos y Orquestación UI Sincronizada
+Fecha: 18 de Marzo de 2026 (Sesión de Nivelación Granular)
+1. Hito: Re-Arquitectura del Diccionario Maestro (Flattening)
+Se detectó que el fallo principal en el build de Vercel y el script de pre-construcción era una discrepancia entre la estructura física de los JSONs y el esquema de validación.
+Acción: Se eliminó la profundidad redundante de la llave homepage en dictionary.schema.ts.
+Resultado: Cada aparato (hero, about, contact, etc.) ahora es una unidad soberana de primer nivel, mapeada 1:1 con su archivo JSON. Se erradicaron los errores de received undefined en el reporte forense.
+2. Nivelación Granular de Aparatos (Sincronización Total)
+A. Aparato "Hero"
+Capa de Datos: Sincronizados en-US, es-ES y pt-BR con campos HOTEL_TITLE, FESTIVAL_TITLE, etc.
+Componente: Refactorizado HeroCarousel.tsx. Se implementó limpieza de eventos en emblaApi (off-listeners) y guardia de hidratación para evitar parpadeos (Zero CLS).
+B. Aparato "About" (Narrativa)
+Capa de Datos: Se transformó la estructura de strings planos a un array de objetos paragraphs con soporte para highlight.
+Componente: AboutSection.tsx nivelado para renderizado dinámico de párrafos, eliminando la lógica hardcoded.
+C. Aparato "Value Proposition"
+Capa de Datos: Sincronización estricta de AmenityIconKey. Se nivelaron las llaves de amenidades del Hotel y del Festival.
+Componente: ValuePropositionSection.tsx nivelado con tipado de Zod inferido y mapeo soberano.
+D. Aparato "Contact"
+Capa de Datos: Alineación de mensajes de validación y placeholders.
+Componente: ContactSection.tsx refactorizado. Se eliminaron las aserciones de tipo as any y se integró el esquema de validación dinámico.
+E. Aparato "System Status" (Telemetría)
+Componente: LiveStatusTicker.tsx nivelado. Se resolvió la advertencia de ESLint no-empty-function documentando la suscripción estática. Se implementó un skeleton de altura exacta para prevenir el CLS durante la carga.
+F. Aparato "Header" & "Footer"
+Identidad: Limpieza profunda de tipos. Erradicación total de any en el LanguageSwitcher y el orquestador de cabecera.
+Navegación: Sincronización de etiquetas localizadas para el menú móvil y desktop.
+3. Infraestructura y DevOps
+Identidad Nx: Se corrigió el error MultipleProjectsWithSameNameError. Se renombró el package.json raíz a @metashark/monorepo para diferenciarlo de la aplicación web.
+Gobernanza ESLint: Se refactorizó eslint.config.mjs para permitir que el proyecto de tests/ pueda importar de las apps/, cumpliendo con el Manifiesto de Pruebas (Arquitectura de Espejo).
+Vercel Pipeline: Se añadió el script build:web al package.json raíz para sincronizar el comando de construcción que el Edge estaba solicitando.
+Genesis Engine (Seeder): Se resolvió el crash TypeError: loadEnvConfig is undefined en el script de base de datos. Se implementó una inyección temprana de dotenv y la bandera PAYLOAD_SKIP_LOAD_ENV='true'.
+📋 Cuadro de Mando: Tareas y Estatus
+✅ REALIZADAS (Higiene 100%)
+
+Aplanamiento de dictionary.schema.ts y eliminación de la llave homepage.
+
+Nivelación de esquemas y JSONs para: hero, about, value_proposition, contact, history, system_status, header, footer.
+
+Refactorización de HeroCarousel.tsx (CLS y Linter).
+
+Refactorización de LiveStatusTicker.tsx (Linter y CLS).
+
+Refactorización de Header.tsx (Zero any).
+
+Refactorización de ContactSection.tsx (Tipado seguro).
+
+Corrección de colisión de nombres de proyecto Nx.
+
+Autorización de fronteras de módulo para la carpeta tests/.
+
+Fix de carga de variables de entorno en seed-database.ts.
+⏳ PENDIENTES (Siguiente Fase)
+
+Aparato "MobileMenu": Nivelar lógica y tipos para asegurar que no existan regresiones en la navegación táctil.
+
+Ejecución Genesis: Correr pnpm db:seed en el entorno real para verificar la creación de tablas en Supabase tras el fix.
+
+Auditoría Visitor API: Revisar api/visitor/route.ts para optimizar latencia en Vercel.
+
+Prueba de Build en Vercel: Confirmar que el nuevo script build:web despliega la aplicación sin errores de hidratación.
+
+
+---

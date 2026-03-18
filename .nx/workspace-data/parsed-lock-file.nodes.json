@@ -5336,6 +5336,15 @@
       "hash": "sha512-rH34esN4W6JZi8r8tj6kwjdbkfZan1nQjr94TbxlPYPVI58R+2e8/yTw0cCchWPT6VAH4TNyk/Wvgq64UOqwkQ=="
     }
   },
+  "npm:@payloadcms/email-nodemailer": {
+    "type": "npm",
+    "name": "npm:@payloadcms/email-nodemailer",
+    "data": {
+      "version": "3.79.1",
+      "packageName": "@payloadcms/email-nodemailer",
+      "hash": "sha512-A1tmQBQoBrrLOZVxcKCAv802bBWUrb9v/qf/qGgF0//4nUuwQewFlsqoR4SJwFZusWZ//IrQCBMXuoR7XHT5og=="
+    }
+  },
   "npm:@payloadcms/graphql": {
     "type": "npm",
     "name": "npm:@payloadcms/graphql",
@@ -16701,6 +16710,15 @@
       "version": "2.1.1",
       "packageName": "node-schedule",
       "hash": "sha512-OXdegQq03OmXEjt2hZP33W2YPs/E5BcFQks46+G2gAxs4gHOIVD1u7EqlYLYSKsaIpyKCK9Gbk0ta1/gjRSMRQ=="
+    }
+  },
+  "npm:nodemailer": {
+    "type": "npm",
+    "name": "npm:nodemailer",
+    "data": {
+      "version": "7.0.12",
+      "packageName": "nodemailer",
+      "hash": "sha512-H+rnK5bX2Pi/6ms3sN4/jRQvYSMltV6vqup/0SFOrxYYY/qoNvhXPlYq3e+Pm9RFJRwrMGbMIwi81M4dxpomhA=="
     }
   },
   "npm:normalize-path": {

@@ -31,6 +31,7 @@
     "@formatjs/intl-localematcher": "^0.6.2",
     "@hookform/resolvers": "^5.2.2",
     "@payloadcms/db-postgres": "^3.79.0",
+    "@payloadcms/email-nodemailer": "^3.79.1",
     "@payloadcms/next": "^3.79.0",
     "@payloadcms/richtext-lexical": "^3.79.0",
     "@react-spring/three": "^10.0.3",
