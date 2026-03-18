@@ -642,7 +642,7 @@
         },
         {
           "file": "apps/portfolio-web/src/app/[lang]/page.tsx",
-          "hash": "1691587258730588531",
+          "hash": "9678175983596069691",
           "deps": [
             "npm:react",
             "npm:next"

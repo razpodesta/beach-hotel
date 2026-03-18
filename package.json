@@ -11,23 +11,17 @@
   "license": "Proprietary",
   "private": true,
   "scripts": {
-    "// --- DESARROLLO & ORQUESTACIÓN --- //": "",
     "dev": "nx serve portfolio-web",
     "build": "nx build portfolio-web --configuration=production",
+    "build:web": "pnpm run prebuild && pnpm run build",
     "lint": "nx run-many --target=lint --all --parallel=1",
     "test": "nx run-many --target=test --all --parallel=1",
     "typecheck": "nx run-many --target=typecheck --all --parallel=1",
-    
-    "// --- PIPELINE DE PRODUCCIÓN (VERCEL) --- //": "",
     "prebuild": "tsx ./scripts/prebuild-portfolio-web.ts",
-    "vercel-build": "pnpm run prebuild && pnpm run build",
-    
-    "// --- MANTENIMIENTO DE DATOS --- //": "",
+    "vercel-build": "pnpm run build:web",
     "db:connection": "tsx scripts/supabase/check-connection.ts",
     "db:schema": "tsx scripts/supabase/audit-full-schema.ts",
     "db:seed": "tsx scripts/supabase/seed-database.ts",
-    
-    "// --- ASSETS & GENERACIÓN --- //": "",
     "generate:assets": "concurrently \"node ./scripts/generate-lucide-manifest.mjs\" \"node ./scripts/generate-tech-manifest.mjs\""
   },
   "dependencies": {
