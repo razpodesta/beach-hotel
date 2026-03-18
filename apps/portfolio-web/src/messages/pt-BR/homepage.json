@@ -1,0 +1,35 @@
+{
+  "hero": {
+    "page_title": "Beach Hotel Canasvieiras | Florianópolis",
+    "page_description": "Hospedagem boutique e sede do festival Pride Escape 2026.",
+    "SUITES_SUBTITLE": "Onde o luxo encontra o mar.",
+    "SUITES_TITLE": "SUÍTES BOUTIQUE",
+    "SUITES_FEATURES": "Vista Panorâmica · Café da Manhã Gourmet",
+    "FESTIVAL_SUBTITLE": "A nova onda de Florianópolis.",
+    "FESTIVAL_TITLE": "PRIDE ESCAPE 2026",
+    "FESTIVAL_FEATURES": "Boat Party · VIP Club Nights · 7 Dias de Takeover",
+    "CTA_BUTTON": "VER DISPONIBILIDADE"
+  },
+  "about_section": {
+    "title": "Um Santuário de Hospitalidade de Elite.",
+    "paragraphs": [
+      {
+        "text": "Localizado no coração de Canasvieiras, nosso hotel oferece uma fusão única entre luxo sofisticado e a energia vibrante de Florianópolis.",
+        "highlight": "Redefinimos a experiência à beira-mar."
+      }
+    ],
+    "cta_button": "Descubra nossa História"
+  },
+  "ai_gallery_section": {
+    "badge": "Impulsionado por Ideogram 3.0",
+    "title": "Sintetizador Visual IA",
+    "subtitle": "Explore uma coleção curada de ativos gerados algoritmicamente.",
+    "overlay_indicator": "RENDER AO VIVO • WEBGL 2.0",
+    "drag_label": "ARRASTAR PARA ORBITAR",
+    "item_prefix": "ATIVO",
+    "error_fallback": "MOTOR VISUAL NÃO SUPORTADO",
+    "footer_prompt": "Engenharia de Prompts Avançada",
+    "footer_upscaling": "Upscaling 8K e Otimização",
+    "items": {}
+  }
+}

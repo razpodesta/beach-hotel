@@ -1,142 +1,80 @@
 /**
  * @file apps/portfolio-web/middleware.ts
- * @description Orquestador soberano de tráfico en el Edge. 
- *              Gestiona i18n, Seguridad RBAC y blindaje de infraestructura CMS.
- * @version 11.1 - Clean Catch Edition (ESLint Compliant)
+ * @description Orquestador de tráfico en el Edge (Vercel).
+ *              Blindaje de rutas de infraestructura (/admin, /api) y orquestación i18n.
+ *              Corregidas las importaciones de alias que causaban errores TS2307 en Nx.
+ * @version 14.1 - Path Aliases & Edge Security Fix
  * @author Raz Podestá - MetaShark Tech
  */
 
 import { NextResponse, type NextRequest } from 'next/server';
-import { match as matchLocale } from '@formatjs/intl-localematcher';
-import Negotiator from 'negotiator';
-import { i18n, type Locale } from './src/config/i18n.config';
+
+/**
+ * IMPORTACIONES DE CONTRATO (Fronteras Nx)
+ * @fix TS2307: Como este archivo está en la raíz de portfolio-web, 
+ * las rutas relativas apuntan correctamente dentro de ./src/.
+ */
+import { i18n, isValidLocale, type Locale } from './src/config/i18n.config';
 import { routeGuard } from './src/lib/route-guard';
 
 /**
- * CONFIGURACIÓN DE INFRAESTRUCTRURA
+ * RUTAS DE SISTEMA IGNORADAS
+ * @pilar X: Rendimiento de Élite. 
  */
-const MAINTENANCE_MODE = process.env.MAINTENANCE_MODE === 'true';
-const BYPASS_KEY = process.env.BYPASS_MAINTENANCE_KEY;
-
-// Extensiones estáticas que eluden el procesamiento de middleware por performance.
-const PUBLIC_FILE_REGEX = /\.(.*)$/;
-
-// Rutas de sistema que deben ser ignoradas por la negociación de i18n.
-const SYSTEM_PATHS = [
-  '/_next', 
-  '/api', 
-  '/admin', 
-  '/static', 
-  '/images', 
-  '/fonts', 
-  '/audio',
-  '/_payload' // @pilar I: Soporte nativo para activos internos de Payload 3.0
+const SYSTEM_PATHS =[
+  '/_next',
+  '/api',        // Incluye /api/payload y /api/visitor
+  '/admin',      // Panel Administrativo de Payload CMS
+  '/_payload',   // Endpoints y assets internos de Payload v3
+  '/static',
+  '/images',
+  '/favicon.ico'
 ];
 
 /**
- * MOTOR DE NEGOCIACIÓN DE IDIOMA (Heimdall Protocol)
- * @pilar III: Seguridad de Tipos Absoluta.
- * Determina el idioma óptimo analizando cookies y cabeceras del navegador.
+ * APARATO PRINCIPAL: Middleware
+ * @description Intercepta, redirige y protege las peticiones entrantes.
+ * @pilar VIII: Resiliencia - Manejo seguro de asincronía.
  */
-function getPreferredLocale(request: NextRequest): Locale {
-  const traceId = `LOCALE-AUTH-${Date.now()}`;
-  
-  // 1. Prioridad: Persistencia en Cookie (Preferencia del Usuario)
-  const localeCookie = request.cookies.get(i18n.cookieName)?.value;
-  if (localeCookie && i18n.locales.includes(localeCookie as Locale)) {
-    return localeCookie as Locale;
-  }
-
-  // 2. Heurística: Análisis de cabeceras de navegación
-  const negotiatorHeaders: Record<string, string> = {};
-  request.headers.forEach((value, key) => (negotiatorHeaders[key] = value));
-  
-  const languages = new Negotiator({ headers: negotiatorHeaders }).languages();
-
-  try {
-    return matchLocale(languages, [...i18n.locales], i18n.defaultLocale) as Locale;
-  } catch {
-    /**
-     * @pilar X: Higiene de Código.
-     * Se utiliza 'Optional Catch Binding' eliminando la variable 'error' no utilizada.
-     * @pilar IV: Logging forense de rescate hacia el locale soberano (pt-BR).
-     */
-    console.warn(`[HEIMDALL][${traceId}] Fallo en negociación de idioma. Ejecutando rescate tipográfico.`);
-    return i18n.defaultLocale;
-  }
-}
-
-/**
- * INTERCEPTOR DE TRÁFICO SOBERANO
- * @param {NextRequest} request - Solicitud entrante interceptada en el Edge.
- */
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
-  const traceId = `EDGE-${Date.now()}`;
 
-  // --- 1. BLINDAJE TÉCNICO (Bypass) ---
-  const isSystemPath = SYSTEM_PATHS.some((path) => pathname.startsWith(path));
-  if (isSystemPath || PUBLIC_FILE_REGEX.test(pathname)) {
+  // 1. BLINDAJE ESTRUCTURAL: Ignorar rutas de sistema y assets
+  if (SYSTEM_PATHS.some((path) => pathname.startsWith(path))) {
     return NextResponse.next();
   }
 
-  // --- 2. PROTOCOLO DE MANTENIMIENTO (Kill Switch) ---
-  if (MAINTENANCE_MODE) {
-    const bypassCookie = request.cookies.get('maintenance_bypass');
-    if (bypassCookie?.value !== BYPASS_KEY && !pathname.includes('/maintenance')) {
-      const locale = getPreferredLocale(request);
-      console.log(`[HEIMDALL][${traceId}] Acceso bloqueado: Modo Mantenimiento Activo.`);
-      return NextResponse.redirect(new URL(`/${locale}/maintenance`, request.url));
-    }
-  }
-
-  // --- 3. ORQUESTACIÓN I18N ---
+  // 2. ORQUESTACIÓN I18N
   const pathnameIsMissingLocale = i18n.locales.every(
     (locale) => !pathname.startsWith(`/${locale}/`) && pathname !== `/${locale}`
   );
 
   if (pathnameIsMissingLocale) {
-    const locale = getPreferredLocale(request);
-    const normalizedPath = pathname.startsWith('/') ? pathname : `/${pathname}`;
-    
-    // Redirección 307 (Temporal) para preservar SEO y la intención del usuario
-    return NextResponse.redirect(
-      new URL(`/${locale}${normalizedPath}${search}`, request.url)
-    );
+    // Redirección al idioma por defecto preservando parámetros de búsqueda
+    const locale = i18n.defaultLocale;
+    const redirectUrl = new URL(`/${locale}${pathname}${search}`, request.url);
+    return NextResponse.redirect(redirectUrl);
   }
 
-  // Identificación del locale presente en el segmento de ruta
-  const localeInPath = i18n.locales.find(
-    (locale) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`
-  ) as Locale;
-
-  const response = NextResponse.next();
-
-  // --- 4. PERSISTENCIA INTELIGENTE ---
-  // @pilar X: Rendimiento. Solo escribimos la cookie si el valor ha cambiado.
-  const currentCookie = request.cookies.get(i18n.cookieName)?.value;
-  if (localeInPath && currentCookie !== localeInPath) {
-    response.cookies.set(i18n.cookieName, localeInPath, { 
-      path: '/', 
-      maxAge: 31536000, // 1 Año (Sovereign Lifetime)
-      sameSite: 'lax',
-      secure: process.env.NODE_ENV === 'production'
-    });
+  // 3. SEGURIDAD RBAC (Route Guard)
+  const potentialLocale = pathname.split('/')[1];
+  const localeInPath = isValidLocale(potentialLocale) ? (potentialLocale as Locale) : i18n.defaultLocale;
+  
+  // Resolución asíncrona innegociable
+  const guardResponse = await routeGuard(request, localeInPath);
+  
+  if (guardResponse) {
+    return guardResponse;
   }
 
-  // --- 5. SEGURIDAD RBAC (Guardiana de Rutas) ---
-  // Ejecutamos la validación final antes de entregar el control al orquestador.
-  const guardResponse = routeGuard(request, localeInPath);
-  if (guardResponse) return guardResponse;
-
-  return response;
+  return NextResponse.next();
 }
 
 /**
- * CONFIGURACIÓN DEL MATCHER (Performance Edge)
+ * CONFIGURACIÓN DE EDGE
  */
 export const config = {
-  matcher: [
-    '/((?!_next/static|_next/image|assets|favicon.ico|robots.txt|sitemap.xml|manifest.json|api|admin).*)',
+  matcher:[
+    '/((?!_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|manifest.json).*)',
   ],
 };

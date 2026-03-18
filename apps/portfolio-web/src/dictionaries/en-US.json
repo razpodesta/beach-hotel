@@ -1,4 +1,157 @@
 {
+  "about": {
+    "title": "A Sanctuary of Elite Hospitality.",
+    "paragraphs": [
+      {
+        "text": "Located in the heart of Canasvieiras, our hotel offers a unique blend of sophisticated luxury and the vibrant energy of Florianópolis.",
+        "highlight": "Exclusivity in every detail."
+      },
+      {
+        "text": "Our commitment is to transform every stay into a curated experience. With smart technology and a personalized concierge service, we ensure that every guest finds their perfect refuge.",
+        "highlight": "Your perfect refuge."
+      }
+    ],
+    "cta_button": "Discover our Story"
+  },
+  "blog_page": {
+    "page_title": "Concierge Journal | Beach Hotel Canasvieiras",
+    "page_description": "Discover the island's best-kept secrets, exclusive nightlife guides, and Pride Escape news.",
+    "hero_title": "The Concierge Journal",
+    "featured_title": "Featured Read",
+    "all_posts_title": "Latest Updates",
+    "read_more_cta": "Read Article",
+    "empty_state": "No articles available at this time. Stay connected.",
+    "tag_results_singular": "One article available curated under",
+    "tag_results_plural": "Articles selected curated under"
+  },
+  "ai_gallery_section": {
+    "badge": "Ideogram 3.0 Powered",
+    "title": "AI Visual Synth",
+    "subtitle": "Explore a curated collection of algorithmically generated assets. Photorealism, perfect typography, and stylistic consistency, orchestrated by our sovereign CMS.",
+    "overlay_indicator": "LIVE RENDER • WEBGL 2.0",
+    "drag_label": "DRAG TO ORBIT",
+    "item_prefix": "ASSET",
+    "error_fallback": "VISUAL ENGINE NOT SUPPORTED ON THIS BROWSER",
+    "footer_prompt": "Advanced Prompt Engineering",
+    "footer_upscaling": "8K Upscaling & Optimization",
+    "items": {
+      "neon-typography": {
+        "title": "Neon Glass",
+        "description": "3D neon tubes rendering."
+      },
+      "editorial-fashion": {
+        "title": "High Fashion",
+        "description": "Photorealistic textile synthesis."
+      },
+      "tech-badge": {
+        "title": "Titanium Tech",
+        "description": "Macro product visualization."
+      },
+      "transparent-gadget": {
+        "title": "Glass Hardware",
+        "description": "Futuristic device engineering."
+      },
+      "luxury-perfume": {
+        "title": "Gold Scent",
+        "description": "Commercial product photography."
+      },
+      "concept-car": {
+        "title": "Auto Concept",
+        "description": "Abstract carbon fiber details."
+      },
+      "concrete-workspace": {
+        "title": "Raw Workspace",
+        "description": "Minimalist interior design."
+      },
+      "cyberpunk-street": {
+        "title": "Night City",
+        "description": "Volumetric lighting atmosphere."
+      },
+      "abstract-geometry": {
+        "title": "Parametric Form",
+        "description": "Algorithmic architecture."
+      },
+      "fluid-shapes": {
+        "title": "Iridescent Flux",
+        "description": "Liquid metal 3D simulation."
+      },
+      "mechanical-insect": {
+        "title": "Clockwork Life",
+        "description": "Precision steampunk macro."
+      },
+      "neural-network": {
+        "title": "Data Stream",
+        "description": "Abstract neural visualization."
+      }
+    }
+  },
+  "cocreation_page": {
+    "page_title": "Co-creation | Raz Podestá",
+    "page_description": "Discover my collaborative framework for transforming ideas into high-performance digital assets.",
+    "title": "Co-creation Framework",
+    "subtitle": "My process for collaborating with you, from idea conception to deployment and continuous optimization.",
+    "construction_notice": "This section is currently under construction. Here I will detail my work methodology, project phases, and how we will partner to ensure the success of your vision."
+  },
+  "contact": {
+    "title": "GET IN TOUCH",
+    "form_cta": "Have an idea or project in mind? I'd love to hear about it. Fill out the form and I'll get back to you shortly.",
+    "form_placeholder_name": "* Name",
+    "form_placeholder_email": "* Email",
+    "form_placeholder_message": "* Your message...",
+    "form_button_submit": "Send Message",
+    "validation": {
+      "name_required": "Name is required",
+      "email_required": "Email is required",
+      "email_invalid": "Please enter a valid email",
+      "message_too_short": "Message must be at least 10 characters"
+    }
+  },
+  "design_system_page": {
+    "page_title": "Design System | Raz Podestá",
+    "page_description": "Explore the components, design tokens, and visual philosophy that build this portfolio's interface.",
+    "title": "Design System",
+    "subtitle": "A transparent look at the visual and functional building blocks of this digital ecosystem.",
+    "construction_notice": "This section is currently under construction. Soon you will be able to explore the color palette, typographic hierarchy, and the React component library that bring this site to life."
+  },
+  "contact_page": {
+    "title": "GET IN TOUCH",
+    "form_cta": "Have an idea or project in mind?",
+    "form_placeholder_name": "Name",
+    "form_placeholder_email": "Email",
+    "form_placeholder_message": "Message...",
+    "form_button_submit": "Send",
+    "validation": {
+      "name_required": "Name is required",
+      "email_required": "Email is required",
+      "email_invalid": "Invalid email",
+      "message_too_short": "Message too short"
+    }
+  },
+  "footer": {
+    "newsletter_title": "Join the Ecosystem",
+    "newsletter_placeholder": "Your email address",
+    "newsletter_button": "Subscribe",
+    "column_nav_title": "Navigation",
+    "column_services_title": "Concierge",
+    "column_legal_title": "Compliance",
+    "rights_reserved": "© 2026 Beach Hotel Canasvieiras. All rights reserved.",
+    "made_by": "Forged by Raz Podestá | MetaShark Tech"
+  },
+  "hero": {
+    "page_title": "Beach Hotel Canasvieiras | Florianópolis",
+    "page_description": "Luxury boutique accommodation and official headquarters of the Pride Escape 2026 festival.",
+    "HOTEL_TITLE": "BOUTIQUE SANCTUARY",
+    "HOTEL_SUBTITLE": "Where sophisticated luxury meets the vibrant energy of the sea.",
+    "HOTEL_FEATURES": "Panoramic Views • Gourmet Experience • Private Concierge",
+    "FESTIVAL_TITLE": "PRIDE ESCAPE 2026",
+    "FESTIVAL_SUBTITLE": "The new wave of Florianópolis. 7 days of absolute takeover.",
+    "FESTIVAL_FEATURES": "Boat Parties • VIP Club Nights • International Line-up",
+    "CTA_BUTTON": "CHECK AVAILABILITY"
+  },
+  "history": {
+    "title": "Forged in Code",
+    "subtitle": "Discover the fusion of two decades of systems engineering with a creative vision obsessed with results. This is not just a portfolio; it is the legacy of an architecture built to last."
+  },
   "header": {
     "talk": "BOOK NOW",
     "tagline": "Your Boutique Experience in Canasvieiras",
@@ -6,215 +159,6 @@
     "job_title": "Boutique Hotel & Pride Escape 2026 Headquarters",
     "mobile_title": "Beach Hotel",
     "mobile_subtitle": "Canasvieiras"
-  },
-  "nav-links": {
-    "nav_links": {
-      "hotel": "The Hotel",
-      "habitaciones": "Luxury Suites",
-      "festival": "Pride Escape 2026",
-      "historia": "Our Story",
-      "ubicacion": "Location",
-      "contacto": "Contact",
-      "reservas": "Online Booking",
-      "politica_privacidad": "Privacy",
-      "terminos_servicio": "Terms of Use"
-    }
-  },
-  "homepage": {
-    "hero": {
-      "page_title": "Beach Hotel Canasvieiras | Florianópolis",
-      "page_description": "Boutique accommodation and official headquarters of the Pride Escape 2026 festival.",
-      "SUITES_SUBTITLE": "Where luxury meets the sea.",
-      "SUITES_TITLE": "BOUTIQUE SUITES",
-      "SUITES_FEATURES": "Panoramic Views · Gourmet Breakfast",
-      "FESTIVAL_SUBTITLE": "The new wave of Florianópolis.",
-      "FESTIVAL_TITLE": "PRIDE ESCAPE 2026",
-      "FESTIVAL_FEATURES": "Boat Party · VIP Club Nights · 7 Days of Takeover",
-      "CTA_BUTTON": "CHECK AVAILABILITY"
-    },
-    "about_section": {
-      "title": "Engineer, Creative, Strategist.",
-      "bio_part_1": "With a foundation forged over <strong class=\"font-bold text-white\">20 years in software engineering</strong>, today I merge technical rigor with a passion for creativity and conversion strategy. My specialty is forging <strong class=\"font-bold text-white\">elite digital ecosystems</strong>: from high-conversion sales funnels to PWAs with a *Mobile-First* philosophy.",
-      "bio_part_2": "To do this, I've built my own arsenal: my sovereign AI co-pilot <strong class=\"font-bold text-white\">LIA Legacy</strong> and a methodology that accelerates development. I don't build sites, I build scalable assets designed for one thing: <strong class=\"font-bold text-white\">results</strong>.",
-      "cta_button": "Read the Full Story"
-    },
-    "value_proposition_section": {
-      "amenities_title": "Premium Amenities",
-      "amenities_cta": "Exclusive access for Beach Hotel guests",
-      "title": "Beyond Code: Building Elite Digital Assets",
-      "subtitle": "My philosophy is based on creating solutions that are not only technically flawless, but also drive growth.",
-      "pillars": [
-        {
-          "title": "Premium Location",
-          "description": "In the heart of Canasvieiras, just meters from the beach."
-        },
-        {
-          "title": "Inclusive Design",
-          "description": "A sophisticated and welcoming atmosphere."
-        },
-        {
-          "title": "Digital Experience",
-          "description": "Smart check-in and full support for digital nomads."
-        }
-      ],
-      "testimonial": {
-        "quote": "An unforgettable experience. The perfect balance between relaxation and the best nightlife in Floripa.",
-        "author_name": "Alex Johnson",
-        "author_role": "VIP Guest"
-      }
-    },
-    "contact": {
-      "title": "GET IN TOUCH",
-      "form_cta": "Have an idea or project in mind? I'd love to hear about it. Fill out the form and I'll get back to you shortly.",
-      "form_placeholder_name": "* Name",
-      "form_placeholder_email": "* Email",
-      "form_placeholder_message": "* Your message...",
-      "form_button_submit": "Send Message",
-      "validation": {
-        "name_required": "Name is required",
-        "email_required": "Email is required",
-        "email_invalid": "Please enter a valid email",
-        "message_too_short": "Message must be at least 10 characters"
-      }
-    },
-    "history_section": {
-      "title": "Forged in Code",
-      "subtitle": "Discover the fusion of two decades of systems engineering with a creative vision obsessed with results. This is not just a portfolio; it is the legacy of an architecture built to last."
-    },
-    "ai_gallery_section": {
-      "badge": "Ideogram 3.0 Powered",
-      "title": "AI Visual Synth",
-      "subtitle": "Explore a curated collection of algorithmically generated assets. Photorealism, perfect typography, and stylistic consistency, orchestrated by our sovereign CMS.",
-      "overlay_indicator": "LIVE RENDER • WEBGL 2.0",
-      "drag_label": "DRAG TO ORBIT",
-      "item_prefix": "ASSET",
-      "error_fallback": "VISUAL ENGINE NOT SUPPORTED ON THIS BROWSER",
-      "footer_prompt": "Advanced Prompt Engineering",
-      "footer_upscaling": "8K Upscaling & Optimization",
-      "items": {
-        "neon-typography": {
-          "title": "Neon Glass Typography",
-          "description": "3D typography render with neon tubes and glass."
-        },
-        "editorial-fashion": {
-          "title": "Editorial Fashion",
-          "description": "High-fashion composition with photorealistic textures."
-        },
-        "tech-badge": {
-          "title": "Titanium Tech Badge",
-          "description": "Macro product shot with brushed titanium finish."
-        },
-        "transparent-gadget": {
-          "title": "Transparent Hardware",
-          "description": "Engineering visualization of a futuristic device."
-        },
-        "luxury-perfume": {
-          "title": "Luxury Glassware",
-          "description": "Product photography with rim lighting."
-        },
-        "concept-car": {
-          "title": "Automotive Concept",
-          "description": "Abstract detail of carbon fiber headlights."
-        },
-        "concrete-workspace": {
-          "title": "Concrete Workspace",
-          "description": "Minimalist interior design with raw concrete."
-        },
-        "cyberpunk-street": {
-          "title": "Cyberpunk Atmosphere",
-          "description": "Night street photography with volumetric lighting."
-        },
-        "abstract-geometry": {
-          "title": "Parametric Geometry",
-          "description": "White abstract architecture against deep blue sky."
-        },
-        "fluid-shapes": {
-          "title": "Iridescent Fluids",
-          "description": "3D liquid metal simulation with chromatic dispersion."
-        },
-        "mechanical-insect": {
-          "title": "Clockwork Insect",
-          "description": "Steampunk mechanical insect macro photography."
-        },
-        "neural-network": {
-          "title": "Neural Network Art",
-          "description": "Abstract visualization of data streams."
-        }
-      }
-    }
-  },
-  "contact_page": {
-    "page_title": "Contact | Raz Podestá",
-    "page_description": "Get in touch to discuss your next project. Let's talk about how we can build an elite digital asset together.",
-    "title": "Let's Start a Conversation",
-    "subtitle": "I am available to discuss new collaborations, projects, or simply to exchange ideas about technology and strategy. Use the form below to send me a direct message."
-  },
-  "footer": {
-    "newsletter_title": "Join the Ecosystem",
-    "newsletter_placeholder": "Your email address",
-    "newsletter_button": "Subscribe",
-    "column_nav_title": "Navigation",
-    "column_services_title": "Services",
-    "column_legal_title": "Legal",
-    "rights_reserved": "© 2025 All rights reserved.",
-    "made_by": "Forged by Raz Podestá | MetaShark Tech"
-  },
-  "language_switcher": {
-    "label": "Language",
-    "en-US": "English",
-    "es-ES": "Español",
-    "pt-BR": "Português"
-  },
-  "visitor_hud": {
-    "label_visitor_info": "INFORMAÇÃO DO HÓSPEDE",
-    "label_ip_visitor": "I.P. DE ORIGEM",
-    "footer_credits": "Tecnologia MetaShark Tech",
-    "status_calibrating": "CALIBRANDO INSTRUMENTOS...",
-    "status_error": "SINAL PERDIDO",
-    "label_location": "LOCALIZAÇÃO",
-    "label_weather": "CLIMA EM CANASVIEIRAS",
-    "weather_sunny": "ENSOLARADO",
-    "weather_rainy": "CHUVOSO",
-    "weather_cloudy": "NUBLADO",
-    "label_time": "HORA LOCAL",
-    "coords_format": "COORDENADAS"
-  },
-  "not_found": {
-    "title": "Page Not Found",
-    "description": "It seems you've ventured into undefined territory. The route you are looking for does not exist in this version of the matrix.",
-    "cta_button": "Return to Base",
-    "error_code": "ERR_ROUTE_MISSING • SYSTEM_ID_404"
-  },
-  "server_error": {
-    "title": "System Malfunction",
-    "description": "A critical anomaly has been detected in the core. Our automated sentinels have been notified and recovery protocols are engaging.",
-    "retry_button": "Retry Connection",
-    "home_button": "Emergency Evac (Home)"
-  },
-  "maintenance": {
-    "title": "System Upgrade in Progress",
-    "description": "We are currently deploying architectural improvements to the ecosystem. Access is temporarily restricted to ensure data integrity.",
-    "estimated_return": "Expected uptime: Shortly."
-  },
-  "mission_vision": {
-    "mission_title": "Our Mission",
-    "mission_description": "To orchestrate the entire digital conversion lifecycle. We forge intelligent, sovereign ecosystems that unify brand strategy, experience creation, and continuous optimization, transforming marketing from a game of guesswork into a science of predictable growth.",
-    "vision_title": "Our Vision: The Growth Flywheel",
-    "vision_subtitle": "Our vision is to be the driving force behind a new paradigm: the web as a living, self-optimizing ecosystem, where every interaction fuels a perpetual growth flywheel.",
-    "vision_pillars": [
-      {
-        "title": "Understand",
-        "description": "We don't just capture metrics; we achieve holistic observability. We integrate qualitative and quantitative data to build a dynamic visitor profile, understanding the 'why' behind every 'what'."
-      },
-      {
-        "title": "Adapt",
-        "description": "The platforms we build are not static. They are living entities that use artificial intelligence to adapt and evolve harmoniously, personalizing the experience in real-time to meet each user's needs."
-      },
-      {
-        "title": "Maximize",
-        "description": "Conversion is not an event, it's a science. Our ecosystem uses the insights generated to fuel a cycle of continuous optimization, ensuring that every asset and every campaign becomes inherently more effective over time, maximizing business objectives."
-      }
-    ]
   },
   "legal": {
     "privacy_policy": {
@@ -246,37 +190,11 @@
       ]
     }
   },
-  "system_status": {
-    "aria_label": "Live Status Updates",
-    "items": [
-      "🔥 PRIDE ESCAPE: 90% Master Suites occupied.",
-      "☀️ Forecast: 25°C in Canasvieiras. Clear skies for the Boat Party.",
-      "🍸 Happy Hour at HQ: Daily at 6 PM.",
-      "✅ High-Performance WiFi 6 enabled in all suites."
-    ]
-  },
-  "project_details": {
-    "section_title": "Elite Engineering",
-    "section_subtitle": "A showcase of high-performance digital assets.",
-    "label_live_demo": "Live Demo",
-    "label_source_code": "Source Code",
-    "label_tech_stack": "Tech Stack",
-    "label_backend_arch": "Backend Architecture",
-    "label_elite_options": "Elite Options",
-    "label_objective": "System Objective",
-    "label_close_modal": "Close Specifications",
-    "empty_state": "No projects available at this moment."
-  },
-  "blog_page": {
-    "page_title": "Concierge Journal | Beach Hotel Canasvieiras",
-    "page_description": "Discover the island's best-kept secrets, exclusive nightlife guides, and Pride Escape news.",
-    "hero_title": "The Concierge Journal",
-    "featured_title": "Featured Read",
-    "all_posts_title": "Latest Updates",
-    "read_more_cta": "Read Article",
-    "empty_state": "No articles available at this time. Stay connected.",
-    "tag_results_singular": "One article available curated under",
-    "tag_results_plural": "Articles selected curated under"
+  "language_switcher": {
+    "label": "Language",
+    "en-US": "English",
+    "es-ES": "Español",
+    "pt-BR": "Português"
   },
   "lucide_page": {
     "page_title": "Lucide Iconography | Raz Podestá",
@@ -301,6 +219,37 @@
     "btn_docs": "Icon Documentation",
     "btn_repo": "GitHub Repository"
   },
+  "mission_vision": {
+    "mission_title": "Our Mission",
+    "mission_description": "To orchestrate the entire digital conversion lifecycle. We forge intelligent, sovereign ecosystems that unify brand strategy, experience creation, and continuous optimization, transforming marketing from a game of guesswork into a science of predictable growth.",
+    "vision_title": "Our Vision: The Growth Flywheel",
+    "vision_subtitle": "Our vision is to be the driving force behind a new paradigm: the web as a living, self-optimizing ecosystem, where every interaction fuels a perpetual growth flywheel.",
+    "vision_pillars": [
+      {
+        "title": "Understand",
+        "description": "We don't just capture metrics; we achieve holistic observability. We integrate qualitative and quantitative data to build a dynamic visitor profile, understanding the 'why' behind every 'what'."
+      },
+      {
+        "title": "Adapt",
+        "description": "The platforms we build are not static. They are living entities that use artificial intelligence to adapt and evolve harmoniously, personalizing the experience in real-time to meet each user's needs."
+      },
+      {
+        "title": "Maximize",
+        "description": "Conversion is not an event, it's a science. Our ecosystem uses the insights generated to fuel a cycle of continuous optimization, ensuring that every asset and every campaign becomes inherently more effective over time, maximizing business objectives."
+      }
+    ]
+  },
+  "maintenance": {
+    "title": "System Upgrade in Progress",
+    "description": "We are currently deploying architectural improvements to the ecosystem. Access is temporarily restricted to ensure data integrity.",
+    "estimated_return": "Expected uptime: Shortly."
+  },
+  "not_found": {
+    "title": "Page Not Found",
+    "description": "It seems you've ventured into undefined territory. The route you are looking for does not exist in this version of the matrix.",
+    "cta_button": "Return to Base",
+    "error_code": "ERR_ROUTE_MISSING • SYSTEM_ID_404"
+  },
   "profile_page": {
     "page_title": "My Profile | Raz Podestá",
     "welcome_title": "Digital Sanctuary",
@@ -308,5 +257,223 @@
     "xp_label": "Experience",
     "inventory_title": "Artifact Inventory",
     "empty_inventory_message": "Your inventory is empty. Explore the ecosystem to discover artifacts."
+  },
+  "homepage": {
+    "hero": {
+      "page_title": "Beach Hotel Canasvieiras | Florianópolis",
+      "page_description": "Boutique accommodation and official headquarters of the Pride Escape 2026 festival.",
+      "SUITES_SUBTITLE": "Where luxury meets the sea.",
+      "SUITES_TITLE": "BOUTIQUE SUITES",
+      "SUITES_FEATURES": "Panoramic Views · Gourmet Breakfast",
+      "FESTIVAL_SUBTITLE": "The new wave of Florianópolis.",
+      "FESTIVAL_TITLE": "PRIDE ESCAPE 2026",
+      "FESTIVAL_FEATURES": "Boat Party · VIP Club Nights · 7 Days of Takeover",
+      "CTA_BUTTON": "CHECK AVAILABILITY"
+    },
+    "about_section": {
+      "title": "A Sanctuary of Elite Hospitality.",
+      "paragraphs": [
+        {
+          "text": "Located in the heart of Canasvieiras, our hotel offers a unique blend of sophisticated luxury and the vibrant energy of Florianópolis.",
+          "highlight": "We redefine the beach experience."
+        }
+      ],
+      "cta_button": "Discover our Story"
+    },
+    "ai_gallery_section": {
+      "badge": "Ideogram 3.0 Powered",
+      "title": "AI Visual Synth",
+      "subtitle": "Explore a curated collection of algorithmically generated assets.",
+      "overlay_indicator": "LIVE RENDER • WEBGL 2.0",
+      "drag_label": "DRAG TO ORBIT",
+      "item_prefix": "ASSET",
+      "error_fallback": "VISUAL ENGINE NOT SUPPORTED",
+      "footer_prompt": "Advanced Prompt Engineering",
+      "footer_upscaling": "8K Upscaling & Optimization",
+      "items": {}
+    }
+  },
+  "quienes_somos": {
+    "page_title": "Our History | Beach Hotel Canasvieiras",
+    "page_description": "Discover the legacy and vision behind the sanctuary of elite hospitality in Florianópolis.",
+    "hero_title": "The Sanctuary Legacy",
+    "hero_subtitle": "Founded on the pillars of exclusivity and the vibrant energy of the sea, our hotel is more than a destination; it is a curated refuge for the global traveler.",
+    "luxury_pillar": {
+      "title": "Boutique Luxury",
+      "description": "A sophisticated atmosphere designed to celebrate diversity and high-end comfort in every detail."
+    },
+    "comfort_pillar": {
+      "title": "Absolute Refuge",
+      "description": "Modern suites integrated with smart technology to ensure peace and rest in the heart of Canasvieiras."
+    },
+    "service_pillar": {
+      "title": "Elite Concierge",
+      "description": "Our dedicated team anticipates your needs, ensuring an impeccable and personalized stay 24/7."
+    },
+    "cta_title": "Experience the Unforgettable",
+    "cta_button": "Book your Experience"
+  },
+  "project_details": {
+    "section_title": "Elite Engineering",
+    "section_subtitle": "A showcase of high-performance digital assets.",
+    "label_live_demo": "Live Demo",
+    "label_source_code": "Source Code",
+    "label_tech_stack": "Tech Stack",
+    "label_backend_arch": "Backend Architecture",
+    "label_elite_options": "Elite Options",
+    "label_objective": "System Objective",
+    "label_close_modal": "Close Specifications",
+    "empty_state": "No projects available at this moment."
+  },
+  "server_error": {
+    "title": "System Malfunction",
+    "description": "A critical anomaly has been detected in the core. Our automated sentinels have been notified and recovery protocols are engaging.",
+    "retry_button": "Retry Connection",
+    "home_button": "Emergency Evac (Home)"
+  },
+  "system_status": {
+    "aria_label": "Live Hospitality Status Updates",
+    "items": [
+      {
+        "category": "PRIDE FEST",
+        "message": "90% Master Suites occupied for the Boat Party.",
+        "iconKey": "Ticket",
+        "colorKey": "purple"
+      },
+      {
+        "category": "METEOROLOGY",
+        "message": "25°C in Canasvieiras. Perfect for the beach.",
+        "iconKey": "ThermometerSun",
+        "colorKey": "yellow"
+      },
+      {
+        "category": "SECURITY",
+        "message": "Private guest-only access monitored 24/7.",
+        "iconKey": "ShieldCheck",
+        "colorKey": "green"
+      },
+      {
+        "category": "LOUNGE",
+        "message": "Sunset Sessions daily at the Headquarters pool.",
+        "iconKey": "Music",
+        "colorKey": "pink"
+      }
+    ]
+  },
+  "technologies_page": {
+    "page_title": "Technologies & Stack | Raz Podestá",
+    "page_description": "Explore the complete universe of technologies, languages, and tools available in my development arsenal.",
+    "title": "Tech Arsenal",
+    "subtitle": "A comprehensive index of every tool, language, and framework available to build your next digital solution.",
+    "search_placeholder": "Search technology, language, or tool...",
+    "load_more_button": "Load More Technologies",
+    "showing_results": "Showing {count} technologies",
+    "visit_official": "Official Site",
+    "category_all": "All",
+    "category_frontend": "Frontend",
+    "category_backend": "Backend",
+    "category_devops": "DevOps & Cloud",
+    "category_ai": "AI & Data",
+    "category_design": "Design",
+    "category_other": "Others",
+    "library_help_btn": "Library Help",
+    "library_help_title": "Architecture Resource",
+    "library_help_desc": "This centralized index facilitates the selection of technologies for new projects, ensuring visual consistency and quick access to technical sources of truth.",
+    "btn_docs": "Icon Documentation",
+    "btn_repo": "GitHub Repository",
+    "modal_install_title": "Library Installation",
+    "modal_usage_title": "Implementation",
+    "modal_close": "Close",
+    "scroll_top": "Scroll Up",
+    "scroll_bottom": "Scroll Down",
+    "view_details": "View Details"
+  },
+  "visitor_hud": {
+    "label_visitor_info": "INFORMAÇÃO DO HÓSPEDE",
+    "label_ip_visitor": "I.P. DE ORIGEM",
+    "footer_credits": "Tecnologia MetaShark Tech",
+    "status_calibrating": "CALIBRANDO INSTRUMENTOS...",
+    "status_error": "SINAL PERDIDO",
+    "label_location": "LOCALIZAÇÃO",
+    "label_weather": "CLIMA EM CANASVIEIRAS",
+    "weather_sunny": "ENSOLARADO",
+    "weather_rainy": "CHUVOSO",
+    "weather_cloudy": "NUBLADO",
+    "label_time": "HORA LOCAL",
+    "coords_format": "COORDENADAS"
+  },
+  "value_proposition": {
+    "amenities_title": "Premium Amenities",
+    "amenities_cta": "Exclusive access for Beach Hotel guests",
+    "amenities_hotel": [
+      {
+        "name": "WiFi 6",
+        "iconKey": "wifi"
+      },
+      {
+        "name": "Ocean View",
+        "iconKey": "waves"
+      },
+      {
+        "name": "Gourmet",
+        "iconKey": "utensils"
+      },
+      {
+        "name": "Concierge",
+        "iconKey": "shield"
+      }
+    ],
+    "amenities_festival": [
+      {
+        "name": "VIP Access",
+        "iconKey": "ticket"
+      },
+      {
+        "name": "Boat Party",
+        "iconKey": "ship"
+      },
+      {
+        "name": "DJ Sets",
+        "iconKey": "music"
+      },
+      {
+        "name": "Sunset Lounge",
+        "iconKey": "martini"
+      }
+    ],
+    "title": "Hospitality Redefined",
+    "subtitle": "Our philosophy is built on three core pillars designed to transform your stay into an unforgettable memory.",
+    "pillars": [
+      {
+        "title": "Prime Location",
+        "description": "At the heart of Canasvieiras, just steps away from the crystal blue ocean."
+      },
+      {
+        "title": "Inclusive Luxury",
+        "description": "A sophisticated atmosphere where every guest feels part of our community."
+      },
+      {
+        "title": "Smart Living",
+        "description": "Digital-first check-in and full support for international nomads."
+      }
+    ],
+    "testimonial": {
+      "quote": "An absolute sanctuary. The staff understands luxury not just as a price point, but as a personalized service.",
+      "author_name": "James Sterling",
+      "author_role": "Loyalty Guest"
+    }
+  },
+  "nav-links": {
+    "nav_links": {
+      "hotel": "The Hotel",
+      "habitaciones": "Luxury Suites",
+      "festival": "Pride Escape 2026",
+      "historia": "Our Story",
+      "ubicacion": "Location",
+      "contacto": "Contact",
+      "reservas": "Online Booking",
+      "politica_privacidad": "Privacy",
+      "terminos_servicio": "Terms of Use"
+    }
   }
 }

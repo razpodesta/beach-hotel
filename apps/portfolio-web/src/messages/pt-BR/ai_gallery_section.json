@@ -9,17 +9,17 @@
   "footer_prompt": "Engenharia de Prompts Avançada",
   "footer_upscaling": "Upscaling 8K e Otimização",
   "items": {
-    "neon-typography": { "title": "Tipografia Neon e Cristal", "description": "Renderização 3D tipográfica com tubos de neon." },
-    "editorial-fashion": { "title": "Moda Editorial", "description": "Composição de alta moda com texturas fotorrealistas." },
-    "tech-badge": { "title": "Insígnia de Titânio", "description": "Fotografia macro de produto com acabamento escovado." },
-    "transparent-gadget": { "title": "Hardware Transparente", "description": "Visualização de engenharia de um dispositivo futurista." },
-    "luxury-perfume": { "title": "Vidraria de Luxo", "description": "Fotografia publicitária com iluminação de borda." },
-    "concept-car": { "title": "Conceito Automotivo", "description": "Detalhe abstrato de faróis com fibra de carbono." },
-    "concrete-workspace": { "title": "Espaço Minimalista", "description": "Design de interiores com texturas de concreto bruto." },
-    "cyberpunk-street": { "title": "Atmosfera Cyberpunk", "description": "Fotografia noturna com iluminação volumétrica." },
-    "abstract-geometry": { "title": "Geometria Paramétrica", "description": "Arquitetura abstrata branca contra céu azul." },
-    "fluid-shapes": { "title": "Fluidos Iridescentes", "description": "Simulação 3D de metal líquido com dispersão." },
-    "mechanical-insect": { "title": "Inseto Mecânico", "description": "Macro fotografia steampunk de alta precisão." },
-    "neural-network": { "title": "Arte de Rede Neural", "description": "Visualização abstrata de fluxos de dados." }
+    "neon-typography": { "title": "Cristal Neon", "description": "Renderização 3D de tubos de neon." },
+    "editorial-fashion": { "title": "Alta Costura", "description": "Síntese têxtil fotorrealista." },
+    "tech-badge": { "title": "Titânio Tech", "description": "Visualização macro de produto." },
+    "transparent-gadget": { "title": "Hardware Cristal", "description": "Engenharia de dispositivos futuristas." },
+    "luxury-perfume": { "title": "Essência Ouro", "description": "Fotografia comercial publicitária." },
+    "concept-car": { "title": "Auto Conceito", "description": "Detalhes abstratos de fibra de carbono." },
+    "concrete-workspace": { "title": "Espaço Bruto", "description": "Design de interiores minimalista." },
+    "cyberpunk-street": { "title": "Cidade Noturna", "description": "Atmosfera com luzes volumétricas." },
+    "abstract-geometry": { "title": "Forma Paramétrica", "description": "Arquitetura algorítmica." },
+    "fluid-shapes": { "title": "Fluxo Iridescente", "description": "Simulação 3D de metal líquido." },
+    "mechanical-insect": { "title": "Vida Mecânica", "description": "Macro steampunk de alta precisão." },
+    "neural-network": { "title": "Fluxo de Dados", "description": "Visualização neural abstrata." }
   }
 }

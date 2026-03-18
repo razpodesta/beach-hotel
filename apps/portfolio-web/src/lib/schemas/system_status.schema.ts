@@ -1,46 +1,72 @@
 /**
- * @file apps/portfolio-web/src/lib/schemas/system_status.schema.ts
- * @description Fuente de verdad para los estados en vivo del sistema.
- *              Implementa enums estrictos para garantizar la integridad visual.
- * @version 3.0 - Strict Status Contract
+ * @file system_status.schema.ts
+ * @description Contrato Soberano para la telemetría en vivo del ecosistema.
+ *              Define los límites de validación para iconos, colores y mensajes
+ *              que se despliegan en el Ticker global.
+ * @version 4.0 - Elite Contract Resilience
  * @author Raz Podestá - MetaShark Tech
  */
 
 import { z } from 'zod';
 
 /**
- * Catálogo de identificadores de iconos permitidos para el Ticker.
+ * Catálogo de identificadores de iconos permitidos.
+ * @pilar III: Seguridad de Tipos Absoluta.
  */
 export const StatusIconKey = z.enum([
-  'Ticket', 'ThermometerSun', 'ShieldCheck', 'Music', 'Users', 'Waves', 'Sparkles'
+  'Ticket', 
+  'ThermometerSun', 
+  'ShieldCheck', 
+  'Music', 
+  'Users', 
+  'Waves', 
+  'Sparkles'
 ]);
 
 /**
- * Catálogo de variantes cromáticas permitidas.
+ * Catálogo de variantes cromáticas permitidas para el branding dinámico.
+ * @pilar VII: Theming Soberano y Semántico.
  */
 export const StatusColorKey = z.enum([
-  'purple', 'yellow', 'green', 'pink', 'blue', 'cyan'
+  'purple', 
+  'yellow', 
+  'green', 
+  'pink', 
+  'blue', 
+  'cyan'
 ]);
 
 /**
- * Esquema de ítem individual de estado.
+ * Esquema de ítem individual de telemetría.
+ * @description Cada ítem representa un "latido" de información en tiempo real.
  */
 export const systemStatusItemSchema = z.object({
-  category: z.string().min(1),
-  message: z.string().min(1),
+  /** Categoría técnica o comercial del mensaje (ej: EVENT, WEATHER) */
+  category: z.string().min(1, 'Category is mandatory for behavioral tracking'),
+  /** El mensaje informativo que leerá el usuario */
+  message: z.string().min(1, 'Message cannot be empty to prevent UI layout shift'),
+  /** Identificador del icono de Lucide a renderizar */
   iconKey: StatusIconKey,
+  /** Clave de color definida en el sistema de diseño */
   colorKey: StatusColorKey,
 });
 
 /**
- * Esquema maestro para el diccionario de System Status.
+ * Esquema maestro para el ensamble del diccionario.
+ * @pilar VI: Internacionalización Nativa.
  */
 export const systemStatusSchema = z.object({
-  items: z.array(systemStatusItemSchema),
-  aria_label: z.string(),
+  /** Colección de mensajes para el bucle infinito */
+  items: z.array(systemStatusItemSchema).min(1, 'At least one status item is required'),
+  /** Etiqueta de accesibilidad para lectores de pantalla */
+  aria_label: z.string().min(1),
 });
 
-// Inferencia de tipos soberana
+/**
+ * TIPOS INFERIDOS SOBERANOS
+ * @description Estos tipos se exportan para ser consumidos por los componentes React.
+ */
 export type StatusIconType = z.infer<typeof StatusIconKey>;
 export type StatusColorType = z.infer<typeof StatusColorKey>;
 export type SystemStatusItem = z.infer<typeof systemStatusItemSchema>;
+export type SystemStatusDictionary = z.infer<typeof systemStatusSchema>;

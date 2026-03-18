@@ -1,9 +1,8 @@
 /**
- * @file apps/portfolio-web/src/components/sections/homepage/HistorySection.tsx
- * @description Aparato de cierre narrativo para la página de inicio. 
- *              Utiliza un fondo de síntesis digital (LetterGlitch) para crear 
- *              una atmósfera de reflexión técnica y vanguardia.
- * @version 2.0
+ * @file HistorySection.tsx
+ * @description Aparato de cierre narrativo con síntesis digital.
+ *              Nivelado: Adaptación a jerarquía plana del Dictionary y eliminación de regresión TS2339.
+ * @version 2.2 - Sovereign Dictionary Mapping
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -13,24 +12,28 @@ import React from 'react';
 import { motion } from 'framer-motion';
 
 /**
- * IMPORTACIONES NIVELADAS (Rutas relativas para cumplimiento @nx/enforce-module-boundaries)
+ * IMPORTACIONES DE INFRAESTRUCTRURA
  */
 import LetterGlitch from '../../razBits/LetterGlitch';
 import { cn } from '../../../lib/utils/cn';
 import type { Dictionary } from '../../../lib/schemas/dictionary.schema';
 
 interface HistorySectionProps {
-  /** Diccionario localizado para la narrativa de historia */
-  dictionary: Dictionary['homepage']['history_section'];
-  /** Clases adicionales para el orquestador externo */
+  /** 
+   * @pilar III: Seguridad de Tipos. 
+   * Mapeo directo al aparato soberano 'history'. 
+   */
+  dictionary: Dictionary['history'];
   className?: string;
 }
 
 /**
  * Aparato Visual: HistorySection
- * Orquesta la transición entre la experiencia de usuario y el legado de marca.
  */
 export function HistorySection({ dictionary, className }: HistorySectionProps) {
+  // @pilar VIII: Resiliencia - Guardia ante datos nulos o incompletos para el Build
+  if (!dictionary?.title || !dictionary?.subtitle) return null;
+
   return (
     <section 
       className={cn(
@@ -39,10 +42,7 @@ export function HistorySection({ dictionary, className }: HistorySectionProps) {
       )}
       aria-labelledby="history-title"
     >
-      {/* 
-         CAPA DE SÍNTESIS VISUAL: 
-         Implementa el efecto de "Lluvia de Código" optimizado para bajo consumo de GPU.
-      */}
+      {/* CAPA DE SÍNTESIS VISUAL: Glitch Engine */}
       <div className="absolute inset-0 z-0 opacity-40 select-none pointer-events-none">
         <LetterGlitch
           glitchColors={['#4a044e', '#86198f', '#c026d3', '#2e1065']}
@@ -53,10 +53,7 @@ export function HistorySection({ dictionary, className }: HistorySectionProps) {
         />
       </div>
 
-      {/* 
-         CAPA NARRATIVA: 
-         Presentación del mensaje central con tipografía de impacto.
-      */}
+      {/* CAPA NARRATIVA */}
       <div className="container relative z-10 mx-auto px-6 text-center">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -64,7 +61,7 @@ export function HistorySection({ dictionary, className }: HistorySectionProps) {
           viewport={{ once: true, amount: 0.5 }}
           transition={{ 
             duration: 1, 
-            ease: [0.16, 1, 0.3, 1] // Easing 'out-expo' para un feel premium
+            ease: [0.16, 1, 0.3, 1] // Easing Premium (Luxury feel)
           }}
           className="max-w-4xl mx-auto space-y-8"
         >

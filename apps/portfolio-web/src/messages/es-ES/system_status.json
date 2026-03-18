@@ -1,9 +1,29 @@
 {
-  "aria_label": "Live Status Updates",
+  "aria_label": "Actualizaciones de Estado del Hotel en Vivo",
   "items": [
-    "🔥 PRIDE ESCAPE: 90% Master Suites occupied.",
-    "☀️ Forecast: 25°C in Canasvieiras. Clear skies for the Boat Party.",
-    "🍸 Happy Hour at HQ: Daily at 6 PM.",
-    "✅ High-Performance WiFi 6 enabled in all suites."
+    {
+      "category": "PRIDE FEST",
+      "message": "90% de Master Suites ocupadas para la Boat Party.",
+      "iconKey": "Ticket",
+      "colorKey": "purple"
+    },
+    {
+      "category": "METEOROLOGÍA",
+      "message": "25°C en Canasvieiras. Ideal para la playa.",
+      "iconKey": "ThermometerSun",
+      "colorKey": "yellow"
+    },
+    {
+      "category": "SEGURIDAD",
+      "message": "Acceso privado exclusivo monitoreado 24/7.",
+      "iconKey": "ShieldCheck",
+      "colorKey": "green"
+    },
+    {
+      "category": "LOUNGE",
+      "message": "Sunset Sessions diarias en la piscina del HQ.",
+      "iconKey": "Music",
+      "colorKey": "pink"
+    }
   ]
 }

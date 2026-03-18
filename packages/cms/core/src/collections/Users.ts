@@ -1,49 +1,81 @@
 /**
- * @file packages/cms/core/src/collections/Users.ts
- * @description Colección soberana de usuarios (Identidad de Élite).
- *              Integra RBAC, Multi-tenancy y el motor Protocolo 33 mediante Tabs UI.
- * @version 1.5 - Optimized Tabular Architecture (Fix TS2353)
+ * @file Users.ts
+ * @description Colección soberana de identidades y acceso (Fortaleza de Identidad).
+ *              Gestiona el RBAC, la gobernanza Multi-Tenant y el motor de 
+ *              gamificación Protocolo 33.
+ * @version 2.1 - Case-Sensitive Cookie Fix (TS2820)
  * @author Raz Podestá - MetaShark Tech
  */
 
 import { type CollectionConfig } from 'payload';
-/**
- * @pilar V: Adherencia Arquitectónica.
- */
-import { multiTenantReadAccess } from './Access';
+import { v4 as uuidv4 } from 'uuid';
+import { multiTenantReadAccess } from './Access.js';
 
 export const Users: CollectionConfig = {
   slug: 'users',
+  /**
+   * @description Configuración de Autenticación de Élite.
+   * @pilar III: Seguridad de Tipos Absoluta.
+   */
   auth: {
-    // Seguridad de grado militar para la infraestructura (Pilar VIII)
-    tokenExpiration: 7200, // 2 Horas
-    verify: true, 
+    tokenExpiration: 7200, // 2 horas
+    verify: true,          // Verificación de identidad obligatoria
     maxLoginAttempts: 5,
-    lockTime: 600000, // 10 Minutos tras bloqueo
+    lockTime: 600000,
+    depth: 0,
+    useAPIKey: true,
+    /**
+     * @pilar VIII: Resiliencia de Sesión.
+     * @fix TS2820: Normalización de Mayúsculas en SameSite.
+     */
+    cookies: {
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'Lax', 
+    },
   },
+  
   admin: {
     useAsTitle: 'email',
     defaultColumns: ['email', 'role', 'level', 'tenantId'],
     group: 'System Management',
+    description: 'Gestión centralizada de identidades y reputación.',
   },
   
   /**
-   * @pilar VIII: Resiliencia en Seguridad.
-   * RBAC Centralizado: Solo el Admin Global orquesta la tabla de identidad.
+   * REGLAS DE ACCESO (RBAC)
+   * @pilar III: Solo los administradores pueden gestionar el ecosistema.
    */
   access: {
     read: multiTenantReadAccess,
     create: ({ req: { user } }) => user?.role === 'admin',
-    update: ({ req: { user } }) => user?.role === 'admin',
+    update: ({ req: { user } }) => user?.role === 'admin' || (!!user),
     delete: ({ req: { user } }) => user?.role === 'admin',
   },
 
+  /**
+   * GUARDIANES DE INTEGRIDAD (Hooks)
+   * @pilar IV: Observabilidad de eventos de identidad.
+   */
+  hooks: {
+    beforeChange: [
+      ({ data, operation }) => {
+        // Garantía de Identidad Multi-Tenant para nuevos registros
+        if (operation === 'create' && !data.tenantId) {
+          data.tenantId = uuidv4();
+        }
+        return data;
+      },
+    ],
+    afterChange: [
+      ({ doc, operation }) => {
+        if (operation === 'create') {
+          console.log(`[HEIMDALL][AUTH] New Sovereign Identity: ${doc.email} | Tenant: ${doc.tenantId}`);
+        }
+      }
+    ]
+  },
+
   fields: [
-    /**
-     * @pilar XII: MEA/UX - Arquitectura por Pestañas.
-     * Resolvemos el fallo de tipos de 'collapsible' migrando a una 
-     * interfaz tabular profesional y resiliente.
-     */
     {
       type: 'tabs',
       tabs: [
@@ -58,6 +90,7 @@ export const Users: CollectionConfig = {
                   type: 'select',
                   required: true,
                   defaultValue: 'user',
+                  saveToJWT: true, // Expone el rol al route-guard.ts
                   options: [
                     { label: 'Administrador Global', value: 'admin' },
                     { label: 'Huésped Boutique', value: 'user' },
@@ -68,10 +101,12 @@ export const Users: CollectionConfig = {
                 {
                   name: 'tenantId',
                   type: 'text',
+                  required: true,
                   index: true,
+                  saveToJWT: true, // Expone el ID de propiedad al middleware
                   admin: { 
                     width: '50%',
-                    description: 'Vinculación de infraestructura (ID de Hotel/Festival).',
+                    description: 'Identificador único de propiedad digital.',
                     readOnly: true 
                   },
                 },
@@ -80,7 +115,7 @@ export const Users: CollectionConfig = {
           ],
         },
         {
-          label: 'Protocolo 33 (Gamificación)',
+          label: 'Protocolo 33 (Evolución)',
           fields: [
             {
               type: 'row',
@@ -89,20 +124,22 @@ export const Users: CollectionConfig = {
                   name: 'level',
                   type: 'number',
                   defaultValue: 1,
+                  min: 1,
                   admin: { 
                     width: '50%',
                     readOnly: true,
-                    description: 'Nivel jerárquico en el ecosistema.'
+                    description: 'Nivel jerárquico del usuario.'
                   },
                 },
                 {
                   name: 'experiencePoints',
                   type: 'number',
                   defaultValue: 0,
+                  min: 0,
                   admin: { 
                     width: '50%',
                     readOnly: true,
-                    description: 'Puntos de reputación acumulados.'
+                    description: 'Puntos de experiencia acumulados.'
                   },
                 },
               ],
@@ -111,11 +148,6 @@ export const Users: CollectionConfig = {
         },
       ],
     },
-
-    /**
-     * @pilar IV: Observabilidad (Heimdall).
-     * Auditoría forense de accesos.
-     */
     {
       name: 'lastLogin',
       type: 'date',

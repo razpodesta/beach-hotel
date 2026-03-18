@@ -1,6 +1,14 @@
 {
-  "page_title": "Contact | Raz Podestá",
-  "page_description": "Get in touch to discuss your next project. Let's talk about how we can build an elite digital asset together.",
-  "title": "Let's Start a Conversation",
-  "subtitle": "I am available to discuss new collaborations, projects, or simply to exchange ideas about technology and strategy. Use the form below to send me a direct message."
+  "title": "GET IN TOUCH",
+  "form_cta": "Have an idea or project in mind?",
+  "form_placeholder_name": "Name",
+  "form_placeholder_email": "Email",
+  "form_placeholder_message": "Message...",
+  "form_button_submit": "Send",
+  "validation": {
+    "name_required": "Name is required",
+    "email_required": "Email is required",
+    "email_invalid": "Invalid email",
+    "message_too_short": "Message too short"
+  }
 }

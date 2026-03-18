@@ -1,26 +1,42 @@
-// RUTA: apps/portfolio-web/src/components/sections/homepage/ContactSection.tsx
-// VERSIÓN: 5.0 - Concierge Desk
-// DESCRIPCIÓN: Formulario inmersivo con diseño de lujo. 
-//              Integración visual con el branding del hotel.
+/**
+ * @file ContactSection.tsx
+ * @description Orquestador inmersivo con validación SSoT.
+ *              Nivelado: Corrección de jerarquía de tipos (Sovereign Aparato) 
+ *              y eliminación de regresión TS2339.
+ * @version 6.3 - Sovereign Type Mapping
+ * @author Raz Podestá - MetaShark Tech
+ */
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { motion } from 'framer-motion';
-import { Loader2, CheckCircle2, Send } from 'lucide-react';
+import { Loader2, CheckCircle2, Send, AlertCircle } from 'lucide-react';
 import { cn } from '../../../lib/utils/cn';
-import { contactFormSchema, type ContactFormData } from '../../../lib/schemas/contact.schema';
+import { createContactFormSchema, type ContactFormData } from '../../../lib/schemas/contact.schema';
 import type { Dictionary } from '../../../lib/schemas/dictionary.schema';
 
 interface ContactSectionProps {
-  dictionary: Dictionary['homepage']['contact'];
+  /** 
+   * @pilar III: Seguridad de Tipos. 
+   * Ajustado a la nueva estructura plana del Dictionary Maestro. 
+   */
+  dictionary: Dictionary['contact'];
 }
 
 export function ContactSection({ dictionary }: ContactSectionProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+
+  /**
+   * @pilar VIII: Resiliencia. 
+   * Generación del esquema con guardia ante validaciones inexistentes.
+   */
+  const schema = useMemo(() => {
+    return createContactFormSchema(dictionary?.validation ?? {});
+  }, [dictionary?.validation]);
 
   const {
     register,
@@ -28,22 +44,26 @@ export function ContactSection({ dictionary }: ContactSectionProps) {
     reset,
     formState: { errors },
   } = useForm<ContactFormData>({
-    resolver: zodResolver(contactFormSchema),
+    resolver: zodResolver(schema),
   });
 
   const onSubmit: SubmitHandler<ContactFormData> = async (data) => {
     setIsSubmitting(true);
-    // Simulación de transporte de datos
+    // Protocolo de transporte simulado
     await new Promise((resolve) => setTimeout(resolve, 1500));
-    console.log('Concierge Lead:', data);
+    
+    console.log('[HEIMDALL][CONCIERGE] Lead Captured:', data);
+    
     setIsSuccess(true);
     reset();
     setIsSubmitting(false);
   };
 
+  // Guardia de seguridad para evitar renderizado de fragmentos nulos en el build
+  if (!dictionary) return null;
+
   return (
     <section className="relative w-full py-24 sm:py-32 bg-[#020202] overflow-hidden" id="contact">
-      {/* Glow de fondo para efecto boutique */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-900/10 blur-[120px] rounded-full pointer-events-none" />
 
       <motion.div
@@ -62,12 +82,12 @@ export function ContactSection({ dictionary }: ContactSectionProps) {
 
         <motion.form
           onSubmit={handleSubmit(onSubmit)}
-          className="mx-auto w-full max-w-lg space-y-6 rounded-[2rem] bg-zinc-900/40 p-10 border border-white/5 backdrop-blur-xl shadow-2xl"
+          className="mx-auto w-full max-w-lg space-y-6 rounded-4xl bg-zinc-900/40 p-10 border border-white/5 backdrop-blur-xl shadow-2xl"
           noValidate
         >
           {isSuccess ? (
             <motion.div 
-              initial={{ opacity: 0, scale: 0.9 }} 
+              initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               className="py-12 flex flex-col items-center justify-center text-center text-purple-400"
             >
@@ -77,47 +97,67 @@ export function ContactSection({ dictionary }: ContactSectionProps) {
             </motion.div>
           ) : (
             <div className="space-y-6">
-              <div>
-                <input
-                  {...register('name')}
-                  placeholder={dictionary.form_placeholder_name}
+              <div className="relative">
+                <input 
+                  {...register('name')} 
+                  placeholder={dictionary.form_placeholder_name} 
                   className={cn(
-                    "w-full bg-black/40 border border-white/10 rounded-full py-4 px-6 outline-none transition-all placeholder:text-zinc-600 focus:border-purple-500",
-                    errors.name && "border-red-500"
-                  )}
+                    "w-full bg-black/40 border border-white/10 rounded-full py-4 px-6 outline-none transition-all placeholder:text-zinc-600 focus:border-purple-500", 
+                    errors.name && "border-red-500/50 bg-red-500/5"
+                  )} 
                 />
+                {errors.name && (
+                  <p className="mt-2 text-[10px] text-red-500 flex items-center gap-1 ml-4">
+                    <AlertCircle size={10} /> {errors.name.message}
+                  </p>
+                )}
               </div>
 
-              <div>
-                <input
-                  {...register('email')}
-                  placeholder={dictionary.form_placeholder_email}
+              <div className="relative">
+                <input 
+                  {...register('email')} 
+                  placeholder={dictionary.form_placeholder_email} 
                   className={cn(
-                    "w-full bg-black/40 border border-white/10 rounded-full py-4 px-6 outline-none transition-all placeholder:text-zinc-600 focus:border-purple-500",
-                    errors.email && "border-red-500"
-                  )}
+                    "w-full bg-black/40 border border-white/10 rounded-full py-4 px-6 outline-none transition-all placeholder:text-zinc-600 focus:border-purple-500", 
+                    errors.email && "border-red-500/50 bg-red-500/5"
+                  )} 
                 />
+                {errors.email && (
+                  <p className="mt-2 text-[10px] text-red-500 flex items-center gap-1 ml-4">
+                    <AlertCircle size={10} /> {errors.email.message}
+                  </p>
+                )}
               </div>
 
-              <div>
-                <textarea
-                  {...register('message')}
-                  placeholder={dictionary.form_placeholder_message}
-                  rows={3}
+              <div className="relative">
+                <textarea 
+                  {...register('message')} 
+                  placeholder={dictionary.form_placeholder_message} 
+                  rows={3} 
                   className={cn(
-                    "w-full bg-black/40 border border-white/10 rounded-3xl py-4 px-6 outline-none transition-all placeholder:text-zinc-600 focus:border-purple-500 resize-none",
-                    errors.message && "border-red-500"
-                  )}
+                    "w-full bg-black/40 border border-white/10 rounded-3xl py-4 px-6 outline-none transition-all placeholder:text-zinc-600 focus:border-purple-500 resize-none", 
+                    errors.message && "border-red-500/50 bg-red-500/5"
+                  )} 
                 />
+                {errors.message && (
+                  <p className="mt-2 text-[10px] text-red-500 flex items-center gap-1 ml-4">
+                    <AlertCircle size={10} /> {errors.message.message}
+                  </p>
+                )}
               </div>
 
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full rounded-full bg-white py-4 font-bold text-black uppercase tracking-widest text-xs hover:bg-zinc-200 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+              <button 
+                type="submit" 
+                disabled={isSubmitting} 
+                className="w-full rounded-full bg-white py-4 font-bold text-black uppercase tracking-widest text-xs hover:bg-purple-600 hover:text-white transition-all flex items-center justify-center gap-3 disabled:opacity-50 active:scale-95"
               >
-                {isSubmitting ? <Loader2 className="animate-spin" /> : (
-                  <> {dictionary.form_button_submit} <Send size={14} /> </>
+                {isSubmitting ? (
+                  <Loader2 className="animate-spin" size={18} />
+                ) : (
+                  <>
+                    {dictionary.form_button_submit} 
+                    <Send size={14} />
+                  </>
                 )}
               </button>
             </div>

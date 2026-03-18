@@ -1,11 +1,24 @@
+/**
+ * @file tests/tsconfig.json
+ * @description Configuración de TypeScript para el entorno global de pruebas.
+ *              Saneada para reflejar el namespace @metashark y la arquitectura sin barrel files.
+ * @version 2.0 - Namespace Sync
+ * @author Raz Podestá - MetaShark Tech
+ */
 {
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
+      /* Alias de la aplicación web */
       "@/*": ["../apps/portfolio-web/src/*"],
-      "@metashark/cms-core/*": ["../packages/cms/core/src/*"],
-      "@portfolio/testing-utils": ["../packages/testing-utils/src/index.ts"]
+
+      /* 
+         @pilar V: Resoluciones de Core y Utils sincronizadas.
+         Se elimina el catch-all '/*' y se actualiza el namespace a @metashark.
+      */
+      "@metashark/cms-core": ["../packages/cms/core/src/index.ts"],
+      "@metashark/testing-utils": ["../packages/testing-utils/src/index.ts"]
     },
     "module": "commonjs",
     "moduleResolution": "node",
@@ -13,9 +26,5 @@
     "types": ["node", "jest", "@testing-library/jest-dom", "react", "react-dom"]
   },
   "include": ["**/*.ts", "**/*.tsx"],
-  "references": [
-    {
-      "path": "../packages/cms/core"
-    }
-  ]
+  "references": []
 }

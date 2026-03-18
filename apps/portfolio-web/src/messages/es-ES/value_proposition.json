@@ -1,16 +1,28 @@
 {
   "amenities_title": "Servicios Premium",
   "amenities_cta": "Acceso exclusivo para huéspedes del Beach Hotel",
-  "title": "Hospitalidad de Élite",
-  "subtitle": "Nuestra filosofía se basa en tres pilares fundamentales para garantizar que tu estadía sea transformadora e inolvidable.",
-  "pillars":[
-    { "title": "Ubicación Premium", "description": "En el corazón de Canasvieiras, a metros de la playa." },
-    { "title": "Diseño Inclusivo", "description": "Un ambiente sofisticado, diseñado para celebrar la diversidad." },
-    { "title": "Experiencia Digital", "description": "Check-in inteligente y soporte total para nómadas digitales." }
+  "amenities_hotel": [
+    { "name": "WiFi 6", "iconKey": "wifi" },
+    { "name": "Vista al Mar", "iconKey": "waves" },
+    { "name": "Gourmet", "iconKey": "utensils" },
+    { "name": "Concierge", "iconKey": "shield" }
+  ],
+  "amenities_festival": [
+    { "name": "Acceso VIP", "iconKey": "ticket" },
+    { "name": "Boat Party", "iconKey": "ship" },
+    { "name": "DJ Sets", "iconKey": "music" },
+    { "name": "Sunset Lounge", "iconKey": "martini" }
+  ],
+  "title": "Hospitalidad Redefinida",
+  "subtitle": "Nuestra filosofía se basa en tres pilares fundamentales diseñados para transformar tu estadía en un recuerdo inolvidable.",
+  "pillars": [
+    { "title": "Ubicación Prime", "description": "En el corazón de Canasvieiras, a solo pasos del océano azul." },
+    { "title": "Lujo Inclusivo", "description": "Un ambiente sofisticado donde cada huésped se siente parte de nuestra comunidad." },
+    { "title": "Vida Inteligente", "description": "Check-in digital y soporte total para nómadas internacionales." }
   ],
   "testimonial": {
-    "quote": "Una experiencia inolvidable. El equilibrio perfecto entre el descanso y la mejor vida nocturna de Floripa.",
-    "author_name": "Alex Johnson",
-    "author_role": "Huésped VIP"
+    "quote": "Un absoluto santuario. El equipo entiende el lujo no solo como un precio, sino como un servicio personalizado.",
+    "author_name": "James Sterling",
+    "author_role": "Huésped Frecuente"
   }
 }

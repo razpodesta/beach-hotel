@@ -1,23 +1,26 @@
-// RUTA: apps/portfolio-web/src/lib/schemas/footer.schema.ts
-// VERSIÓN: 2.0 - Arquitectura de Footer Potente.
-// DESCRIPCIÓN: Se expande el esquema para incluir una estructura de columnas de
-//              enlaces y textos para una llamada a la acción (CTA) de suscripción,
-//              permitiendo un footer rico en contenido y funcional.
+/**
+ * @file footer.schema.ts
+ * @description Contrato inmutable para el pie de página institucional.
+ * @version 3.1 - Elite Standard Hardening
+ * @author Raz Podestá - MetaShark Tech
+ */
 
 import { z } from 'zod';
 
 export const footerSchema = z.object({
-  // Textos para la llamada a la acción del boletín
-  newsletter_title: z.string(),
-  newsletter_placeholder: z.string(),
-  newsletter_button: z.string(),
+  /** Captación de leads */
+  newsletter_title: z.string().min(1, 'Newsletter title is required'),
+  newsletter_placeholder: z.string().min(1),
+  newsletter_button: z.string().min(1),
 
-  // Títulos para las columnas de enlaces de navegación
-  column_nav_title: z.string(),
-  column_services_title: z.string(),
-  column_legal_title: z.string(),
+  /** Títulos de columnas (Mapeados por nav-links.ts) */
+  column_nav_title: z.string().min(1),
+  column_services_title: z.string().min(1),
+  column_legal_title: z.string().min(1),
 
-  // Textos legales y de derechos de autor
-  rights_reserved: z.string(),
-  made_by: z.string(),
+  /** Copyright e Infraestructura */
+  rights_reserved: z.string().min(1),
+  made_by: z.string().min(1),
 });
+
+export type FooterDictionary = z.infer<typeof footerSchema>;

@@ -1,8 +1,8 @@
 /**
  * @file packages/cms/core/src/collections/Access.ts
- * @description Lógica soberana de seguridad multi-tenant para el ecosistema CMS.
- *              Implementa control de acceso basado en roles (RBAC) e identidad de Tenant.
- * @version 3.1 - Type-Safe Security Architecture
+ * @description Lógica soberana de seguridad multi-tenant.
+ *              Refactorizada para garantizar visibilidad pública y aislamiento privado.
+ * @version 3.2 - Security & Performance Hardened
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -10,8 +10,6 @@ import { type Access, type Where } from 'payload';
 
 /**
  * CONTRATO DE USUARIO SOBERANO
- * @pilar III: Seguridad de Tipos Absoluta.
- * Extendemos la definición de usuario para incluir las métricas de identidad del Monorepo.
  */
 interface SovereignUser {
   id: string;
@@ -22,37 +20,30 @@ interface SovereignUser {
 
 /**
  * REGLA DE LECTURA: multiTenantReadAccess
- * @description Orquesta la visibilidad de documentos. 
- *              Público -> Solo publicados.
- *              Admin -> Todo.
- *              User -> Publicados + Propiedad del Tenant.
+ * @description Orquesta la visibilidad con precisión matemática:
+ * - Publicados: Visible para todos (incluyendo anónimos).
+ * - Privados: Solo visibles para el Admin o miembros del mismo Tenant.
  */
 export const multiTenantReadAccess: Access = ({ req: { user } }) => {
   const sovereignUser = user as SovereignUser | null;
 
-  // 1. Caso: Visitante Anónimo (Pilar VIII: Resiliencia)
-  if (!sovereignUser) {
-    return {
-      status: {
-        equals: 'published',
-      },
-    };
-  }
+  // 1. Visibilidad Pública: Todos pueden leer publicaciones
+  const publicAccess: Where = {
+    status: {
+      equals: 'published',
+    },
+  };
 
-  // 2. Caso: Administrador Maestro (Visión Total)
-  if (sovereignUser.role === 'admin') {
+  // 2. Administrador Maestro: Acceso Total
+  if (sovereignUser?.role === 'admin') {
     return true;
   }
 
-  // 3. Caso: Usuario Localizado (Privacidad por Tenant)
-  if (sovereignUser.tenantId) {
+  // 3. Usuario Autenticado (No Admin): Publicados + Privados de su propio Tenant
+  if (sovereignUser?.tenantId) {
     return {
       or: [
-        {
-          status: {
-            equals: 'published',
-          },
-        },
+        publicAccess,
         {
           tenantId: {
             equals: sovereignUser.tenantId,
@@ -62,36 +53,27 @@ export const multiTenantReadAccess: Access = ({ req: { user } }) => {
     } as Where;
   }
 
-  // Fallback de seguridad: Solo lo publicado
-  return {
-    status: {
-      equals: 'published',
-    },
-  };
+  // 4. Default: Solo público
+  return publicAccess;
 };
 
 /**
  * REGLA DE ESCRITURA: multiTenantWriteAccess
- * @description Protege la integridad de los datos. 
- *              Garantiza que nadie pueda modificar activos ajenos a su Tenant.
+ * @description Protección de integridad estricta.
  */
 export const multiTenantWriteAccess: Access = ({ req: { user } }) => {
   const sovereignUser = user as SovereignUser | null;
 
-  // @pilar VIII: Bloqueo inmediato para anónimos
+  // Acceso denegado para no autenticados
   if (!sovereignUser) return false;
 
-  // Superuser bypass
+  // Bypass para Admin
   if (sovereignUser.role === 'admin') return true;
 
-  // @pilar V: Restricción estricta de frontera de datos
-  if (sovereignUser.tenantId) {
-    return {
-      tenantId: {
-        equals: sovereignUser.tenantId,
-      },
-    } as Where;
-  }
-
-  return false;
+  // Restricción por Tenant: Solo permite escribir en recursos propios
+  return {
+    tenantId: {
+      equals: sovereignUser.tenantId,
+    },
+  } as Where;
 };

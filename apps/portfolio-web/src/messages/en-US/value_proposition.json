@@ -1,16 +1,28 @@
 {
   "amenities_title": "Premium Amenities",
   "amenities_cta": "Exclusive access for Beach Hotel guests",
-  "title": "Beyond Code: Building Elite Digital Assets",
-  "subtitle": "My philosophy is based on creating solutions that are not only technically flawless, but also drive growth.",
-  "pillars":[
-    { "title": "Premium Location", "description": "In the heart of Canasvieiras, just meters from the beach." },
-    { "title": "Inclusive Design", "description": "A sophisticated and welcoming atmosphere." },
-    { "title": "Digital Experience", "description": "Smart check-in and full support for digital nomads." }
+  "amenities_hotel": [
+    { "name": "WiFi 6", "iconKey": "wifi" },
+    { "name": "Ocean View", "iconKey": "waves" },
+    { "name": "Gourmet", "iconKey": "utensils" },
+    { "name": "Concierge", "iconKey": "shield" }
+  ],
+  "amenities_festival": [
+    { "name": "VIP Access", "iconKey": "ticket" },
+    { "name": "Boat Party", "iconKey": "ship" },
+    { "name": "DJ Sets", "iconKey": "music" },
+    { "name": "Sunset Lounge", "iconKey": "martini" }
+  ],
+  "title": "Hospitality Redefined",
+  "subtitle": "Our philosophy is built on three core pillars designed to transform your stay into an unforgettable memory.",
+  "pillars": [
+    { "title": "Prime Location", "description": "At the heart of Canasvieiras, just steps away from the crystal blue ocean." },
+    { "title": "Inclusive Luxury", "description": "A sophisticated atmosphere where every guest feels part of our community." },
+    { "title": "Smart Living", "description": "Digital-first check-in and full support for international nomads." }
   ],
   "testimonial": {
-    "quote": "An unforgettable experience. The perfect balance between relaxation and the best nightlife in Floripa.",
-    "author_name": "Alex Johnson",
-    "author_role": "VIP Guest"
+    "quote": "An absolute sanctuary. The staff understands luxury not just as a price point, but as a personalized service.",
+    "author_name": "James Sterling",
+    "author_role": "Loyalty Guest"
   }
 }

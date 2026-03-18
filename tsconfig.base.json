@@ -12,31 +12,34 @@
     "isolatedModules": true,
     "resolveJsonModule": true,
     "declaration": true,
+    "declarationMap": true,
     "sourceMap": true,
     "importHelpers": true,
     "noPropertyAccessFromIndexSignature": false,
+    "jsx": "react-jsx",
+    "baseUrl": ".",
+    "types": ["node"],
     "paths": {
       /* 
-         Mapeos Específicos (Prioridad Alta) 
-         @pilar V: Se colocan primero para evitar colisiones con comodines.
+         @pilar V: Alias estrictos. 
+         Centralización absoluta para evitar colisiones de empaquetado.
       */
+      "@/*": ["apps/portfolio-web/src/*"],
       "@metashark/cms-core/config": ["packages/cms/core/src/payload.config.ts"],
-      "@metashark/cms-core/collections": ["packages/cms/core/src/collections/index.ts"],
-      
-      /* 
-         Mapeos de Paquetes (Entry Points) 
-      */
       "@metashark/cms-core": ["packages/cms/core/src/index.ts"],
       "@metashark/cms-ui": ["packages/cms/ui/src/index.ts"],
       "@metashark/protocol-33": ["packages/protocol-33/src/index.ts"],
       "@metashark/auth-shield": ["packages/auth-shield/src/index.ts"],
-      "@metashark/testing-utils": ["packages/testing-utils/src/index.ts"],
-
-      /* 
-         Mapeos Generales (Catch-all)
-      */
-      "@metashark/cms-core/*": ["packages/cms/core/src/*"]
+      "@metashark/testing-utils": ["packages/testing-utils/src/index.ts"]
     }
   },
-  "exclude": ["node_modules", "tmp", "dist"]
+  "exclude": [
+    "node_modules", 
+    "tmp", 
+    "dist", 
+    "**/*.spec.ts", 
+    "**/*.test.ts",
+    "**/*.spec.tsx",
+    "**/*.test.tsx"
+  ]
 }

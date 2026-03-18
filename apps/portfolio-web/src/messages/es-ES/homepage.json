@@ -1,60 +1,35 @@
 {
+  "hero": {
+    "page_title": "Beach Hotel Canasvieiras | Florianópolis",
+    "page_description": "Hospedaje boutique y sede oficial del festival Pride Escape 2026.",
+    "SUITES_SUBTITLE": "Donde el lujo se encuentra con el mar.",
+    "SUITES_TITLE": "SUITES BOUTIQUE",
+    "SUITES_FEATURES": "Vista Panorámica · Desayuno Gourmet",
+    "FESTIVAL_SUBTITLE": "La nueva ola de Florianópolis.",
+    "FESTIVAL_TITLE": "PRIDE ESCAPE 2026",
+    "FESTIVAL_FEATURES": "Boat Party · Noches de Club VIP · 7 Días de Takeover",
+    "CTA_BUTTON": "VER DISPONIBILIDAD"
+  },
+  "about_section": {
+    "title": "Un Santuario de Hospitalidad de Élite.",
+    "paragraphs": [
+      {
+        "text": "Ubicado en el corazón de Canasvieiras, nuestro hotel ofrece una fusión única entre lujo sofisticado y la energía vibrante de Florianópolis.",
+        "highlight": "Redefinimos la experiencia frente al mar."
+      }
+    ],
+    "cta_button": "Descubre nuestra Historia"
+  },
   "ai_gallery_section": {
     "badge": "Impulsado por Ideogram 3.0",
     "title": "Sintetizador Visual IA",
-    "subtitle": "Explora una colección curada de activos generados algorítmicamente. Fotorrealismo, tipografía perfecta y consistencia estilística, orquestados por nuestro CMS soberano.",
+    "subtitle": "Explora una colección curada de activos generados algorítmicamente.",
     "overlay_indicator": "RENDER EN VIVO • WEBGL 2.0",
+    "drag_label": "ARRASTRAR PARA ORBITAR",
+    "item_prefix": "ACTIVO",
+    "error_fallback": "EL MOTOR VISUAL NO ESTÁ DISPONIBLE",
     "footer_prompt": "Ingeniería de Prompts Avanzada",
     "footer_upscaling": "Escalado 8K y Optimización",
-    "items": {
-      "neon-typography": {
-        "title": "Tipografía Neón y Cristal",
-        "description": "Renderizado 3D tipográfico con tubos de neón."
-      },
-      "editorial-fashion": {
-        "title": "Moda Editorial",
-        "description": "Composición de alta moda con texturas fotorrealistas."
-      },
-      "tech-badge": {
-        "title": "Insignia de Titanio",
-        "description": "Fotografía macro de producto con acabado cepillado."
-      },
-      "transparent-gadget": {
-        "title": "Hardware Transparente",
-        "description": "Visualización de ingeniería de un dispositivo futurista."
-      },
-      "luxury-perfume": {
-        "title": "Cristalería de Lujo",
-        "description": "Fotografía de producto publicitaria con iluminación de borde."
-      },
-      "concept-car": {
-        "title": "Concepto Automotriz",
-        "description": "Detalle abstracto de faros con fibra de carbono."
-      },
-      "concrete-workspace": {
-        "title": "Espacio Minimalista",
-        "description": "Interiorismo con texturas de hormigón crudo."
-      },
-      "cyberpunk-street": {
-        "title": "Atmósfera Cyberpunk",
-        "description": "Fotografía nocturna con iluminación volumétrica."
-      },
-      "abstract-geometry": {
-        "title": "Geometría Paramétrica",
-        "description": "Arquitectura abstracta blanca contra cielo azul."
-      },
-      "fluid-shapes": {
-        "title": "Fluidos Iridiscentes",
-        "description": "Simulación 3D de metal líquido con dispersión."
-      },
-      "mechanical-insect": {
-        "title": "Insecto Mecánico",
-        "description": "Macro fotografía steampunk de alta precisión."
-      },
-      "neural-network": {
-        "title": "Arte de Red Neuronal",
-        "description": "Visualización abstracta de flujos de datos."
-      }
-    }
+    "items": {}
   }
 }

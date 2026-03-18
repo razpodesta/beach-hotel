@@ -236,10 +236,6 @@
       "nx.json",
       "nx/target-defaults"
     ],
-    "targets.test.dependsOn": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
     "targets.test.inputs": [
       "nx.json",
       "nx/target-defaults"
@@ -487,10 +483,6 @@
       "nx/target-defaults"
     ],
     "targets.lint.parallelism": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
-    "targets.test.dependsOn": [
       "nx.json",
       "nx/target-defaults"
     ],
@@ -744,10 +736,6 @@
       "nx.json",
       "nx/target-defaults"
     ],
-    "targets.test.dependsOn": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
     "targets.test.inputs": [
       "nx.json",
       "nx/target-defaults"
@@ -995,10 +983,6 @@
       "nx/target-defaults"
     ],
     "targets.lint.parallelism": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
-    "targets.test.dependsOn": [
       "nx.json",
       "nx/target-defaults"
     ],
@@ -1252,10 +1236,6 @@
       "nx.json",
       "nx/target-defaults"
     ],
-    "targets.test.dependsOn": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
     "targets.test.inputs": [
       "nx.json",
       "nx/target-defaults"
@@ -1458,10 +1438,6 @@
       "nx.json",
       "nx/target-defaults"
     ],
-    "targets.test.dependsOn": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
     "targets.test.inputs": [
       "nx.json",
       "nx/target-defaults"
@@ -1564,6 +1540,14 @@
       "apps/portfolio-web/package.json",
       "nx/core/package-json"
     ],
+    "metadata.targetGroups.NPM Scripts.2": [
+      "apps/portfolio-web/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.targetGroups.NPM Scripts.3": [
+      "apps/portfolio-web/package.json",
+      "nx/core/package-json"
+    ],
     "metadata.description": [
       "apps/portfolio-web/package.json",
       "nx/core/package-json"
@@ -1637,6 +1621,62 @@
       "nx/core/package-json"
     ],
     "targets.start.metadata.runCommand": [
+      "apps/portfolio-web/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.prebuild": [
+      "apps/portfolio-web/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.prebuild.executor": [
+      "apps/portfolio-web/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.prebuild.options": [
+      "apps/portfolio-web/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.prebuild.metadata": [
+      "apps/portfolio-web/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.prebuild.options.script": [
+      "apps/portfolio-web/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.prebuild.metadata.scriptContent": [
+      "apps/portfolio-web/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.prebuild.metadata.runCommand": [
+      "apps/portfolio-web/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.vercel-build": [
+      "apps/portfolio-web/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.vercel-build.executor": [
+      "apps/portfolio-web/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.vercel-build.options": [
+      "apps/portfolio-web/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.vercel-build.metadata": [
+      "apps/portfolio-web/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.vercel-build.options.script": [
+      "apps/portfolio-web/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.vercel-build.metadata.scriptContent": [
+      "apps/portfolio-web/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.vercel-build.metadata.runCommand": [
       "apps/portfolio-web/package.json",
       "nx/core/package-json"
     ],
@@ -1844,10 +1884,6 @@
       "nx.json",
       "nx/target-defaults"
     ],
-    "targets.test.dependsOn": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
     "targets.test.inputs": [
       "nx.json",
       "nx/target-defaults"
@@ -1966,6 +2002,10 @@
       "package.json",
       "nx/core/package-json"
     ],
+    "metadata.description": [
+      "package.json",
+      "nx/core/package-json"
+    ],
     "metadata.js": [
       "package.json",
       "nx/core/package-json"
@@ -2005,10 +2045,6 @@
     "targets.local-registry.options.storage": [
       "package.json",
       "nx/core/package-json"
-    ],
-    "targets.test.dependsOn": [
-      "nx.json",
-      "nx/target-defaults"
     ],
     "targets.test.parallelism": [
       "nx.json",

@@ -1,8 +1,9 @@
 /**
- * @file packages/cms/core/src/collections/BlogPosts.ts
+ * @file BlogPosts.ts
  * @description Colección soberana para el motor editorial (The Concierge Journal).
- *              Implementa gobernanza multi-tenant, automatización de slugs y métricas E-E-A-T.
- * @version 1.3 - Lexical Contract & Prop Placement Fixed
+ *              Implementa orquestación multi-tenant, cálculo automatizado de métricas
+ *              y blindaje de autoridad E-E-A-T.
+ * @version 2.0 - Metric Automation & Author Resilience
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -14,25 +15,22 @@ import {
   HeadingFeature, 
   LinkFeature 
 } from '@payloadcms/richtext-lexical';
-import { multiTenantReadAccess, multiTenantWriteAccess } from './Access';
+import { multiTenantReadAccess, multiTenantWriteAccess } from './Access.js';
 
 export const BlogPosts: CollectionConfig = {
   slug: 'blog-posts',
-  /**
-   * @pilar XII: MEA/UX. 
-   * CORRECCIÓN TS2353: 'defaultSort' reside en la raíz de la colección.
-   */
   defaultSort: '-publishedDate',
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'author', 'status', 'publishedDate', 'tenantId'],
     group: 'Editorial Sanctuary',
-    preview: (doc) => {
-      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:4200';
-      return `${baseUrl}/blog/${doc.slug}`;
-    },
+    description: 'Curaduría de artículos exclusivos para el Santuario Digital.',
   },
   
+  /**
+   * REGLAS DE ACCESO
+   * @pilar III: Seguridad de Tipos.
+   */
   access: {
     read: multiTenantReadAccess,
     create: ({ req: { user } }) => !!user,
@@ -40,25 +38,36 @@ export const BlogPosts: CollectionConfig = {
     delete: multiTenantWriteAccess,
   },
 
+  /**
+   * GUARDIANES DE INTEGRIDAD (Hooks)
+   * @pilar VIII: Resiliencia - Automatización de metadatos.
+   */
   hooks: {
     beforeChange: [
       ({ req, data, operation }) => {
-        // 1. Garantía de Identidad Multi-Tenant
+        // 1. Garantía de Multi-Tenancy
         if (operation === 'create' && req.user) {
           data.tenantId = req.user.tenantId;
+          // Auto-asignación de autor si no se proporciona
+          if (!data.author) data.author = req.user.id;
         }
         
-        // 2. @pilar XII: Automatización de Slug
-        if (data.title && !data.slug) {
-          data.slug = data.title
+        // 2. Slugificación Dinámica Sanitizada
+        if (data.title && typeof data.title === 'string' && !data.slug) {
+           data.slug = data.title
             .toLowerCase()
-            .replace(/ /g, '-')
-            .replace(/[^\w-]+/g, '');
+            .trim()
+            .replace(/[^\w\s-]/g, '')
+            .replace(/\s+/g, '-');
         }
 
-        // 3. Simulación de cálculo de tiempo de lectura (Lógica de próxima generación)
-        if (data.content) {
-          data.readingTime = 5; // Placeholder para lógica de conteo de palabras
+        // 3. Cálculo de Tiempo de Lectura (Pilar X: Performance)
+        if (data.content && typeof data.content === 'object') {
+            // Estimación basada en el volumen del AST de Lexical
+            const contentString = JSON.stringify(data.content);
+            const wordCount = contentString.split(/\s+/g).length;
+            // Estándar: 200 palabras por minuto
+            data.readingTime = Math.max(1, Math.ceil(wordCount / 200));
         }
 
         return data;
@@ -82,16 +91,19 @@ export const BlogPosts: CollectionConfig = {
             {
               type: 'row',
               fields: [
-                { name: 'title', type: 'text', required: true, admin: { width: '60%' } },
+                { 
+                  name: 'title', 
+                  type: 'text', 
+                  required: true, 
+                  admin: { width: '60%', placeholder: 'Título del artículo' } 
+                },
                 { 
                   name: 'slug', 
                   type: 'text', 
                   unique: true, 
                   required: true, 
-                  admin: { 
-                    width: '40%',
-                    description: 'Generado automáticamente a partir del título.' 
-                  } 
+                  index: true, 
+                  admin: { width: '40%', description: 'Identificador único de URL' } 
                 },
               ]
             },
@@ -99,13 +111,9 @@ export const BlogPosts: CollectionConfig = {
               name: 'content', 
               type: 'richText', 
               required: true,
-              /**
-               * @pilar X: Performance y Control.
-               * CORRECCIÓN TS2724: Uso de PascalCase para Features de Lexical.
-               */
+              admin: { description: 'Contenido principal enriquecido.' },
               editor: lexicalEditor({
-                features: ({ defaultFeatures }) => [
-                  ...defaultFeatures,
+                features: () => [
                   HeadingFeature({ enabledHeadingSizes: ['h2', 'h3', 'h4'] }),
                   FixedToolbarFeature(),
                   LinkFeature({}),
@@ -113,7 +121,12 @@ export const BlogPosts: CollectionConfig = {
                 ],
               }), 
             },
-            { name: 'description', type: 'textarea', required: true },
+            { 
+              name: 'description', 
+              type: 'textarea', 
+              required: true,
+              admin: { description: 'Resumen corto para la tarjeta del blog (SEO Meta Description).' }
+            },
           ],
         },
         {
@@ -127,18 +140,14 @@ export const BlogPosts: CollectionConfig = {
                   type: 'relationship', 
                   relationTo: 'users', 
                   required: true,
-                  admin: { width: '50%' },
-                  filterOptions: ({ req }) => {
-                    if (!req.user?.tenantId) return true;
-                    return {
-                      tenantId: { equals: req.user.tenantId }
-                    };
-                  }
+                  index: true,
+                  admin: { width: '50%' }
                 },
                 { 
                   name: 'publishedDate', 
                   type: 'date', 
-                  defaultValue: () => new Date().toISOString(),
+                  index: true, 
+                  required: true,
                   admin: { width: '50%' }
                 },
               ]
@@ -146,6 +155,7 @@ export const BlogPosts: CollectionConfig = {
             { 
               name: 'status', 
               type: 'select', 
+              index: true,
               options: [
                 { label: 'Borrador', value: 'draft' },
                 { label: 'Publicado', value: 'published' }
@@ -153,31 +163,33 @@ export const BlogPosts: CollectionConfig = {
               defaultValue: 'draft',
               admin: { position: 'sidebar' }
             },
-            {
-              name: 'readingTime',
-              type: 'number',
-              admin: {
-                position: 'sidebar',
+            { 
+              name: 'readingTime', 
+              type: 'number', 
+              admin: { 
+                position: 'sidebar', 
                 readOnly: true,
-              }
+                description: 'Cálculo automático en minutos.' 
+              } 
             },
-            {
-              name: 'tags',
-              type: 'array',
-              fields: [{ name: 'tag', type: 'text', required: true }]
+            { 
+              name: 'tags', 
+              type: 'array', 
+              fields: [{ name: 'tag', type: 'text', required: true }],
+              admin: { description: 'Taxonomía para filtrado en la UI.' }
             }
           ],
         },
         {
-          label: 'SEO (E-E-A-T)',
+          label: 'SEO & Social',
           fields: [
-            { name: 'metaTitle', type: 'text' },
-            { name: 'metaDescription', type: 'textarea' },
+            { name: 'metaTitle', type: 'text', admin: { description: 'Opcional: Título para buscadores.' } },
             { 
               name: 'ogImage', 
               type: 'upload', 
               relationTo: 'media', 
               required: true,
+              admin: { description: 'Imagen de portada y miniatura compartida (E-E-A-T).' }
             },
           ],
         }

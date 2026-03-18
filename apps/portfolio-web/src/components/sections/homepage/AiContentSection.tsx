@@ -1,64 +1,64 @@
 /**
- * @file apps/portfolio-web/src/components/sections/homepage/AiContentSection.tsx
- * @description Sección de exhibición de síntesis visual mediante IA. 
- *              Orquesta el motor OrbitalGallery con inyección de i18n soberana.
- * @version 6.1 - Type-Safe SSoT Sync
+ * @file AiContentSection.tsx
+ * @description Orquestador inmersivo para la exhibición de activos IA.
+ *              Nivelado: Eliminada regresión TS2339 y mapeo soberano de tipos.
+ * @version 7.2 - Sovereign Hierarchy & Build Resilience
  * @author Raz Podestá - MetaShark Tech
  */
 
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Sparkles, BrainCircuit } from 'lucide-react';
 
-/**
- * IMPORTACIONES NIVELADAS
- */
 import { BlurText } from '../../razBits/BlurText';
 import { OrbitalGallery, type OrbitalGalleryItem } from '../../razBits/OrbitalGallery';
 import { aiGalleryData } from '../../../data/ai-gallery';
 import { ColorWaveBar } from '../../ui/ColorWaveBar';
+import { cn } from '../../../lib/utils/cn';
 import type { Dictionary } from '../../../lib/schemas/dictionary.schema';
 
 interface AiContentSectionProps {
-  /** Diccionario validado contra aiGallerySectionSchema */
-  dictionary: Dictionary['homepage']['ai_gallery_section'];
+  /** 
+   * @pilar III: Seguridad de Tipos. 
+   * Mapeo directo a la llave raíz del nuevo Dictionary Maestro.
+   */
+  dictionary: Dictionary['ai_gallery_section'];
 }
 
-/**
- * Aparato Visual: AiContentSection
- */
 export function AiContentSection({ dictionary }: AiContentSectionProps) {
+  
+  useEffect(() => {
+    if (!dictionary) {
+      console.error('[HEIMDALL][CRITICAL] AiContentSection: Sovereign Dictionary missing.');
+    }
+  }, [dictionary]);
 
   /**
-   * @pilar I: Sincronización de Datos.
+   * MAPEO DE ACTIVOS WEBGL
+   * Sincroniza el inventario estático con las traducciones del JSON soberano.
    */
   const galleryItems: OrbitalGalleryItem[] = useMemo(() => {
-    return aiGalleryData.map((asset) => {
-      const translation = dictionary.items[asset.id] ?? {
-        title: 'Boutique Visual Asset',
-        description: 'Atmospheric AI synthesis.',
-      };
+    if (!dictionary?.items) return [];
 
+    return aiGalleryData.map((asset) => {
+      const translation = dictionary.items[asset.id];
       return {
         image: asset.image,
-        title: translation.title,
-        description: translation.description,
+        title: translation?.title || `Asset ${asset.id}`,
+        description: translation?.description || dictionary.item_prefix,
       };
     });
-  }, [dictionary.items]);
+  }, [dictionary]);
 
-  /**
-   * @pilar VI: Preparación de Etiquetas (Full Type-Safe).
-   * Tras la nivelación del esquema, estas propiedades son ahora reconocidas por TS.
-   */
-  const engineDictionary = useMemo(() => ({
-    drag_label: dictionary.drag_label,
-    item_prefix: dictionary.item_prefix,
-    error_fallback: dictionary.error_fallback
+  const engineLabels = useMemo(() => ({
+    drag_label: dictionary?.drag_label || 'Orbit',
+    item_prefix: dictionary?.item_prefix || 'Asset',
+    error_fallback: dictionary?.error_fallback || 'Graphics error'
   }), [dictionary]);
 
+  // @pilar VIII: Resiliencia de Render
   if (!dictionary) return null;
 
   return (
@@ -67,11 +67,9 @@ export function AiContentSection({ dictionary }: AiContentSectionProps) {
       className="relative w-full overflow-hidden bg-[#050505] py-24 sm:py-32"
       aria-label={dictionary.title}
     >
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(24,24,27,0.5),transparent_70%)] pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(168,85,247,0.04),transparent_70%)] pointer-events-none" />
 
       <div className="container relative z-10 mx-auto px-6">
-        
-        {/* ENCABEZADO TÉCNICO */}
         <div className="mb-20 flex flex-col items-center text-center">
           <motion.div
             initial={{ opacity: 0, y: 10 }}
@@ -92,23 +90,20 @@ export function AiContentSection({ dictionary }: AiContentSectionProps) {
           <motion.p
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
             className="max-w-2xl text-lg md:text-2xl text-zinc-500 font-sans leading-relaxed font-light"
           >
             {dictionary.subtitle}
           </motion.p>
         </div>
 
-        {/* CONTENEDOR DEL MOTOR WEBGL */}
         <div className="relative mx-auto w-full max-w-5xl">
-           <div className="absolute -inset-4 rounded-[4rem] bg-purple-500/5 blur-3xl pointer-events-none" />
-
-           <div className="relative overflow-hidden rounded-[3rem] border border-white/5 bg-zinc-950/50 shadow-3xl backdrop-blur-sm">
-             <OrbitalGallery 
-                items={galleryItems} 
-                dictionary={engineDictionary}
-             />
-
-             {/* Indicador de Estado en Vivo */}
+           <div className="absolute -inset-10 rounded-[5rem] bg-purple-500/5 blur-[120px] pointer-events-none" />
+           <div className={cn(
+             "relative overflow-hidden rounded-[3rem] border border-white/5 bg-zinc-950/50 shadow-3xl backdrop-blur-sm",
+             "transition-all duration-700 hover:border-purple-500/20"
+           )}>
+             <OrbitalGallery items={galleryItems} dictionary={engineLabels} />
              <div className="absolute top-8 left-8 flex items-center gap-3 rounded-full bg-black/60 border border-white/10 px-5 py-2.5 text-[9px] font-mono font-bold tracking-widest text-zinc-300 backdrop-blur-xl pointer-events-none z-20">
                 <div className="h-1.5 w-1.5 rounded-full bg-green-500 shadow-[0_0_10px_#22c55e] animate-pulse" />
                 {dictionary.overlay_indicator}
@@ -116,30 +111,18 @@ export function AiContentSection({ dictionary }: AiContentSectionProps) {
            </div>
         </div>
 
-        {/* PIE DE SECCIÓN */}
         <div className="mt-24 flex flex-col items-center justify-center gap-10 text-center sm:flex-row">
-           <motion.div
-             initial={{ opacity: 0 }}
-             whileInView={{ opacity: 1 }}
-             className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-600"
-           >
+           <motion.div className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-600">
               <Sparkles size={14} className="text-purple-500" />
               <span>{dictionary.footer_prompt}</span>
            </motion.div>
-
            <div className="hidden h-1 w-1 rounded-full bg-zinc-800 sm:block" />
-
-           <motion.div
-             initial={{ opacity: 0 }}
-             whileInView={{ opacity: 1 }}
-             className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-600"
-           >
+           <motion.div className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-600">
               <Sparkles size={14} className="text-pink-500" />
               <span>{dictionary.footer_upscaling}</span>
            </motion.div>
         </div>
       </div>
-
       <ColorWaveBar position="bottom" variant="festival" className="h-0.5 opacity-40" />
     </section>
   );

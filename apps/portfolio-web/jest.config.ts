@@ -1,8 +1,9 @@
 /**
  * @file apps/portfolio-web/jest.config.ts
  * @description Orquestador de pruebas para la aplicación web.
- *              Nivelado para resolución de alias @metashark y transformación ESM.
- * @version 4.0 - Monorepo Sincronizado
+ *              Nivelado para resolución unificada de módulos del Core.
+ * @version 4.1 - Centralized Module Mapper
+ * @author Raz Podestá - MetaShark Tech
  */
 
 export default {
@@ -12,7 +13,7 @@ export default {
   rootDir: '.',
 
   // @pilar V: Arquitectura de Espejo
-  roots: [
+  roots:[
     '<rootDir>/src',
     '<rootDir>/../../tests/apps/portfolio-web'
   ],
@@ -22,14 +23,13 @@ export default {
   /**
    * @pilar III: Seguridad de Tipos y Transformación.
    * Lista blanca para paquetes que deben ser procesados por SWC (ESM a CJS).
-   * Se incluyen las librerías de Payload y el core del CMS.
    */
-  transformIgnorePatterns: [
+  transformIgnorePatterns:[
     'node_modules/(?!.*(@metashark|@payloadcms|payload|@faker-js|msw|until-async))'
   ],
 
   transform: {
-    '^.+\\.[tj]sx?$': [
+    '^.+\\.[tj]sx?$':[
       '@swc/jest',
       {
         jsc: {
@@ -45,12 +45,12 @@ export default {
 
   /**
    * @pilar V: Adherencia Arquitectónica (Alias Sincronizados).
-   * Mapeo innegociable bajo el namespace @metashark.
+   * Se elimina la ruta de 'collections' para forzar a Jest a importar
+   * la configuración unificada directamente de la raíz del core.
    */
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
     '^@metashark/cms-core/config$': '<rootDir>/../../packages/cms/core/src/payload.config.ts',
-    '^@metashark/cms-core/collections$': '<rootDir>/../../packages/cms/core/src/collections/index.ts',
     '^@metashark/cms-core$': '<rootDir>/../../packages/cms/core/src/index.ts',
     '^@metashark/cms-ui$': '<rootDir>/../../packages/cms/ui/src/index.ts',
     '^@metashark/protocol-33$': '<rootDir>/../../packages/protocol-33/src/index.ts',
@@ -58,7 +58,7 @@ export default {
     '^@metashark/testing-utils$': '<rootDir>/../../packages/testing-utils/src/index.ts',
   },
 
-  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
+  moduleFileExtensions:['ts', 'tsx', 'js', 'jsx'],
   coverageDirectory: '../../coverage/apps/portfolio-web',
-  testMatch: ['**/*.spec.ts', '**/*.spec.tsx'],
+  testMatch:['**/*.spec.ts', '**/*.spec.tsx'],
 };

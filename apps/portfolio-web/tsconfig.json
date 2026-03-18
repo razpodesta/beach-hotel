@@ -12,30 +12,30 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "strict": true,
-    "plugins": [{ "name": "next" }],
+    "plugins":[{ "name": "next" }],
     /* 
        @pilar V: Restauración de Alias Soberanos.
        Debido a que TS no combina 'paths', debemos incluir tanto los alias 
        locales como los del monorepo para asegurar la resolución.
+       Se elimina el alias de 'collections' para forzar la importación desde la raíz del core.
     */
     "paths": {
       "@/*": ["./src/*"],
-      "@metashark/cms-core/config": ["../../packages/cms/core/src/payload.config.ts"],
-      "@metashark/cms-core/collections": ["../../packages/cms/core/src/collections/index.ts"],
-      "@metashark/cms-core": ["../../packages/cms/core/src/index.ts"],
-      "@metashark/cms-ui": ["../../packages/cms/ui/src/index.ts"],
-      "@metashark/protocol-33": ["../../packages/protocol-33/src/index.ts"],
-      "@metashark/auth-shield": ["../../packages/auth-shield/src/index.ts"],
-      "@metashark/testing-utils": ["../../packages/testing-utils/src/index.ts"]
+      "@metashark/cms-core/config":["../../packages/cms/core/src/payload.config.ts"],
+      "@metashark/cms-core":["../../packages/cms/core/src/index.ts"],
+      "@metashark/cms-ui":["../../packages/cms/ui/src/index.ts"],
+      "@metashark/protocol-33":["../../packages/protocol-33/src/index.ts"],
+      "@metashark/auth-shield":["../../packages/auth-shield/src/index.ts"],
+      "@metashark/testing-utils":["../../packages/testing-utils/src/index.ts"]
     }
   },
-  "include": [
+  "include":[
     "next-env.d.ts", 
     ".next/types/**/*.ts",
     "**/*.ts", 
     "**/*.tsx"
   ],
-  "exclude": [
+  "exclude":[
     "node_modules",
     ".next",
     "dist",
@@ -43,7 +43,7 @@
     "**/*.spec.ts",
     "**/*.spec.tsx"
   ],
-  "references": [
+  "references":[
     { "path": "../../packages/protocol-33" },
     { "path": "../../packages/auth-shield" },
     { "path": "../../packages/cms/ui" },

@@ -10,7 +10,8 @@
       "!{projectRoot}/jest.config.[jt]s",
       "!{projectRoot}/.eslintrc.json",
       "!{projectRoot}/eslint.config.mjs",
-      "!{projectRoot}/**/*.md"
+      "!{projectRoot}/**/*.md",
+      "{workspaceRoot}/scripts/**/*" 
     ],
     "sharedGlobals": [
       "{workspaceRoot}/.github/workflows/*.yml",
@@ -22,13 +23,8 @@
     {
       "plugin": "@nx/js/typescript",
       "options": {
-        "typecheck": {
-          "targetName": "typecheck"
-        },
-        "build": {
-          "targetName": "build",
-          "configName": "tsconfig.lib.json"
-        }
+        "typecheck": { "targetName": "typecheck" },
+        "build": { "targetName": "build", "configName": "tsconfig.lib.json" }
       }
     },
     {
@@ -36,44 +32,18 @@
       "options": {
         "buildTargetName": "build",
         "devTargetName": "dev",
-        "serveTargetName": "serve",
-        "serveStaticTargetName": "serve-static"
+        "serveTargetName": "serve"
       }
     },
     {
       "plugin": "@nx/eslint/plugin",
-      "options": {
-        "targetName": "lint"
-      }
+      "options": { "targetName": "lint" }
     },
     {
       "plugin": "@nx/jest/plugin",
-      "options": {
-        "targetName": "test"
-      }
-    },
-    {
-      "plugin": "@nx/rollup/plugin",
-      "options": {
-        "buildTargetName": "build",
-        "buildDepsTargetName": "build-deps",
-        "watchDepsTargetName": "watch-deps"
-      }
+      "options": { "targetName": "test" }
     }
   ],
-  "generators": {
-    "@nx/next": {
-      "application": {
-        "style": "tailwind",
-        "linter": "eslint"
-      }
-    },
-    "@nx/react": {
-      "library": {
-        "unitTestRunner": "jest"
-      }
-    }
-  },
   "targetDefaults": {
     "build": {
       "dependsOn": ["^build"],
@@ -85,18 +55,12 @@
       "cache": true
     },
     "test": {
-      "dependsOn": ["build"],
       "inputs": ["default", "^default", "{workspaceRoot}/jest.preset.js"],
       "cache": true
     },
     "lint": {
       "inputs": ["default", "{workspaceRoot}/.eslintrc.json", "{workspaceRoot}/eslint.config.mjs"],
       "cache": true
-    }
-  },
-  "release": {
-    "version": {
-      "preVersionCommand": "pnpm nx run-many -t build"
     }
   }
 }

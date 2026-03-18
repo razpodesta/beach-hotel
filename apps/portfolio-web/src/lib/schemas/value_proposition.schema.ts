@@ -1,53 +1,43 @@
 /**
- * @file apps/portfolio-web/src/lib/schemas/value_proposition.schema.ts
- * @description Esquema de validación y fuente de verdad para la sección de propuesta de valor.
- *              Implementa taxonomía estricta para iconos de hospitalidad.
- * @version 5.0 - Strict Icon Mapping
+ * @file value_proposition.schema.ts
+ * @description Contrato inmutable para la sección de Propuesta de Valor.
+ *              Define la estructura de Amenidades, Pilares y Prueba Social.
+ * @version 6.1 - Elite Standard
  * @author Raz Podestá - MetaShark Tech
  */
 
 import { z } from 'zod';
 
-/**
- * Catálogo de identificadores de iconos permitidos en la UI.
- * Sincronizado con ICON_MAP en el componente visual.
- */
+/** Catálogo de iconos permitidos para amenidades */
 export const AmenityIconKey = z.enum([
   'wifi', 'waves', 'utensils', 'dumbbell', 'shield', 
   'coffee', 'car', 'sparkles', 'disc', 'martini', 
   'ship', 'ticket', 'music', 'pin', 'users', 'flame'
 ]);
 
-/**
- * Esquema de objeto Amenity individual.
- */
+/** Esquema de ítem individual de amenidad */
 export const amenitySchema = z.object({
-  name: z.string().min(1),
+  name: z.string().min(1, 'Amenity name is required'),
   iconKey: AmenityIconKey,
 });
 
-/**
- * Esquema maestro para la sección de Propuesta de Valor.
- */
+/** Esquema maestro del aparato Value Proposition */
 export const valuePropositionSectionSchema = z.object({
-  amenities_title: z.string(),
-  amenities_cta: z.string(),
-  // Arrays estrictamente tipados para evitar inferencia 'never'
-  amenities_hotel: z.array(amenitySchema),
-  amenities_festival: z.array(amenitySchema),
-  title: z.string(),
-  subtitle: z.string(),
+  amenities_title: z.string().min(1),
+  amenities_cta: z.string().min(1),
+  amenities_hotel: z.array(amenitySchema).min(1),
+  amenities_festival: z.array(amenitySchema).min(1),
+  title: z.string().min(1),
+  subtitle: z.string().min(1),
   pillars: z.array(z.object({
-    title: z.string(),
-    description: z.string(),
-  })).length(3),
+    title: z.string().min(1),
+    description: z.string().min(1),
+  })).length(3, 'Value proposition must have exactly 3 pillars'),
   testimonial: z.object({
-    quote: z.string(),
-    author_name: z.string(),
-    author_role: z.string(),
+    quote: z.string().min(1),
+    author_name: z.string().min(1),
+    author_role: z.string().min(1),
   }),
 });
 
-// Tipos inferidos soberanos
-export type AmenityIconType = z.infer<typeof AmenityIconKey>;
-export type Amenity = z.infer<typeof amenitySchema>;
+export type ValuePropositionDictionary = z.infer<typeof valuePropositionSectionSchema>;

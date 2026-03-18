@@ -1,16 +1,28 @@
 {
   "amenities_title": "Comodidades Premium",
   "amenities_cta": "Acesso exclusivo para hóspedes do Beach Hotel",
-  "title": "Hospitalidade de Elite",
-  "subtitle": "Nossa filosofia baseia-se em três pilares fundamentais para garantir que sua estadia seja transformadora e inesquecível.",
-  "pillars":[
-    { "title": "Localização Premium", "description": "No coração de Canasvieiras, a poucos metros da praia." },
-    { "title": "Design Inclusivo", "description": "Um ambiente sofisticado e acolhedor, projetado para celebrar a diversidade." },
-    { "title": "Experiência Digital", "description": "Check-in inteligente e suporte total para nômades digitais." }
+  "amenities_hotel": [
+    { "name": "WiFi 6", "iconKey": "wifi" },
+    { "name": "Vista Mar", "iconKey": "waves" },
+    { "name": "Gourmet", "iconKey": "utensils" },
+    { "name": "Concierge", "iconKey": "shield" }
+  ],
+  "amenities_festival": [
+    { "name": "Acesso VIP", "iconKey": "ticket" },
+    { "name": "Boat Party", "iconKey": "ship" },
+    { "name": "DJ Sets", "iconKey": "music" },
+    { "name": "Sunset Lounge", "iconKey": "martini" }
+  ],
+  "title": "Hospitalidade Redefinida",
+  "subtitle": "Nossa filosofia baseia-se em três pilares fundamentais projetados para transformar sua estadia em uma memória inesquecível.",
+  "pillars": [
+    { "title": "Localização Prime", "description": "No coração de Canasvieiras, a apenas passos do oceano azul." },
+    { "title": "Luxo Inclusivo", "description": "Um ambiente sofisticado onde cada hóspede se sente parte da nossa comunidade." },
+    { "title": "Smart Living", "description": "Check-in digital e suporte total para nômades internacionais." }
   ],
   "testimonial": {
-    "quote": "Uma experiência inesquecível. O equilíbrio perfeito entre o relaxamento e a melhor vida noturna de Floripa.",
-    "author_name": "Alex Johnson",
-    "author_role": "Hóspede VIP"
+    "quote": "Um santuário absoluto. A equipe entende o luxo não apenas como um preço, mas como um serviço personalizado.",
+    "author_name": "James Sterling",
+    "author_role": "Hóspede Frequente"
   }
 }

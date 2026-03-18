@@ -1,6 +1,14 @@
 {
-  "page_title": "Contacto Directo | Concierge Desk",
-  "page_description": "Póngase en contacto con nuestro equipo para reservas personalizadas o eventos VIP.",
-  "title": "Centro de Atención al Huésped",
-  "subtitle": "Nuestro equipo de concierge está disponible para asegurar que su experiencia en Florianópolis sea impecable."
+  "title": "PONTE EN CONTACTO",
+  "form_cta": "¿Tienes una idea o un proyecto en mente? Me encantaría saber de ello.",
+  "form_placeholder_name": "* Nombre",
+  "form_placeholder_email": "* Email",
+  "form_placeholder_message": "* Tu mensaje...",
+  "form_button_submit": "Enviar Mensaje",
+  "validation": {
+    "name_required": "El nombre es obligatorio",
+    "email_required": "El email es obligatorio",
+    "email_invalid": "Por favor, introduce un email válido",
+    "message_too_short": "El mensaje debe tener al menos 10 caracteres"
+  }
 }

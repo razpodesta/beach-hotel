@@ -1,13 +1,8 @@
 {
-  "nav_links": {
-    "hotel": "O Hotel",
-    "habitaciones": "Suítes",
-    "festival": "Pride Escape 2026",
-    "historia": "Nossa História",
-    "ubicacion": "Localização",
-    "contacto": "Contato",
-    "reservas": "Reservas Online",
-    "politica_privacidad": "Privacidade",
-    "terminos_servicio": "Termos de Uso"
-  }
+  "talk": "RESERVAR AGORA",
+  "tagline": "Sua Experiência Boutique em Canasvieiras",
+  "personal_portfolio": "BEACH HOTEL CANASVIEIRAS",
+  "job_title": "Hotel Boutique & Sede do Pride Escape 2026",
+  "mobile_title": "Beach Hotel",
+  "mobile_subtitle": "Canasvieiras"
 }
