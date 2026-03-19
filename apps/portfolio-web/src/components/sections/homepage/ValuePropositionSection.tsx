@@ -1,8 +1,9 @@
 /**
- * @file ValuePropositionSection.tsx
+ * @file apps/portfolio-web/src/components/sections/homepage/ValuePropositionSection.tsx
  * @description Orquestador de la Propuesta de Valor (Pillares + Amenidades + Testimonio).
- *              Nivelado: Validaciones de seguridad de tipos y resiliencia de renderizado.
- * @version 5.2 - Contract Enforcement & Resilience
+ *              Refactorizado: Cumplimiento total del Manifiesto MACS v1.0 (Acceso Aplanado).
+ *              Implementa validación de integridad SSoT y coreografía visual premium.
+ * @version 6.0 - MACS Flattened Sync & Resilience Hardening
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -10,21 +11,40 @@
 
 import React from 'react';
 import { motion, type Variants } from 'framer-motion';
+
+/**
+ * IMPORTACIONES DE INFRAESTRUCTRURA
+ * @pilar V: Adherencia arquitectónica mediante fronteras Nx.
+ */
 import { cn } from '../../../lib/utils/cn';
 import { PillarCard } from '../../ui/PillarCard';
 import { AmenitiesMarquee } from './AmenitiesMarquee';
 import { TestimonialCard } from '../../ui/TestimonialCard';
-import { type ValuePropositionDictionary } from '../../../lib/schemas/value_proposition.schema';
+import type { Dictionary } from '../../../lib/schemas/dictionary.schema';
 
+/**
+ * @interface ValuePropositionSectionProps
+ * @description Contrato inmutable para la inyección de contenido localizado.
+ */
 interface ValuePropositionSectionProps {
-  /** Diccionario validado por el esquema soberano */
-  dictionary: ValuePropositionDictionary;
+  /** 
+   * @pilar III: Seguridad de Tipos. 
+   * Mapeo directo al aparato 'value_proposition' tras la nivelación MACS.
+   */
+  dictionary: Dictionary['value_proposition'];
   className?: string;
 }
 
-/** Mapa de iconos vinculado a la secuencia de pilares */
+/** 
+ * MAPA DE ICONOS ESTRATÉGICO
+ * Vincula la secuencia de pilares con la simbología de Lucide en PillarCard.
+ */
 const PILLAR_ICONS = ['pin', 'users', 'sparkles'] as const;
 
+/**
+ * CONFIGURACIÓN DE ANIMACIÓN (MEA/UX)
+ * @pilar IX: Definición estática para optimizar ciclos de render.
+ */
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
@@ -33,10 +53,18 @@ const containerVariants: Variants = {
   },
 };
 
+/**
+ * APARATO PRINCIPAL: ValuePropositionSection
+ * @description Orquesta la narrativa de estándares y excelencia del Hotel.
+ */
 export function ValuePropositionSection({ dictionary, className }: ValuePropositionSectionProps) {
-  // @pilar VIII: Resiliencia - Guardia de seguridad ante datos incompletos
+  
+  /**
+   * GUARDIÁN DE RESILIENCIA (Pilar VIII)
+   * Valida la estructura mínima necesaria para garantizar un renderizado coherente.
+   */
   if (!dictionary?.pillars || dictionary.pillars.length !== 3) {
-    console.error('[HEIMDALL][DATA] ValuePropositionSection: Incomplete pillars data.');
+    console.error('[HEIMDALL][DATA] ValuePropositionSection: Estructura de pilares incompleta.');
     return null;
   }
 
@@ -45,14 +73,14 @@ export function ValuePropositionSection({ dictionary, className }: ValueProposit
       className={cn("relative w-full py-24 sm:py-32 bg-[#020202] overflow-hidden", className)}
       aria-labelledby="value-prop-title"
     >
-      {/* 1. MARQUEE DE AMENIDADES */}
+      {/* 1. APARATO: MARQUEE DE AMENIDADES (Integración MACS) */}
       <div className="mb-24">
         <AmenitiesMarquee dictionary={dictionary} />
       </div>
 
       <div className="container mx-auto px-6">
         
-        {/* 2. ENCABEZADO NARRATIVO */}
+        {/* 2. ENCABEZADO NARRATIVO INSTITUCIONAL */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -60,7 +88,7 @@ export function ValuePropositionSection({ dictionary, className }: ValueProposit
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           className="mx-auto max-w-4xl text-center mb-20 md:mb-32"
         >
-          <span className="text-[10px] font-bold tracking-[0.6em] text-purple-500 uppercase mb-4 block">
+          <span className="text-[10px] font-bold tracking-[0.6em] text-purple-500 uppercase mb-4 block animate-fade-in">
             The Sanctuary Standards
           </span>
           <h2 id="value-prop-title" className="font-display text-5xl md:text-7xl font-bold tracking-tighter text-white mb-8">
@@ -71,7 +99,7 @@ export function ValuePropositionSection({ dictionary, className }: ValueProposit
           </p>
         </motion.div>
 
-        {/* 3. GRID DE PILARES */}
+        {/* 3. GRID DE PILARES (Arquitectura Lego) */}
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -91,12 +119,12 @@ export function ValuePropositionSection({ dictionary, className }: ValueProposit
           ))}
         </motion.div>
 
-        {/* 4. PRUEBA SOCIAL (TESTIMONIAL) */}
+        {/* 4. PRUEBA SOCIAL: TESTIMONIAL DE ÉLITE */}
         <motion.div
           initial={{ opacity: 0, scale: 0.98 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           className="relative max-w-4xl mx-auto"
         >
           <TestimonialCard 
@@ -108,7 +136,8 @@ export function ValuePropositionSection({ dictionary, className }: ValueProposit
         </motion.div>
       </div>
 
-      <div className="absolute bottom-0 left-0 w-full h-1/2 bg-linear-to-t from-purple-500/2 to-transparent pointer-events-none" />
+      {/* ELEMENTO DE AMBIENTACIÓN: Gradiente de Cierre */}
+      <div className="absolute bottom-0 left-0 w-full h-1/2 bg-linear-to-t from-purple-500/5 to-transparent pointer-events-none" />
     </section>
   );
 }

@@ -1,8 +1,8 @@
 /**
  * @file apps/portfolio-web/src/components/ui/NewsletterModal.tsx
  * @description Orquestador de captación de leads mediante modal emergente persistente.
- *              Refactorizado para Build-Safety: acceso diferido a cookies.
- * @version 6.2 - Linter Compliant Edition
+ *              Nivelado: Inyección de diccionario desde el Layout raíz para satisfacer contrato.
+ * @version 6.3 - Dependency Injected Content
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -14,30 +14,27 @@ import { X } from 'lucide-react';
 import { getCookie, setCookie } from 'cookies-next';
 
 import { NewsletterForm } from '../shared/NewsletterForm';
+import type { Dictionary } from '../../lib/schemas/dictionary.schema';
 
 const COOKIE_NAME = 'newsletter_modal_seen';
 
 /**
- * Hook de Hidratación de Élite: Garantiza que la lógica de cookies
- * solo se ejecute tras el montaje en cliente.
+ * Hook de Hidratación de Élite
  */
 function useIsMounted(): boolean {
-  const subscribe = useCallback(() => {
-    return () => {
-      // Intencionalmente vacío: Estado de montaje estático en cliente.
-      // Comentario necesario para satisfacer la regla 'no-empty-function' de ESLint.
-    };
-  }, []);
-
+  const subscribe = useCallback(() => () => { /* No-op */ }, []);
   return useSyncExternalStore(subscribe, () => true, () => false);
 }
 
-export function NewsletterModal() {
+interface NewsletterModalProps {
+  dictionary: Dictionary['footer'];
+}
+
+export function NewsletterModal({ dictionary }: NewsletterModalProps) {
   const isMounted = useIsMounted();
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    // Solo accedemos a las cookies si estamos montados en el cliente
     if (!isMounted) return;
 
     const hasSeen = getCookie(COOKIE_NAME);
@@ -56,8 +53,7 @@ export function NewsletterModal() {
     setIsOpen(false);
   };
 
-  // No renderizamos el modal si no estamos montados para evitar parpadeos de build
-  if (!isMounted) return null;
+  if (!isMounted || !dictionary) return null;
 
   return (
     <AnimatePresence>
@@ -88,7 +84,8 @@ export function NewsletterModal() {
             </button>
 
             <div className="relative z-10">
-               <NewsletterForm />
+               {/* Propiedad inyectada correctamente para satisfacer contrato */}
+               <NewsletterForm content={dictionary} />
             </div>
 
             <div className="absolute -bottom-12 -right-12 h-64 w-64 rounded-full bg-purple-500/10 blur-3xl pointer-events-none" />

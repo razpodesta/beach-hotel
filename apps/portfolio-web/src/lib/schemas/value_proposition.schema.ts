@@ -1,25 +1,30 @@
 /**
- * @file value_proposition.schema.ts
+ * @file packages/cms/core/src/lib/schemas/value_proposition.schema.ts
  * @description Contrato inmutable para la sección de Propuesta de Valor.
- *              Define la estructura de Amenidades, Pilares y Prueba Social.
- * @version 6.1 - Elite Standard
- * @author Raz Podestá - MetaShark Tech
+ *              Nivelado: Exportaciones tipadas definitivas.
+ * @version 6.2 - Export Contract Sync
  */
 
 import { z } from 'zod';
 
-/** Catálogo de iconos permitidos para amenidades */
+/** Catálogo de iconos permitidos (Zod Enum) */
 export const AmenityIconKey = z.enum([
   'wifi', 'waves', 'utensils', 'dumbbell', 'shield', 
   'coffee', 'car', 'sparkles', 'disc', 'martini', 
   'ship', 'ticket', 'music', 'pin', 'users', 'flame'
 ]);
 
+// Tipo inferido para uso en el MAPA DE ICONOS (evita errores TS2749)
+export type AmenityIconType = z.infer<typeof AmenityIconKey>;
+
 /** Esquema de ítem individual de amenidad */
 export const amenitySchema = z.object({
   name: z.string().min(1, 'Amenity name is required'),
   iconKey: AmenityIconKey,
 });
+
+// Exportación explícita del tipo Amenity (resuelve TS2305)
+export type Amenity = z.infer<typeof amenitySchema>;
 
 /** Esquema maestro del aparato Value Proposition */
 export const valuePropositionSectionSchema = z.object({

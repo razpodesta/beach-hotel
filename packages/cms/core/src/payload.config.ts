@@ -1,8 +1,6 @@
 /**
  * @file packages/cms/core/src/payload.config.ts
- * @description Configuración central.
- *              Refactorización definitiva: Importación directa desde la raíz 
- *              de colecciones para evitar errores de resolución de rutas.
+ * @description Configuración central. Nivelado para CJS/ESM interop y compatibilidad con Sharp.
  */
 
 import { buildConfig } from 'payload';
@@ -10,18 +8,12 @@ import { postgresAdapter } from '@payloadcms/db-postgres';
 import { lexicalEditor } from '@payloadcms/richtext-lexical';
 import { nodemailerAdapter } from '@payloadcms/email-nodemailer';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-import sharp from 'sharp';
 
-// --- REFACORIZACIÓN: Importación directa a los archivos fuente ---
-// Eliminamos la dependencia de './collections/index.js'
-import { Users } from './collections/Users.js';
-import { BlogPosts } from './collections/BlogPosts.js';
-import { Projects } from './collections/Projects.js';
-import { Media } from './collections/Media.js';
+// --- REFACORIZACIÓN: Eliminación de import.meta.url para evitar error TS1470 ---
+// Usamos __dirname nativo de CJS o un path relativo desde el proceso actual
+const configDir = path.resolve(process.cwd(), 'packages/cms/core/src');
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import { Users, BlogPosts, Projects, Media } from './collections/index.js';
 
 export default buildConfig({
   email: nodemailerAdapter({
@@ -29,21 +21,21 @@ export default buildConfig({
     defaultFromName: 'Genesis Engine',
   }),
 
-  sharp,
+  // --- CORRECCIÓN TS2322: Cast explícito para compatibilidad con SharpDependency ---
+  sharp: (await import('sharp')) as any,
 
   admin: {
     user: Users.slug,
-    importMap: { baseDir: path.resolve(__dirname) },
+    importMap: { baseDir: configDir },
   },
 
-  // Colecciones importadas directamente
   collections: [Users, BlogPosts, Projects, Media],
-  
   editor: lexicalEditor(),
+  
   secret: process.env.PAYLOAD_SECRET || 'genesis-engine-secret-key-2026',
   
   typescript: {
-    outputFile: path.resolve(__dirname, '../payload-types.ts'),
+    outputFile: path.resolve(configDir, '../payload-types.ts'),
   },
   
   db: postgresAdapter({

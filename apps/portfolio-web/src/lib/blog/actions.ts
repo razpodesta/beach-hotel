@@ -1,9 +1,9 @@
 /**
- * @file actions.ts
- * @description Orquestador soberano de datos para el Hub Editorial.
- *              Gestiona la comunicación con Payload CMS 3.0, la compilación
- *              de contenido Lexical y el mapeo hacia contratos Zod.
- * @version 12.2 - Advanced Lexical Resolution & Forensic Logging
+ * @file apps/portfolio-web/src/lib/blog/actions.ts
+ * @description Orquestador soberano de datos para el Hub Editorial (The Concierge Journal).
+ *              Implementa comunicación resiliente con Payload CMS 3.0, soporte para i18n
+ *              nativo en queries y compilación JIT de Lexical AST a Markdown.
+ * @version 13.0 - i18n Query Support & Type-Safe Shaper
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -11,36 +11,24 @@ import { getPayload, type Payload } from 'payload';
 
 /**
  * IMPORTACIONES DE INFRAESTRUCTRURA
- * @pilar V: Adherencia arquitectónica.
+ * @pilar V: Adherencia arquitectónica mediante alias unificados.
  */
 import configPromise from '@metashark/cms-core/config';
 import { type PostWithSlug, postWithSlugSchema } from '../schemas/blog.schema';
+import { type Locale, i18n } from '../../config/i18n.config';
 
 /**
  * DETECTORES DE ENTORNO SOBERANOS
+ * @description Previenen fallos durante la fase de compilación estática (Build) 
+ *              cuando la infraestructura de datos no es accesible.
  */
 const isBuildPhase = process.env.NEXT_PHASE === 'phase-production-build' || process.env.VERCEL === '1';
 const isDatabaseAvailable = Boolean(process.env.DATABASE_URL);
 
 /**
- * ============================================================================
- * CONTRATOS DE INTERFAZ CMS (Bridge Interfaces - Payload 3.0)
+ * CONTRATOS DE INTERFAZ CMS (Bridge)
  * @pilar III: Seguridad de Tipos Absoluta.
- * ============================================================================
  */
-
-interface PayloadUser {
-  id: string;
-  username?: string | null;
-  email?: string | null;
-}
-
-interface PayloadMedia {
-  id: string;
-  url?: string | null;
-  alt?: string | null;
-}
-
 interface LexicalNode {
   type: string;
   text?: string;
@@ -55,16 +43,16 @@ interface LexicalRoot {
   };
 }
 
-interface RawBlogPostEntry {
+interface RawPayloadPost {
   title?: string | null;
   slug?: string | null;
   description?: string | null;
   content?: LexicalRoot | string | null;
   publishedDate?: string | null;
-  author?: PayloadUser | string | null;
+  author?: { username?: string; email?: string } | string | null;
   tags?: Array<{ tag?: string | null }> | null;
   status?: 'draft' | 'published' | null;
-  ogImage?: PayloadMedia | string | null;
+  ogImage?: { url?: string } | string | null;
 }
 
 /**
@@ -73,8 +61,8 @@ interface RawBlogPostEntry {
 let cachedPayload: Payload | null = null;
 
 /**
- * @description Recupera la instancia soberana de Payload conectada a la infraestructura.
- * @returns {Promise<Payload>} Instancia activa de Payload CMS.
+ * @description Recupera la instancia soberana de Payload.
+ * @returns {Promise<Payload>}
  */
 async function getSovereignPayload(): Promise<Payload> {
   if (cachedPayload) return cachedPayload;
@@ -84,13 +72,11 @@ async function getSovereignPayload(): Promise<Payload> {
 }
 
 /**
- * COMPILADOR JIT: Lexical AST a Markdown Puro
- * @description Transforma el árbol de nodos de Lexical en Markdown compatible con MDX.
- * @pilar VIII: Resiliencia - Maneja recursividad para sub-nodos y tipos de bloque.
- * @param {unknown} contentNode - Nodo de contenido crudo.
- * @returns {string} Contenido transformado.
+ * COMPILADOR JIT: Lexical AST a Markdown
+ * @description Transforma el árbol de nodos de Lexical en Markdown puro para MDXRemote.
+ * @pilar VIII: Resiliencia - Maneja recursividad y tipos de bloque editoriales.
  */
-function extractMarkdownFromLexical(contentNode: unknown): string {
+function compileLexicalToMarkdown(contentNode: unknown): string {
   if (!contentNode) return '';
   if (typeof contentNode === 'string') return contentNode;
 
@@ -117,12 +103,9 @@ function extractMarkdownFromLexical(contentNode: unknown): string {
 
   try {
     const ast = contentNode as LexicalRoot;
-    if (ast.root?.children) {
-      return ast.root.children.map(processNode).join('');
-    }
-    return '';
+    return ast.root?.children?.map(processNode).join('') || '';
   } catch (error) {
-    console.warn('[HEIMDALL][LEXICAL] Fallo en compilación JIT. Retornando texto plano.', error);
+    console.warn('[HEIMDALL][LEXICAL] Fallo en compilación JIT. Retornando vacío.', error);
     return '';
   }
 }
@@ -130,26 +113,21 @@ function extractMarkdownFromLexical(contentNode: unknown): string {
 /**
  * FUNCIÓN SHAPER: mapPayloadToPost
  * @description Transforma la entidad de DB en el contrato inmutable de Zod.
- * @param {unknown} entry - Registro crudo del CMS.
- * @returns {PostWithSlug} Objeto validado.
  */
 function mapPayloadToPost(entry: unknown): PostWithSlug {
-  const raw = entry as RawBlogPostEntry;
+  const raw = entry as RawPayloadPost;
 
-  // 1. Resolución de Autoría
   let authorName = 'Concierge Team';
   if (typeof raw.author === 'object' && raw.author !== null) {
     authorName = raw.author.username ?? (raw.author.email?.split('@')[0] ?? 'Concierge Team');
   }
 
-  // 2. Saneamiento de Taxonomía
   const sanitizedTags = Array.isArray(raw.tags) 
     ? raw.tags.map((t) => t.tag ?? '').filter(Boolean) 
     : [];
 
-  // 3. Resolución de Medios
   const ogImageUrl = (typeof raw.ogImage === 'object' && raw.ogImage !== null) 
-    ? raw.ogImage.url ?? undefined 
+    ? raw.ogImage.url 
     : undefined;
 
   const mappedData = {
@@ -162,18 +140,18 @@ function mapPayloadToPost(entry: unknown): PostWithSlug {
       tags: sanitizedTags,
       ogImage: ogImageUrl,
     },
-    content: extractMarkdownFromLexical(raw.content),
+    content: compileLexicalToMarkdown(raw.content),
   };
 
   return postWithSlugSchema.parse(mappedData);
 }
 
 /**
- * RECUPERACIÓN SOBERANA: getAllPosts
- * @description Obtiene la colección completa de artículos publicados.
+ * @description Obtiene todos los artículos publicados.
+ * @param {Locale} lang - El idioma para la resolución de contenido (SSoT).
  * @returns {Promise<PostWithSlug[]>}
  */
-export async function getAllPosts(): Promise<PostWithSlug[]> {
+export async function getAllPosts(lang: Locale = i18n.defaultLocale): Promise<PostWithSlug[]> {
   const traceId = `BLOG-FETCH-ALL-${Date.now()}`;
 
   if (isBuildPhase && !isDatabaseAvailable) {
@@ -182,31 +160,28 @@ export async function getAllPosts(): Promise<PostWithSlug[]> {
   }
   
   try {
-    console.group(`[HEIMDALL][TRACE] ${traceId}`);
     const payload = await getSovereignPayload();
     const { docs } = await payload.find({
       collection: 'blog-posts',
       where: { status: { equals: 'published' } },
       sort: '-publishedDate',
       limit: 100,
-      depth: 1,
+      locale: lang, // @pilar VI: Internacionalización nativa en query
     });
-    console.log(`[DATA] Docs retrieved: ${docs.length}`);
-    console.groupEnd();
     
     return docs.map(mapPayloadToPost);
   } catch (error) {
-    console.error(`[HEIMDALL][CRITICAL] ${traceId}: Execution failed.`, error);
+    console.error(`[HEIMDALL][CRITICAL] ${traceId}: Failed to fetch editorial content.`, error);
     return [];
   }
 }
 
 /**
- * RECUPERACIÓN INDIVIDUAL: getPostBySlug
  * @description Localiza un artículo por su slug único.
  * @param {string} slug - Identificador semántico.
+ * @param {Locale} lang - Idioma de la solicitud.
  */
-export async function getPostBySlug(slug: string): Promise<PostWithSlug | null> {
+export async function getPostBySlug(slug: string, lang: Locale = i18n.defaultLocale): Promise<PostWithSlug | null> {
   if (isBuildPhase && !isDatabaseAvailable) return null;
 
   try {
@@ -218,7 +193,7 @@ export async function getPostBySlug(slug: string): Promise<PostWithSlug | null> 
         status: { equals: 'published' }
       },
       limit: 1,
-      depth: 1,
+      locale: lang,
     });
     
     return docs[0] ? mapPayloadToPost(docs[0]) : null;
@@ -229,11 +204,11 @@ export async function getPostBySlug(slug: string): Promise<PostWithSlug | null> 
 }
 
 /**
- * FILTRADO TAXONÓMICO: getPostsByTag
  * @description Obtiene artículos vinculados a una etiqueta específica.
  * @param {string} tagSlug - Tag normalizada.
+ * @param {Locale} lang - Idioma de la solicitud.
  */
-export async function getPostsByTag(tagSlug: string): Promise<PostWithSlug[]> {
+export async function getPostsByTag(tagSlug: string, lang: Locale = i18n.defaultLocale): Promise<PostWithSlug[]> {
   if (isBuildPhase && !isDatabaseAvailable) return [];
   
   try {
@@ -250,7 +225,7 @@ export async function getPostsByTag(tagSlug: string): Promise<PostWithSlug[]> {
       },
       sort: '-publishedDate',
       limit: 50,
-      depth: 1,
+      locale: lang,
     });
     
     return docs.map(mapPayloadToPost);

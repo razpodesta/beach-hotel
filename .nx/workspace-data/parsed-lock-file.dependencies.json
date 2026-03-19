@@ -9115,6 +9115,16 @@
     "type": "static"
   },
   {
+    "source": "npm:@payloadcms/email-nodemailer",
+    "target": "npm:nodemailer",
+    "type": "static"
+  },
+  {
+    "source": "npm:@payloadcms/email-nodemailer",
+    "target": "npm:payload",
+    "type": "static"
+  },
+  {
     "source": "npm:@payloadcms/graphql",
     "target": "npm:graphql",
     "type": "static"

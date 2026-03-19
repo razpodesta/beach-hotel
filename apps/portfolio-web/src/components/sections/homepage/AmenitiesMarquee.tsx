@@ -1,8 +1,9 @@
 /**
  * @file apps/portfolio-web/src/components/sections/homepage/AmenitiesMarquee.tsx
- * @description Aparato de visualización de amenidades mediante ticker infinito.
- *              Implementa tipado estricto basado en el esquema de Zod y optimización de renderizado.
- * @version 5.0 - Type-Safe Icon Engine
+ * @description Aparato de visualización de amenidades con tipado estricto y bucles infinitos.
+ *              Refactorizado: Cumplimiento del Manifiesto MACS v1.0 (Acceso Aplanado).
+ *              Implementa orquestación de iconos Lucide y animación de alto rendimiento.
+ * @version 7.0 - MACS Flattened Sync & Performance Hardening
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -12,17 +13,21 @@ import React, { useRef, useMemo } from 'react';
 import * as LucideIcons from 'lucide-react';
 import { Sparkles } from 'lucide-react';
 
+/**
+ * IMPORTACIONES DE INFRAESTRUCTRURA
+ * @pilar V: Adherencia arquitectónica mediante fronteras Nx.
+ */
 import { BlurText } from '../../razBits/BlurText';
 import { useInfiniteCarouselAnimation } from '../../../lib/hooks/use-infinite-carousel-animation';
 import { cn } from '../../../lib/utils/cn';
 
-// IMPORTACIONES DE CONTRATO
+// IMPORTACIONES DE CONTRATO SOBERANO
 import type { Dictionary } from '../../../lib/schemas/dictionary.schema';
 import type { Amenity, AmenityIconType } from '../../../lib/schemas/value_proposition.schema';
 
 /**
  * MAPA DE ICONOS SOBERANO
- * Vincula claves del CMS con componentes de Lucide.
+ * @description Centraliza la resolución de glifos para evitar inyecciones dinámicas inseguras.
  */
 const ICON_MAP: Record<AmenityIconType, LucideIcons.LucideIcon> = {
   wifi: LucideIcons.Wifi,
@@ -44,11 +49,10 @@ const ICON_MAP: Record<AmenityIconType, LucideIcons.LucideIcon> = {
 };
 
 /**
- * SUB-APARATO: AmenityItem
- * Renderiza una cápsula de amenidad con feedback visual boutique.
+ * SUB-APARATO ATÓMICO: AmenityItem
+ * @description Renderiza una cápsula individual con micro-interacciones.
  */
 const AmenityItem = ({ item, isNeon }: { item: Amenity; isNeon?: boolean }) => {
-  // @pilar III: Acceso seguro al mapa de iconos mediante el tipo AmenityIconType
   const Icon = ICON_MAP[item.iconKey] || Sparkles;
 
   return (
@@ -71,27 +75,49 @@ const AmenityItem = ({ item, isNeon }: { item: Amenity; isNeon?: boolean }) => {
 };
 
 /**
- * APARATO PRINCIPAL: AmenitiesMarquee
+ * @interface AmenitiesMarqueeProps
+ * @description Contrato inmutable para la inyección de datos.
  */
-export function AmenitiesMarquee({ dictionary }: { dictionary: Dictionary['homepage']['value_proposition_section'] }) {
+interface AmenitiesMarqueeProps {
+  /** 
+   * @pilar III: Seguridad de Tipos. 
+   * Mapeo directo al aparato 'value_proposition' tras el aplanamiento MACS.
+   */
+  dictionary: Dictionary['value_proposition'];
+}
+
+/**
+ * APARATO PRINCIPAL: AmenitiesMarquee
+ * @description Orquesta los rieles cinemáticos de amenidades del Hotel y Festival.
+ */
+export function AmenitiesMarquee({ dictionary }: AmenitiesMarqueeProps) {
   const trackHotelRef = useRef<HTMLDivElement>(null);
   const trackFestivalRef = useRef<HTMLDivElement>(null);
 
   /**
-   * ORQUESTACIÓN DE ANIMACIÓN (GSAP Engine)
+   * MOTOR DE ANIMACIÓN INFINITA (GSAP Engine)
    */
   useInfiniteCarouselAnimation([
     { ref: trackHotelRef, duration: 100, direction: 1 },
     { ref: trackFestivalRef, duration: 120, direction: -1 },
   ]);
 
-  // @pilar I: Memoización para evitar cálculos de reconciliación innecesarios
-  const hotelList = useMemo(() => dictionary.amenities_hotel, [dictionary.amenities_hotel]);
-  const festivalList = useMemo(() => dictionary.amenities_festival, [dictionary.amenities_festival]);
+  const hotelList = useMemo(() => dictionary?.amenities_hotel ?? [], [dictionary]);
+  const festivalList = useMemo(() => dictionary?.amenities_festival ?? [], [dictionary]);
+
+  /**
+   * GUARDIÁN DE RESILIENCIA (Pilar VIII)
+   * Previene el renderizado de contenedores vacíos si el diccionario falla.
+   */
+  if (!dictionary || (hotelList.length === 0 && festivalList.length === 0)) {
+    return null;
+  }
 
   return (
-    <section className="relative w-full overflow-hidden bg-[#020202] py-24 border-y border-white/5 select-none" aria-label="Hotel & Festival Amenities">
-      {/* Glow Atmosférico */}
+    <section 
+      className="relative w-full overflow-hidden bg-[#020202] py-24 border-y border-white/5 select-none" 
+      aria-label="Hotel & Festival Amenities"
+    >
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(168,85,247,0.03),transparent_70%)] pointer-events-none" />
       
       <div className="relative z-10 space-y-20">
@@ -103,20 +129,20 @@ export function AmenitiesMarquee({ dictionary }: { dictionary: Dictionary['homep
         </div>
 
         <div className="space-y-8 relative">
-          {/* Máscaras de gradiente para suavizar bordes del carrusel */}
+          {/* MÁSCARAS DE DIFUMINADO (Edge Fading) */}
           <div className="absolute left-0 top-0 z-20 h-full w-24 md:w-64 bg-linear-to-r from-[#020202] to-transparent pointer-events-none" />
           <div className="absolute right-0 top-0 z-20 h-full w-24 md:w-64 bg-linear-to-l from-[#020202] to-transparent pointer-events-none" />
 
-          {/* Carrusel Hotel (Derecha) */}
+          {/* Carrusel Hotel (Dirección Horaria) */}
           <div ref={trackHotelRef} className="flex w-max gap-8 will-change-transform">
-            {hotelList.map((item, index) => (
+            {hotelList.map((item: Amenity, index: number) => (
               <AmenityItem key={`hotel-${index}`} item={item} />
             ))}
           </div>
 
-          {/* Carrusel Festival (Izquierda) */}
+          {/* Carrusel Festival (Dirección Anti-horaria) */}
           <div ref={trackFestivalRef} className="flex w-max gap-8 will-change-transform">
-            {festivalList.map((item, index) => (
+            {festivalList.map((item: Amenity, index: number) => (
               <AmenityItem key={`fest-${index}`} item={item} isNeon />
             ))}
           </div>

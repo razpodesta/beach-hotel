@@ -6424,6 +6424,15 @@
         "hash": "sha512-rH34esN4W6JZi8r8tj6kwjdbkfZan1nQjr94TbxlPYPVI58R+2e8/yTw0cCchWPT6VAH4TNyk/Wvgq64UOqwkQ=="
       }
     },
+    "npm:@payloadcms/email-nodemailer": {
+      "type": "npm",
+      "name": "npm:@payloadcms/email-nodemailer",
+      "data": {
+        "version": "3.79.1",
+        "packageName": "@payloadcms/email-nodemailer",
+        "hash": "sha512-A1tmQBQoBrrLOZVxcKCAv802bBWUrb9v/qf/qGgF0//4nUuwQewFlsqoR4SJwFZusWZ//IrQCBMXuoR7XHT5og=="
+      }
+    },
     "npm:@payloadcms/graphql": {
       "type": "npm",
       "name": "npm:@payloadcms/graphql",
@@ -17791,6 +17800,15 @@
         "hash": "sha512-OXdegQq03OmXEjt2hZP33W2YPs/E5BcFQks46+G2gAxs4gHOIVD1u7EqlYLYSKsaIpyKCK9Gbk0ta1/gjRSMRQ=="
       }
     },
+    "npm:nodemailer": {
+      "type": "npm",
+      "name": "npm:nodemailer",
+      "data": {
+        "version": "7.0.12",
+        "packageName": "nodemailer",
+        "hash": "sha512-H+rnK5bX2Pi/6ms3sN4/jRQvYSMltV6vqup/0SFOrxYYY/qoNvhXPlYq3e+Pm9RFJRwrMGbMIwi81M4dxpomhA=="
+      }
+    },
     "npm:normalize-path": {
       "type": "npm",
       "name": "npm:normalize-path",
@@ -24152,6 +24170,21 @@
       },
       {
         "source": "@metashark/cms-core",
+        "target": "npm:@payloadcms/email-nodemailer",
+        "type": "static"
+      },
+      {
+        "source": "@metashark/cms-core",
+        "target": "npm:sharp",
+        "type": "static"
+      },
+      {
+        "source": "@metashark/cms-core",
+        "target": "npm:sharp",
+        "type": "dynamic"
+      },
+      {
+        "source": "@metashark/cms-core",
         "target": "npm:tslib",
         "type": "static"
       },
@@ -24612,6 +24645,11 @@
       },
       {
         "source": "@metashark/monorepo",
+        "target": "npm:@payloadcms/email-nodemailer",
+        "type": "static"
+      },
+      {
+        "source": "@metashark/monorepo",
         "target": "npm:@payloadcms/next",
         "type": "static"
       },
@@ -24762,6 +24800,11 @@
       },
       {
         "source": "@metashark/monorepo",
+        "target": "npm:payload",
+        "type": "dynamic"
+      },
+      {
+        "source": "@metashark/monorepo",
         "target": "npm:postprocessing",
         "type": "static"
       },
@@ -24824,6 +24867,11 @@
         "source": "@metashark/monorepo",
         "target": "@metashark/cms-core",
         "type": "static"
+      },
+      {
+        "source": "@metashark/monorepo",
+        "target": "@metashark/cms-core",
+        "type": "dynamic"
       }
     ],
     "npm:@apidevtools/json-schema-ref-parser": [
@@ -34279,6 +34327,18 @@
       {
         "source": "npm:@payloadcms/drizzle",
         "target": "npm:uuid@9.0.0",
+        "type": "static"
+      }
+    ],
+    "npm:@payloadcms/email-nodemailer": [
+      {
+        "source": "npm:@payloadcms/email-nodemailer",
+        "target": "npm:nodemailer",
+        "type": "static"
+      },
+      {
+        "source": "npm:@payloadcms/email-nodemailer",
+        "target": "npm:payload",
         "type": "static"
       }
     ],
@@ -57750,5 +57810,5 @@
   },
   "version": "6.0",
   "errors": [],
-  "computedAt": 1773795041477
+  "computedAt": 1773881306266
 }

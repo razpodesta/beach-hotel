@@ -1,38 +1,45 @@
 /**
- * @file dictionary.schema.ts
+ * @file apps/portfolio-web/src/lib/schemas/dictionary.schema.ts
  * @description Constitución Soberana de Datos (Master SSoT). 
- *              Orquestador definitivo de los contratos de contenido para el ecosistema.
- *              Nivelado: Integración del Protocolo 33 y validación de perfil.
- * @version 9.0 - Protocol 33 Full Integration Sync
+ *              Orquesta la validación integral de todos los activos i18n del ecosistema.
+ *              Refactorizado: Aplanamiento estructural para garantizar coincidencia 
+ *              con el ensamblador y eliminar fallos de build (Heimdall Sync).
+ * @version 12.0 - Flattened Architecture Standard
  * @author Raz Podestá - MetaShark Tech
  */
 
 import { z } from 'zod';
 
-import { headerSchema } from './header.schema';
-import { navLinksSchema } from './nav-links.schema';
-import { footerSchema } from './footer.schema';
-import { heroSchema } from './hero.schema';
-import { aboutSectionSchema } from './about_section.schema';
-import { valuePropositionSectionSchema } from './value_proposition.schema';
-import { contactMessagesSchema } from './contact.schema';
-import { historySectionSchema } from './history_section.schema';
-import { aiGallerySectionSchema } from './homepage.schema';
-import { systemStatusSchema } from './system_status.schema';
-import { visitorHudSchema } from './visitor_hud.schema';
-import { languageSwitcherSchema } from './language_switcher.schema';
-import { legalPageSchema } from './legal_page.schema';
-import { blogPageSchema } from './blog.schema';
-import { notFoundSchema, maintenanceSchema } from './not_found.schema';
-import { missionVisionSchema } from './mission_vision.schema';
-import { profilePageSchema } from './profile_page.schema';
+/**
+ * IMPORTACIONES DE ESQUEMAS ATÓMICOS
+ * @pilar V: Adherencia arquitectónica mediante rutas relativas internas.
+ */
+import { headerSchema } from './header.schema.js';
+import { navLinksSchema } from './nav-links.schema.js';
+import { footerSchema } from './footer.schema.js';
+import { heroSchema } from './hero.schema.js';
+import { aboutSectionSchema } from './about_section.schema.js';
+import { valuePropositionSectionSchema } from './value_proposition.schema.js';
+import { contactMessagesSchema } from './contact.schema.js';
+import { historySectionSchema } from './history_section.schema.js';
+import { aiGallerySectionSchema } from './homepage.schema.js';
+import { systemStatusSchema } from './system_status.schema.js';
+import { visitorHudSchema } from './visitor_hud.schema.js';
+import { languageSwitcherSchema } from './language_switcher.schema.js';
+import { legalPageSchema } from './legal_page.schema.js';
+import { blogPageSchema } from './blog.schema.js';
+import { notFoundSchema, maintenanceSchema, serverErrorSchema } from './not_found.schema.js';
+import { missionVisionSchema } from './mission_vision.schema.js';
+import { profilePageSchema } from './profile_page.schema.js';
+import { suiteGallerySchema } from './suite_gallery.schema.js';
 
 /**
  * ESQUEMA MAESTRO: dictionarySchema
- * @description Contrato inmutable contra el cual se validan todos los archivos JSON de mensajes.
- * @pilar III: Seguridad de Tipos Absoluta.
+ * @description Define la estructura final del objeto Dictionary tras el pre-build.
+ * @pilar III: Seguridad de Tipos Absoluta e Inferencia Obligatoria.
  */
 export const dictionarySchema = z.object({
+  // --- INFRAESTRUCTURA DEL SHELL (Soberanía Global) ---
   header: headerSchema,
   'nav-links': navLinksSchema,
   footer: footerSchema,
@@ -40,33 +47,44 @@ export const dictionarySchema = z.object({
   visitor_hud: visitorHudSchema,
   language_switcher: languageSwitcherSchema,
   
-  // Aparatos granulares de marca y narrativa
+  // --- APARATOS DE NARRATIVA (Aplanados para Sincronización SSoT) ---
+  /** @pilar I: Mapeo directo de hero.json */
   hero: heroSchema,
+  /** @pilar I: Mapeo directo de about.json */
   about: aboutSectionSchema,
+  /** @pilar I: Mapeo directo de value_proposition.json */
   value_proposition: valuePropositionSectionSchema,
+  /** @pilar I: Mapeo directo de ai_gallery_section.json */
+  ai_gallery_section: aiGallerySectionSchema,
+  /** @pilar I: Mapeo directo de suite_gallery.json */
+  suite_gallery: suiteGallerySchema,
+  
+  // --- APARATOS INSTITUCIONALES Y EDITORIALES ---
   contact: contactMessagesSchema,
   history: historySectionSchema,
-  ai_gallery_section: aiGallerySectionSchema,
   blog_page: blogPageSchema,
   mission_vision: missionVisionSchema,
-
-  /**
-   * @pilar I: Visión Holística.
-   * Integración del centro de mando del usuario (Reputación & XP).
-   */
   profile_page: profilePageSchema,
   
+  // --- DOMINIOS DE CONTENIDO ADICIONAL ---
+  /** Llave técnica para metadatos generales de la landing (opcional) */
+  homepage: z.record(z.string(), z.unknown()).optional(),
+
+  // --- APARATOS LEGALES (Compliance) ---
   legal: z.object({
     privacy_policy: legalPageSchema,
     terms_of_service: legalPageSchema,
   }),
 
+  // --- ESTADOS DEL SISTEMA Y RESILIENCIA (Pilar VIII) ---
   not_found: notFoundSchema,
   maintenance: maintenanceSchema,
+  server_error: serverErrorSchema,
 });
 
 /**
- * TIPO SOBERANO INFERIDO
- * Fuente de verdad única para props y hooks en toda la plataforma web.
+ * INFERENCIA SOBERANA
+ * @description El tipo Dictionary se deriva automáticamente del contrato SSoT.
+ * @pilar III: Erradicación de any/manual interfaces.
  */
 export type Dictionary = z.infer<typeof dictionarySchema>;

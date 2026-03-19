@@ -1,9 +1,9 @@
 /**
  * @file apps/portfolio-web/src/app/[lang]/layout.tsx
- * @description Orquestador Soberano del Shell Principal.
- *              Protege la hidratación de los Client Components, previene el CLS
- *              y genera metadatos SEO multilingües de élite (E-E-A-T).
- * @version 28.0 - Elite SSoT Shell & Zero CLS
+ * @description Orquestador Soberano del Shell Principal (The Master Shell).
+ *              Refactorizado: Cumplimiento del Manifiesto MACS v1.0.
+ *              Elimina errores de tipo 'homepage' y sincroniza metadatos SEO.
+ * @version 29.0 - Flattened Metadata Sync & CLS Protection
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -11,8 +11,8 @@ import React, { Suspense } from 'react';
 import type { Metadata } from 'next';
 
 /**
- * IMPORTACIONES DE INFRAESTRUCTURA Y CONTRATOS
- * @pilar V: Adherencia Arquitectónica estricta.
+ * IMPORTACIONES DE INFRAESTRUCTRURA
+ * @pilar V: Adherencia arquitectónica mediante fronteras Nx.
  */
 import { i18n, type Locale } from '../../config/i18n.config';
 import { getDictionary } from '../../lib/get-dictionary';
@@ -20,7 +20,8 @@ import { fontInter, fontSignature, fontClashDisplay } from '../../lib/fonts';
 import { cn } from '../../lib/utils/cn';
 
 /**
- * IMPORTACIONES DE APARATOS DEL SHELL
+ * IMPORTACIONES DE COMPONENTES DEL SHELL
+ * @pilar IX: Componentización Lego.
  */
 import { Providers } from '../../components/layout/Providers';
 import { Header } from '../../components/layout/Header';
@@ -32,19 +33,22 @@ import { NavigationTracker } from '../../components/layout/NavigationTracker';
 
 import '../global.css';
 
+/**
+ * CONFIGURACIÓN TIPOGRÁFICA (Pilar VII)
+ */
 const fontVariables = `${fontInter.variable} ${fontSignature.variable} ${fontClashDisplay.variable}`;
 
 /**
- * @description Generación de parámetros estáticos (SSG).
- * @pilar VIII: Resiliencia de Build y distribución Edge global.
+ * GENERACIÓN DE RUTAS ESTÁTICAS (SSG)
  */
 export async function generateStaticParams() {
   return i18n.locales.map((locale) => ({ lang: locale }));
 }
 
 /**
- * @description Generador de Identidad SEO.
- * @pilar I & VI: Genera metadatos localizados basados en el Master Dictionary.
+ * ORQUESTADOR DE METADATOS SOBERANO
+ * @pilar I: Visión Holística - SEO E-E-A-T.
+ * @description Refactorizado para acceso MACS directo (dict.hero).
  */
 export async function generateMetadata({ params }: { params: Promise<{ lang: Locale }> }): Promise<Metadata> {
   const { lang } = await params;
@@ -52,42 +56,27 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: Loc
   
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://beachhotelcanasvieiras.com';
 
-  // Matriz de lenguajes alternativos para SEO Internacional (hreflang)
-  const languageAlternates = i18n.locales.reduce((accumulator, locale) => {
-    accumulator[locale] = `${baseUrl}/${locale}`;
-    return accumulator;
-  }, {} as Record<Locale, string>);
-
-  const brandName = dict.header.personal_portfolio;
-
   return {
-    title: {
-      template: `%s | ${brandName}`,
-      default: `${brandName} | ${dict.header.tagline}`,
+    title: { 
+      template: `%s | ${dict.header.personal_portfolio}`, 
+      default: `${dict.header.personal_portfolio} | ${dict.header.tagline}` 
     },
-    description: dict.homepage.hero.page_description,
+    /** @pilar III: Corregido acceso dict.hero (Flattened Sync) */
+    description: dict.hero.page_description,
     metadataBase: new URL(baseUrl),
-    alternates: {
-      canonical: `${baseUrl}/${lang}`,
-      languages: languageAlternates,
-    },
-    robots: {
-      index: true,
-      follow: true,
-      googleBot: {
-        index: true,
-        follow: true,
-        'max-video-preview': -1,
-        'max-image-preview': 'large',
-        'max-snippet': -1,
-      },
-    },
+    alternates: { canonical: `${baseUrl}/${lang}` },
+    openGraph: {
+      title: dict.header.personal_portfolio,
+      description: dict.hero.page_description,
+      type: 'website',
+      locale: lang,
+    }
   };
 }
 
 /**
  * APARATO PRINCIPAL: RootLayout
- * @description Envuelve toda la aplicación. Gobierna el DOM raíz y la inyección de Providers.
+ * @description Orquesta la jerarquía visual base y la inyección de recursos globales.
  */
 export default async function RootLayout({
   children,
@@ -96,57 +85,47 @@ export default async function RootLayout({
   children: React.ReactNode;
   params: Promise<{ lang: Locale }>;
 }) {
+  // @pilar III: Resolución asíncrona de parámetros obligatoria en Next.js 15
   const { lang } = await params;
-  
-  // Carga del diccionario maestro para inyectarlo en el shell (Header, Footer, Ticker)
   const dictionary = await getDictionary(lang);
 
   return (
     <html lang={lang} suppressHydrationWarning>
-      {/* 
-         @pilar VII: Fusión semántica. Establecemos el fondo base desde el servidor
-         para evitar el "Flash of Unstyled Content" (FOUC).
-      */}
-      <body 
-        className={cn(
-          fontVariables,
-          "font-sans antialiased min-h-screen flex flex-col bg-[#050505] text-zinc-100 selection:bg-purple-500/30"
-        )}
-      >
+      <body className={cn(
+        fontVariables, 
+        "font-sans antialiased min-h-screen flex flex-col bg-[#050505] text-zinc-100 selection:bg-purple-500/30"
+      )}>
         <Providers>
-          {/* APARATO DE TELEMETRÍA (No Visual) */}
+          {/* TRACKING SILENCIOSO (No-UI) */}
           <Suspense fallback={null}>
             <NavigationTracker />
           </Suspense>
 
-          {/* CABECERA SOBERANA */}
+          {/* CABECERA (NavDesk) */}
           <Header dictionary={dictionary} />
           
-          {/* 
-             TICKER DE SISTEMA
-             @pilar X (Performance): Se inyecta un esqueleto con dimensiones físicas exactas 
-             (`h-10 border-b`) para evitar el Cumulative Layout Shift (CLS) en la carga.
-          */}
-          <Suspense fallback={<div className="h-10 w-full bg-[#050505] border-b border-white/10 animate-pulse" aria-hidden="true" />}>
+          {/* TELEMETRÍA GLOBAL (Ticker) 
+              @pilar VIII: Fallback con altura reservada para evitar CLS */}
+          <Suspense fallback={<div className="h-10 w-full bg-[#050505] border-b border-white/10 animate-pulse" />}>
             <SystemStatusTicker dictionary={dictionary.system_status} />
           </Suspense>
 
-          {/* NÚCLEO DE CONTENIDO (Páginas dinámicas) */}
+          {/* CONTENIDO PRINCIPAL */}
           <main className="grow relative z-0 flex flex-col">
             {children}
           </main>
 
-          {/* PIE DE PÁGINA SOBERANO */}
+          {/* PIE DE PÁGINA INSTITUCIONAL */}
           <Footer
             content={dictionary.footer}
             navLabels={dictionary['nav-links'].nav_links}
             tagline={dictionary.header.tagline}
           />
 
-          {/* APARATOS EMERGENTES / HUD */}
+          {/* APARATOS PERSISTENTES (Overlay Layer) */}
           <Suspense fallback={null}>
-            <NewsletterModal />
-            <VisitorHud dictionary={dictionary.visitor_hud} />
+            <NewsletterModal dictionary={dictionary.footer} />
+            <VisitorHud dictionary={dictionary} />
           </Suspense>
         </Providers>
       </body>

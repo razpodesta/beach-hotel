@@ -1,9 +1,9 @@
 /**
- * @file page.tsx (Quienes Somos)
- * @description Orquestador soberano de la página "Nuestra Historia".
- *              Proyecta el legado del hotel mediante renderizado en servidor (SSR),
- *              datos estructurados y una coreografía de animaciones de alta fidelidad.
- * @version 3.0 - Elite Hospitality Resilience
+ * @file apps/portfolio-web/src/app/[lang]/quienes-somos/page.tsx
+ * @description Orquestador soberano de la narrativa institucional (Nuestra Historia).
+ *              Implementa renderizado en servidor (SSR), metadatos dinámicos y 
+ *              seguridad de tipos absoluta mediante intersección de contratos.
+ * @version 5.0 - Elite Type-Safe Integration (No-Any Edition)
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -13,7 +13,7 @@ import Link from 'next/link';
 
 /**
  * IMPORTACIONES DE INFRAESTRUCTRURA
- * @pilar V: Adherencia arquitectónica.
+ * @pilar V: Adherencia arquitectónica estricta.
  */
 import { BlurText } from '../../../components/razBits/BlurText';
 import { FadeIn } from '../../../components/ui/FadeIn';
@@ -21,10 +21,12 @@ import { type Locale } from '../../../config/i18n.config';
 import { getDictionary } from '../../../lib/get-dictionary';
 import { cn } from '../../../lib/utils/cn';
 import { getLocalizedHref } from '../../../lib/utils/link-helpers';
+import type { Dictionary } from '../../../lib/schemas/dictionary.schema';
+import type { QuienesSomosDictionary } from '../../../lib/schemas/quienes_somos.schema';
 
 /**
  * @interface PageProps
- * @description Contrato de parámetros asíncronos para Next.js 15.
+ * @description Contrato de parámetros asíncronos requerido por Next.js 15.
  */
 interface PageProps { 
   params: Promise<{ lang: Locale }> 
@@ -32,7 +34,7 @@ interface PageProps {
 
 /**
  * @interface LocalPillar
- * @description Estructura extendida de un pilar de hospitalidad para la UI.
+ * @description Contrato visual para los pilares de hospitalidad.
  */
 interface LocalPillar {
   title: string;
@@ -42,26 +44,31 @@ interface LocalPillar {
 
 /**
  * GENERACIÓN DE METADATOS SOBERANOS
- * @pilar I: Visión Holística - SEO E-E-A-T.
+ * @pilar I: Visión Holística - SEO E-E-A-T con tipado estricto.
  */
 export async function generateMetadata(props: PageProps): Promise<Metadata> {
   const { lang } = await props.params;
   const dict = await getDictionary(lang);
   
-  if (!dict.quienes_somos) return { title: 'Nossa História | Beach Hotel' };
+  /**
+   * @pilar III: Seguridad de Tipos.
+   * Casting seguro mediante intersección para evitar 'any'.
+   */
+  const t = (dict as Dictionary & { quienes_somos: QuienesSomosDictionary }).quienes_somos;
+  
+  if (!t) return { title: 'Nossa História | Beach Hotel' };
 
-  const { page_title, page_description } = dict.quienes_somos;
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://beachhotelcanasvieiras.com';
 
   return { 
-    title: `${page_title} | Beach Hotel Canasvieiras`, 
-    description: page_description,
+    title: `${t.page_title} | Beach Hotel Canasvieiras`, 
+    description: t.page_description,
     alternates: {
       canonical: `${baseUrl}/${lang}/quienes-somos`,
     },
     openGraph: {
-      title: page_title,
-      description: page_description,
+      title: t.page_title,
+      description: t.page_description,
       type: 'website',
       url: `${baseUrl}/${lang}/quienes-somos`,
       siteName: 'Beach Hotel Canasvieiras',
@@ -71,26 +78,27 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 
 /**
  * APARATO PRINCIPAL: QuienesSomosPage
- * @description Orquesta el contenido narrativo desde el servidor.
+ * @description Orquestador de la narrativa de legado del santuario.
  */
 export default async function QuienesSomosPage(props: PageProps) {
   const { lang } = await props.params;
-  
-  // Protocolo Heimdall: Trazabilidad de orquestación
-  console.log(`[HEIMDALL][SSR] Orchestrating QuienesSomosPage for locale: ${lang}`);
-
   const dict = await getDictionary(lang);
-  const t = dict.quienes_somos;
+  
+  /**
+   * @pilar III: Erradicación de 'any'. 
+   * Se utiliza una intersección de tipos controlada.
+   */
+  const t = (dict as Dictionary & { quienes_somos: QuienesSomosDictionary }).quienes_somos;
 
-  // @pilar VIII: Guardia de Resiliencia ante fallos de carga de diccionario
+  // @pilar VIII: Guardia de Resiliencia ante datos nulos
   if (!t) {
-    console.error(`[HEIMDALL][CRITICAL] Missing 'quienes_somos' dictionary for ${lang}`);
+    console.error(`[HEIMDALL][CRITICAL] Dictionary key 'quienes_somos' missing for locale: ${lang}`);
     return null;
   }
 
   /**
    * PROCESAMIENTO DE PILARES
-   * @pilar III: Seguridad de Tipos Absoluta.
+   * Mapeo de datos desde el CMS hacia la coreografía visual.
    */
   const processedPillars: LocalPillar[] = [
     { ...t.luxury_pillar, color: 'text-purple-400' },
@@ -126,7 +134,7 @@ export default async function QuienesSomosPage(props: PageProps) {
 
         {/* 2. GRID DE HOSPITALIDAD: Valores Fundamentales */}
         <section className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12 mb-32" aria-label="Nossos pilares de excelência">
-          {processedPillars.map((pillar, i) => (
+          {processedPillars.map((pillar: LocalPillar, i: number) => (
             <FadeIn key={`pillar-${i}`} delay={0.5 + (i * 0.1)} yOffset={30}>
               <div className={cn(
                 "h-full p-10 rounded-[2.5rem] border border-white/5 bg-zinc-900/30 backdrop-blur-sm transition-all duration-700",

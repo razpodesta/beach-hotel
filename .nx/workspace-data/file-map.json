@@ -61,6 +61,110 @@
   "fileMap": {
     "nonProjectFiles": [],
     "projectFileMap": {
+      "@metashark/testing-utils": [
+        {
+          "file": "packages/testing-utils/.spec.swcrc",
+          "hash": "18201067170784284381"
+        },
+        {
+          "file": "packages/testing-utils/README.md",
+          "hash": "16269602868918243062"
+        },
+        {
+          "file": "packages/testing-utils/eslint.config.mjs",
+          "hash": "685157097331647975",
+          "deps": [
+            "npm:jsonc-eslint-parser"
+          ]
+        },
+        {
+          "file": "packages/testing-utils/package.json",
+          "hash": "3835705025411571502",
+          "deps": [
+            "npm:react",
+            "npm:react-dom",
+            "npm:@faker-js/faker",
+            "npm:msw",
+            "npm:@testing-library/react",
+            "npm:next-themes",
+            "npm:tslib"
+          ]
+        },
+        {
+          "file": "packages/testing-utils/project.json",
+          "hash": "5887306272548612965"
+        },
+        {
+          "file": "packages/testing-utils/src/index.d.ts",
+          "hash": "8407376922395440544"
+        },
+        {
+          "file": "packages/testing-utils/src/index.ts",
+          "hash": "10496210136792617449"
+        },
+        {
+          "file": "packages/testing-utils/src/lib/factories/user.factory.d.ts",
+          "hash": "16152805565536285395"
+        },
+        {
+          "file": "packages/testing-utils/src/lib/factories/user.factory.ts",
+          "hash": "16366464358184771164",
+          "deps": [
+            "npm:@faker-js/faker"
+          ]
+        },
+        {
+          "file": "packages/testing-utils/src/lib/mocks/handlers.d.ts",
+          "hash": "6456558549446067856"
+        },
+        {
+          "file": "packages/testing-utils/src/lib/mocks/handlers.ts",
+          "hash": "6682892904495886246"
+        },
+        {
+          "file": "packages/testing-utils/src/lib/mocks/server.d.ts",
+          "hash": "879230018059988503",
+          "deps": [
+            "npm:msw"
+          ]
+        },
+        {
+          "file": "packages/testing-utils/src/lib/mocks/server.ts",
+          "hash": "5072969720175049260",
+          "deps": [
+            "npm:msw"
+          ]
+        },
+        {
+          "file": "packages/testing-utils/src/lib/rendering/custom-render.d.ts",
+          "hash": "16330743998609248232",
+          "deps": [
+            "npm:react",
+            "npm:@testing-library/react"
+          ]
+        },
+        {
+          "file": "packages/testing-utils/src/lib/rendering/custom-render.tsx",
+          "hash": "5941408186728530533",
+          "deps": [
+            "npm:react",
+            "npm:@testing-library/react",
+            "npm:next-themes"
+          ]
+        },
+        {
+          "file": "packages/testing-utils/src/lib/testing-utils.ts",
+          "hash": "16045256856501043472"
+        },
+        {
+          "file": "packages/testing-utils/tsconfig.json",
+          "hash": "12804883564201542009"
+        },
+        {
+          "file": "packages/testing-utils/tsconfig.lib.json",
+          "hash": "94856704134188621"
+        }
+      ],
       "@metashark/protocol-33": [
         {
           "file": "packages/protocol-33/.babelrc",
@@ -111,6 +215,198 @@
         {
           "file": "packages/protocol-33/tsconfig.lib.json",
           "hash": "9779397125517379911"
+        }
+      ],
+      "@metashark/cms-core": [
+        {
+          "file": "packages/cms/core/README.md",
+          "hash": "15554027265428607455"
+        },
+        {
+          "file": "packages/cms/core/eslint.config.mjs",
+          "hash": "12190544393852254075",
+          "deps": [
+            "npm:typescript-eslint",
+            "npm:eslint-plugin-jest"
+          ]
+        },
+        {
+          "file": "packages/cms/core/package.json",
+          "hash": "5223153161860239255",
+          "deps": [
+            "npm:@payloadcms/email-nodemailer",
+            "npm:sharp",
+            "npm:tslib"
+          ]
+        },
+        {
+          "file": "packages/cms/core/project.json",
+          "hash": "15176425134223315432"
+        },
+        {
+          "file": "packages/cms/core/src/collections/Access.ts",
+          "hash": "4007316447992169288",
+          "deps": [
+            "npm:payload"
+          ]
+        },
+        {
+          "file": "packages/cms/core/src/collections/BlogPosts.ts",
+          "hash": "15018890128103977215",
+          "deps": [
+            "npm:payload",
+            "npm:@payloadcms/richtext-lexical"
+          ]
+        },
+        {
+          "file": "packages/cms/core/src/collections/Media.ts",
+          "hash": "2047007454686425602",
+          "deps": [
+            "npm:payload"
+          ]
+        },
+        {
+          "file": "packages/cms/core/src/collections/Projects.ts",
+          "hash": "10595776852741385557",
+          "deps": [
+            "npm:payload"
+          ]
+        },
+        {
+          "file": "packages/cms/core/src/collections/Users.ts",
+          "hash": "10034198326389056350",
+          "deps": [
+            "npm:payload",
+            "npm:uuid"
+          ]
+        },
+        {
+          "file": "packages/cms/core/src/index.ts",
+          "hash": "2318139829810926307"
+        },
+        {
+          "file": "packages/cms/core/src/payload.config.ts",
+          "hash": "8238572041638048803",
+          "deps": [
+            "npm:payload",
+            "npm:@payloadcms/db-postgres",
+            "npm:@payloadcms/richtext-lexical",
+            "npm:@payloadcms/email-nodemailer",
+            [
+              "npm:sharp",
+              "dynamic"
+            ]
+          ]
+        },
+        {
+          "file": "packages/cms/core/tsconfig.json",
+          "hash": "8317828428320121955"
+        },
+        {
+          "file": "packages/cms/core/tsconfig.lib.json",
+          "hash": "3775186848885536549"
+        },
+        {
+          "file": "packages/cms/core/tsconfig.tsbuildinfo",
+          "hash": "10611428456138163272"
+        }
+      ],
+      "tests": [
+        {
+          "file": "tests/apps/portfolio-web/components/LiveStatusTicker.spec.d.ts",
+          "hash": "12345030752168512035"
+        },
+        {
+          "file": "tests/apps/portfolio-web/components/LiveStatusTicker.spec.ts",
+          "hash": "5146797763067713204"
+        },
+        {
+          "file": "tests/jest.config.d.ts",
+          "hash": "4656988560849933836"
+        },
+        {
+          "file": "tests/jest.config.d.ts.map",
+          "hash": "589721261724739220"
+        },
+        {
+          "file": "tests/jest.config.ts",
+          "hash": "17982218132478925057"
+        },
+        {
+          "file": "tests/project.json",
+          "hash": "18252000667970237050"
+        },
+        {
+          "file": "tests/tsconfig.json",
+          "hash": "15898928764642766621"
+        },
+        {
+          "file": "tests/tsconfig.tsbuildinfo",
+          "hash": "10375109724276731928"
+        }
+      ],
+      "@metashark/auth-shield": [
+        {
+          "file": "packages/auth-shield/README.md",
+          "hash": "8699780366713087146"
+        },
+        {
+          "file": "packages/auth-shield/eslint.config.mjs",
+          "hash": "7885312352449748209",
+          "deps": [
+            [
+              "npm:jsonc-eslint-parser",
+              "dynamic"
+            ]
+          ]
+        },
+        {
+          "file": "packages/auth-shield/package.json",
+          "hash": "22378432989394394",
+          "deps": [
+            "npm:@types/bcryptjs",
+            "npm:@types/jsonwebtoken",
+            "npm:bcryptjs",
+            "npm:jsonwebtoken",
+            "npm:tslib"
+          ]
+        },
+        {
+          "file": "packages/auth-shield/project.json",
+          "hash": "4925871394781037072"
+        },
+        {
+          "file": "packages/auth-shield/src/index.ts",
+          "hash": "12550811978168567675"
+        },
+        {
+          "file": "packages/auth-shield/src/lib/crypto.ts",
+          "hash": "18395952019876602590",
+          "deps": [
+            "npm:bcryptjs"
+          ]
+        },
+        {
+          "file": "packages/auth-shield/src/lib/token.ts",
+          "hash": "215175184019023078",
+          "deps": [
+            "npm:jsonwebtoken"
+          ]
+        },
+        {
+          "file": "packages/auth-shield/src/lib/types.ts",
+          "hash": "106442762050097634",
+          "deps": [
+            "npm:jsonwebtoken"
+          ]
+        },
+        {
+          "file": "packages/auth-shield/tsconfig.json",
+          "hash": "14597098418009976553"
+        },
+        {
+          "file": "packages/auth-shield/tsconfig.lib.json",
+          "hash": "10316145138534235478"
         }
       ],
       "@metashark/cms-ui": [
@@ -171,127 +467,6 @@
         {
           "file": "packages/cms/ui/tsconfig.lib.json",
           "hash": "1592622775211130803"
-        }
-      ],
-      "@metashark/cms-core": [
-        {
-          "file": "packages/cms/core/README.md",
-          "hash": "15554027265428607455"
-        },
-        {
-          "file": "packages/cms/core/eslint.config.mjs",
-          "hash": "12190544393852254075",
-          "deps": [
-            "npm:typescript-eslint",
-            "npm:eslint-plugin-jest"
-          ]
-        },
-        {
-          "file": "packages/cms/core/package.json",
-          "hash": "1776120112147790959",
-          "deps": [
-            "npm:tslib"
-          ]
-        },
-        {
-          "file": "packages/cms/core/project.json",
-          "hash": "15176425134223315432"
-        },
-        {
-          "file": "packages/cms/core/src/collections/Access.ts",
-          "hash": "4007316447992169288",
-          "deps": [
-            "npm:payload"
-          ]
-        },
-        {
-          "file": "packages/cms/core/src/collections/BlogPosts.ts",
-          "hash": "15018890128103977215",
-          "deps": [
-            "npm:payload",
-            "npm:@payloadcms/richtext-lexical"
-          ]
-        },
-        {
-          "file": "packages/cms/core/src/collections/Media.ts",
-          "hash": "2047007454686425602",
-          "deps": [
-            "npm:payload"
-          ]
-        },
-        {
-          "file": "packages/cms/core/src/collections/Projects.ts",
-          "hash": "5423754705800027960",
-          "deps": [
-            "npm:payload"
-          ]
-        },
-        {
-          "file": "packages/cms/core/src/collections/Users.ts",
-          "hash": "14451538920904772589",
-          "deps": [
-            "npm:payload",
-            "npm:uuid"
-          ]
-        },
-        {
-          "file": "packages/cms/core/src/index.ts",
-          "hash": "1268274889599812866"
-        },
-        {
-          "file": "packages/cms/core/src/payload.config.ts",
-          "hash": "989522674621278947",
-          "deps": [
-            "npm:payload",
-            "npm:@payloadcms/db-postgres",
-            "npm:@payloadcms/richtext-lexical"
-          ]
-        },
-        {
-          "file": "packages/cms/core/tsconfig.json",
-          "hash": "8317828428320121955"
-        },
-        {
-          "file": "packages/cms/core/tsconfig.lib.json",
-          "hash": "8774739362798239026"
-        },
-        {
-          "file": "packages/cms/core/tsconfig.tsbuildinfo",
-          "hash": "10611428456138163272"
-        }
-      ],
-      "tests": [
-        {
-          "file": "tests/apps/portfolio-web/components/LiveStatusTicker.spec.d.ts",
-          "hash": "12345030752168512035"
-        },
-        {
-          "file": "tests/apps/portfolio-web/components/LiveStatusTicker.spec.ts",
-          "hash": "5146797763067713204"
-        },
-        {
-          "file": "tests/jest.config.d.ts",
-          "hash": "4656988560849933836"
-        },
-        {
-          "file": "tests/jest.config.d.ts.map",
-          "hash": "589721261724739220"
-        },
-        {
-          "file": "tests/jest.config.ts",
-          "hash": "17982218132478925057"
-        },
-        {
-          "file": "tests/project.json",
-          "hash": "18252000667970237050"
-        },
-        {
-          "file": "tests/tsconfig.json",
-          "hash": "15898928764642766621"
-        },
-        {
-          "file": "tests/tsconfig.tsbuildinfo",
-          "hash": "10375109724276731928"
         }
       ],
       "@metashark/portfolio-web": [
@@ -596,7 +771,7 @@
         },
         {
           "file": "apps/portfolio-web/src/app/[lang]/layout.tsx",
-          "hash": "12327529476843236037",
+          "hash": "12495709675426758016",
           "deps": [
             "npm:react",
             "npm:next"
@@ -642,7 +817,7 @@
         },
         {
           "file": "apps/portfolio-web/src/app/[lang]/page.tsx",
-          "hash": "9678175983596069691",
+          "hash": "17677593314528830696",
           "deps": [
             "npm:react",
             "npm:next"
@@ -650,7 +825,7 @@
         },
         {
           "file": "apps/portfolio-web/src/app/[lang]/quienes-somos/page.tsx",
-          "hash": "14839814256184983012",
+          "hash": "8859313467614555623",
           "deps": [
             "npm:react",
             "npm:next"
@@ -711,8 +886,9 @@
         },
         {
           "file": "apps/portfolio-web/src/components/layout/Footer.tsx",
-          "hash": "12719362103525126704",
+          "hash": "5981729459700413488",
           "deps": [
+            "npm:react",
             "npm:next",
             "npm:framer-motion",
             "npm:lucide-react"
@@ -720,16 +896,17 @@
         },
         {
           "file": "apps/portfolio-web/src/components/layout/Header.tsx",
-          "hash": "3432149595185881673",
+          "hash": "14226326975230703986",
           "deps": [
             "npm:react",
             "npm:next",
+            "npm:framer-motion",
             "npm:lucide-react"
           ]
         },
         {
           "file": "apps/portfolio-web/src/components/layout/MobileMenu.tsx",
-          "hash": "10894032863191980138",
+          "hash": "8084838560034651122",
           "deps": [
             "npm:react",
             "npm:framer-motion",
@@ -799,7 +976,7 @@
         },
         {
           "file": "apps/portfolio-web/src/components/sections/homepage/AboutSection.tsx",
-          "hash": "9551823235435164855",
+          "hash": "1169832643524889418",
           "deps": [
             "npm:react",
             "npm:next",
@@ -808,7 +985,7 @@
         },
         {
           "file": "apps/portfolio-web/src/components/sections/homepage/AiContentSection.tsx",
-          "hash": "12544846527011647128",
+          "hash": "11339892569603280124",
           "deps": [
             "npm:react",
             "npm:framer-motion",
@@ -817,7 +994,7 @@
         },
         {
           "file": "apps/portfolio-web/src/components/sections/homepage/AmenitiesMarquee.tsx",
-          "hash": "3179943914260310697",
+          "hash": "15872195982828073018",
           "deps": [
             "npm:react",
             "npm:lucide-react"
@@ -856,15 +1033,15 @@
         },
         {
           "file": "apps/portfolio-web/src/components/sections/homepage/HeroCarousel.tsx",
-          "hash": "17416431083970156458",
+          "hash": "8388818891110523454",
           "deps": [
             "npm:react",
+            "npm:next",
             "npm:embla-carousel-react",
             "npm:embla-carousel-fade",
             "npm:embla-carousel-autoplay",
             "npm:framer-motion",
-            "npm:lucide-react",
-            "npm:next"
+            "npm:lucide-react"
           ]
         },
         {
@@ -877,7 +1054,7 @@
         },
         {
           "file": "apps/portfolio-web/src/components/sections/homepage/LiveStatusTicker.tsx",
-          "hash": "1095844264737873309",
+          "hash": "9076556030698761594",
           "deps": [
             "npm:react",
             "npm:lucide-react"
@@ -885,7 +1062,7 @@
         },
         {
           "file": "apps/portfolio-web/src/components/sections/homepage/ValuePropositionSection.tsx",
-          "hash": "6932991438790901738",
+          "hash": "7126289090604714545",
           "deps": [
             "npm:react",
             "npm:framer-motion"
@@ -893,7 +1070,7 @@
         },
         {
           "file": "apps/portfolio-web/src/components/sections/suites/SuiteGallery.tsx",
-          "hash": "6918580608457586743",
+          "hash": "4701217012005988802",
           "deps": [
             "npm:react",
             "npm:lucide-react",
@@ -902,7 +1079,15 @@
         },
         {
           "file": "apps/portfolio-web/src/components/shared/NewsletterForm.tsx",
-          "hash": "11960719612151871112"
+          "hash": "10856059602487623292",
+          "deps": [
+            "npm:react",
+            "npm:react-hook-form",
+            "npm:@hookform/resolvers",
+            "npm:zod",
+            "npm:framer-motion",
+            "npm:lucide-react"
+          ]
         },
         {
           "file": "apps/portfolio-web/src/components/ui/AnimatedQrCode.tsx",
@@ -996,7 +1181,7 @@
         },
         {
           "file": "apps/portfolio-web/src/components/ui/NewsletterModal.tsx",
-          "hash": "11332950289230942462",
+          "hash": "7358654257380540538",
           "deps": [
             "npm:react",
             "npm:framer-motion",
@@ -1075,11 +1260,12 @@
         },
         {
           "file": "apps/portfolio-web/src/components/ui/VisitorHud.tsx",
-          "hash": "8538230464083653647",
+          "hash": "17249140702512753177",
           "deps": [
             "npm:react",
             "npm:framer-motion",
-            "npm:lucide-react"
+            "npm:lucide-react",
+            "@metashark/protocol-33"
           ]
         },
         {
@@ -1112,7 +1298,7 @@
         },
         {
           "file": "apps/portfolio-web/src/lib/blog/actions.ts",
-          "hash": "1780339963902527048",
+          "hash": "3775144977750171353",
           "deps": [
             "npm:payload",
             "@metashark/cms-core"
@@ -1210,7 +1396,7 @@
         },
         {
           "file": "apps/portfolio-web/src/lib/schemas/dictionary.schema.ts",
-          "hash": "8673644206130644814",
+          "hash": "3738189441012801493",
           "deps": [
             "npm:zod"
           ]
@@ -1361,7 +1547,7 @@
         },
         {
           "file": "apps/portfolio-web/src/lib/schemas/value_proposition.schema.ts",
-          "hash": "16680082879784607725",
+          "hash": "14043593622796285923",
           "deps": [
             "npm:zod"
           ]
@@ -1760,181 +1946,13 @@
         },
         {
           "file": "apps/portfolio-web/tsconfig.tsbuildinfo",
-          "hash": "8055216362752856574"
-        }
-      ],
-      "@metashark/auth-shield": [
-        {
-          "file": "packages/auth-shield/README.md",
-          "hash": "8699780366713087146"
-        },
-        {
-          "file": "packages/auth-shield/eslint.config.mjs",
-          "hash": "7885312352449748209",
-          "deps": [
-            [
-              "npm:jsonc-eslint-parser",
-              "dynamic"
-            ]
-          ]
-        },
-        {
-          "file": "packages/auth-shield/package.json",
-          "hash": "22378432989394394",
-          "deps": [
-            "npm:@types/bcryptjs",
-            "npm:@types/jsonwebtoken",
-            "npm:bcryptjs",
-            "npm:jsonwebtoken",
-            "npm:tslib"
-          ]
-        },
-        {
-          "file": "packages/auth-shield/project.json",
-          "hash": "4925871394781037072"
-        },
-        {
-          "file": "packages/auth-shield/src/index.ts",
-          "hash": "12550811978168567675"
-        },
-        {
-          "file": "packages/auth-shield/src/lib/crypto.ts",
-          "hash": "18395952019876602590",
-          "deps": [
-            "npm:bcryptjs"
-          ]
-        },
-        {
-          "file": "packages/auth-shield/src/lib/token.ts",
-          "hash": "215175184019023078",
-          "deps": [
-            "npm:jsonwebtoken"
-          ]
-        },
-        {
-          "file": "packages/auth-shield/src/lib/types.ts",
-          "hash": "106442762050097634",
-          "deps": [
-            "npm:jsonwebtoken"
-          ]
-        },
-        {
-          "file": "packages/auth-shield/tsconfig.json",
-          "hash": "14597098418009976553"
-        },
-        {
-          "file": "packages/auth-shield/tsconfig.lib.json",
-          "hash": "10316145138534235478"
-        }
-      ],
-      "@metashark/testing-utils": [
-        {
-          "file": "packages/testing-utils/.spec.swcrc",
-          "hash": "18201067170784284381"
-        },
-        {
-          "file": "packages/testing-utils/README.md",
-          "hash": "16269602868918243062"
-        },
-        {
-          "file": "packages/testing-utils/eslint.config.mjs",
-          "hash": "685157097331647975",
-          "deps": [
-            "npm:jsonc-eslint-parser"
-          ]
-        },
-        {
-          "file": "packages/testing-utils/package.json",
-          "hash": "3835705025411571502",
-          "deps": [
-            "npm:react",
-            "npm:react-dom",
-            "npm:@faker-js/faker",
-            "npm:msw",
-            "npm:@testing-library/react",
-            "npm:next-themes",
-            "npm:tslib"
-          ]
-        },
-        {
-          "file": "packages/testing-utils/project.json",
-          "hash": "5887306272548612965"
-        },
-        {
-          "file": "packages/testing-utils/src/index.d.ts",
-          "hash": "8407376922395440544"
-        },
-        {
-          "file": "packages/testing-utils/src/index.ts",
-          "hash": "10496210136792617449"
-        },
-        {
-          "file": "packages/testing-utils/src/lib/factories/user.factory.d.ts",
-          "hash": "16152805565536285395"
-        },
-        {
-          "file": "packages/testing-utils/src/lib/factories/user.factory.ts",
-          "hash": "16366464358184771164",
-          "deps": [
-            "npm:@faker-js/faker"
-          ]
-        },
-        {
-          "file": "packages/testing-utils/src/lib/mocks/handlers.d.ts",
-          "hash": "6456558549446067856"
-        },
-        {
-          "file": "packages/testing-utils/src/lib/mocks/handlers.ts",
-          "hash": "6682892904495886246"
-        },
-        {
-          "file": "packages/testing-utils/src/lib/mocks/server.d.ts",
-          "hash": "879230018059988503",
-          "deps": [
-            "npm:msw"
-          ]
-        },
-        {
-          "file": "packages/testing-utils/src/lib/mocks/server.ts",
-          "hash": "5072969720175049260",
-          "deps": [
-            "npm:msw"
-          ]
-        },
-        {
-          "file": "packages/testing-utils/src/lib/rendering/custom-render.d.ts",
-          "hash": "16330743998609248232",
-          "deps": [
-            "npm:react",
-            "npm:@testing-library/react"
-          ]
-        },
-        {
-          "file": "packages/testing-utils/src/lib/rendering/custom-render.tsx",
-          "hash": "5941408186728530533",
-          "deps": [
-            "npm:react",
-            "npm:@testing-library/react",
-            "npm:next-themes"
-          ]
-        },
-        {
-          "file": "packages/testing-utils/src/lib/testing-utils.ts",
-          "hash": "16045256856501043472"
-        },
-        {
-          "file": "packages/testing-utils/tsconfig.json",
-          "hash": "12804883564201542009"
-        },
-        {
-          "file": "packages/testing-utils/tsconfig.lib.json",
-          "hash": "94856704134188621"
+          "hash": "14539919128500117547"
         }
       ],
       "@metashark/monorepo": [
         {
           "file": ".docs/_BITACORA.md",
-          "hash": "4946754060441897881"
+          "hash": "15185517639972297530"
         },
         {
           "file": ".docs/_comandos-pruebas.md",
@@ -1975,6 +1993,10 @@
         {
           "file": ".docs/manifiesto-rutas.md",
           "hash": "11508314177086664130"
+        },
+        {
+          "file": ".docs/manifiesto-schemas-diccionarios.md",
+          "hash": "17278285560113445037"
         },
         {
           "file": ".docs/manifiesto-tipografia.md",
@@ -2037,11 +2059,19 @@
           "hash": "15706242059990761052"
         },
         {
+          "file": "cls",
+          "hash": "3244421341483603138"
+        },
+        {
           "file": "eslint.config.mjs",
           "hash": "895297819790404694",
           "deps": [
             "npm:@nx/eslint-plugin"
           ]
+        },
+        {
+          "file": "git",
+          "hash": "3244421341483603138"
         },
         {
           "file": "jest.config.ts",
@@ -2056,12 +2086,24 @@
           ]
         },
         {
+          "file": "main",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "media/genesis-placeholder-1.png",
+          "hash": "7561193309471798576"
+        },
+        {
+          "file": "media/genesis-placeholder.png",
+          "hash": "7561193309471798576"
+        },
+        {
           "file": "nx.json",
           "hash": "10938813657741318901"
         },
         {
           "file": "package.json",
-          "hash": "1738398812970296756",
+          "hash": "5059872208719024701",
           "deps": [
             "npm:@babel/core",
             "npm:@babel/preset-react",
@@ -2142,6 +2184,7 @@
             "npm:@formatjs/intl-localematcher",
             "npm:@hookform/resolvers",
             "npm:@payloadcms/db-postgres",
+            "npm:@payloadcms/email-nodemailer",
             "npm:@payloadcms/next",
             "npm:@payloadcms/richtext-lexical",
             "npm:@react-spring/three",
@@ -2187,7 +2230,7 @@
         },
         {
           "file": "pnpm-lock.yaml",
-          "hash": "2987000977822753951"
+          "hash": "6375645897222979927"
         },
         {
           "file": "pnpm-workspace.yaml",
@@ -2203,7 +2246,7 @@
         },
         {
           "file": "reports/dictionaries/prematch-report.json",
-          "hash": "8345635497648964643"
+          "hash": "1617969125913231041"
         },
         {
           "file": "scripts/audit-typescript-integrity.mjs",
@@ -2531,12 +2574,18 @@
         },
         {
           "file": "scripts/supabase/seed-database.ts",
-          "hash": "17383693981138392506",
+          "hash": "17471630660631402169",
           "deps": [
             "npm:dotenv",
-            "npm:payload",
             "@metashark/cms-core",
-            "@metashark/portfolio-web"
+            [
+              "npm:payload",
+              "dynamic"
+            ],
+            [
+              "@metashark/cms-core",
+              "dynamic"
+            ]
           ]
         },
         {
@@ -2570,5 +2619,5 @@
       ]
     }
   },
-  "externalNodesHash": "11977821034504127995"
+  "externalNodesHash": "250005607403552109"
 }

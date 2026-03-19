@@ -1,31 +1,46 @@
 /**
- * @file HeroCarousel.tsx
- * @description Orquestador Cinematográfico de la Recepción (LCP Engine). 
+ * @file apps/portfolio-web/src/components/sections/homepage/HeroCarousel.tsx
+ * @description Orquestador Cinemático de la Recepción (LCP Engine). 
  *              Implementa narrativa sensorial de audio, optimización de video y 
- *              telemetría forense de atención.
- * @version 10.0 - Sensory Boutique & LCP Optimized
+ *              telemetría forense de atención. 
+ *              Refactorizado: Sincronización con el esquema aplanado MACS v1.0.
+ * @version 11.0 - Cinematic Resilience & MACS Sync
  * @author Raz Podestá - MetaShark Tech
  */
 
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, useSyncExternalStore } from 'react';
+import { usePathname } from 'next/navigation';
+import Link from 'next/link';
 import useEmblaCarousel from 'embla-carousel-react';
 import Fade from 'embla-carousel-fade';
 import Autoplay from 'embla-carousel-autoplay';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Volume2, VolumeX, Sparkles, ArrowRight} from 'lucide-react';
-import Link from 'next/link';
+import { Volume2, VolumeX, Sparkles, ArrowRight } from 'lucide-react';
 
 /**
  * IMPORTACIONES DE INFRAESTRUCTRURA
+ * @pilar V: Adherencia arquitectónica mediante fronteras Nx.
  */
 import { cn } from '../../../lib/utils/cn';
 import { getLocalizedHref } from '../../../lib/utils/link-helpers';
 import { i18n, type Locale } from '../../../config/i18n.config';
-import { usePathname } from 'next/navigation';
 import type { HeroDictionary } from '../../../lib/schemas/hero.schema';
 
+/**
+ * @interface HeroCarouselProps
+ * @description Contrato explícito para la inyección de contenido localizado.
+ */
+interface HeroCarouselProps {
+  /** Diccionario aplanado validado por SSoT */
+  dictionary: HeroDictionary;
+}
+
+/**
+ * @interface SlideConfig
+ * @description Estructura técnica de cada unidad narrativa en el carrusel.
+ */
 interface SlideConfig {
   id: string;
   titleKey: keyof HeroDictionary;
@@ -38,18 +53,19 @@ interface SlideConfig {
 }
 
 /**
- * Hook de Hidratación de Élite (Pilar X)
+ * Hook de Hidratación de Élite
+ * @pilar VIII: Erradica el parpadeo visual entre SSR y Cliente.
  */
-const useIsMounted = () => useSyncExternalStore(
-  useCallback(() => () => { /* No-op teardown */ }, []), 
-  () => true, 
-  () => false
-);
+function useIsMounted(): boolean {
+  const subscribe = useCallback(() => () => { /* No-op teardown */ }, []);
+  return useSyncExternalStore(subscribe, () => true, () => false);
+}
 
 /**
  * APARATO PRINCIPAL: HeroCarousel
+ * @description Gestiona la experiencia inmersiva inicial del Santuario.
  */
-export function HeroCarousel({ dictionary }: { dictionary: HeroDictionary | undefined }) {
+export function HeroCarousel({ dictionary }: HeroCarouselProps) {
   const isMounted = useIsMounted();
   const pathname = usePathname();
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -57,10 +73,19 @@ export function HeroCarousel({ dictionary }: { dictionary: HeroDictionary | unde
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [isMuted, setIsMuted] = useState(true);
 
-  const currentLang = useMemo(() => 
-    (pathname?.split('/')[1] as Locale) || i18n.defaultLocale, 
-  [pathname]);
+  /**
+   * RESOLUCIÓN DE IDIOMA SOBERANA
+   */
+  const currentLang = useMemo(() => {
+    const segments = pathname?.split('/') ?? [];
+    const candidate = segments[1] as Locale;
+    return i18n.locales.includes(candidate) ? candidate : i18n.defaultLocale;
+  }, [pathname]);
 
+  /**
+   * CONFIGURACIÓN DE NARRATIVAS (DIMENSIONES)
+   * Sincroniza los activos visuales con las llaves del diccionario.
+   */
   const slides = useMemo<SlideConfig[]>(() => [
     {
       id: 'luxury-sanctuary',
@@ -70,7 +95,7 @@ export function HeroCarousel({ dictionary }: { dictionary: HeroDictionary | unde
       videoUrl: "https://cdn.pixabay.com/video/2021/09/01/87113-596486047_large.mp4",
       posterUrl: "/images/hotel/hero-hotel-poster.jpg",
       ctaLink: "/quienes-somos",
-      audioTeaser: "/audio/sanctuary-ambient.mp3" // Audio boutique para el Hotel
+      audioTeaser: "/audio/sanctuary-ambient.mp3"
     },
     {
       id: 'pride-takeover',
@@ -80,10 +105,11 @@ export function HeroCarousel({ dictionary }: { dictionary: HeroDictionary | unde
       videoUrl: "https://cdn.pixabay.com/video/2023/10/24/186358-877995180_large.mp4",
       posterUrl: "/images/festival/hero-festival-poster.jpg",
       ctaLink: "/festival",
-      audioTeaser: "/audio/festival-beat.mp3" // Audio enérgico para el Festival
+      audioTeaser: "/audio/festival-beat.mp3"
     }
   ], []);
 
+  // Inicialización de Motor de Carrusel (Embla)
   const [emblaRef, emblaApi] = useEmblaCarousel(
     { loop: true, duration: 60, skipSnaps: false }, 
     [Fade(), Autoplay({ delay: 9000, stopOnInteraction: false })]
@@ -91,48 +117,67 @@ export function HeroCarousel({ dictionary }: { dictionary: HeroDictionary | unde
 
   /**
    * MOTOR DE AUDIO BOUTIQUE
-   * @description Implementa un fundido de entrada (fade-in) de 3 segundos.
+   * @description Implementa un fundido de entrada (fade-in) para una experiencia de lujo.
    */
   useEffect(() => {
     if (!isMounted || !audioRef.current) return;
     
+    let intervalId: NodeJS.Timeout;
+
     if (!isMuted) {
       audioRef.current.volume = 0;
-      audioRef.current.play().catch(() => console.warn("[HEIMDALL][AUDIO] Autoplay blocked by browser."));
+      audioRef.current.play().catch(() => 
+        console.warn("[HEIMDALL][AUDIO] Autoplay restringido por política de navegador.")
+      );
       
       let vol = 0;
-      const interval = setInterval(() => {
-        if (vol < 0.3) {
+      intervalId = setInterval(() => {
+        if (vol < 0.25) {
           vol += 0.05;
           if (audioRef.current) audioRef.current.volume = vol;
         } else {
-          clearInterval(interval);
+          clearInterval(intervalId);
         }
-      }, 300);
-      return () => clearInterval(interval);
+      }, 200);
     } else {
       audioRef.current.pause();
     }
+
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
   }, [isMuted, isMounted, selectedIndex]);
 
+  /**
+   * PROTOCOLO HEIMDALL: Telemetría de Atención
+   */
   useEffect(() => {
     if (!emblaApi) return;
+    
     const onSelect = () => {
       const index = emblaApi.selectedScrollSnap();
       setSelectedIndex(index);
-      // Pilar IV: Telemetría de atención
       console.log(`[HEIMDALL][UX] Hero_Slide_Focus: ${slides[index].id}`);
     };
+
     emblaApi.on('select', onSelect);
-    return () => { emblaApi.off('select', onSelect); };
+    // @pilar X: Limpieza estricta de eventos
+    return () => {
+      emblaApi.off('select', onSelect);
+    };
   }, [emblaApi, slides]);
 
+  // @pilar VIII: Guardia ante datos inexistentes (Build Safety)
   if (!dictionary || !isMounted) return null;
 
   return (
-    <section className="relative h-screen w-full bg-black overflow-hidden" role="region" aria-label="Luxury Welcome">
+    <section 
+      className="relative h-[95vh] md:h-screen w-full bg-black overflow-hidden" 
+      role="region" 
+      aria-label="Luxury Welcome"
+    >
       {/* 1. CONTROL DE ATMÓSFERA SENSORIAL */}
-      <div className="absolute top-32 right-8 z-50 flex flex-col gap-4">
+      <div className="absolute top-32 right-8 z-50">
         <motion.button
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -152,7 +197,7 @@ export function HeroCarousel({ dictionary }: { dictionary: HeroDictionary | unde
                 exit={{ width: 0, opacity: 0 }}
                 className="text-[9px] font-bold uppercase tracking-widest overflow-hidden whitespace-nowrap"
               >
-                Audio On
+                Audio Active
               </motion.span>
             )}
           </AnimatePresence>
@@ -182,7 +227,7 @@ export function HeroCarousel({ dictionary }: { dictionary: HeroDictionary | unde
                       isActive ? "scale-115" : "scale-100"
                     )}
                   />
-                  {/* Gradiente de Inmersión Soberano */}
+                  {/* Gradientes de Inmersión Soberanos */}
                   <div className="absolute inset-0 bg-radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.8)_100%)" />
                   <div className="absolute inset-0 bg-linear-to-t from-black via-black/20 to-transparent" />
                 </div>
@@ -242,7 +287,7 @@ export function HeroCarousel({ dictionary }: { dictionary: HeroDictionary | unde
             key={i}
             onClick={() => emblaApi?.scrollTo(i)}
             className="group relative p-2 outline-none"
-            aria-label={`Ir al slide ${i + 1}`}
+            aria-label={`Navegar a diapositiva ${i + 1}`}
           >
             <div className={cn(
               "h-1 transition-all duration-500 rounded-full",

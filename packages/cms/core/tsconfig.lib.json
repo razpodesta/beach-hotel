@@ -3,32 +3,12 @@
   "compilerOptions": {
     "composite": true,
     "outDir": "../../../dist/packages/cms/core",
-    /* 
-       @pilar V: Definición de Raíz de Emisión. 
-       Forzamos que la estructura del dist sea plana respecto a src, 
-       cumpliendo con el contrato del package.json.
-    */
     "rootDir": "src",
-    
-    /* 
-       @pilar III: Integridad de ESM.
-       Mantenemos nodenext para que las declaraciones generadas 
-       sean compatibles con el motor de Payload.
-    */
-    "module": "nodenext",
+    "module": "nodenext", 
     "moduleResolution": "nodenext",
     "emitDeclarationOnly": true,
     "declaration": true,
-    "declarationMap": true,
-    "tsBuildInfoFile": "../../../dist/packages/cms/core/tsconfig.lib.tsbuildinfo"
+    "declarationMap": true
   },
-  "include": [
-    "src/**/*.ts",
-    "../payload-types.ts" /* Incluimos los tipos generados que residen un nivel arriba de src */
-  ],
-  "exclude": [
-    "jest.config.ts", 
-    "src/**/*.spec.ts", 
-    "src/**/*.test.ts"
-  ]
+  "include": ["src/**/*.ts"]
 }
