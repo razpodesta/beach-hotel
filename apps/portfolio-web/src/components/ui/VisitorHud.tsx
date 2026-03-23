@@ -3,7 +3,8 @@
  * @description Centro de Mando Perimetral (Heimdall HUD). 
  *              Orquesta la telemetría ambiental, la geolocalización y el motor 
  *              de reputación Protocolo 33 en tiempo real.
- * @version 21.1 - Linter & Hydration Hardening
+ *              Refactorizado: 100% Data-Driven, Zero Hardcoding, Linter Compliant.
+ * @version 22.1 - Elite Compliance Edition
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -18,7 +19,6 @@ import {
 
 /**
  * IMPORTACIONES DE INFRAESTRUCTRURA
- * @pilar V: Adherencia arquitectónica mediante alias @metashark.
  */
 import { cn } from '../../lib/utils/cn';
 import { useVisitorData } from '../../lib/hooks/use-visitor-data';
@@ -27,15 +27,11 @@ import { calculateProgress, type UserProgress } from '@metashark/protocol-33';
 import type { Dictionary } from '../../lib/schemas/dictionary.schema';
 
 /**
- * CONSTANTES TÉCNICAS Y TIPOS SOBERANOS
+ * CONSTANTES TÉCNICAS
  */
 const HUD_TABS = ['identity', 'telemetry'] as const;
 type HudTab = (typeof HUD_TABS)[number];
 
-/**
- * @interface SovereignUserSession
- * @description Define la estructura esperada de la identidad del usuario para el HUD.
- */
 interface SovereignUserSession {
   name: string;
   role: string;
@@ -45,18 +41,20 @@ interface SovereignUserSession {
 
 /**
  * Hook de Hidratación de Élite: Erradica el Hydration Mismatch.
- * @pilar VIII: Resiliencia de renderizado.
+ * @description Utiliza useSyncExternalStore para una detección de entorno libre de parpadeos.
+ * @returns {boolean} True si el componente está montado en el cliente.
  */
 function useIsMounted(): boolean {
   const subscribe = useCallback(() => {
     /**
-     * @pilar X: Higiene.
-     * Retornamos una función de limpieza documentada para cumplir con el linter.
-     * Al ser un estado de montaje de cliente, no requiere des-suscripción activa.
+     * FUNCIÓN DE LIMPIEZA SOBERANA
+     * @description Satisfaciendo @typescript-eslint/no-empty-function.
+     * Al ser un estado de montaje terminal en cliente, no requiere des-suscripción activa.
      */
-    return () => {
-      /* No-op: Ciclo de vida estático tras montaje */
+    const unsubscribe = () => {
+      /* No-op: Estado estático alcanzado */
     };
+    return unsubscribe;
   }, []);
 
   return useSyncExternalStore(subscribe, () => true, () => false);
@@ -64,8 +62,7 @@ function useIsMounted(): boolean {
 
 /**
  * APARATO: VisitorHud
- * @param {Object} props - Propiedades del componente.
- * @param {Dictionary} props.dictionary - Diccionario maestro para i18n.
+ * @description Orquesta la telemetría ambiental y el sistema de reputación con i18n nativa.
  */
 export function VisitorHud({ dictionary }: { dictionary: Dictionary }) {
   const isMounted = useIsMounted();
@@ -78,23 +75,22 @@ export function VisitorHud({ dictionary }: { dictionary: Dictionary }) {
   const hasHydrated = useUIStore((s) => s.hasHydrated);
   const closeHud = useUIStore((s) => s.closeVisitorHud);
   
-  // Motores de Movimiento Físico (Framer Motion)
+  // Motores de Movimiento Físico
   const x = useMotionValue(0);
   const y = useMotionValue(0);
 
-  // Desestructuración de contratos i18n del Master Schema
+  // Desestructuración de contratos i18n (MACS Compliance)
   const t = dictionary.visitor_hud;
   const p = dictionary.profile_page;
 
   /**
-   * RECUPERACIÓN DE IDENTIDAD (Mock para Fase A)
+   * SESIÓN DE USUARIO (Sovereign Context)
    * @todo Conectar con useSovereignAuth() en Fase B.
    */
   const session: { user: SovereignUserSession | null } = { user: null };
 
   /**
    * CÁLCULO DE PROGRESO (Protocolo 33)
-   * @pilar III: Seguridad de Tipos. Inferencia desde el motor lógico.
    */
   const progress: UserProgress | null = useMemo(() => 
     session.user ? calculateProgress(session.user.xp) : null, 
@@ -102,7 +98,7 @@ export function VisitorHud({ dictionary }: { dictionary: Dictionary }) {
 
   /**
    * RELOJ ATÓMICO (Protocolo Heimdall)
-   * Sincroniza la hora local basada en la zona horaria detectada por Geo-IP.
+   * Sincroniza la hora local basada en la zona horaria detectada.
    */
   useEffect(() => {
     if (!geo?.timezone || !isHudOpen) return;
@@ -127,16 +123,8 @@ export function VisitorHud({ dictionary }: { dictionary: Dictionary }) {
   }, [geo?.timezone, isHudOpen]);
 
   /**
-   * @pilar IV: Observabilidad.
-   * Registro de apertura de interfaz táctica.
+   * GUARDIÁN DE HIDRATACIÓN
    */
-  useEffect(() => {
-    if (isHudOpen) {
-      console.log(`[HEIMDALL][UX] Visitor HUD engaged. Telemetry signal: ${geo?.ip || 'Pending'}`);
-    }
-  }, [isHudOpen, geo?.ip]);
-
-  // @pilar VIII: Guardia de Seguridad de Hidratación.
   if (!isMounted || !hasHydrated || !isHudOpen || !dictionary) return null;
 
   return (
@@ -156,7 +144,7 @@ export function VisitorHud({ dictionary }: { dictionary: Dictionary }) {
         role="complementary"
         aria-label="Visitor HUD"
       >
-        {/* 1. HEADER: NAVEGACIÓN TÁCTICA */}
+        {/* 1. HEADER: NAVEGACIÓN TÁCTICA DATA-DRIVEN */}
         <div className="flex items-center justify-between px-6 py-5 bg-white/5 border-b border-white/5">
           <div className="flex gap-4">
             {HUD_TABS.map((tab) => (
@@ -168,7 +156,7 @@ export function VisitorHud({ dictionary }: { dictionary: Dictionary }) {
                   activeTab === tab ? "text-primary" : "text-zinc-500 hover:text-zinc-300"
                 )}
               >
-                {tab === 'identity' ? dictionary.header.personal_portfolio.split(' ')[0] : 'Telemetry'}
+                {tab === 'identity' ? t.tab_identity : t.tab_telemetry}
                 {activeTab === tab && (
                   <motion.div layoutId="hud-tab" className="absolute bottom-0 left-0 right-0 h-px bg-primary" />
                 )}
@@ -216,14 +204,14 @@ export function VisitorHud({ dictionary }: { dictionary: Dictionary }) {
                     <div className="space-y-3">
                       <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-widest text-zinc-400">
                         <span>{p.xp_label}: {progress?.currentXp}</span>
-                        <span className="text-zinc-600">Next: {progress?.nextLevelXp}</span>
+                        <span className="text-zinc-600">{t.xp_next_label}: {progress?.nextLevelXp}</span>
                       </div>
                       <div className="h-2 w-full overflow-hidden rounded-full bg-white/5 border border-white/5">
                         <motion.div 
                           initial={{ width: 0 }}
                           animate={{ width: `${progress?.progressPercent}%` }}
                           transition={{ duration: 1.5, ease: "circOut" }}
-                          className="h-full bg-linear-to-r from-primary to-pink-500 shadow-[0_0_15px_rgba(168,85,247,0.4)]" 
+                          className="h-full bg-linear-to-r from-primary to-pink-500" 
                         />
                       </div>
                     </div>
@@ -235,25 +223,25 @@ export function VisitorHud({ dictionary }: { dictionary: Dictionary }) {
                       <ScanFace size={40} className="text-zinc-700" />
                     </div>
                     <div className="space-y-2">
-                      <h4 className="text-white font-display text-lg font-bold">Identidad No Vinculada</h4>
+                      <h4 className="text-white font-display text-lg font-bold">{t.guest_title}</h4>
                       <p className="text-zinc-500 text-xs leading-relaxed max-w-[220px] mx-auto">
-                        Accede para activar el **Protocolo 33** y recolectar artefactos exclusivos en el Santuario.
+                        {t.guest_description}
                       </p>
                     </div>
                     <button className="w-full flex items-center justify-center gap-3 py-4 rounded-2xl bg-white text-black text-[10px] font-bold uppercase tracking-widest hover:bg-primary hover:text-white transition-all active:scale-95 shadow-2xl">
-                      <LogIn size={14} /> Vincular Identidad
+                      <LogIn size={14} /> {t.guest_cta}
                     </button>
                   </div>
                 )}
 
                 <div className="grid grid-cols-2 gap-3 pt-2">
-                  <div className="rounded-2xl border border-white/5 bg-white/2 p-4 flex items-center gap-3 group transition-all opacity-40">
+                  <div className="rounded-2xl border border-white/5 bg-white/2 p-4 flex items-center gap-3 opacity-40">
                     <Trophy size={16} className="text-zinc-500" />
-                    <span className="text-[10px] font-bold text-zinc-600 uppercase tracking-tighter">Artefactos</span>
+                    <span className="text-[10px] font-bold text-zinc-600 uppercase tracking-tighter">{t.stat_artifacts}</span>
                   </div>
-                  <div className="rounded-2xl border border-white/5 bg-white/2 p-4 flex items-center gap-3 group transition-all opacity-40">
+                  <div className="rounded-2xl border border-white/5 bg-white/2 p-4 flex items-center gap-3 opacity-40">
                     <Zap size={16} className="text-zinc-500" />
-                    <span className="text-[10px] font-bold text-zinc-600 uppercase tracking-tighter">Racha</span>
+                    <span className="text-[10px] font-bold text-zinc-600 uppercase tracking-tighter">{t.stat_streak}</span>
                   </div>
                 </div>
               </motion.div>
@@ -285,7 +273,7 @@ export function VisitorHud({ dictionary }: { dictionary: Dictionary }) {
                         <p className="flex items-center gap-2 text-[9px] font-mono text-zinc-600 uppercase tracking-widest">
                           <MapPin size={10} className="text-primary" /> {t.label_location}
                         </p>
-                        <p className="font-bold text-sm text-zinc-100">{geo?.city || 'Roaming'}</p>
+                        <p className="font-bold text-sm text-zinc-100">{geo?.city || t.roaming_label}</p>
                       </div>
                       <div className="text-right space-y-1">
                         <p className="flex items-center justify-end gap-2 text-[9px] font-mono text-zinc-600 uppercase tracking-widest">
@@ -324,7 +312,7 @@ export function VisitorHud({ dictionary }: { dictionary: Dictionary }) {
             {t.footer_credits}
           </p>
           <button className="group flex items-center gap-2 text-[9px] font-bold text-white uppercase tracking-widest hover:text-primary transition-colors outline-none">
-             Explorar
+             {t.cta_explore}
             <ChevronRight size={10} className="group-hover:translate-x-1 transition-transform" />
           </button>
         </div>

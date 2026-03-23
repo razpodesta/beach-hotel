@@ -1,30 +1,40 @@
 {
   "privacy_policy": {
+    "meta_title": "Política de Privacidad | Beach Hotel Canasvieiras",
+    "meta_description": "Consulta cómo protegemos tus datos en el Santuario Digital.",
     "title": "Política de Privacidad",
-    "last_updated": "12 de Noviembre de 2025",
+    "badge_label": "MARCO LEGAL Y TRANSPARENCIA",
+    "last_updated_prefix": "Última actualización:",
+    "last_updated_date": "23 de Marzo, 2026",
+    "back_button_label": "Volver a la Recepción",
+    "print_button_label": "Imprimir Documento",
     "content": [
       {
         "heading": "1. Introducción",
-        "body": "Bienvenido a mi portafolio. Tu privacidad es de suma importancia. Esta política detalla qué datos personales se recopilan y cómo se utilizan."
+        "body": "En Beach Hotel Canasvieiras, la privacidad de nuestros huéspedes y visitantes es una prioridad innegociable. Este documento describe cómo recolectamos, protegemos y utilizamos su información personal."
       },
       {
-        "heading": "2. Datos que Recopilamos",
-        "body": "Para el widget de visitante, recopilamos datos de geolocalización anónimos a través de APIs públicas (IP-API, Open-Meteo) para personalizar la experiencia. Para la suscripción al boletín, utilizamos Supabase Auth, que puede implicar el uso de cookies para gestionar tu sesión. No vendemos ni compartimos tus datos con terceros."
+        "heading": "2. Telemetría y Geolocalización",
+        "body": "Nuestra plataforma utiliza el <strong>Protocolo Heimdall</strong> para anonimizar datos de geolocalización con el fin de personalizar el clima y la zona horaria en el HUD del visitante. No almacenamos direcciones IP físicas en bases de datos permanentes."
       }
-    ]
+    ],
+    "infrastructure_label": "Sovereign Digital Infrastructure • MetaShark Tech"
   },
   "terms_of_service": {
+    "meta_title": "Términos de Servicio | Beach Hotel Canasvieiras",
+    "meta_description": "Condiciones de uso y reserva de nuestra plataforma boutique.",
     "title": "Términos de Servicio",
-    "last_updated": "12 de Noviembre de 2025",
+    "badge_label": "REGLAS DE INTERACCIÓN",
+    "last_updated_prefix": "Última actualización:",
+    "last_updated_date": "23 de Marzo, 2026",
+    "back_button_label": "Volver a la Recepción",
+    "print_button_label": "Descargar PDF",
     "content": [
       {
-        "heading": "1. Aceptación de los Términos",
-        "body": "Al utilizar este sitio web, aceptas cumplir con los presentes términos y condiciones de uso. El contenido y los proyectos aquí mostrados son de mi propiedad intelectual, a menos que se indique lo contrario."
-      },
-      {
-        "heading": "2. Uso del Sitio",
-        "body": "Este sitio se proporciona 'tal cual' con fines informativos y profesionales. No se permite el uso de su contenido con fines comerciales sin consentimiento explícito previo. Se prohíbe cualquier intento de interrumpir o comprometer la seguridad del sitio."
+        "heading": "1. Uso del Sitio",
+        "body": "Este ecosistema está diseñado para la gestión de reservas y promoción de experiencias del Canasvieiras Fest. El uso indebido de los activos WebGL o intentos de inyección de código serán bloqueados por nuestros centinelas."
       }
-    ]
+    ],
+    "infrastructure_label": "Sovereign Digital Infrastructure • MetaShark Tech"
   }
 }

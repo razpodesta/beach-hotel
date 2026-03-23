@@ -1,27 +1,26 @@
 /**
- * @file apps/portfolio-web/src/app/[lang]/page.tsx
+ * @file page.tsx
  * @description Orquestador Soberano de la Landing Page (Recepción).
- *              Refactorizado: Cumplimiento del Manifiesto MACS v1.0. 
- *              Implementa acceso aplanado a diccionarios atómicos, eliminando
- *              la dependencia de la llave 'homepage' y resolviendo errores en cascada.
- * @version 17.0 - Flattened Content Architecture (Elite Sync)
+ *              Implementa un Embudo de Ventas (Conversion Funnel) de próxima generación.
+ *              Refactorizado: 100% Data-Driven, Resolución de Error TS2741 y SEO Pro.
+ * @version 19.0 - Triple-Check Integrity Edition
  * @author Raz Podestá - MetaShark Tech
  */
 
 import { Suspense } from 'react';
-import { type Metadata } from 'next';
+import type { Metadata } from 'next';
 
 /**
  * IMPORTACIONES DE INFRAESTRUCTRURA
- * @pilar V: Adherencia arquitectónica mediante rutas relativas.
+ * @pilar V: Adherencia arquitectónica mediante fronteras Nx.
  */
 import { getDictionary } from '../../lib/get-dictionary';
 import { type Locale } from '../../config/i18n.config';
 import { JsonLdScript } from '../../components/ui/JsonLdScript';
 
 /**
- * IMPORTACIONES DE APARATOS (Secciones)
- * @pilar IX: Componentización Lego.
+ * APARATOS DE SECCIÓN (Lego System)
+ * @pilar IX: Componentización desacoplada.
  */
 import { HeroCarousel } from '../../components/sections/homepage/HeroCarousel';
 import { LiveStatusTicker } from '../../components/sections/homepage/LiveStatusTicker';
@@ -43,7 +42,6 @@ type PageProps = {
 /**
  * GENERACIÓN DE METADATOS SOBERANOS
  * @pilar I: Visión Holística - SEO E-E-A-T.
- * @description Sincronizado con el esquema aplanado (hero y header).
  */
 export async function generateMetadata(props: PageProps): Promise<Metadata> {
   const { lang } = await props.params;
@@ -63,7 +61,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
         url: '/images/hotel/og-main.jpg',
         width: 1200,
         height: 630,
-        alt: 'Vista panorámica del Beach Hotel Canasvieiras',
+        alt: dict.header.personal_portfolio,
       }],
       type: 'website',
     }
@@ -72,83 +70,90 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 
 /**
  * APARATO PRINCIPAL: HotelHomePage
- * @description Orquesta la composición de la página mediante la inyección 
- *              de diccionarios atómicos validados por SSoT.
+ * @description Orquesta la composición del embudo comercial mediante inyección atómica de SSoT.
  */
 export default async function HotelHomePage(props: PageProps) {
+  // @pilar III: Resolución asíncrona de parámetros obligatoria
   const { lang } = await props.params;
   const dict = await getDictionary(lang);
 
   /**
    * DATOS ESTRUCTURADOS (Schema.org)
-   * @description Provee contexto semántico a motores de búsqueda con acceso directo.
+   * @description Provee contexto semántico rico para motores de búsqueda.
    */
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "Hotel",
-    "name": "Beach Hotel Canasvieiras",
+    "name": dict.header.personal_portfolio,
     "description": dict.hero.page_description,
     "image": "/images/hotel/og-main.jpg",
+    "url": "https://beachhotelcanasvieiras.com",
     "address": {
       "@type": "PostalAddress",
-      "streetAddress": "Av. das Nações",
+      "streetAddress": "Av. das Nações, 123",
       "addressLocality": "Florianópolis",
       "addressRegion": "SC",
       "postalCode": "88054-000",
       "addressCountry": "BR"
     },
     "telephone": "+5548999999999",
-    "url": "https://beachhotelcanasvieiras.com"
+    "priceRange": "R$$-R$$$",
+    "containsPlace": dict.suite_gallery.cat_all
   };
 
   return (
-    <div className="bg-[#050505] min-h-screen selection:bg-purple-500/30 flex flex-col">
+    <div className="bg-[#050505] min-h-screen selection:bg-primary/30 flex flex-col overflow-x-hidden">
+      {/* Cimiento de Infraestructura SEO */}
       <JsonLdScript data={structuredData} />
 
-      {/* 1. HERO (Acceso MACS: dict.hero) */}
-      <section id="hero" className="relative w-full" aria-label="Hero Section">
+      {/* --- FASE 1: ATENCIÓN (AWARENESS) --- */}
+      <header id="hero" className="relative w-full" aria-label="Hero Experience">
         <HeroCarousel dictionary={dict.hero} />
-      </section>
+      </header>
 
-      {/* 2. TELEMETRÍA (Acceso MACS: dict.system_status) */}
-      <Suspense fallback={<div className="h-14 w-full bg-[#050505] border-y border-white/5 animate-pulse" />}>
-        <LiveStatusTicker dictionary={dict.system_status} />
-      </Suspense>
+      {/* --- FASE 2: VALIDACIÓN SOCIAL (TRUST) --- */}
+      <aside id="pulse" className="relative z-20">
+        <Suspense fallback={<div className="h-14 w-full bg-zinc-950 animate-pulse border-y border-white/5" />}>
+          <LiveStatusTicker dictionary={dict.system_status} />
+        </Suspense>
+      </aside>
 
-      {/* 3. NARRATIVA INSTITUCIONAL (Acceso MACS: dict.about) */}
-      <section id="about" className="relative z-10 w-full">
+      {/* --- FASE 3: CONEXIÓN EMOCIONAL (CONSIDERATION) --- */}
+      <section id="about" className="relative z-10 w-full bg-black">
         <AboutSection dictionary={dict.about} />
       </section>
 
-      {/* 4. SÍNTESIS VISUAL IA (Acceso MACS: dict.ai_gallery_section) */}
-      <section id="visual-synth" className="relative z-10 w-full border-t border-white/5">
+      {/* --- FASE 4: INNOVACIÓN Y HYPE (DIFFERENTIATION) --- */}
+      <section id="visual-synth" className="relative z-10 w-full border-t border-white/5 bg-[#050505]">
         <AiContentSection dictionary={dict.ai_gallery_section} />
       </section>
 
-      {/* 5. FESTIVAL TAKEOVER (Acceso MACS: dict['nav-links']) */}
-      <section id="festival-preview" className="relative w-full bg-zinc-950/30 border-t border-white/5" aria-label="Pride Escape Preview">
+      {/* --- FASE 5: TAKEOVER (EXCLUSIVITY) --- 
+          @fix TS2741: Inyección soberana del diccionario festival nivelado.
+      */}
+      <section id="festival-preview" className="relative w-full bg-zinc-950/30 border-t border-white/5" aria-label="Pride Escape Takeover">
         <div className="container mx-auto px-6 pt-24 text-center md:text-left">
             <span className="inline-flex items-center gap-2 rounded-full border border-purple-500/30 bg-purple-500/10 px-5 py-2 text-[10px] font-bold uppercase tracking-[0.4em] text-purple-400">
-                {dict['nav-links'].nav_links.festival}
+                {dict.festival.hero.title}
             </span>
         </div>
-        <Suspense fallback={<div className="h-[600px] w-full flex items-center justify-center bg-zinc-950/30" />}>
-            <ExperienceShowcase3D />
+        <Suspense fallback={<div className="h-[600px] w-full flex items-center justify-center bg-zinc-950/20" />}>
+            <ExperienceShowcase3D dictionary={dict.festival} />
         </Suspense>
       </section>
 
-      {/* 6. PROPUESTA DE VALOR (Acceso MACS: dict.value_proposition) */}
+      {/* --- FASE 6: JUSTIFICACIÓN LÓGICA (VALUE) --- */}
       <section id="pillars" className="relative w-full z-10">
         <ValuePropositionSection dictionary={dict.value_proposition} />
       </section>
 
-      {/* 7. LEGADO INSTITUCIONAL (Acceso MACS: dict.history) */}
+      {/* --- FASE 7: LEGADO (AUTHORITY) --- */}
       <HistorySection dictionary={dict.history} />
 
-      {/* 8. CONVERSIÓN & CONTACTO (Acceso MACS: dict.contact) */}
-      <section id="reservas" className="relative w-full border-t border-white/5 z-10">
+      {/* --- FASE 8: CONVERSIÓN FINAL (ACTION) --- */}
+      <footer id="reservas" className="relative w-full border-t border-white/5 z-10 bg-[#020202]">
         <ContactSection dictionary={dict.contact} />
-      </section>
+      </footer>
     </div>
   );
 }

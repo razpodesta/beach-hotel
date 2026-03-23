@@ -1,38 +1,44 @@
 /**
  * @file visitor_hud.schema.ts
  * @description Contrato Soberano para el panel de telemetría Heimdall.
- *              Valida la mensajería técnica, climática y geográfica.
- * @version 1.0 - Genesis Contract
+ *              Define la totalidad de la mensajería de interfaz y estados.
+ * @version 2.0 - Full i18n & P33 Sync
  * @author Raz Podestá - MetaShark Tech
  */
 
 import { z } from 'zod';
 
 export const visitorHudSchema = z.object({
-  /** Etiqueta superior del panel */
+  // --- NAVEGACIÓN Y TABS ---
+  tab_identity: z.string().min(1),
+  tab_telemetry: z.string().min(1),
+  
+  // --- ESTADO: INVITADO (CONVERSIÓN) ---
+  guest_title: z.string().min(1),
+  guest_description: z.string().min(1),
+  guest_cta: z.string().min(1),
+
+  // --- TELEMETRÍA (HEIMDALL) ---
   label_visitor_info: z.string().min(1),
-  /** Etiqueta para la dirección IP */
   label_ip_visitor: z.string().min(1),
-  /** Créditos de infraestructura */
-  footer_credits: z.string().min(1),
-  /** Mensaje durante la carga de datos */
-  status_calibrating: z.string().min(1),
-  /** Mensaje ante fallo de señal */
-  status_error: z.string().min(1),
-  /** Etiqueta de ciudad/ubicación */
   label_location: z.string().min(1),
-  /** Etiqueta de clima regional */
   label_weather: z.string().min(1),
-  /** Traducción: Soleado */
-  weather_sunny: z.string().min(1),
-  /** Traducción: Lluvioso */
-  weather_rainy: z.string().min(1),
-  /** Traducción: Nublado */
-  weather_cloudy: z.string().min(1),
-  /** Etiqueta de hora local */
   label_time: z.string().min(1),
-  /** Formato de coordenadas geográficas */
-  coords_format: z.string().min(1),
+  status_calibrating: z.string().min(1),
+  status_error: z.string().min(1),
+  weather_sunny: z.string().min(1),
+  weather_rainy: z.string().min(1),
+  weather_cloudy: z.string().min(1),
+  roaming_label: z.string().min(1),
+
+  // --- PROTOCOLO 33 & REPUTACIÓN ---
+  stat_artifacts: z.string().min(1),
+  stat_streak: z.string().min(1),
+  xp_next_label: z.string().min(1),
+
+  // --- FOOTER Y ACCIONES ---
+  footer_credits: z.string().min(1),
+  cta_explore: z.string().min(1),
 });
 
 export type VisitorHudDictionary = z.infer<typeof visitorHudSchema>;

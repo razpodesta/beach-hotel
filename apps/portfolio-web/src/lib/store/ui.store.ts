@@ -1,22 +1,35 @@
 /**
- * @file apps/portfolio-web/src/lib/store/ui.store.ts
- * @version 3.3 - Multi-Tenant State Engine
- * @description Store global desacoplado y multi-tenant. 
- *              Implementa MockStorage con parámetros ignorados explícitamente para
- *              cumplir con las reglas de linter más estrictas.
+ * @file ui.store.ts
+ * @description Orquestador Soberano del Estado Global de la Interfaz.
+ *              Gestiona la persistencia de preferencias, estados de navegación 
+ *              y multi-tenancy. Implementa un motor de almacenamiento resiliente 
+ *              al renderizado de servidor (SSR).
+ * @version 4.0 - Elite Production Standard
  * @author Raz Podestá - MetaShark Tech
  */
 
 import { create } from 'zustand';
 import { persist, createJSONStorage, type StateStorage } from 'zustand/middleware';
 
+/**
+ * @interface UIState
+ * @description Contrato de datos persistentes y efímeros de la UI.
+ */
 interface UIState {
+  /** Estado de visibilidad del panel Heimdall */
   isVisitorHudOpen: boolean;
+  /** Estado del menú táctil móvil */
   isMobileMenuOpen: boolean;
+  /** Flag de sincronización tras hidratación de cliente */
   hasHydrated: boolean;
+  /** Identificador de propiedad para lógica multi-tenant */
   tenantId: string | null;
 }
 
+/**
+ * @interface UIActions
+ * @description Definición de mutaciones atómicas del estado.
+ */
 interface UIActions {
   toggleVisitorHud: () => void;
   closeVisitorHud: () => void;
@@ -28,61 +41,79 @@ interface UIActions {
 }
 
 /**
- * MockStorage Forense:
- * Implementa las funciones requeridas por StateStorage.
- * Nota: Los parámetros se nombran sin guion bajo y se descartan explícitamente
- * para evitar el error de 'no-unused-vars' y 'no-empty-function'.
+ * SOVEREIGN STORAGE ENGINE
+ * @description Motor de respaldo para entornos sin persistencia física (Node.js/SSR).
+ * Implementado para cumplir estrictamente con @typescript-eslint/no-unused-vars.
  */
-const mockStorage: StateStorage = {
-  getItem: () => null,
-  setItem: (name, value) => {
-    // Uso explícito para evitar warnings del linter
-    if (process.env.NODE_ENV === 'development') {
-      console.warn(`[Zustand-SSR-Storage] Intento de escribir ${name}=${value} ignorado.`);
-    }
+const forensicMockStorage: StateStorage = {
+  getItem: (_name: string): string | null => null,
+  setItem: (_name: string, _value: string): void => {
+    /* No-op: Persistencia deshabilitada en tiempo de compilación */
   },
-  removeItem: (name) => {
-    // Uso explícito del parámetro
-    void name; 
+  removeItem: (_name: string): void => {
+    /* No-op: Operación de limpieza omitida en servidor */
   },
 };
 
-const getStorage = () => (typeof window !== 'undefined' ? localStorage : mockStorage);
+/**
+ * @description Resuelve el motor de almacenamiento basado en el entorno de ejecución.
+ */
+const resolveStorageEngine = () => 
+  (typeof window !== 'undefined' ? localStorage : forensicMockStorage);
 
+/**
+ * STORE: useUIStore
+ * @description Fuente única de verdad para el estado visual del ecosistema.
+ */
 export const useUIStore = create<UIState & UIActions>()(
   persist(
     (set) => ({
-      // --- Estado Inicial ---
+      // --- ESTADO INICIAL ---
       isVisitorHudOpen: true,
       isMobileMenuOpen: false,
       hasHydrated: false,
       tenantId: null,
 
-      // --- Acciones ---
-      setHasHydrated: (state) => set({ hasHydrated: state }),
-      setTenant: (tenantId) => set({ tenantId }),
+      // --- MUTACIONES DE SINCRONIZACIÓN ---
+      setHasHydrated: (state: boolean) => set({ hasHydrated: state }),
+      setTenant: (tenantId: string) => set({ tenantId }),
 
+      // --- GESTIÓN DE HUD (TELEMETRÍA) ---
       toggleVisitorHud: () => set((state) => ({ isVisitorHudOpen: !state.isVisitorHudOpen })),
       closeVisitorHud: () => set({ isVisitorHudOpen: false }),
       openVisitorHud: () => set({ isVisitorHudOpen: true }),
 
+      // --- GESTIÓN DE NAVEGACIÓN MÓVIL ---
       toggleMobileMenu: () => set((state) => ({ isMobileMenuOpen: !state.isMobileMenuOpen })),
       closeMobileMenu: () => set({ isMobileMenuOpen: false }),
     }),
     {
-      name: 'portfolio-ui-preferences',
-      storage: createJSONStorage(getStorage),
+      name: 'sanctuary-ui-vault', // Nombre del bucket en LocalStorage
+      storage: createJSONStorage(resolveStorageEngine),
       
+      /**
+       * @pilar X: Higiene de Persistencia.
+       * Solo persistimos preferencias que el usuario desea recordar. 
+       * Los menús abiertos y flags de hidratación se resetean en cada carga.
+       */
       partialize: (state) => ({
         isVisitorHudOpen: state.isVisitorHudOpen,
         tenantId: state.tenantId,
       }),
 
+      /**
+       * PROTOCOLO DE HIDRATACIÓN
+       * @description Asegura que los componentes de cliente sepan cuándo es seguro
+       * acceder al estado persistido.
+       */
       onRehydrateStorage: () => (state) => {
-        state?.setHasHydrated(true);
+        if (state) {
+          state.setHasHydrated(true);
+          console.log('[HEIMDALL][STORE] UI Vault rehydrated and synchronized.');
+        }
       },
       
-      version: 1, 
+      version: 2, // Migración de versión para limpiar stores antiguos del proyecto base
     }
   )
 );

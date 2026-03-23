@@ -1,0 +1,76 @@
+{
+  "hero": {
+    "title": "PRIDE ESCAPE 2026",
+    "subtitle": "O Takeover Boutique de Canasvieiras",
+    "video_url": "https://cdn.pixabay.com/video/2023/10/24/186358-877995180_large.mp4",
+    "countdown_target": "2026-06-15T20:00:00Z",
+    "cta_label": "GARANTIR MEU LUGAR"
+  },
+  "manifesto": "Uma semana desenhada para conhecer, conectar e desfrutar em comunidade. Fuja do frio e viva uma experiência única no coração da Ilha da Magia. 7 dias de liberdade absoluta, festas exclusivas e o melhor da hotelaria boutique.",
+  "vip_upsell": {
+    "title": "Experiência VIP Diamond",
+    "price_addon": "+R$ 650",
+    "benefits": [
+      "Suíte com vista frontal para o mar",
+      "Acesso prioritário (Fast Pass) em todos os eventos",
+      "Welcome Kit Edição Limitada",
+      "Jantar exclusivo com o Line-up internacional",
+      "Open Bar Premium em todas as Boat Parties"
+    ],
+    "cta_label": "UPGRADE PARA VIP"
+  },
+  "events": [
+    {
+      "id": "sunset-welcome",
+      "day": 1,
+      "title": "HQ SUNSET",
+      "location": "Piscina do Beach Hotel",
+      "startTime": "16:00",
+      "description": "Festa de abertura oficial com coquetel de boas-vindas e DJ sets melódicos.",
+      "vibe": "Chill",
+      "isVipOnly": false,
+      "image": "/images/festival/hq-sunset.jpg",
+      "neon_color": "#3B82F6"
+    },
+    {
+      "id": "main-boat-party",
+      "day": 3,
+      "title": "BOAT PARTY: THE NEW WAVE",
+      "location": "Baía Norte / Escuna Exclusiva",
+      "startTime": "14:00",
+      "description": "Cruzeiro ao pôr do sol com sistema de som de alta fidelidade e paradas estratégicas.",
+      "vibe": "House",
+      "isVipOnly": true,
+      "image": "/images/festival/boat-party-main.jpg",
+      "neon_color": "#A855F7"
+    },
+    {
+      "id": "techno-sanctuary",
+      "day": 5,
+      "title": "THE SANCTUARY NIGHT",
+      "location": "The Cave / Underground Club",
+      "startTime": "23:00",
+      "description": "Uma imersão visual e sonora com o melhor do Techno europeu.",
+      "vibe": "Techno",
+      "isVipOnly": false,
+      "image": "/images/festival/techno-night.jpg",
+      "neon_color": "#EC4899"
+    }
+  ],
+  "packages": [
+    {
+      "category": "Experience Base",
+      "price_5_nights": "R$ 2.450",
+      "price_7_nights": "R$ 3.100",
+      "hotel_name": "Beach Hotel Principal",
+      "availability_label": "ÚLTIMAS VAGAS"
+    },
+    {
+      "category": "Luxury Elite",
+      "price_5_nights": "R$ 4.200",
+      "price_7_nights": "R$ 5.500",
+      "hotel_name": "Beach Hotel Suites",
+      "availability_label": "RESERVA EXCLUSIVA"
+    }
+  ]
+}

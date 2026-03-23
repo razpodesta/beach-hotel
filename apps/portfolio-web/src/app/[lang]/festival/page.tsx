@@ -1,53 +1,189 @@
 /**
- * @file Festival Page - Canasvieiras Fest 2026
- * @description Ruta inmersiva para el Pride Escape.
+ * @file page.tsx (Festival)
+ * @description Orquestador inmersivo para el Canasvieiras Fest 2026.
+ *              Refactorizado: 100% Data-Driven, Linter Compliant y Corrección de Regresión FadeIn.
+ * @version 2.1 - Production Elite Standard
+ * @author Raz Podestá - MetaShark Tech
+ */
+
+import React from 'react';
+import type { Metadata } from 'next';
+import { ChevronRight, CheckCircle2, Ship } from 'lucide-react';
+import Link from 'next/link';
+
+/**
+ * IMPORTACIONES DE INFRAESTRUCTRURA
  */
 import { getDictionary } from '../../../lib/get-dictionary';
-import { BlurText } from '../../../components/razBits/BlurText';
-import { BlogSection3D } from '../../../components/sections/homepage/BlogSection3D';
 import { type Locale } from '../../../config/i18n.config';
-import { getAllPosts } from '../../../lib/blog'; // Reutilizado para experiencias del festival
+import { BlurText } from '../../../components/razBits/BlurText';
+import { ExperienceShowcase3D } from '../../../components/sections/homepage/ExperienceShowcase3D';
+import { FadeIn } from '../../../components/ui/FadeIn';
 
-export default async function FestivalPage({ params }: { params: Promise<{ lang: Locale }> }) {
-  const { lang } = await params;
+/**
+ * CONTRATO DE PARÁMETROS
+ */
+type FestivalPageProps = {
+  params: Promise<{ lang: Locale }>;
+};
+
+/**
+ * GENERACIÓN DE METADATOS SOBERANOS
+ */
+export async function generateMetadata(props: FestivalPageProps): Promise<Metadata> {
+  const { lang } = await props.params;
   const dict = await getDictionary(lang);
-  const experiences = await getAllPosts();
+  const t = dict.festival.hero;
+
+  return {
+    title: `${t.title} | ${t.subtitle}`,
+    description: dict.festival.manifesto,
+    openGraph: {
+      title: t.title,
+      description: dict.festival.manifesto,
+      type: 'website',
+      images: ['/images/festival/og-festival.jpg']
+    }
+  };
+}
+
+/**
+ * APARATO PRINCIPAL: FestivalPage
+ * @description Orquesta la inmersión Takeover siguiendo el embudo de conversión.
+ */
+export default async function FestivalPage(props: FestivalPageProps) {
+  const { lang } = await props.params;
+  const dict = await getDictionary(lang);
+  const f = dict.festival;
 
   return (
-    <main className="min-h-screen bg-[#050505] text-white overflow-hidden">
-      {/* Hero Inmersivo */}
-      <section className="relative pt-32 pb-20 flex flex-col items-center">
+    <main className="min-h-screen bg-[#050505] text-white selection:bg-pink-500/30 overflow-x-hidden">
+      
+      {/* --- FASE 1: IMPACTO (HERO) --- */}
+      <section className="relative min-h-[90vh] flex flex-col items-center justify-center pt-32 pb-20 px-6">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(168,85,247,0.15),transparent_70%)]" />
         
+        <FadeIn delay={0.2}>
+          <div className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-6 py-2 text-[10px] font-bold uppercase tracking-[0.5em] text-zinc-400 mb-10 backdrop-blur-md">
+            {f.hero.subtitle}
+          </div>
+        </FadeIn>
+
         <BlurText 
-          text="CANASVIEIRAS FEST"
-          className="font-display text-6xl md:text-9xl font-bold tracking-tighter text-transparent bg-clip-text bg-linear-to-b from-white to-purple-500"
+          text={f.hero.title}
+          className="font-display text-6xl md:text-9xl font-bold tracking-tighter text-transparent bg-clip-text bg-linear-to-b from-white via-white to-purple-500 text-center leading-[0.85]"
         />
         
-        <p className="mt-4 font-mono text-zinc-500 tracking-[0.3em] uppercase">
-          The Winter Escape 2026
-        </p>
+        <FadeIn delay={0.6}>
+           <div className="mt-12 flex flex-col items-center gap-8">
+              <Link 
+                href="#booking"
+                className="group relative flex items-center gap-6 rounded-full bg-white px-12 py-6 text-[11px] font-bold text-black uppercase tracking-[0.4em] transition-all hover:bg-purple-600 hover:text-white shadow-2xl active:scale-95"
+              >
+                {f.hero.cta_label}
+                <ChevronRight size={18} className="transition-transform group-hover:translate-x-2" />
+              </Link>
+           </div>
+        </FadeIn>
       </section>
 
-      {/* Carrusel de Experiencias 3D (Pilot CMS 3.0 Powered) */}
-      <BlogSection3D 
-        posts={experiences} 
-        dictionary={dict.blog_page} 
-        lang={lang} 
-      />
+      {/* --- FASE 2: MANIFIESTO --- */}
+      <section className="container mx-auto max-w-4xl px-6 py-24 text-center">
+        <FadeIn>
+          <div className="relative p-12 md:p-20 rounded-[4rem] bg-zinc-900/30 border border-white/5 backdrop-blur-xl">
+             <p className="text-xl md:text-3xl font-sans font-light leading-relaxed text-zinc-300 italic">
+               "{f.manifesto}"
+             </p>
+          </div>
+        </FadeIn>
+      </section>
 
-      {/* CTA de Tickets */}
-      <section className="container mx-auto px-4 py-20 text-center">
-        <div className="rounded-3xl border border-white/10 bg-zinc-900/50 p-12 backdrop-blur-xl">
-           <h2 className="font-display text-4xl font-bold mb-6">Únete a la nueva ola</h2>
-           <p className="text-zinc-400 mb-10 max-w-xl mx-auto">
-             7 días de takeover exclusivo en el corazón de Florianópolis. Barcos, clubs VIP y la mejor comunidad.
-           </p>
-           <button className="rounded-full bg-white px-10 py-4 font-bold text-black hover:scale-105 transition-transform">
-             CONSEGUIR PAQUETE VIP
-           </button>
+      {/* --- FASE 3: EXPERIENCIAS --- */}
+      <section id="lineup" className="py-24 border-y border-white/5 bg-zinc-950/20">
+         <ExperienceShowcase3D dictionary={f} />
+      </section>
+
+      {/* --- FASE 4: UPSELL (VIP ACCESS) --- */}
+      <section className="container mx-auto px-6 py-32">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+           {/* @fix TS2322: yOffset utilizado para cumplimiento de contrato FadeIn */}
+           <FadeIn yOffset={40}>
+              <div className="space-y-8">
+                <span className="text-primary font-bold text-[10px] uppercase tracking-[0.6em]">{f.vip_upsell.title}</span>
+                <h2 className="font-display text-5xl md:text-7xl font-bold tracking-tighter leading-none">
+                  THE <br /> DIAMOND <br /> UPGRADE
+                </h2>
+                <div className="text-4xl font-display font-bold text-white">
+                   {f.vip_upsell.price_addon} <span className="text-sm font-mono text-zinc-600 uppercase tracking-widest">{f.vip_upsell.per_guest_label}</span>
+                </div>
+              </div>
+           </FadeIn>
+
+           <FadeIn yOffset={40}>
+              <div className="rounded-[3.5rem] bg-linear-to-br from-zinc-900 to-black p-12 border border-white/10 shadow-3xl">
+                 <ul className="space-y-6">
+                    {f.vip_upsell.benefits.map((benefit, i) => (
+                      <li key={i} className="flex items-start gap-4 text-zinc-400 font-sans group">
+                        <CheckCircle2 size={20} className="text-primary shrink-0 group-hover:scale-110 transition-transform" />
+                        <span className="text-lg leading-tight group-hover:text-white transition-colors">{benefit}</span>
+                      </li>
+                    ))}
+                 </ul>
+                 <button className="w-full mt-12 py-5 rounded-3xl bg-primary text-white font-bold uppercase tracking-[0.3em] text-xs hover:bg-white hover:text-black transition-all active:scale-95 shadow-2xl">
+                    {f.vip_upsell.cta_label}
+                 </button>
+              </div>
+           </FadeIn>
         </div>
       </section>
+
+      {/* --- FASE 5: ACCIÓN (PACKAGES) --- */}
+      <section id="booking" className="container mx-auto px-6 py-32 border-t border-white/5">
+        <div className="text-center mb-20">
+           <h2 className="font-display text-4xl md:text-6xl font-bold tracking-tighter mb-6">{f.packages_section.title}</h2>
+           <p className="text-zinc-500 font-mono text-[10px] uppercase tracking-[0.4em]">{f.packages_section.subtitle}</p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+           {f.packages.map((pkg, i) => (
+             <FadeIn key={i} delay={i * 0.2}>
+               <div className="group relative rounded-[4rem] bg-white/2 border border-white/5 p-12 hover:border-primary/40 transition-all duration-700">
+                  <div className="flex justify-between items-start mb-12">
+                     <div>
+                        <span className="block text-[10px] font-bold text-primary uppercase tracking-[0.4em] mb-2">{pkg.availability_label}</span>
+                        <h3 className="font-display text-3xl font-bold text-white uppercase">{pkg.category}</h3>
+                     </div>
+                     <Ship size={32} className="text-zinc-800 group-hover:text-primary transition-colors" />
+                  </div>
+
+                  <div className="space-y-6 mb-12">
+                     <div className="flex justify-between border-b border-white/5 pb-4">
+                        <span className="text-zinc-500">{f.packages_section.label_5_nights}</span>
+                        <span className="text-xl font-bold text-white">{pkg.price_5_nights}</span>
+                     </div>
+                     <div className="flex justify-between">
+                        <span className="text-zinc-500">{f.packages_section.label_7_nights}</span>
+                        <span className="text-xl font-bold text-white">{pkg.price_7_nights}</span>
+                     </div>
+                  </div>
+
+                  <Link 
+                    href={`/${lang}/contacto`}
+                    className="flex items-center justify-center w-full py-5 rounded-full border border-white/10 group-hover:bg-white group-hover:text-black font-bold uppercase tracking-[0.3em] text-[10px] transition-all"
+                  >
+                    {f.packages_section.cta}
+                  </Link>
+               </div>
+             </FadeIn>
+           ))}
+        </div>
+      </section>
+
+      <footer className="py-20 text-center opacity-30 border-t border-white/5">
+         <p className="text-[9px] font-mono uppercase tracking-[0.5em]">
+            {f.footer_credits}
+         </p>
+      </footer>
     </main>
   );
 }

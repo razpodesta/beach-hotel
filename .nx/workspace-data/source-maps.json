@@ -36,6 +36,10 @@
       "packages/auth-shield/project.json",
       "nx/core/project-json"
     ],
+    "projectType": [
+      "packages/auth-shield/project.json",
+      "nx/core/project-json"
+    ],
     "tags": [
       "packages/auth-shield/package.json",
       "nx/core/package-json"
@@ -93,10 +97,6 @@
       "nx/core/project-json"
     ],
     "sourceRoot": [
-      "packages/auth-shield/project.json",
-      "nx/core/project-json"
-    ],
-    "projectType": [
       "packages/auth-shield/project.json",
       "nx/core/project-json"
     ],
@@ -286,6 +286,10 @@
       "packages/cms/core/project.json",
       "nx/core/project-json"
     ],
+    "projectType": [
+      "packages/cms/core/project.json",
+      "nx/core/project-json"
+    ],
     "tags": [
       "packages/cms/core/package.json",
       "nx/core/package-json"
@@ -343,10 +347,6 @@
       "nx/core/project-json"
     ],
     "sourceRoot": [
-      "packages/cms/core/project.json",
-      "nx/core/project-json"
-    ],
-    "projectType": [
       "packages/cms/core/project.json",
       "nx/core/project-json"
     ],
@@ -536,6 +536,10 @@
       "packages/cms/ui/project.json",
       "nx/core/project-json"
     ],
+    "projectType": [
+      "packages/cms/ui/project.json",
+      "nx/core/project-json"
+    ],
     "tags": [
       "packages/cms/ui/package.json",
       "nx/core/package-json"
@@ -593,10 +597,6 @@
       "nx/core/project-json"
     ],
     "sourceRoot": [
-      "packages/cms/ui/project.json",
-      "nx/core/project-json"
-    ],
-    "projectType": [
       "packages/cms/ui/project.json",
       "nx/core/project-json"
     ],
@@ -786,6 +786,10 @@
       "packages/protocol-33/project.json",
       "nx/core/project-json"
     ],
+    "projectType": [
+      "packages/protocol-33/project.json",
+      "nx/core/project-json"
+    ],
     "tags": [
       "packages/protocol-33/package.json",
       "nx/core/package-json"
@@ -843,10 +847,6 @@
       "nx/core/project-json"
     ],
     "sourceRoot": [
-      "packages/protocol-33/project.json",
-      "nx/core/project-json"
-    ],
-    "projectType": [
       "packages/protocol-33/project.json",
       "nx/core/project-json"
     ],
@@ -1036,6 +1036,10 @@
       "packages/testing-utils/project.json",
       "nx/core/project-json"
     ],
+    "projectType": [
+      "packages/testing-utils/project.json",
+      "nx/core/project-json"
+    ],
     "tags": [
       "packages/testing-utils/package.json",
       "nx/core/package-json"
@@ -1093,10 +1097,6 @@
       "nx/core/project-json"
     ],
     "sourceRoot": [
-      "packages/testing-utils/project.json",
-      "nx/core/project-json"
-    ],
-    "projectType": [
       "packages/testing-utils/project.json",
       "nx/core/project-json"
     ],
@@ -1516,6 +1516,10 @@
       "apps/portfolio-web/project.json",
       "nx/core/project-json"
     ],
+    "projectType": [
+      "apps/portfolio-web/project.json",
+      "nx/core/project-json"
+    ],
     "tags": [
       "apps/portfolio-web/package.json",
       "nx/core/package-json"
@@ -1685,10 +1689,6 @@
       "nx/core/project-json"
     ],
     "sourceRoot": [
-      "apps/portfolio-web/project.json",
-      "nx/core/project-json"
-    ],
-    "projectType": [
       "apps/portfolio-web/project.json",
       "nx/core/project-json"
     ],

@@ -1,4 +1,18 @@
 {
+  "about": {
+    "title": "Un Santuario de Hospitalidad de Élite.",
+    "paragraphs": [
+      {
+        "text": "Ubicado en el corazón de Canasvieiras, nuestro hotel ofrece una fusión única entre lujo sofisticado y la energía vibrante de Florianópolis.",
+        "highlight": "Exclusividad en cada detalle."
+      },
+      {
+        "text": "Nuestro compromiso es transformar cada estancia en una experiencia curada. Con tecnología inteligente y un servicio de concierge personalizado, aseguramos que cada huésped encuentre su refugio perfecto.",
+        "highlight": "Tu refugio perfecto."
+      }
+    ],
+    "cta_button": "Descubre nuestra Historia"
+  },
   "ai_gallery_section": {
     "badge": "Impulsado por Ideogram 3.0",
     "title": "Sintetizador Visual IA",
@@ -60,20 +74,6 @@
       }
     }
   },
-  "about": {
-    "title": "Un Santuario de Hospitalidad de Élite.",
-    "paragraphs": [
-      {
-        "text": "Ubicado en el corazón de Canasvieiras, nuestro hotel ofrece una fusión única entre lujo sofisticado y la energía vibrante de Florianópolis.",
-        "highlight": "Exclusividad en cada detalle."
-      },
-      {
-        "text": "Nuestro compromiso es transformar cada estancia en una experiencia curada. Con tecnología inteligente y un servicio de concierge personalizado, aseguramos que cada huésped encuentre su refugio perfecto.",
-        "highlight": "Tu refugio perfecto."
-      }
-    ],
-    "cta_button": "Descubre nuestra Historia"
-  },
   "blog_page": {
     "page_title": "Concierge Journal | Beach Hotel Canasvieiras",
     "page_description": "Descubre los secretos mejor guardados de la isla, guías exclusivas de vida nocturna y novedades del Pride Escape.",
@@ -84,6 +84,13 @@
     "empty_state": "No hay artículos disponibles en este momento. Mantente conectado.",
     "tag_results_singular": "Un artículo disponible bajo la curaduría de",
     "tag_results_plural": "Artículos seleccionados bajo la curaduría de"
+  },
+  "cocreation_page": {
+    "page_title": "Co-creación | Raz Podestá",
+    "page_description": "Descubre mi framework de colaboración para transformar ideas en activos digitales de alto rendimiento.",
+    "title": "Framework de Co-creación",
+    "subtitle": "Mi proceso para colaborar contigo, desde la concepción de la idea hasta el despliegue y la optimización continua.",
+    "construction_notice": "Esta sección está actualmente en construcción. Aquí detallaré mi metodología de trabajo, fases del proyecto y cómo nos asociaremos para garantizar el éxito de tu visión."
   },
   "contact": {
     "title": "PONTE EN CONTACTO",
@@ -99,20 +106,6 @@
       "message_too_short": "El mensaje debe tener al menos 10 caracteres"
     }
   },
-  "cocreation_page": {
-    "page_title": "Co-creación | Raz Podestá",
-    "page_description": "Descubre mi framework de colaboración para transformar ideas en activos digitales de alto rendimiento.",
-    "title": "Framework de Co-creación",
-    "subtitle": "Mi proceso para colaborar contigo, desde la concepción de la idea hasta el despliegue y la optimización continua.",
-    "construction_notice": "Esta sección está actualmente en construcción. Aquí detallaré mi metodología de trabajo, fases del proyecto y cómo nos asociaremos para garantizar el éxito de tu visión."
-  },
-  "design_system_page": {
-    "page_title": "Sistema de Diseño | Raz Podestá",
-    "page_description": "Explora los componentes, tokens de diseño y la filosofía visual que construyen la interfaz de este portafolio.",
-    "title": "Sistema de Diseño",
-    "subtitle": "Una mirada transparente a los bloques de construcción visuales y funcionales de este ecosistema digital.",
-    "construction_notice": "Esta sección está actualmente en construcción. Pronto podrás explorar aquí la paleta de colores, la jerarquía tipográfica y la librería de componentes de React que dan vida a este sitio."
-  },
   "contact_page": {
     "title": "PONTE EN CONTACTO",
     "form_cta": "¿Tienes una idea o un proyecto en mente? Me encantaría saber de ello.",
@@ -126,6 +119,13 @@
       "email_invalid": "Por favor, introduce un email válido",
       "message_too_short": "El mensaje debe tener al menos 10 caracteres"
     }
+  },
+  "design_system_page": {
+    "page_title": "Sistema de Diseño | Raz Podestá",
+    "page_description": "Explora los componentes, tokens de diseño y la filosofía visual que construyen la interfaz de este portafolio.",
+    "title": "Sistema de Diseño",
+    "subtitle": "Una mirada transparente a los bloques de construcción visuales y funcionales de este ecosistema digital.",
+    "construction_notice": "Esta sección está actualmente en construcción. Pronto podrás explorar aquí la paleta de colores, la jerarquía tipográfica y la librería de componentes de React que dan vida a este sitio."
   },
   "festival": {
     "hero": {
@@ -173,12 +173,6 @@
     "FESTIVAL_FEATURES": "Boat Parties • Noches VIP • Line-up Internacional",
     "CTA_BUTTON": "VER DISPONIBILIDAD"
   },
-  "language_switcher": {
-    "label": "Idioma",
-    "en-US": "English",
-    "es-ES": "Español",
-    "pt-BR": "Português"
-  },
   "history": {
     "title": "Forjado en Código",
     "subtitle": "Descubre la fusión de dos décadas de ingeniería de sistemas con una visión creativa obsesionada por los resultados. Esto no es solo un portafolio; es el legado de una arquitectura construida para perdurar."
@@ -217,6 +211,12 @@
       "footer_upscaling": "Escalado 8K y Optimización",
       "items": {}
     }
+  },
+  "language_switcher": {
+    "label": "Idioma",
+    "en-US": "English",
+    "es-ES": "Español",
+    "pt-BR": "Português"
   },
   "legal": {
     "privacy_policy": {
@@ -360,6 +360,14 @@
     "description": "Se ha detectado una anomalía crítica en el núcleo. Nuestros centinelas automatizados han sido notificados y los protocolos de recuperación están en marcha.",
     "retry_button": "Reintentar Conexión",
     "home_button": "Evacuación de Emergencia (Inicio)"
+  },
+  "suite_gallery": {
+    "title": "Suites de Lujo",
+    "search_placeholder": "Busca tu santuario...",
+    "cat_all": "Todas las Suites",
+    "cat_master": "Santuario Master",
+    "cat_deluxe": "Habitación Deluxe",
+    "cat_standard": "Confort Standard"
   },
   "system_status": {
     "aria_label": "Actualizaciones de Estado del Hotel en Vivo",

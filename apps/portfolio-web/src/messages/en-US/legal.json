@@ -1,30 +1,48 @@
 {
   "privacy_policy": {
+    "meta_title": "Privacy Policy | Beach Hotel Canasvieiras",
+    "meta_description": "Understand our commitment to data protection and digital sovereignty within the Sanctuary.",
     "title": "Privacy Policy",
-    "last_updated": "November 12, 2025",
+    "badge_label": "COMPLIANCE & TRANSPARENCY",
+    "last_updated_prefix": "Last updated:",
+    "last_updated_date": "March 23, 2026",
+    "back_button_label": "Return to Reception",
+    "print_button_label": "Print Document",
     "content": [
       {
         "heading": "1. Introduction",
-        "body": "Welcome to my portfolio. Your privacy is of the utmost importance. This policy details what personal data is collected and how it is used."
+        "body": "At Beach Hotel Canasvieiras, the privacy of our guests and visitors is a non-negotiable priority. This policy outlines how we collect, safeguard, and utilize your information."
       },
       {
-        "heading": "2. Data We Collect",
-        "body": "For the visitor widget, we collect anonymous geolocation data through public APIs (IP-API, Open-Meteo) to personalize the experience. For the newsletter subscription, we use Supabase Auth, which may involve the use of cookies to manage your session. We do not sell or share your data with third parties."
+        "heading": "2. Telemetry & Geolocation",
+        "body": "Our platform employs the <strong>Heimdall Protocol</strong> to anonymize geolocation data, enabling real-time weather and timezone synchronization in the Visitor HUD. We do not store physical IP addresses in permanent databases."
+      },
+      {
+        "heading": "3. Data Sovereignty",
+        "body": "Through our private infrastructure, we ensure that guest data remains encrypted and isolated, preventing unauthorized third-party access."
       }
-    ]
+    ],
+    "infrastructure_label": "Sovereign Digital Infrastructure • MetaShark Tech"
   },
   "terms_of_service": {
+    "meta_title": "Terms of Service | Beach Hotel Canasvieiras",
+    "meta_description": "Usage conditions and booking terms for our boutique platform and festival.",
     "title": "Terms of Service",
-    "last_updated": "November 12, 2025",
+    "badge_label": "USAGE GUIDELINES",
+    "last_updated_prefix": "Last updated:",
+    "last_updated_date": "March 23, 2026",
+    "back_button_label": "Return to Reception",
+    "print_button_label": "Download PDF",
     "content": [
       {
         "heading": "1. Acceptance of Terms",
-        "body": "By using this website, you agree to comply with these terms and conditions of use. The content and projects displayed here are my intellectual property, unless otherwise stated."
+        "body": "By accessing this digital ecosystem, you agree to comply with these terms. Our services are designed for elite hospitality management and event promotion."
       },
       {
-        "heading": "2. Use of the Site",
-        "body": "This site is provided 'as is' for informational and professional purposes. The use of its content for commercial purposes without prior explicit consent is not permitted. Any attempt to disrupt or compromise the security of the site is prohibited."
+        "heading": "2. Digital Assets",
+        "body": "All software components, 3D models, and AI-generated content displayed are protected intellectual property. Misuse or attempted security breaches will be handled by our automated sentinels."
       }
-    ]
+    ],
+    "infrastructure_label": "Sovereign Digital Infrastructure • MetaShark Tech"
   }
 }

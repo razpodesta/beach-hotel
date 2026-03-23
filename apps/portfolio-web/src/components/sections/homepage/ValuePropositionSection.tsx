@@ -1,9 +1,9 @@
 /**
- * @file apps/portfolio-web/src/components/sections/homepage/ValuePropositionSection.tsx
+ * @file ValuePropositionSection.tsx
  * @description Orquestador de la Propuesta de Valor (Pillares + Amenidades + Testimonio).
- *              Refactorizado: Cumplimiento total del Manifiesto MACS v1.0 (Acceso Aplanado).
- *              Implementa validación de integridad SSoT y coreografía visual premium.
- * @version 6.0 - MACS Flattened Sync & Resilience Hardening
+ *              Fase 6 del Embudo: Justificación Lógica y Cierre de Confianza.
+ *              Refactorizado: 100% Data-Driven, Eliminación de Hardcoding y Regresiones.
+ * @version 7.0 - Elite Conversion Standard
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -14,7 +14,6 @@ import { motion, type Variants } from 'framer-motion';
 
 /**
  * IMPORTACIONES DE INFRAESTRUCTRURA
- * @pilar V: Adherencia arquitectónica mediante fronteras Nx.
  */
 import { cn } from '../../../lib/utils/cn';
 import { PillarCard } from '../../ui/PillarCard';
@@ -24,26 +23,20 @@ import type { Dictionary } from '../../../lib/schemas/dictionary.schema';
 
 /**
  * @interface ValuePropositionSectionProps
- * @description Contrato inmutable para la inyección de contenido localizado.
  */
 interface ValuePropositionSectionProps {
-  /** 
-   * @pilar III: Seguridad de Tipos. 
-   * Mapeo directo al aparato 'value_proposition' tras la nivelación MACS.
-   */
+  /** Fragmento nivelado del diccionario aplanado */
   dictionary: Dictionary['value_proposition'];
   className?: string;
 }
 
 /** 
  * MAPA DE ICONOS ESTRATÉGICO
- * Vincula la secuencia de pilares con la simbología de Lucide en PillarCard.
  */
 const PILLAR_ICONS = ['pin', 'users', 'sparkles'] as const;
 
 /**
- * CONFIGURACIÓN DE ANIMACIÓN (MEA/UX)
- * @pilar IX: Definición estática para optimizar ciclos de render.
+ * COREOGRAFÍA MEA/UX (Pilar XII)
  */
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
@@ -54,50 +47,47 @@ const containerVariants: Variants = {
 };
 
 /**
- * APARATO PRINCIPAL: ValuePropositionSection
- * @description Orquesta la narrativa de estándares y excelencia del Hotel.
+ * APARATO: ValuePropositionSection
+ * @description Sella la decisión de reserva mediante evidencia de estándares y testimonios.
  */
 export function ValuePropositionSection({ dictionary, className }: ValuePropositionSectionProps) {
   
   /**
    * GUARDIÁN DE RESILIENCIA (Pilar VIII)
-   * Valida la estructura mínima necesaria para garantizar un renderizado coherente.
    */
   if (!dictionary?.pillars || dictionary.pillars.length !== 3) {
-    console.error('[HEIMDALL][DATA] ValuePropositionSection: Estructura de pilares incompleta.');
+    console.error('[HEIMDALL][DATA] ValuePropositionSection: Integrity violation.');
     return null;
   }
 
   return (
     <section 
-      className={cn("relative w-full py-24 sm:py-32 bg-[#020202] overflow-hidden", className)}
-      aria-labelledby="value-prop-title"
+      className={cn("relative w-full py-24 sm:py-40 bg-[#020202] overflow-hidden selection:bg-primary/30", className)}
+      aria-label={dictionary.title}
     >
-      {/* 1. APARATO: MARQUEE DE AMENIDADES (Integración MACS) */}
-      <div className="mb-24">
+      {/* 1. MARQUEE DE AMENIDADES (Validación Visual) */}
+      <div className="mb-32">
         <AmenitiesMarquee dictionary={dictionary} />
       </div>
 
       <div className="container mx-auto px-6">
         
-        {/* 2. ENCABEZADO NARRATIVO INSTITUCIONAL */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className="mx-auto max-w-4xl text-center mb-20 md:mb-32"
-        >
-          <span className="text-[10px] font-bold tracking-[0.6em] text-purple-500 uppercase mb-4 block animate-fade-in">
-            The Sanctuary Standards
-          </span>
-          <h2 id="value-prop-title" className="font-display text-5xl md:text-7xl font-bold tracking-tighter text-white mb-8">
+        {/* 2. HEADER NARRATIVO INSTITUCIONAL */}
+        <header className="mx-auto max-w-4xl text-center mb-24 md:mb-36">
+          <motion.span 
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            className="text-[10px] font-bold tracking-[0.6em] text-primary uppercase mb-6 block"
+          >
+            {dictionary.badge_label}
+          </motion.span>
+          <h2 className="font-display text-5xl md:text-8xl font-bold tracking-tighter text-white mb-10 leading-[0.9]">
             {dictionary.title}
           </h2>
-          <p className="text-zinc-400 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed font-light italic">
+          <p className="text-zinc-400 text-lg md:text-2xl max-w-3xl mx-auto leading-relaxed font-light italic">
             {dictionary.subtitle}
           </p>
-        </motion.div>
+        </header>
 
         {/* 3. GRID DE PILARES (Arquitectura Lego) */}
         <motion.div
@@ -105,7 +95,7 @@ export function ValuePropositionSection({ dictionary, className }: ValueProposit
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.1 }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12 mb-32"
+          className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-16 mb-40"
         >
           {dictionary.pillars.map((pillar, index) => (
             <PillarCard
@@ -121,23 +111,26 @@ export function ValuePropositionSection({ dictionary, className }: ValueProposit
 
         {/* 4. PRUEBA SOCIAL: TESTIMONIAL DE ÉLITE */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.98 }}
-          whileInView={{ opacity: 1, scale: 1 }}
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className="relative max-w-4xl mx-auto"
+          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+          className="relative max-w-5xl mx-auto"
         >
-          <TestimonialCard 
+           {/* Efecto de fondo para destacar el testimonio */}
+           <div className="absolute -inset-10 bg-primary/5 blur-[100px] rounded-full pointer-events-none" />
+           
+           <TestimonialCard 
             quote={dictionary.testimonial.quote}
             authorName={dictionary.testimonial.author_name}
             authorRole={dictionary.testimonial.author_role}
-            avatarSrc="/images/hotel/guest-avatar-placeholder.jpg"
+            avatarSrc={dictionary.testimonial.avatar_url}
           />
         </motion.div>
       </div>
 
-      {/* ELEMENTO DE AMBIENTACIÓN: Gradiente de Cierre */}
-      <div className="absolute bottom-0 left-0 w-full h-1/2 bg-linear-to-t from-purple-500/5 to-transparent pointer-events-none" />
+      {/* ELEMENTO ATMOSFÉRICO: Gradiente de Cierre */}
+      <div className="absolute bottom-0 left-0 w-full h-1/2 bg-linear-to-t from-primary/5 to-transparent pointer-events-none" />
     </section>
   );
 }

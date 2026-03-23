@@ -1,33 +1,44 @@
 /**
- * @file packages/cms/core/src/lib/schemas/value_proposition.schema.ts
- * @description Contrato inmutable para la sección de Propuesta de Valor.
- *              Nivelado: Exportaciones tipadas definitivas.
- * @version 6.2 - Export Contract Sync
+ * @file value_proposition.schema.ts
+ * @description Contrato Soberano para la Propuesta de Valor y Amenidades.
+ *              Nivelado: Exportación explícita de tipos inferidos para resolver TS2305/TS2724.
+ * @version 8.0 - Full Type Inference Standard
+ * @author Raz Podestá - MetaShark Tech
  */
 
 import { z } from 'zod';
 
-/** Catálogo de iconos permitidos (Zod Enum) */
+/**
+ * CATÁLOGO DE ICONOS PERMITIDOS
+ * @description Única fuente de verdad para los glifos de amenidades.
+ */
 export const AmenityIconKey = z.enum([
   'wifi', 'waves', 'utensils', 'dumbbell', 'shield', 
   'coffee', 'car', 'sparkles', 'disc', 'martini', 
   'ship', 'ticket', 'music', 'pin', 'users', 'flame'
 ]);
 
-// Tipo inferido para uso en el MAPA DE ICONOS (evita errores TS2749)
+/** @type AmenityIconType - Inferencia para el mapeo de componentes visuales */
 export type AmenityIconType = z.infer<typeof AmenityIconKey>;
 
-/** Esquema de ítem individual de amenidad */
+/**
+ * ESQUEMA: amenitySchema
+ * @description Define una unidad individual de servicio.
+ */
 export const amenitySchema = z.object({
-  name: z.string().min(1, 'Amenity name is required'),
+  name: z.string().min(1),
   iconKey: AmenityIconKey,
 });
 
-// Exportación explícita del tipo Amenity (resuelve TS2305)
+/** @type Amenity - Inferencia para props de sub-componentes */
 export type Amenity = z.infer<typeof amenitySchema>;
 
-/** Esquema maestro del aparato Value Proposition */
+/**
+ * ESQUEMA MAESTRO: valuePropositionSectionSchema
+ * @description Orquestador del contenido de valor de la landing.
+ */
 export const valuePropositionSectionSchema = z.object({
+  badge_label: z.string().min(1),
   amenities_title: z.string().min(1),
   amenities_cta: z.string().min(1),
   amenities_hotel: z.array(amenitySchema).min(1),
@@ -37,11 +48,12 @@ export const valuePropositionSectionSchema = z.object({
   pillars: z.array(z.object({
     title: z.string().min(1),
     description: z.string().min(1),
-  })).length(3, 'Value proposition must have exactly 3 pillars'),
+  })).length(3),
   testimonial: z.object({
     quote: z.string().min(1),
     author_name: z.string().min(1),
     author_role: z.string().min(1),
+    avatar_url: z.string().min(1),
   }),
 });
 

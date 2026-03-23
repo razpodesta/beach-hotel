@@ -1,0 +1,76 @@
+{
+  "hero": {
+    "title": "PRIDE ESCAPE 2026",
+    "subtitle": "The Boutique Takeover of Canasvieiras",
+    "video_url": "https://cdn.pixabay.com/video/2023/10/24/186358-877995180_large.mp4",
+    "countdown_target": "2026-06-15T20:00:00Z",
+    "cta_label": "SECURE MY SPOT"
+  },
+  "manifesto": "A week designed to meet, connect and enjoy in community. Escape the cold and live a unique experience in the heart of the Magic Island. 7 days of absolute freedom, exclusive parties and the finest boutique hospitality.",
+  "vip_upsell": {
+    "title": "VIP Diamond Experience",
+    "price_addon": "+U$ 125",
+    "benefits": [
+      "Front-row ocean view room",
+      "Priority Access (Fast Pass) to all events",
+      "Limited Edition Welcome Kit",
+      "Exclusive dinner with the International Line-up",
+      "Premium Open Bar at all Boat Parties"
+    ],
+    "cta_label": "UPGRADE TO VIP"
+  },
+  "events": [
+    {
+      "id": "sunset-welcome",
+      "day": 1,
+      "title": "HQ SUNSET",
+      "location": "Beach Hotel Pool",
+      "startTime": "4:00 PM",
+      "description": "Official opening party with welcome cocktails and melodic DJ sets.",
+      "vibe": "Chill",
+      "isVipOnly": false,
+      "image": "/images/festival/hq-sunset.jpg",
+      "neon_color": "#3B82F6"
+    },
+    {
+      "id": "main-boat-party",
+      "day": 3,
+      "title": "BOAT PARTY: THE NEW WAVE",
+      "location": "North Bay / Private Yacht",
+      "startTime": "2:00 PM",
+      "description": "Sunset cruise with hi-fi sound system and strategic swim stops.",
+      "vibe": "House",
+      "isVipOnly": true,
+      "image": "/images/festival/boat-party-main.jpg",
+      "neon_color": "#A855F7"
+    },
+    {
+      "id": "techno-sanctuary",
+      "day": 5,
+      "title": "THE SANCTUARY NIGHT",
+      "location": "The Cave / Underground Club",
+      "startTime": "11:00 PM",
+      "description": "A visual and sonic immersion with the best of European Techno.",
+      "vibe": "Techno",
+      "isVipOnly": false,
+      "image": "/images/festival/techno-night.jpg",
+      "neon_color": "#EC4899"
+    }
+  ],
+  "packages": [
+    {
+      "category": "Experience Base",
+      "price_5_nights": "U$ 465",
+      "price_7_nights": "U$ 595",
+      "hotel_name": "Beach Hotel Principal",
+      "availability_label": "LAST CALL"
+    },
+    {
+      "category": "Luxury Elite",
+      "price_5_nights": "U$ 810",
+      "price_7_nights": "U$ 1,050",
+      "hotel_name": "Beach Hotel Suites",
+      "availability_label": "EXCLUSIVE BOOKING"
+    }
+  ]
+}

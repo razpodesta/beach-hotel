@@ -13,17 +13,6 @@
     ],
     "cta_button": "Discover our Story"
   },
-  "blog_page": {
-    "page_title": "Concierge Journal | Beach Hotel Canasvieiras",
-    "page_description": "Discover the island's best-kept secrets, exclusive nightlife guides, and Pride Escape news.",
-    "hero_title": "The Concierge Journal",
-    "featured_title": "Featured Read",
-    "all_posts_title": "Latest Updates",
-    "read_more_cta": "Read Article",
-    "empty_state": "No articles available at this time. Stay connected.",
-    "tag_results_singular": "One article available curated under",
-    "tag_results_plural": "Articles selected curated under"
-  },
   "ai_gallery_section": {
     "badge": "Ideogram 3.0 Powered",
     "title": "AI Visual Synth",
@@ -85,6 +74,17 @@
       }
     }
   },
+  "blog_page": {
+    "page_title": "Concierge Journal | Beach Hotel Canasvieiras",
+    "page_description": "Discover the island's best-kept secrets, exclusive nightlife guides, and Pride Escape news.",
+    "hero_title": "The Concierge Journal",
+    "featured_title": "Featured Read",
+    "all_posts_title": "Latest Updates",
+    "read_more_cta": "Read Article",
+    "empty_state": "No articles available at this time. Stay connected.",
+    "tag_results_singular": "One article available curated under",
+    "tag_results_plural": "Articles selected curated under"
+  },
   "cocreation_page": {
     "page_title": "Co-creation | Raz Podestá",
     "page_description": "Discover my collaborative framework for transforming ideas into high-performance digital assets.",
@@ -106,13 +106,6 @@
       "message_too_short": "Message must be at least 10 characters"
     }
   },
-  "design_system_page": {
-    "page_title": "Design System | Raz Podestá",
-    "page_description": "Explore the components, design tokens, and visual philosophy that build this portfolio's interface.",
-    "title": "Design System",
-    "subtitle": "A transparent look at the visual and functional building blocks of this digital ecosystem.",
-    "construction_notice": "This section is currently under construction. Soon you will be able to explore the color palette, typographic hierarchy, and the React component library that bring this site to life."
-  },
   "contact_page": {
     "title": "GET IN TOUCH",
     "form_cta": "Have an idea or project in mind?",
@@ -127,6 +120,13 @@
       "message_too_short": "Message too short"
     }
   },
+  "design_system_page": {
+    "page_title": "Design System | Raz Podestá",
+    "page_description": "Explore the components, design tokens, and visual philosophy that build this portfolio's interface.",
+    "title": "Design System",
+    "subtitle": "A transparent look at the visual and functional building blocks of this digital ecosystem.",
+    "construction_notice": "This section is currently under construction. Soon you will be able to explore the color palette, typographic hierarchy, and the React component library that bring this site to life."
+  },
   "footer": {
     "newsletter_title": "Join the Ecosystem",
     "newsletter_placeholder": "Your email address",
@@ -136,6 +136,14 @@
     "column_legal_title": "Compliance",
     "rights_reserved": "© 2026 Beach Hotel Canasvieiras. All rights reserved.",
     "made_by": "Forged by Raz Podestá | MetaShark Tech"
+  },
+  "header": {
+    "talk": "BOOK NOW",
+    "tagline": "Your Boutique Experience in Canasvieiras",
+    "personal_portfolio": "BEACH HOTEL CANASVIEIRAS",
+    "job_title": "Boutique Hotel & Pride Escape 2026 Headquarters",
+    "mobile_title": "Beach Hotel",
+    "mobile_subtitle": "Canasvieiras"
   },
   "hero": {
     "page_title": "Beach Hotel Canasvieiras | Florianópolis",
@@ -151,112 +159,6 @@
   "history": {
     "title": "Forged in Code",
     "subtitle": "Discover the fusion of two decades of systems engineering with a creative vision obsessed with results. This is not just a portfolio; it is the legacy of an architecture built to last."
-  },
-  "header": {
-    "talk": "BOOK NOW",
-    "tagline": "Your Boutique Experience in Canasvieiras",
-    "personal_portfolio": "BEACH HOTEL CANASVIEIRAS",
-    "job_title": "Boutique Hotel & Pride Escape 2026 Headquarters",
-    "mobile_title": "Beach Hotel",
-    "mobile_subtitle": "Canasvieiras"
-  },
-  "legal": {
-    "privacy_policy": {
-      "title": "Privacy Policy",
-      "last_updated": "November 12, 2025",
-      "content": [
-        {
-          "heading": "1. Introduction",
-          "body": "Welcome to my portfolio. Your privacy is of the utmost importance. This policy details what personal data is collected and how it is used."
-        },
-        {
-          "heading": "2. Data We Collect",
-          "body": "For the visitor widget, we collect anonymous geolocation data through public APIs (IP-API, Open-Meteo) to personalize the experience. For the newsletter subscription, we use Supabase Auth, which may involve the use of cookies to manage your session. We do not sell or share your data with third parties."
-        }
-      ]
-    },
-    "terms_of_service": {
-      "title": "Terms of Service",
-      "last_updated": "November 12, 2025",
-      "content": [
-        {
-          "heading": "1. Acceptance of Terms",
-          "body": "By using this website, you agree to comply with these terms and conditions of use. The content and projects displayed here are my intellectual property, unless otherwise stated."
-        },
-        {
-          "heading": "2. Use of the Site",
-          "body": "This site is provided 'as is' for informational and professional purposes. The use of its content for commercial purposes without prior explicit consent is not permitted. Any attempt to disrupt or compromise the security of the site is prohibited."
-        }
-      ]
-    }
-  },
-  "language_switcher": {
-    "label": "Language",
-    "en-US": "English",
-    "es-ES": "Español",
-    "pt-BR": "Português"
-  },
-  "lucide_page": {
-    "page_title": "Lucide Iconography | Raz Podestá",
-    "page_description": "Explore the complete collection of Lucide icons available in the design system.",
-    "header_title": "Lucide Universe",
-    "header_subtitle": "A collection of beautiful and consistent SVG icons for modern interfaces.",
-    "search_placeholder": "Search icon by name...",
-    "load_more_button": "Load More Icons",
-    "showing_results": "Showing {count} of {total} icons",
-    "visit_official": "View Documentation",
-    "copy_import": "Copy JSX",
-    "category_all": "All",
-    "view_details": "View Details",
-    "modal_install_title": "Library Installation",
-    "modal_usage_title": "Implementation",
-    "modal_close": "Close",
-    "scroll_top": "Scroll Up",
-    "scroll_bottom": "Scroll Down",
-    "library_help_btn": "Library Help",
-    "library_help_title": "Architecture Resource",
-    "library_help_desc": "This centralized index facilitates icon selection for new projects.",
-    "btn_docs": "Icon Documentation",
-    "btn_repo": "GitHub Repository"
-  },
-  "mission_vision": {
-    "mission_title": "Our Mission",
-    "mission_description": "To orchestrate the entire digital conversion lifecycle. We forge intelligent, sovereign ecosystems that unify brand strategy, experience creation, and continuous optimization, transforming marketing from a game of guesswork into a science of predictable growth.",
-    "vision_title": "Our Vision: The Growth Flywheel",
-    "vision_subtitle": "Our vision is to be the driving force behind a new paradigm: the web as a living, self-optimizing ecosystem, where every interaction fuels a perpetual growth flywheel.",
-    "vision_pillars": [
-      {
-        "title": "Understand",
-        "description": "We don't just capture metrics; we achieve holistic observability. We integrate qualitative and quantitative data to build a dynamic visitor profile, understanding the 'why' behind every 'what'."
-      },
-      {
-        "title": "Adapt",
-        "description": "The platforms we build are not static. They are living entities that use artificial intelligence to adapt and evolve harmoniously, personalizing the experience in real-time to meet each user's needs."
-      },
-      {
-        "title": "Maximize",
-        "description": "Conversion is not an event, it's a science. Our ecosystem uses the insights generated to fuel a cycle of continuous optimization, ensuring that every asset and every campaign becomes inherently more effective over time, maximizing business objectives."
-      }
-    ]
-  },
-  "maintenance": {
-    "title": "System Upgrade in Progress",
-    "description": "We are currently deploying architectural improvements to the ecosystem. Access is temporarily restricted to ensure data integrity.",
-    "estimated_return": "Expected uptime: Shortly."
-  },
-  "not_found": {
-    "title": "Page Not Found",
-    "description": "It seems you've ventured into undefined territory. The route you are looking for does not exist in this version of the matrix.",
-    "cta_button": "Return to Base",
-    "error_code": "ERR_ROUTE_MISSING • SYSTEM_ID_404"
-  },
-  "profile_page": {
-    "page_title": "My Profile | Raz Podestá",
-    "welcome_title": "Digital Sanctuary",
-    "level_label": "Current Level",
-    "xp_label": "Experience",
-    "inventory_title": "Artifact Inventory",
-    "empty_inventory_message": "Your inventory is empty. Explore the ecosystem to discover artifacts."
   },
   "homepage": {
     "hero": {
@@ -293,6 +195,129 @@
       "items": {}
     }
   },
+  "language_switcher": {
+    "label": "Language",
+    "en-US": "English",
+    "es-ES": "Español",
+    "pt-BR": "Português"
+  },
+  "legal": {
+    "privacy_policy": {
+      "title": "Privacy Policy",
+      "last_updated": "November 12, 2025",
+      "content": [
+        {
+          "heading": "1. Introduction",
+          "body": "Welcome to my portfolio. Your privacy is of the utmost importance. This policy details what personal data is collected and how it is used."
+        },
+        {
+          "heading": "2. Data We Collect",
+          "body": "For the visitor widget, we collect anonymous geolocation data through public APIs (IP-API, Open-Meteo) to personalize the experience. For the newsletter subscription, we use Supabase Auth, which may involve the use of cookies to manage your session. We do not sell or share your data with third parties."
+        }
+      ]
+    },
+    "terms_of_service": {
+      "title": "Terms of Service",
+      "last_updated": "November 12, 2025",
+      "content": [
+        {
+          "heading": "1. Acceptance of Terms",
+          "body": "By using this website, you agree to comply with these terms and conditions of use. The content and projects displayed here are my intellectual property, unless otherwise stated."
+        },
+        {
+          "heading": "2. Use of the Site",
+          "body": "This site is provided 'as is' for informational and professional purposes. The use of its content for commercial purposes without prior explicit consent is not permitted. Any attempt to disrupt or compromise the security of the site is prohibited."
+        }
+      ]
+    }
+  },
+  "lucide_page": {
+    "page_title": "Lucide Iconography | Raz Podestá",
+    "page_description": "Explore the complete collection of Lucide icons available in the design system.",
+    "header_title": "Lucide Universe",
+    "header_subtitle": "A collection of beautiful and consistent SVG icons for modern interfaces.",
+    "search_placeholder": "Search icon by name...",
+    "load_more_button": "Load More Icons",
+    "showing_results": "Showing {count} of {total} icons",
+    "visit_official": "View Documentation",
+    "copy_import": "Copy JSX",
+    "category_all": "All",
+    "view_details": "View Details",
+    "modal_install_title": "Library Installation",
+    "modal_usage_title": "Implementation",
+    "modal_close": "Close",
+    "scroll_top": "Scroll Up",
+    "scroll_bottom": "Scroll Down",
+    "library_help_btn": "Library Help",
+    "library_help_title": "Architecture Resource",
+    "library_help_desc": "This centralized index facilitates icon selection for new projects.",
+    "btn_docs": "Icon Documentation",
+    "btn_repo": "GitHub Repository"
+  },
+  "maintenance": {
+    "title": "System Upgrade in Progress",
+    "description": "We are currently deploying architectural improvements to the ecosystem. Access is temporarily restricted to ensure data integrity.",
+    "estimated_return": "Expected uptime: Shortly."
+  },
+  "mission_vision": {
+    "mission_title": "Our Mission",
+    "mission_description": "To orchestrate the entire digital conversion lifecycle. We forge intelligent, sovereign ecosystems that unify brand strategy, experience creation, and continuous optimization, transforming marketing from a game of guesswork into a science of predictable growth.",
+    "vision_title": "Our Vision: The Growth Flywheel",
+    "vision_subtitle": "Our vision is to be the driving force behind a new paradigm: the web as a living, self-optimizing ecosystem, where every interaction fuels a perpetual growth flywheel.",
+    "vision_pillars": [
+      {
+        "title": "Understand",
+        "description": "We don't just capture metrics; we achieve holistic observability. We integrate qualitative and quantitative data to build a dynamic visitor profile, understanding the 'why' behind every 'what'."
+      },
+      {
+        "title": "Adapt",
+        "description": "The platforms we build are not static. They are living entities that use artificial intelligence to adapt and evolve harmoniously, personalizing the experience in real-time to meet each user's needs."
+      },
+      {
+        "title": "Maximize",
+        "description": "Conversion is not an event, it's a science. Our ecosystem uses the insights generated to fuel a cycle of continuous optimization, ensuring that every asset and every campaign becomes inherently more effective over time, maximizing business objectives."
+      }
+    ]
+  },
+  "nav-links": {
+    "nav_links": {
+      "hotel": "The Hotel",
+      "habitaciones": "Luxury Suites",
+      "festival": "Pride Escape 2026",
+      "historia": "Our Story",
+      "ubicacion": "Location",
+      "contacto": "Contact",
+      "reservas": "Online Booking",
+      "politica_privacidad": "Privacy",
+      "terminos_servicio": "Terms of Use"
+    }
+  },
+  "not_found": {
+    "title": "Page Not Found",
+    "description": "It seems you've ventured into undefined territory. The route you are looking for does not exist in this version of the matrix.",
+    "cta_button": "Return to Base",
+    "error_code": "ERR_ROUTE_MISSING • SYSTEM_ID_404"
+  },
+  "profile_page": {
+    "page_title": "My Profile | Raz Podestá",
+    "welcome_title": "Digital Sanctuary",
+    "level_label": "Current Level",
+    "xp_label": "Experience",
+    "inventory_title": "Artifact Inventory",
+    "empty_inventory_message": "Your inventory is empty. Explore the ecosystem to discover artifacts."
+  },
+  "project_details": {
+    "section_title": "Elite Engineering",
+    "section_subtitle": "A showcase of high-performance digital assets.",
+    "label_live_demo": "Live Demo",
+    "label_source_code": "Source Code",
+    "label_tech_stack": "Tech Stack",
+    "label_backend_arch": "Backend Architecture",
+    "label_elite_options": "Elite Options",
+    "label_objective": "System Objective",
+    "label_close_modal": "Close Specifications",
+    "empty_state": "No projects available at this moment."
+  },
   "quienes_somos": {
     "page_title": "Our History | Beach Hotel Canasvieiras",
     "page_description": "Discover the legacy and vision behind the sanctuary of elite hospitality in Florianópolis.",
@@ -313,23 +338,19 @@
     "cta_title": "Experience the Unforgettable",
     "cta_button": "Book your Experience"
   },
-  "project_details": {
-    "section_title": "Elite Engineering",
-    "section_subtitle": "A showcase of high-performance digital assets.",
-    "label_live_demo": "Live Demo",
-    "label_source_code": "Source Code",
-    "label_tech_stack": "Tech Stack",
-    "label_backend_arch": "Backend Architecture",
-    "label_elite_options": "Elite Options",
-    "label_objective": "System Objective",
-    "label_close_modal": "Close Specifications",
-    "empty_state": "No projects available at this moment."
-  },
   "server_error": {
     "title": "System Malfunction",
     "description": "A critical anomaly has been detected in the core. Our automated sentinels have been notified and recovery protocols are engaging.",
     "retry_button": "Retry Connection",
     "home_button": "Emergency Evac (Home)"
+  },
+  "suite_gallery": {
+    "title": "Luxury Suites",
+    "search_placeholder": "Search for your sanctuary...",
+    "cat_all": "All Suites",
+    "cat_master": "Master Sanctuary",
+    "cat_deluxe": "Deluxe Room",
+    "cat_standard": "Standard Comfort"
   },
   "system_status": {
     "aria_label": "Live Hospitality Status Updates",
@@ -387,20 +408,6 @@
     "scroll_top": "Scroll Up",
     "scroll_bottom": "Scroll Down",
     "view_details": "View Details"
-  },
-  "visitor_hud": {
-    "label_visitor_info": "INFORMAÇÃO DO HÓSPEDE",
-    "label_ip_visitor": "I.P. DE ORIGEM",
-    "footer_credits": "Tecnologia MetaShark Tech",
-    "status_calibrating": "CALIBRANDO INSTRUMENTOS...",
-    "status_error": "SINAL PERDIDO",
-    "label_location": "LOCALIZAÇÃO",
-    "label_weather": "CLIMA EM CANASVIEIRAS",
-    "weather_sunny": "ENSOLARADO",
-    "weather_rainy": "CHUVOSO",
-    "weather_cloudy": "NUBLADO",
-    "label_time": "HORA LOCAL",
-    "coords_format": "COORDENADAS"
   },
   "value_proposition": {
     "amenities_title": "Premium Amenities",
@@ -463,17 +470,18 @@
       "author_role": "Loyalty Guest"
     }
   },
-  "nav-links": {
-    "nav_links": {
-      "hotel": "The Hotel",
-      "habitaciones": "Luxury Suites",
-      "festival": "Pride Escape 2026",
-      "historia": "Our Story",
-      "ubicacion": "Location",
-      "contacto": "Contact",
-      "reservas": "Online Booking",
-      "politica_privacidad": "Privacy",
-      "terminos_servicio": "Terms of Use"
-    }
+  "visitor_hud": {
+    "label_visitor_info": "INFORMAÇÃO DO HÓSPEDE",
+    "label_ip_visitor": "I.P. DE ORIGEM",
+    "footer_credits": "Tecnologia MetaShark Tech",
+    "status_calibrating": "CALIBRANDO INSTRUMENTOS...",
+    "status_error": "SINAL PERDIDO",
+    "label_location": "LOCALIZAÇÃO",
+    "label_weather": "CLIMA EM CANASVIEIRAS",
+    "weather_sunny": "ENSOLARADO",
+    "weather_rainy": "CHUVOSO",
+    "weather_cloudy": "NUBLADO",
+    "label_time": "HORA LOCAL",
+    "coords_format": "COORDENADAS"
   }
 }

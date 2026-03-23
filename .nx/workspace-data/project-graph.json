@@ -107,6 +107,7 @@
           }
         },
         "name": "@metashark/testing-utils",
+        "projectType": "library",
         "tags": [
           "npm:public",
           "scope:shared",
@@ -130,7 +131,6 @@
         },
         "$schema": "../../node_modules/nx/schemas/project-schema.json",
         "sourceRoot": "packages/testing-utils/src",
-        "projectType": "library",
         "implicitDependencies": []
       }
     },
@@ -241,6 +241,7 @@
           }
         },
         "name": "@metashark/auth-shield",
+        "projectType": "library",
         "tags": [
           "npm:public",
           "scope:shared",
@@ -264,7 +265,6 @@
         },
         "$schema": "../../node_modules/nx/schemas/project-schema.json",
         "sourceRoot": "packages/auth-shield/src",
-        "projectType": "library",
         "implicitDependencies": []
       }
     },
@@ -375,6 +375,7 @@
           }
         },
         "name": "@metashark/protocol-33",
+        "projectType": "library",
         "tags": [
           "npm:public",
           "scope:shared",
@@ -398,7 +399,6 @@
         },
         "$schema": "../../node_modules/nx/schemas/project-schema.json",
         "sourceRoot": "packages/protocol-33/src",
-        "projectType": "library",
         "implicitDependencies": []
       }
     },
@@ -583,6 +583,7 @@
           }
         },
         "name": "@metashark/portfolio-web",
+        "projectType": "application",
         "tags": [
           "npm:private",
           "scope:metashark",
@@ -607,7 +608,6 @@
         },
         "$schema": "../../node_modules/nx/schemas/project-schema.json",
         "sourceRoot": "apps/portfolio-web/src",
-        "projectType": "application",
         "implicitDependencies": []
       }
     },
@@ -723,6 +723,7 @@
           }
         },
         "name": "@metashark/cms-core",
+        "projectType": "library",
         "tags": [
           "npm:public",
           "scope:cms",
@@ -737,17 +738,12 @@
               ".": {
                 "types": "./src/index.ts",
                 "import": "./src/index.ts",
-                "default": "./dist/index.js"
+                "default": "./src/index.ts"
               },
               "./config": {
                 "types": "./src/payload.config.ts",
                 "import": "./src/payload.config.ts",
-                "default": "./dist/payload.config.js"
-              },
-              "./collections": {
-                "types": "./src/collections/index.ts",
-                "import": "./src/collections/index.ts",
-                "default": "./dist/collections/index.js"
+                "default": "./src/payload.config.ts"
               },
               "./package.json": "./package.json"
             },
@@ -757,7 +753,6 @@
         },
         "$schema": "../../../node_modules/nx/schemas/project-schema.json",
         "sourceRoot": "packages/cms/core/src",
-        "projectType": "library",
         "implicitDependencies": []
       }
     },
@@ -873,6 +868,7 @@
           }
         },
         "name": "@metashark/cms-ui",
+        "projectType": "library",
         "tags": [
           "npm:public",
           "scope:cms",
@@ -896,7 +892,6 @@
         },
         "$schema": "../../../node_modules/nx/schemas/project-schema.json",
         "sourceRoot": "packages/cms/ui/src",
-        "projectType": "library",
         "implicitDependencies": []
       }
     },
@@ -24177,11 +24172,6 @@
         "source": "@metashark/cms-core",
         "target": "npm:sharp",
         "type": "static"
-      },
-      {
-        "source": "@metashark/cms-core",
-        "target": "npm:sharp",
-        "type": "dynamic"
       },
       {
         "source": "@metashark/cms-core",
@@ -57810,5 +57800,5 @@
   },
   "version": "6.0",
   "errors": [],
-  "computedAt": 1773881306266
+  "computedAt": 1774298803369
 }

@@ -1,3 +1,4 @@
+
 {
   "name": "@metashark/protocol-33",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
@@ -5,6 +6,7 @@
   "projectType": "library",
   "tags": ["scope:shared", "type:logic"],
   "targets": {
+
     "build": {
       "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
@@ -27,6 +29,7 @@
         "passWithNoTests": true
       }
     },
+ 
     "typecheck": {
       "executor": "nx:run-commands",
       "options": {

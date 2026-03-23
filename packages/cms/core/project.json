@@ -5,6 +5,7 @@
   "projectType": "library",
   "tags": ["scope:cms", "type:core"],
   "targets": {
+ 
     "build": {
       "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
@@ -34,6 +35,7 @@
         "passWithNoTests": true
       }
     },
+ 
     "typecheck": {
       "executor": "nx:run-commands",
       "options": {
