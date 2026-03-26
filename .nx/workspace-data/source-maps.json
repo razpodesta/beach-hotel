@@ -1,4 +1,346 @@
 {
+  "apps/portfolio-web": {
+    "root": [
+      "apps/portfolio-web/project.json",
+      "nx/core/project-json"
+    ],
+    "targets": [
+      "apps/portfolio-web/next.config.js",
+      "@nx/next/plugin"
+    ],
+    "targets.dev": [
+      "apps/portfolio-web/next.config.js",
+      "@nx/next/plugin"
+    ],
+    "targets.dev.continuous": [
+      "apps/portfolio-web/next.config.js",
+      "@nx/next/plugin"
+    ],
+    "targets.dev.options": [
+      "apps/portfolio-web/next.config.js",
+      "@nx/next/plugin"
+    ],
+    "targets.dev.syncGenerators": [
+      "apps/portfolio-web/next.config.js",
+      "@nx/next/plugin"
+    ],
+    "targets.dev.executor": [
+      "apps/portfolio-web/next.config.js",
+      "@nx/next/plugin"
+    ],
+    "targets.dev.options.cwd": [
+      "apps/portfolio-web/next.config.js",
+      "@nx/next/plugin"
+    ],
+    "targets.dev.options.command": [
+      "apps/portfolio-web/next.config.js",
+      "@nx/next/plugin"
+    ],
+    "targets.start": [
+      "apps/portfolio-web/next.config.js",
+      "@nx/next/plugin"
+    ],
+    "targets.start.continuous": [
+      "apps/portfolio-web/next.config.js",
+      "@nx/next/plugin"
+    ],
+    "targets.start.options": [
+      "apps/portfolio-web/next.config.js",
+      "@nx/next/plugin"
+    ],
+    "targets.start.dependsOn": [
+      "apps/portfolio-web/next.config.js",
+      "@nx/next/plugin"
+    ],
+    "targets.start.executor": [
+      "apps/portfolio-web/next.config.js",
+      "@nx/next/plugin"
+    ],
+    "targets.start.options.cwd": [
+      "apps/portfolio-web/next.config.js",
+      "@nx/next/plugin"
+    ],
+    "targets.start.options.command": [
+      "apps/portfolio-web/next.config.js",
+      "@nx/next/plugin"
+    ],
+    "targets.serve-static": [
+      "apps/portfolio-web/next.config.js",
+      "@nx/next/plugin"
+    ],
+    "targets.serve-static.continuous": [
+      "apps/portfolio-web/next.config.js",
+      "@nx/next/plugin"
+    ],
+    "targets.serve-static.options": [
+      "apps/portfolio-web/next.config.js",
+      "@nx/next/plugin"
+    ],
+    "targets.serve-static.dependsOn": [
+      "apps/portfolio-web/next.config.js",
+      "@nx/next/plugin"
+    ],
+    "targets.serve-static.executor": [
+      "apps/portfolio-web/next.config.js",
+      "@nx/next/plugin"
+    ],
+    "targets.serve-static.options.cwd": [
+      "apps/portfolio-web/next.config.js",
+      "@nx/next/plugin"
+    ],
+    "targets.serve-static.options.command": [
+      "apps/portfolio-web/next.config.js",
+      "@nx/next/plugin"
+    ],
+    "targets.watch-deps": [
+      "apps/portfolio-web/next.config.js",
+      "@nx/next/plugin"
+    ],
+    "targets.watch-deps.continuous": [
+      "apps/portfolio-web/next.config.js",
+      "@nx/next/plugin"
+    ],
+    "targets.watch-deps.dependsOn": [
+      "apps/portfolio-web/next.config.js",
+      "@nx/next/plugin"
+    ],
+    "targets.watch-deps.executor": [
+      "apps/portfolio-web/next.config.js",
+      "@nx/next/plugin"
+    ],
+    "targets.watch-deps.options": [
+      "apps/portfolio-web/next.config.js",
+      "@nx/next/plugin"
+    ],
+    "targets.watch-deps.options.command": [
+      "apps/portfolio-web/next.config.js",
+      "@nx/next/plugin"
+    ],
+    "targets.test": [
+      "apps/portfolio-web/jest.config.ts",
+      "@nx/jest/plugin"
+    ],
+    "targets.test.options": [
+      "apps/portfolio-web/jest.config.ts",
+      "@nx/jest/plugin"
+    ],
+    "targets.test.metadata": [
+      "apps/portfolio-web/jest.config.ts",
+      "@nx/jest/plugin"
+    ],
+    "targets.test.cache": [
+      "apps/portfolio-web/jest.config.ts",
+      "@nx/jest/plugin"
+    ],
+    "targets.test.inputs": [
+      "apps/portfolio-web/jest.config.ts",
+      "@nx/jest/plugin"
+    ],
+    "targets.test.outputs": [
+      "apps/portfolio-web/jest.config.ts",
+      "@nx/jest/plugin"
+    ],
+    "targets.test.executor": [
+      "apps/portfolio-web/jest.config.ts",
+      "@nx/jest/plugin"
+    ],
+    "targets.test.options.cwd": [
+      "apps/portfolio-web/jest.config.ts",
+      "@nx/jest/plugin"
+    ],
+    "targets.test.options.env": [
+      "apps/portfolio-web/jest.config.ts",
+      "@nx/jest/plugin"
+    ],
+    "targets.test.options.command": [
+      "apps/portfolio-web/jest.config.ts",
+      "@nx/jest/plugin"
+    ],
+    "targets.test.metadata.technologies": [
+      "apps/portfolio-web/jest.config.ts",
+      "@nx/jest/plugin"
+    ],
+    "targets.test.metadata.technologies.0": [
+      "apps/portfolio-web/jest.config.ts",
+      "@nx/jest/plugin"
+    ],
+    "targets.test.metadata.description": [
+      "apps/portfolio-web/jest.config.ts",
+      "@nx/jest/plugin"
+    ],
+    "targets.test.metadata.help": [
+      "apps/portfolio-web/jest.config.ts",
+      "@nx/jest/plugin"
+    ],
+    "targets.test.metadata.help.command": [
+      "apps/portfolio-web/jest.config.ts",
+      "@nx/jest/plugin"
+    ],
+    "targets.test.metadata.help.example": [
+      "apps/portfolio-web/jest.config.ts",
+      "@nx/jest/plugin"
+    ],
+    "name": [
+      "apps/portfolio-web/project.json",
+      "nx/core/project-json"
+    ],
+    "tags": [
+      "apps/portfolio-web/package.json",
+      "nx/core/package-json"
+    ],
+    "tags.npm:private": [
+      "apps/portfolio-web/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.targetGroups": [
+      "apps/portfolio-web/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.js": [
+      "apps/portfolio-web/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.js.packageName": [
+      "apps/portfolio-web/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.js.packageVersion": [
+      "apps/portfolio-web/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.js.isInPackageManagerWorkspaces": [
+      "apps/portfolio-web/package.json",
+      "nx/core/package-json"
+    ],
+    "$schema": [
+      "apps/portfolio-web/project.json",
+      "nx/core/project-json"
+    ],
+    "sourceRoot": [
+      "apps/portfolio-web/project.json",
+      "nx/core/project-json"
+    ],
+    "projectType": [
+      "apps/portfolio-web/project.json",
+      "nx/core/project-json"
+    ],
+    "tags.platform:web": [
+      "apps/portfolio-web/project.json",
+      "nx/core/project-json"
+    ],
+    "tags.scope:metashark": [
+      "apps/portfolio-web/project.json",
+      "nx/core/project-json"
+    ],
+    "tags.type:app": [
+      "apps/portfolio-web/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build": [
+      "apps/portfolio-web/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.executor": [
+      "apps/portfolio-web/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.outputs": [
+      "apps/portfolio-web/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.options": [
+      "apps/portfolio-web/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.dependsOn": [
+      "apps/portfolio-web/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.options.outputPath": [
+      "apps/portfolio-web/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.serve": [
+      "apps/portfolio-web/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.serve.executor": [
+      "apps/portfolio-web/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.serve.options": [
+      "apps/portfolio-web/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.serve.options.buildTarget": [
+      "apps/portfolio-web/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.serve.options.dev": [
+      "apps/portfolio-web/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.serve.options.port": [
+      "apps/portfolio-web/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.typecheck": [
+      "apps/portfolio-web/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.typecheck.executor": [
+      "apps/portfolio-web/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.typecheck.options": [
+      "apps/portfolio-web/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.typecheck.options.command": [
+      "apps/portfolio-web/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.typecheck.options.forwardAllArgs": [
+      "apps/portfolio-web/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.lint": [
+      "apps/portfolio-web/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.lint.executor": [
+      "apps/portfolio-web/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.inputs": [
+      "nx.json",
+      "nx/target-defaults"
+    ],
+    "targets.build.cache": [
+      "nx.json",
+      "nx/target-defaults"
+    ],
+    "targets.build.parallelism": [
+      "nx.json",
+      "nx/target-defaults"
+    ],
+    "targets.typecheck.dependsOn": [
+      "nx.json",
+      "nx/target-defaults"
+    ],
+    "targets.typecheck.inputs": [
+      "nx.json",
+      "nx/target-defaults"
+    ],
+    "targets.typecheck.cache": [
+      "nx.json",
+      "nx/target-defaults"
+    ],
+    "targets.typecheck.parallelism": [
+      "nx.json",
+      "nx/target-defaults"
+    ]
+  },
   "packages/auth-shield": {
     "root": [
       "packages/auth-shield/project.json",
@@ -36,15 +378,11 @@
       "packages/auth-shield/project.json",
       "nx/core/project-json"
     ],
-    "projectType": [
-      "packages/auth-shield/project.json",
-      "nx/core/project-json"
-    ],
     "tags": [
       "packages/auth-shield/package.json",
       "nx/core/package-json"
     ],
-    "tags.npm:public": [
+    "tags.npm:private": [
       "packages/auth-shield/package.json",
       "nx/core/package-json"
     ],
@@ -76,22 +414,6 @@
       "packages/auth-shield/package.json",
       "nx/core/package-json"
     ],
-    "targets.nx-release-publish": [
-      "packages/auth-shield/package.json",
-      "nx/core/package-json"
-    ],
-    "targets.nx-release-publish.executor": [
-      "packages/auth-shield/package.json",
-      "nx/core/package-json"
-    ],
-    "targets.nx-release-publish.dependsOn": [
-      "packages/auth-shield/package.json",
-      "nx/core/package-json"
-    ],
-    "targets.nx-release-publish.options": [
-      "packages/auth-shield/package.json",
-      "nx/core/package-json"
-    ],
     "$schema": [
       "packages/auth-shield/project.json",
       "nx/core/project-json"
@@ -100,11 +422,19 @@
       "packages/auth-shield/project.json",
       "nx/core/project-json"
     ],
+    "projectType": [
+      "packages/auth-shield/project.json",
+      "nx/core/project-json"
+    ],
     "tags.scope:shared": [
       "packages/auth-shield/project.json",
       "nx/core/project-json"
     ],
     "tags.type:logic": [
+      "packages/auth-shield/project.json",
+      "nx/core/project-json"
+    ],
+    "tags.layer:security": [
       "packages/auth-shield/project.json",
       "nx/core/project-json"
     ],
@@ -144,6 +474,30 @@
       "packages/auth-shield/project.json",
       "nx/core/project-json"
     ],
+    "targets.build.options.clean": [
+      "packages/auth-shield/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.typecheck": [
+      "packages/auth-shield/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.typecheck.executor": [
+      "packages/auth-shield/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.typecheck.options": [
+      "packages/auth-shield/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.typecheck.options.command": [
+      "packages/auth-shield/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.typecheck.options.forwardAllArgs": [
+      "packages/auth-shield/project.json",
+      "nx/core/project-json"
+    ],
     "targets.lint": [
       "packages/auth-shield/project.json",
       "nx/core/project-json"
@@ -176,25 +530,9 @@
       "packages/auth-shield/project.json",
       "nx/core/project-json"
     ],
-    "targets.typecheck": [
-      "packages/auth-shield/project.json",
-      "nx/core/project-json"
-    ],
-    "targets.typecheck.executor": [
-      "packages/auth-shield/project.json",
-      "nx/core/project-json"
-    ],
-    "targets.typecheck.options": [
-      "packages/auth-shield/project.json",
-      "nx/core/project-json"
-    ],
-    "targets.typecheck.options.command": [
-      "packages/auth-shield/project.json",
-      "nx/core/project-json"
-    ],
-    "targets.typecheck.options.forwardAllArgs": [
-      "packages/auth-shield/project.json",
-      "nx/core/project-json"
+    "targets.typecheck.dependsOn": [
+      "nx.json",
+      "nx/target-defaults"
     ],
     "targets.typecheck.inputs": [
       "nx.json",
@@ -221,30 +559,6 @@
       "nx/target-defaults"
     ],
     "targets.build.parallelism": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
-    "targets.lint.inputs": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
-    "targets.lint.cache": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
-    "targets.lint.parallelism": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
-    "targets.test.inputs": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
-    "targets.test.cache": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
-    "targets.test.parallelism": [
       "nx.json",
       "nx/target-defaults"
     ]
@@ -286,15 +600,11 @@
       "packages/cms/core/project.json",
       "nx/core/project-json"
     ],
-    "projectType": [
-      "packages/cms/core/project.json",
-      "nx/core/project-json"
-    ],
     "tags": [
       "packages/cms/core/package.json",
       "nx/core/package-json"
     ],
-    "tags.npm:public": [
+    "tags.npm:private": [
       "packages/cms/core/package.json",
       "nx/core/package-json"
     ],
@@ -326,22 +636,6 @@
       "packages/cms/core/package.json",
       "nx/core/package-json"
     ],
-    "targets.nx-release-publish": [
-      "packages/cms/core/package.json",
-      "nx/core/package-json"
-    ],
-    "targets.nx-release-publish.executor": [
-      "packages/cms/core/package.json",
-      "nx/core/package-json"
-    ],
-    "targets.nx-release-publish.dependsOn": [
-      "packages/cms/core/package.json",
-      "nx/core/package-json"
-    ],
-    "targets.nx-release-publish.options": [
-      "packages/cms/core/package.json",
-      "nx/core/package-json"
-    ],
     "$schema": [
       "packages/cms/core/project.json",
       "nx/core/project-json"
@@ -350,11 +644,19 @@
       "packages/cms/core/project.json",
       "nx/core/project-json"
     ],
+    "projectType": [
+      "packages/cms/core/project.json",
+      "nx/core/project-json"
+    ],
     "tags.scope:cms": [
       "packages/cms/core/project.json",
       "nx/core/project-json"
     ],
     "tags.type:core": [
+      "packages/cms/core/project.json",
+      "nx/core/project-json"
+    ],
+    "tags.layer:data": [
       "packages/cms/core/project.json",
       "nx/core/project-json"
     ],
@@ -394,6 +696,30 @@
       "packages/cms/core/project.json",
       "nx/core/project-json"
     ],
+    "targets.build.options.clean": [
+      "packages/cms/core/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.typecheck": [
+      "packages/cms/core/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.typecheck.executor": [
+      "packages/cms/core/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.typecheck.options": [
+      "packages/cms/core/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.typecheck.options.command": [
+      "packages/cms/core/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.typecheck.options.forwardAllArgs": [
+      "packages/cms/core/project.json",
+      "nx/core/project-json"
+    ],
     "targets.lint": [
       "packages/cms/core/project.json",
       "nx/core/project-json"
@@ -426,25 +752,9 @@
       "packages/cms/core/project.json",
       "nx/core/project-json"
     ],
-    "targets.typecheck": [
-      "packages/cms/core/project.json",
-      "nx/core/project-json"
-    ],
-    "targets.typecheck.executor": [
-      "packages/cms/core/project.json",
-      "nx/core/project-json"
-    ],
-    "targets.typecheck.options": [
-      "packages/cms/core/project.json",
-      "nx/core/project-json"
-    ],
-    "targets.typecheck.options.command": [
-      "packages/cms/core/project.json",
-      "nx/core/project-json"
-    ],
-    "targets.typecheck.options.forwardAllArgs": [
-      "packages/cms/core/project.json",
-      "nx/core/project-json"
+    "targets.typecheck.dependsOn": [
+      "nx.json",
+      "nx/target-defaults"
     ],
     "targets.typecheck.inputs": [
       "nx.json",
@@ -471,30 +781,6 @@
       "nx/target-defaults"
     ],
     "targets.build.parallelism": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
-    "targets.lint.inputs": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
-    "targets.lint.cache": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
-    "targets.lint.parallelism": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
-    "targets.test.inputs": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
-    "targets.test.cache": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
-    "targets.test.parallelism": [
       "nx.json",
       "nx/target-defaults"
     ]
@@ -536,15 +822,11 @@
       "packages/cms/ui/project.json",
       "nx/core/project-json"
     ],
-    "projectType": [
-      "packages/cms/ui/project.json",
-      "nx/core/project-json"
-    ],
     "tags": [
       "packages/cms/ui/package.json",
       "nx/core/package-json"
     ],
-    "tags.npm:public": [
+    "tags.npm:private": [
       "packages/cms/ui/package.json",
       "nx/core/package-json"
     ],
@@ -576,22 +858,6 @@
       "packages/cms/ui/package.json",
       "nx/core/package-json"
     ],
-    "targets.nx-release-publish": [
-      "packages/cms/ui/package.json",
-      "nx/core/package-json"
-    ],
-    "targets.nx-release-publish.executor": [
-      "packages/cms/ui/package.json",
-      "nx/core/package-json"
-    ],
-    "targets.nx-release-publish.dependsOn": [
-      "packages/cms/ui/package.json",
-      "nx/core/package-json"
-    ],
-    "targets.nx-release-publish.options": [
-      "packages/cms/ui/package.json",
-      "nx/core/package-json"
-    ],
     "$schema": [
       "packages/cms/ui/project.json",
       "nx/core/project-json"
@@ -600,11 +866,19 @@
       "packages/cms/ui/project.json",
       "nx/core/project-json"
     ],
+    "projectType": [
+      "packages/cms/ui/project.json",
+      "nx/core/project-json"
+    ],
     "tags.scope:cms": [
       "packages/cms/ui/project.json",
       "nx/core/project-json"
     ],
     "tags.type:ui": [
+      "packages/cms/ui/project.json",
+      "nx/core/project-json"
+    ],
+    "tags.layer:presentation": [
       "packages/cms/ui/project.json",
       "nx/core/project-json"
     ],
@@ -644,6 +918,30 @@
       "packages/cms/ui/project.json",
       "nx/core/project-json"
     ],
+    "targets.build.options.clean": [
+      "packages/cms/ui/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.typecheck": [
+      "packages/cms/ui/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.typecheck.executor": [
+      "packages/cms/ui/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.typecheck.options": [
+      "packages/cms/ui/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.typecheck.options.command": [
+      "packages/cms/ui/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.typecheck.options.forwardAllArgs": [
+      "packages/cms/ui/project.json",
+      "nx/core/project-json"
+    ],
     "targets.lint": [
       "packages/cms/ui/project.json",
       "nx/core/project-json"
@@ -676,25 +974,9 @@
       "packages/cms/ui/project.json",
       "nx/core/project-json"
     ],
-    "targets.typecheck": [
-      "packages/cms/ui/project.json",
-      "nx/core/project-json"
-    ],
-    "targets.typecheck.executor": [
-      "packages/cms/ui/project.json",
-      "nx/core/project-json"
-    ],
-    "targets.typecheck.options": [
-      "packages/cms/ui/project.json",
-      "nx/core/project-json"
-    ],
-    "targets.typecheck.options.command": [
-      "packages/cms/ui/project.json",
-      "nx/core/project-json"
-    ],
-    "targets.typecheck.options.forwardAllArgs": [
-      "packages/cms/ui/project.json",
-      "nx/core/project-json"
+    "targets.typecheck.dependsOn": [
+      "nx.json",
+      "nx/target-defaults"
     ],
     "targets.typecheck.inputs": [
       "nx.json",
@@ -721,30 +1003,6 @@
       "nx/target-defaults"
     ],
     "targets.build.parallelism": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
-    "targets.lint.inputs": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
-    "targets.lint.cache": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
-    "targets.lint.parallelism": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
-    "targets.test.inputs": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
-    "targets.test.cache": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
-    "targets.test.parallelism": [
       "nx.json",
       "nx/target-defaults"
     ]
@@ -786,15 +1044,11 @@
       "packages/protocol-33/project.json",
       "nx/core/project-json"
     ],
-    "projectType": [
-      "packages/protocol-33/project.json",
-      "nx/core/project-json"
-    ],
     "tags": [
       "packages/protocol-33/package.json",
       "nx/core/package-json"
     ],
-    "tags.npm:public": [
+    "tags.npm:private": [
       "packages/protocol-33/package.json",
       "nx/core/package-json"
     ],
@@ -826,22 +1080,6 @@
       "packages/protocol-33/package.json",
       "nx/core/package-json"
     ],
-    "targets.nx-release-publish": [
-      "packages/protocol-33/package.json",
-      "nx/core/package-json"
-    ],
-    "targets.nx-release-publish.executor": [
-      "packages/protocol-33/package.json",
-      "nx/core/package-json"
-    ],
-    "targets.nx-release-publish.dependsOn": [
-      "packages/protocol-33/package.json",
-      "nx/core/package-json"
-    ],
-    "targets.nx-release-publish.options": [
-      "packages/protocol-33/package.json",
-      "nx/core/package-json"
-    ],
     "$schema": [
       "packages/protocol-33/project.json",
       "nx/core/project-json"
@@ -850,11 +1088,19 @@
       "packages/protocol-33/project.json",
       "nx/core/project-json"
     ],
+    "projectType": [
+      "packages/protocol-33/project.json",
+      "nx/core/project-json"
+    ],
     "tags.scope:shared": [
       "packages/protocol-33/project.json",
       "nx/core/project-json"
     ],
     "tags.type:logic": [
+      "packages/protocol-33/project.json",
+      "nx/core/project-json"
+    ],
+    "tags.layer:gamification": [
       "packages/protocol-33/project.json",
       "nx/core/project-json"
     ],
@@ -894,6 +1140,30 @@
       "packages/protocol-33/project.json",
       "nx/core/project-json"
     ],
+    "targets.build.options.clean": [
+      "packages/protocol-33/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.typecheck": [
+      "packages/protocol-33/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.typecheck.executor": [
+      "packages/protocol-33/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.typecheck.options": [
+      "packages/protocol-33/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.typecheck.options.command": [
+      "packages/protocol-33/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.typecheck.options.forwardAllArgs": [
+      "packages/protocol-33/project.json",
+      "nx/core/project-json"
+    ],
     "targets.lint": [
       "packages/protocol-33/project.json",
       "nx/core/project-json"
@@ -926,25 +1196,9 @@
       "packages/protocol-33/project.json",
       "nx/core/project-json"
     ],
-    "targets.typecheck": [
-      "packages/protocol-33/project.json",
-      "nx/core/project-json"
-    ],
-    "targets.typecheck.executor": [
-      "packages/protocol-33/project.json",
-      "nx/core/project-json"
-    ],
-    "targets.typecheck.options": [
-      "packages/protocol-33/project.json",
-      "nx/core/project-json"
-    ],
-    "targets.typecheck.options.command": [
-      "packages/protocol-33/project.json",
-      "nx/core/project-json"
-    ],
-    "targets.typecheck.options.forwardAllArgs": [
-      "packages/protocol-33/project.json",
-      "nx/core/project-json"
+    "targets.typecheck.dependsOn": [
+      "nx.json",
+      "nx/target-defaults"
     ],
     "targets.typecheck.inputs": [
       "nx.json",
@@ -971,30 +1225,6 @@
       "nx/target-defaults"
     ],
     "targets.build.parallelism": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
-    "targets.lint.inputs": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
-    "targets.lint.cache": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
-    "targets.lint.parallelism": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
-    "targets.test.inputs": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
-    "targets.test.cache": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
-    "targets.test.parallelism": [
       "nx.json",
       "nx/target-defaults"
     ]
@@ -1036,15 +1266,11 @@
       "packages/testing-utils/project.json",
       "nx/core/project-json"
     ],
-    "projectType": [
-      "packages/testing-utils/project.json",
-      "nx/core/project-json"
-    ],
     "tags": [
       "packages/testing-utils/package.json",
       "nx/core/package-json"
     ],
-    "tags.npm:public": [
+    "tags.npm:private": [
       "packages/testing-utils/package.json",
       "nx/core/package-json"
     ],
@@ -1076,22 +1302,6 @@
       "packages/testing-utils/package.json",
       "nx/core/package-json"
     ],
-    "targets.nx-release-publish": [
-      "packages/testing-utils/package.json",
-      "nx/core/package-json"
-    ],
-    "targets.nx-release-publish.executor": [
-      "packages/testing-utils/package.json",
-      "nx/core/package-json"
-    ],
-    "targets.nx-release-publish.dependsOn": [
-      "packages/testing-utils/package.json",
-      "nx/core/package-json"
-    ],
-    "targets.nx-release-publish.options": [
-      "packages/testing-utils/package.json",
-      "nx/core/package-json"
-    ],
     "$schema": [
       "packages/testing-utils/project.json",
       "nx/core/project-json"
@@ -1100,11 +1310,19 @@
       "packages/testing-utils/project.json",
       "nx/core/project-json"
     ],
+    "projectType": [
+      "packages/testing-utils/project.json",
+      "nx/core/project-json"
+    ],
     "tags.scope:shared": [
       "packages/testing-utils/project.json",
       "nx/core/project-json"
     ],
     "tags.type:util": [
+      "packages/testing-utils/project.json",
+      "nx/core/project-json"
+    ],
+    "tags.layer:infrastructure": [
       "packages/testing-utils/project.json",
       "nx/core/project-json"
     ],
@@ -1144,6 +1362,30 @@
       "packages/testing-utils/project.json",
       "nx/core/project-json"
     ],
+    "targets.build.options.clean": [
+      "packages/testing-utils/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.typecheck": [
+      "packages/testing-utils/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.typecheck.executor": [
+      "packages/testing-utils/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.typecheck.options": [
+      "packages/testing-utils/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.typecheck.options.command": [
+      "packages/testing-utils/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.typecheck.options.forwardAllArgs": [
+      "packages/testing-utils/project.json",
+      "nx/core/project-json"
+    ],
     "targets.lint": [
       "packages/testing-utils/project.json",
       "nx/core/project-json"
@@ -1176,25 +1418,9 @@
       "packages/testing-utils/project.json",
       "nx/core/project-json"
     ],
-    "targets.typecheck": [
-      "packages/testing-utils/project.json",
-      "nx/core/project-json"
-    ],
-    "targets.typecheck.executor": [
-      "packages/testing-utils/project.json",
-      "nx/core/project-json"
-    ],
-    "targets.typecheck.options": [
-      "packages/testing-utils/project.json",
-      "nx/core/project-json"
-    ],
-    "targets.typecheck.options.command": [
-      "packages/testing-utils/project.json",
-      "nx/core/project-json"
-    ],
-    "targets.typecheck.options.forwardAllArgs": [
-      "packages/testing-utils/project.json",
-      "nx/core/project-json"
+    "targets.typecheck.dependsOn": [
+      "nx.json",
+      "nx/target-defaults"
     ],
     "targets.typecheck.inputs": [
       "nx.json",
@@ -1223,30 +1449,6 @@
     "targets.build.parallelism": [
       "nx.json",
       "nx/target-defaults"
-    ],
-    "targets.lint.inputs": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
-    "targets.lint.cache": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
-    "targets.lint.parallelism": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
-    "targets.test.inputs": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
-    "targets.test.cache": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
-    "targets.test.parallelism": [
-      "nx.json",
-      "nx/target-defaults"
     ]
   },
   "tests": {
@@ -1258,89 +1460,21 @@
       "tests/tsconfig.json",
       "@nx/js/typescript"
     ],
-    "targets.typecheck": [
-      "tests/tsconfig.json",
-      "@nx/js/typescript"
-    ],
-    "targets.typecheck.dependsOn": [
-      "tests/tsconfig.json",
-      "@nx/js/typescript"
-    ],
-    "targets.typecheck.options": [
-      "tests/tsconfig.json",
-      "@nx/js/typescript"
-    ],
-    "targets.typecheck.cache": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
-    "targets.typecheck.inputs": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
-    "targets.typecheck.outputs": [
-      "tests/tsconfig.json",
-      "@nx/js/typescript"
-    ],
-    "targets.typecheck.syncGenerators": [
-      "tests/tsconfig.json",
-      "@nx/js/typescript"
-    ],
-    "targets.typecheck.metadata": [
-      "tests/tsconfig.json",
-      "@nx/js/typescript"
-    ],
-    "targets.typecheck.executor": [
-      "tests/tsconfig.json",
-      "@nx/js/typescript"
-    ],
-    "targets.typecheck.options.cwd": [
-      "tests/tsconfig.json",
-      "@nx/js/typescript"
-    ],
-    "targets.typecheck.options.command": [
-      "tests/tsconfig.json",
-      "@nx/js/typescript"
-    ],
-    "targets.typecheck.metadata.technologies": [
-      "tests/tsconfig.json",
-      "@nx/js/typescript"
-    ],
-    "targets.typecheck.metadata.technologies.0": [
-      "tests/tsconfig.json",
-      "@nx/js/typescript"
-    ],
-    "targets.typecheck.metadata.description": [
-      "tests/tsconfig.json",
-      "@nx/js/typescript"
-    ],
-    "targets.typecheck.metadata.help": [
-      "tests/tsconfig.json",
-      "@nx/js/typescript"
-    ],
-    "targets.typecheck.metadata.help.command": [
-      "tests/tsconfig.json",
-      "@nx/js/typescript"
-    ],
-    "targets.typecheck.metadata.help.example": [
-      "tests/tsconfig.json",
-      "@nx/js/typescript"
-    ],
     "targets.lint": [
       "eslint.config.mjs",
       "@nx/eslint/plugin"
     ],
     "targets.lint.cache": [
-      "nx.json",
-      "nx/target-defaults"
+      "eslint.config.mjs",
+      "@nx/eslint/plugin"
     ],
     "targets.lint.options": [
       "eslint.config.mjs",
       "@nx/eslint/plugin"
     ],
     "targets.lint.inputs": [
-      "nx.json",
-      "nx/target-defaults"
+      "eslint.config.mjs",
+      "@nx/eslint/plugin"
     ],
     "targets.lint.outputs": [
       "eslint.config.mjs",
@@ -1406,6 +1540,10 @@
       "tests/project.json",
       "nx/core/project-json"
     ],
+    "tags.type:testing": [
+      "tests/project.json",
+      "nx/core/project-json"
+    ],
     "targets.test": [
       "tests/project.json",
       "nx/core/project-json"
@@ -1428,471 +1566,29 @@
     ],
     "targets.test.options.passWithNoTests": [
       "tests/project.json",
-      "nx/core/project-json"
-    ],
-    "targets.typecheck.parallelism": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
-    "targets.lint.parallelism": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
-    "targets.test.inputs": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
-    "targets.test.cache": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
-    "targets.test.parallelism": [
-      "nx.json",
-      "nx/target-defaults"
-    ]
-  },
-  "apps/portfolio-web": {
-    "root": [
-      "apps/portfolio-web/project.json",
-      "nx/core/project-json"
-    ],
-    "targets": [
-      "apps/portfolio-web/next.config.js",
-      "@nx/next/plugin"
-    ],
-    "targets.serve-static": [
-      "apps/portfolio-web/next.config.js",
-      "@nx/next/plugin"
-    ],
-    "targets.serve-static.continuous": [
-      "apps/portfolio-web/next.config.js",
-      "@nx/next/plugin"
-    ],
-    "targets.serve-static.options": [
-      "apps/portfolio-web/next.config.js",
-      "@nx/next/plugin"
-    ],
-    "targets.serve-static.dependsOn": [
-      "apps/portfolio-web/next.config.js",
-      "@nx/next/plugin"
-    ],
-    "targets.serve-static.executor": [
-      "apps/portfolio-web/next.config.js",
-      "@nx/next/plugin"
-    ],
-    "targets.serve-static.options.cwd": [
-      "apps/portfolio-web/next.config.js",
-      "@nx/next/plugin"
-    ],
-    "targets.serve-static.options.command": [
-      "apps/portfolio-web/next.config.js",
-      "@nx/next/plugin"
-    ],
-    "targets.watch-deps": [
-      "apps/portfolio-web/next.config.js",
-      "@nx/next/plugin"
-    ],
-    "targets.watch-deps.continuous": [
-      "apps/portfolio-web/next.config.js",
-      "@nx/next/plugin"
-    ],
-    "targets.watch-deps.dependsOn": [
-      "apps/portfolio-web/next.config.js",
-      "@nx/next/plugin"
-    ],
-    "targets.watch-deps.executor": [
-      "apps/portfolio-web/next.config.js",
-      "@nx/next/plugin"
-    ],
-    "targets.watch-deps.options": [
-      "apps/portfolio-web/next.config.js",
-      "@nx/next/plugin"
-    ],
-    "targets.watch-deps.options.command": [
-      "apps/portfolio-web/next.config.js",
-      "@nx/next/plugin"
-    ],
-    "name": [
-      "apps/portfolio-web/project.json",
-      "nx/core/project-json"
-    ],
-    "projectType": [
-      "apps/portfolio-web/project.json",
-      "nx/core/project-json"
-    ],
-    "tags": [
-      "apps/portfolio-web/package.json",
-      "nx/core/package-json"
-    ],
-    "tags.npm:private": [
-      "apps/portfolio-web/package.json",
-      "nx/core/package-json"
-    ],
-    "metadata.targetGroups": [
-      "apps/portfolio-web/package.json",
-      "nx/core/package-json"
-    ],
-    "metadata.targetGroups.NPM Scripts": [
-      "apps/portfolio-web/package.json",
-      "nx/core/package-json"
-    ],
-    "metadata.targetGroups.NPM Scripts.0": [
-      "apps/portfolio-web/package.json",
-      "nx/core/package-json"
-    ],
-    "metadata.targetGroups.NPM Scripts.1": [
-      "apps/portfolio-web/package.json",
-      "nx/core/package-json"
-    ],
-    "metadata.targetGroups.NPM Scripts.2": [
-      "apps/portfolio-web/package.json",
-      "nx/core/package-json"
-    ],
-    "metadata.targetGroups.NPM Scripts.3": [
-      "apps/portfolio-web/package.json",
-      "nx/core/package-json"
-    ],
-    "metadata.description": [
-      "apps/portfolio-web/package.json",
-      "nx/core/package-json"
-    ],
-    "metadata.js": [
-      "apps/portfolio-web/package.json",
-      "nx/core/package-json"
-    ],
-    "metadata.js.packageName": [
-      "apps/portfolio-web/package.json",
-      "nx/core/package-json"
-    ],
-    "metadata.js.packageVersion": [
-      "apps/portfolio-web/package.json",
-      "nx/core/package-json"
-    ],
-    "metadata.js.isInPackageManagerWorkspaces": [
-      "apps/portfolio-web/package.json",
-      "nx/core/package-json"
-    ],
-    "targets.dev": [
-      "apps/portfolio-web/package.json",
-      "nx/core/package-json"
-    ],
-    "targets.dev.executor": [
-      "apps/portfolio-web/package.json",
-      "nx/core/package-json"
-    ],
-    "targets.dev.options": [
-      "apps/portfolio-web/package.json",
-      "nx/core/package-json"
-    ],
-    "targets.dev.metadata": [
-      "apps/portfolio-web/package.json",
-      "nx/core/package-json"
-    ],
-    "targets.dev.options.script": [
-      "apps/portfolio-web/package.json",
-      "nx/core/package-json"
-    ],
-    "targets.dev.metadata.scriptContent": [
-      "apps/portfolio-web/package.json",
-      "nx/core/package-json"
-    ],
-    "targets.dev.metadata.runCommand": [
-      "apps/portfolio-web/package.json",
-      "nx/core/package-json"
-    ],
-    "targets.start": [
-      "apps/portfolio-web/package.json",
-      "nx/core/package-json"
-    ],
-    "targets.start.executor": [
-      "apps/portfolio-web/package.json",
-      "nx/core/package-json"
-    ],
-    "targets.start.options": [
-      "apps/portfolio-web/package.json",
-      "nx/core/package-json"
-    ],
-    "targets.start.metadata": [
-      "apps/portfolio-web/package.json",
-      "nx/core/package-json"
-    ],
-    "targets.start.options.script": [
-      "apps/portfolio-web/package.json",
-      "nx/core/package-json"
-    ],
-    "targets.start.metadata.scriptContent": [
-      "apps/portfolio-web/package.json",
-      "nx/core/package-json"
-    ],
-    "targets.start.metadata.runCommand": [
-      "apps/portfolio-web/package.json",
-      "nx/core/package-json"
-    ],
-    "targets.prebuild": [
-      "apps/portfolio-web/package.json",
-      "nx/core/package-json"
-    ],
-    "targets.prebuild.executor": [
-      "apps/portfolio-web/package.json",
-      "nx/core/package-json"
-    ],
-    "targets.prebuild.options": [
-      "apps/portfolio-web/package.json",
-      "nx/core/package-json"
-    ],
-    "targets.prebuild.metadata": [
-      "apps/portfolio-web/package.json",
-      "nx/core/package-json"
-    ],
-    "targets.prebuild.options.script": [
-      "apps/portfolio-web/package.json",
-      "nx/core/package-json"
-    ],
-    "targets.prebuild.metadata.scriptContent": [
-      "apps/portfolio-web/package.json",
-      "nx/core/package-json"
-    ],
-    "targets.prebuild.metadata.runCommand": [
-      "apps/portfolio-web/package.json",
-      "nx/core/package-json"
-    ],
-    "targets.vercel-build": [
-      "apps/portfolio-web/package.json",
-      "nx/core/package-json"
-    ],
-    "targets.vercel-build.executor": [
-      "apps/portfolio-web/package.json",
-      "nx/core/package-json"
-    ],
-    "targets.vercel-build.options": [
-      "apps/portfolio-web/package.json",
-      "nx/core/package-json"
-    ],
-    "targets.vercel-build.metadata": [
-      "apps/portfolio-web/package.json",
-      "nx/core/package-json"
-    ],
-    "targets.vercel-build.options.script": [
-      "apps/portfolio-web/package.json",
-      "nx/core/package-json"
-    ],
-    "targets.vercel-build.metadata.scriptContent": [
-      "apps/portfolio-web/package.json",
-      "nx/core/package-json"
-    ],
-    "targets.vercel-build.metadata.runCommand": [
-      "apps/portfolio-web/package.json",
-      "nx/core/package-json"
-    ],
-    "$schema": [
-      "apps/portfolio-web/project.json",
-      "nx/core/project-json"
-    ],
-    "sourceRoot": [
-      "apps/portfolio-web/project.json",
-      "nx/core/project-json"
-    ],
-    "tags.scope:metashark": [
-      "apps/portfolio-web/project.json",
-      "nx/core/project-json"
-    ],
-    "tags.platform:web": [
-      "apps/portfolio-web/project.json",
-      "nx/core/project-json"
-    ],
-    "tags.type:app": [
-      "apps/portfolio-web/project.json",
-      "nx/core/project-json"
-    ],
-    "targets.build": [
-      "apps/portfolio-web/project.json",
-      "nx/core/project-json"
-    ],
-    "targets.build.executor": [
-      "apps/portfolio-web/project.json",
-      "nx/core/project-json"
-    ],
-    "targets.build.outputs": [
-      "apps/portfolio-web/project.json",
-      "nx/core/project-json"
-    ],
-    "targets.build.defaultConfiguration": [
-      "apps/portfolio-web/project.json",
-      "nx/core/project-json"
-    ],
-    "targets.build.options": [
-      "apps/portfolio-web/project.json",
-      "nx/core/project-json"
-    ],
-    "targets.build.configurations": [
-      "apps/portfolio-web/project.json",
-      "nx/core/project-json"
-    ],
-    "targets.build.dependsOn": [
-      "apps/portfolio-web/project.json",
-      "nx/core/project-json"
-    ],
-    "targets.build.options.outputPath": [
-      "apps/portfolio-web/project.json",
-      "nx/core/project-json"
-    ],
-    "targets.build.configurations.development": [
-      "apps/portfolio-web/project.json",
-      "nx/core/project-json"
-    ],
-    "targets.build.configurations.development.outputPath": [
-      "apps/portfolio-web/project.json",
-      "nx/core/project-json"
-    ],
-    "targets.build.configurations.production": [
-      "apps/portfolio-web/project.json",
-      "nx/core/project-json"
-    ],
-    "targets.serve": [
-      "apps/portfolio-web/project.json",
-      "nx/core/project-json"
-    ],
-    "targets.serve.executor": [
-      "apps/portfolio-web/project.json",
-      "nx/core/project-json"
-    ],
-    "targets.serve.defaultConfiguration": [
-      "apps/portfolio-web/project.json",
-      "nx/core/project-json"
-    ],
-    "targets.serve.options": [
-      "apps/portfolio-web/project.json",
-      "nx/core/project-json"
-    ],
-    "targets.serve.configurations": [
-      "apps/portfolio-web/project.json",
-      "nx/core/project-json"
-    ],
-    "targets.serve.options.buildTarget": [
-      "apps/portfolio-web/project.json",
-      "nx/core/project-json"
-    ],
-    "targets.serve.options.dev": [
-      "apps/portfolio-web/project.json",
-      "nx/core/project-json"
-    ],
-    "targets.serve.options.port": [
-      "apps/portfolio-web/project.json",
-      "nx/core/project-json"
-    ],
-    "targets.serve.configurations.development": [
-      "apps/portfolio-web/project.json",
-      "nx/core/project-json"
-    ],
-    "targets.serve.configurations.development.buildTarget": [
-      "apps/portfolio-web/project.json",
-      "nx/core/project-json"
-    ],
-    "targets.serve.configurations.development.dev": [
-      "apps/portfolio-web/project.json",
-      "nx/core/project-json"
-    ],
-    "targets.serve.configurations.production": [
-      "apps/portfolio-web/project.json",
-      "nx/core/project-json"
-    ],
-    "targets.serve.configurations.production.buildTarget": [
-      "apps/portfolio-web/project.json",
-      "nx/core/project-json"
-    ],
-    "targets.serve.configurations.production.dev": [
-      "apps/portfolio-web/project.json",
-      "nx/core/project-json"
-    ],
-    "targets.lint": [
-      "apps/portfolio-web/project.json",
-      "nx/core/project-json"
-    ],
-    "targets.lint.executor": [
-      "apps/portfolio-web/project.json",
-      "nx/core/project-json"
-    ],
-    "targets.test": [
-      "apps/portfolio-web/project.json",
-      "nx/core/project-json"
-    ],
-    "targets.test.executor": [
-      "apps/portfolio-web/project.json",
-      "nx/core/project-json"
-    ],
-    "targets.test.outputs": [
-      "apps/portfolio-web/project.json",
-      "nx/core/project-json"
-    ],
-    "targets.test.options": [
-      "apps/portfolio-web/project.json",
-      "nx/core/project-json"
-    ],
-    "targets.test.options.jestConfig": [
-      "apps/portfolio-web/project.json",
-      "nx/core/project-json"
-    ],
-    "targets.test.options.passWithNoTests": [
-      "apps/portfolio-web/project.json",
       "nx/core/project-json"
     ],
     "targets.typecheck": [
-      "apps/portfolio-web/project.json",
+      "tests/project.json",
       "nx/core/project-json"
     ],
     "targets.typecheck.executor": [
-      "apps/portfolio-web/project.json",
+      "tests/project.json",
       "nx/core/project-json"
     ],
     "targets.typecheck.options": [
-      "apps/portfolio-web/project.json",
-      "nx/core/project-json"
-    ],
-    "targets.typecheck.description": [
-      "apps/portfolio-web/project.json",
+      "tests/project.json",
       "nx/core/project-json"
     ],
     "targets.typecheck.options.command": [
-      "apps/portfolio-web/project.json",
+      "tests/project.json",
       "nx/core/project-json"
     ],
     "targets.typecheck.options.forwardAllArgs": [
-      "apps/portfolio-web/project.json",
+      "tests/project.json",
       "nx/core/project-json"
     ],
-    "targets.build.inputs": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
-    "targets.build.cache": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
-    "targets.build.parallelism": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
-    "targets.lint.inputs": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
-    "targets.lint.cache": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
-    "targets.lint.parallelism": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
-    "targets.test.inputs": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
-    "targets.test.cache": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
-    "targets.test.parallelism": [
+    "targets.typecheck.dependsOn": [
       "nx.json",
       "nx/target-defaults"
     ],
@@ -1931,12 +1627,12 @@
       "@nx/jest/plugin"
     ],
     "targets.test.cache": [
-      "nx.json",
-      "nx/target-defaults"
+      "jest.config.ts",
+      "@nx/jest/plugin"
     ],
     "targets.test.inputs": [
-      "nx.json",
-      "nx/target-defaults"
+      "jest.config.ts",
+      "@nx/jest/plugin"
     ],
     "targets.test.outputs": [
       "jest.config.ts",
@@ -2045,10 +1741,6 @@
     "targets.local-registry.options.storage": [
       "package.json",
       "nx/core/package-json"
-    ],
-    "targets.test.parallelism": [
-      "nx.json",
-      "nx/target-defaults"
     ]
   }
 }

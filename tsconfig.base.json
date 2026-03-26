@@ -1,45 +1,46 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+    "rootDir": ".",
+    "sourceMap": true,
+    "declaration": true,
     "target": "es2022",
     "module": "esnext",
     "moduleResolution": "bundler",
     "lib": ["es2022", "dom", "dom.iterable"],
     "skipLibCheck": true,
-    "strict": true,
-    "noImplicitAny": true,
+    "skipDefaultLibCheck": true,
+    "allowJs": true,
     "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "isolatedModules": true,
     "resolveJsonModule": true,
-    "declaration": true,
+    "incremental": true,
+
+    /* PILAR III: SEGURIDAD DE TIPOS ABSOLUTA */
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+
+    /* PILAR V: ADHERENCIA ARQUITECTÓNICA (Project References) */
+    "composite": true,
     "declarationMap": true,
-    "sourceMap": true,
-    "importHelpers": true,
-    "noPropertyAccessFromIndexSignature": false,
-    "jsx": "react-jsx",
+
     "baseUrl": ".",
-    "types": ["node"],
     "paths": {
-      /* 
-         @pilar V: Alias estrictos. 
-         Centralización absoluta para evitar colisiones de empaquetado.
-      */
+      /* ALIAS SOBERANOS: Unificados bajo @metashark */
       "@/*": ["apps/portfolio-web/src/*"],
-      "@metashark/cms-core/config": ["packages/cms/core/src/payload.config.ts"],
       "@metashark/cms-core": ["packages/cms/core/src/index.ts"],
+      "@metashark/cms-core/config": ["packages/cms/core/src/payload.config.ts"],
       "@metashark/cms-ui": ["packages/cms/ui/src/index.ts"],
       "@metashark/protocol-33": ["packages/protocol-33/src/index.ts"],
       "@metashark/auth-shield": ["packages/auth-shield/src/index.ts"],
       "@metashark/testing-utils": ["packages/testing-utils/src/index.ts"]
     }
   },
-  "exclude": [
-    "node_modules", 
-    "tmp", 
-    "dist", 
-    "**/*.spec.ts", 
-    "**/*.test.ts",
-    "**/*.spec.tsx",
-    "**/*.test.tsx"
-  ]
+  "exclude": ["node_modules", "tmp", "dist"]
 }

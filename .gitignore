@@ -1,40 +1,93 @@
 # =================================================================
-# ARCHIVO .gitignore CANÓNICO PARA MONOREPO NX + NEXT.JS
+# ECOSISTEMA METASHARK: CONSTITUCIÓN DE RASTREO Y SINCRONIZACIÓN
+# Versión: 3.0 (Cloud-First & Mirror Architecture Ready)
 # =================================================================
 
-# 1. Dependencias
-# La carpeta más pesada y siempre se reinstala con `pnpm install`.
+# -----------------------------------------------------------------
+# 1. INFRAESTRUCTRURA DE DEPENDENCIAS
+# -----------------------------------------------------------------
+# Pnpm gestiona los enlaces simbólicos. Nunca subir.
 node_modules
+.pnpm-debug.log
 
-# 2. Artefactos de Build y Cachés
-# Archivos generados por Next.js y Nx durante el desarrollo y la construcción.
+# -----------------------------------------------------------------
+# 2. ARTEFACTOS DE COMPILACIÓN (Paradigma Dual-Mode)
+# -----------------------------------------------------------------
+# Ignoramos los binarios emitidos. El CI/CD los generará mediante Nx.
 .next/
 dist/
-.nx/cache/
+out/
+build/
 
-# 3. Logs y Reportes
-# Archivos de errores y reportes de cobertura de pruebas.
-error.log
+# Metadatos incrementales de TypeScript (evita colisiones de caché local)
+*.tsbuildinfo
+*.tsticket
+
+# -----------------------------------------------------------------
+# 3. CACHÉ DE ORQUESTACIÓN (Nx Engine)
+# -----------------------------------------------------------------
+# La caché local se queda en el equipo. El CI usará caché remota o limpia.
+.nx/cache
+.nx/workspace-data
+
+# -----------------------------------------------------------------
+# 4. SOBERANÍA DE PRUEBAS (The Quality Mirror)
+# -----------------------------------------------------------------
+# REGLA OBLIGATORIA: El código de validación SIEMPRE se sube.
+# NO añadir 'tests/' o '*.spec.ts' a este archivo.
+
+# Ignoramos solo los resultados volátiles de las ejecuciones.
 coverage/
+test-output/
+.nyc_output/
+playwright-report/
+blob-report/
+test-results/
 
-# 4. Variables de Entorno y Secretos
-# NUNCA subir archivos .env que contienen claves de API.
-# Es una buena práctica tener un archivo de ejemplo sin secretos.
+# -----------------------------------------------------------------
+# 5. SEGURIDAD Y SECRETOS (Compliance)
+# -----------------------------------------------------------------
+# NUNCA subir llaves privadas. Usar GitHub Secrets para el CI.
 .env
 .env.local
-.env.*.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.apps.googleusercontent.com
+*.pem
+*.key
+
+# Permitir explícitamente el ejemplo como contrato de entorno.
 !.env.example
 
-# 5. Configuración del Editor de Código (IDE)
-# Configuraciones personales que no deben ser compartidas.
-.vscode/
+# -----------------------------------------------------------------
+# 6. CONFIGURACIONES DE ENTORNO LOCAL (DX)
+# -----------------------------------------------------------------
+.vscode/*
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/settings.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 
-# 6. Archivos del Sistema Operativo
-# Basura generada por macOS, Windows y Linux.
+# -----------------------------------------------------------------
+# 7. BASURA DEL SISTEMA OPERATIVO
+# -----------------------------------------------------------------
 .DS_Store
 Thumbs.db
+desktop.ini
+ehthumbs.db
+Icon?
 
-
-test-output
-
-*.apps.googleusercontent.com
+# -----------------------------------------------------------------
+# 8. ASSETS Y TEMPORALES
+# -----------------------------------------------------------------
+# Ignorar descargas accidentales o temporales de diseño.
+*.tmp
+*.log
+.vercel
+.turbo

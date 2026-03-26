@@ -2,7 +2,7 @@
   "name": "tests",
   "$schema": "../node_modules/nx/schemas/project-schema.json",
   "projectType": "library",
-  "tags": ["scope:tests"],
+  "tags": ["scope:tests", "type:testing"],
   "targets": {
     "test": {
       "executor": "@nx/jest:jest",
@@ -10,6 +10,14 @@
       "options": {
         "jestConfig": "tests/jest.config.ts",
         "passWithNoTests": true
+      }
+    },
+
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc -p tests/tsconfig.json --noEmit",
+        "forwardAllArgs": true
       }
     }
   }

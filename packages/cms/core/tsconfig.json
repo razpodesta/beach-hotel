@@ -1,62 +1,26 @@
-/**
- * @file packages/cms/core/tsconfig.json
- * @description Configuración de TypeScript para el núcleo del CMS.
- *              Nivelado para convergencia de resolución con Next.js 15.
- * @version 2.0 - Bundler Convergence Edition
- * @author Raz Podestá - MetaShark Tech
- */
 {
   "extends": "../../../tsconfig.base.json",
   "compilerOptions": {
-    /* 
-       @pilar V: Normalización de BaseUrl. 
-       Alineamos el paquete con la raíz del monorepo para que los alias 
-       de la base sean interpretados sin desplazamientos.
-    */
     "baseUrl": ".",
+    "composite": true,
     "rootDir": ".",
-
     /* 
-       @pilar III: Seguridad de Tipos y Convergencia de Resolución.
-       Cambiamos a 'bundler' para permitir importaciones sin extensión (.ts),
-       coincidiendo con el comportamiento de Vercel y Next.js 15.
+       RESOLUCIÓN DE CORE:
+       Usamos 'nodenext' para forzar el cumplimiento de ESM, ya que este 
+       paquete es la base de los scripts de base de datos.
     */
-    "module": "esnext",
-    "moduleResolution": "bundler",
-    
-    /* 
-       @pilar III: Integridad de Módulos.
-       Obligatorio para que Payload 3.0 y Next.js gestionen correctamente 
-       las exportaciones de servidor.
-    */
-    "isolatedModules": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "resolveJsonModule": true,
-
-    /* Generación de metadatos de tipos para el Monorepo */
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
     "declaration": true,
     "declarationMap": true,
-    "composite": true,
-    
-    "strict": true,
-    "noImplicitAny": true,
     "types": ["node"]
   },
   "include": [
-    "src/**/*.ts", 
-    "payload-types.ts" 
+    "src/**/*.ts",
+    "src/payload-types.ts" // Inclusión crítica para el autocompletado global
   ],
-  "exclude": [
-    "node_modules",
-    "jest.config.ts", 
-    "src/**/*.spec.ts", 
-    "src/**/*.test.ts",
-    "dist"
-  ],
+  "exclude": ["node_modules", "dist", "jest.config.ts", "src/**/*.spec.ts"],
   "references": [
-    {
-      "path": "./tsconfig.lib.json"
-    }
+    { "path": "./tsconfig.lib.json" }
   ]
 }

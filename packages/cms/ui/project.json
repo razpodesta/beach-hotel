@@ -3,7 +3,7 @@
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/cms/ui/src",
   "projectType": "library",
-  "tags": ["scope:cms", "type:ui"],
+  "tags": ["scope:cms", "type:ui", "layer:presentation"],
   "targets": {
     "build": {
       "executor": "@nx/js:tsc",
@@ -12,6 +12,7 @@
         "outputPath": "dist/packages/cms/ui",
         "main": "packages/cms/ui/src/index.ts",
         "tsConfig": "packages/cms/ui/tsconfig.lib.json",
+  
         "assets": [
           "packages/cms/ui/*.md",
           {
@@ -20,18 +21,8 @@
             "output": "./"
           }
         ],
-        "updateBuildableProjectDepsInPackageJson": true
-      }
-    },
-    "lint": {
-      "executor": "@nx/eslint:lint"
-    },
-    "test": {
-      "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/packages/cms/ui"],
-      "options": {
-        "jestConfig": "packages/cms/ui/jest.config.ts",
-        "passWithNoTests": true
+        "updateBuildableProjectDepsInPackageJson": true,
+        "clean": true
       }
     },
     "typecheck": {
@@ -39,6 +30,15 @@
       "options": {
         "command": "tsc -p packages/cms/ui/tsconfig.lib.json --noEmit",
         "forwardAllArgs": true
+      }
+    },
+    "lint": { "executor": "@nx/eslint:lint" },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/packages/cms/ui"],
+      "options": {
+        "jestConfig": "packages/cms/ui/jest.config.ts",
+        "passWithNoTests": true
       }
     }
   }

@@ -19,5 +19,6 @@
   "stat_streak": "Racha",
   "xp_next_label": "Siguiente",
   "footer_credits": "Tecnología MetaShark Tech",
-  "cta_explore": "Explorar"
+  "cta_explore": "Explorar",
+  "precision_sync_label": "Protocolo Heimdall: Sincronización de Precisión Activa"
 }

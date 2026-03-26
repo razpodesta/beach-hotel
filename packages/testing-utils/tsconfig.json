@@ -1,27 +1,27 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "composite": true,
     "baseUrl": ".",
-    "declaration": true,
-    "declarationMap": true,
-    "esModuleInterop": true,
-    "jsx": "react-jsx",
+    /* 
+       PILAR V: ADHERENCIA AL GRAFO 
+       'composite' permite que este proyecto sea referenciado por el root y por /tests.
+    */
+    "composite": true,
+    "rootDir": ".",
+    
     "module": "esnext",
     "moduleResolution": "bundler",
-    "types":["node", "jest", "react", "react-dom"]
+    "jsx": "react-jsx",
+    
+    "declaration": true,
+    "declarationMap": true,
+
+    /* Tipado para el ecosistema de pruebas */
+    "types": ["node", "jest", "react", "react-dom"]
   },
-  "include":["src/**/*.ts", "src/**/*.tsx"],
-  "exclude":[
-    "node_modules",
-    "dist",
-    "jest.config.ts",
-    "**/*.spec.ts",
-    "**/*.spec.tsx"
-  ],
-  "references":[
-    {
-      "path": "./tsconfig.lib.json"
-    }
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "exclude": ["node_modules", "dist", "jest.config.ts", "src/**/*.spec.ts"],
+  "references": [
+    { "path": "./tsconfig.lib.json" }
   ]
 }

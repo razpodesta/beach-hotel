@@ -1,19 +1,27 @@
 {
   "extends": "../../../tsconfig.base.json",
   "compilerOptions": {
-    "composite": true,
-    "declaration": true,
-    "declarationMap": true,
     "baseUrl": ".",
+    "composite": true,
+    "rootDir": ".",
+    /* 
+       RESOLUCIÓN PARA UI:
+       Usamos 'bundler' para máxima compatibilidad con Next.js 15 y React 19.
+    */
     "module": "esnext",
     "moduleResolution": "bundler",
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "declaration": true,
+    "declarationMap": true,
+    "types": ["node"]
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.d.ts"],
-  "exclude":["node_modules", "dist", "jest.config.ts", "**/*.spec.ts", "**/*.test.tsx"],
-  "references":[
-    {
-      "path": "./tsconfig.lib.json"
-    }
+  "include": [
+    "src/**/*.ts", 
+    "src/**/*.tsx", 
+    "src/global.d.ts" // Vital para el tipado de archivos .css
+  ],
+  "exclude": ["node_modules", "dist", "jest.config.ts", "**/*.spec.ts", "**/*.spec.tsx"],
+  "references": [
+    { "path": "./tsconfig.lib.json" }
   ]
 }

@@ -1,22 +1,20 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "baseUrl": ".",
-    "composite": true,
+    /* SOBERANÍA DE SALIDA: Directorio global dist */
     "outDir": "../../../dist/packages/cms/ui",
-    "emitDeclarationOnly": false,
+    
+    /* 
+       PROFILAXIS TS6305: 
+       Al fijar rootDir en 'src', garantizamos que los componentes se compilen 
+       en la raíz del dist, evitando anidamientos redundantes.
+    */
+    "rootDir": "src",
+    
+    "composite": true,
+    "emitDeclarationOnly": false, 
     "tsBuildInfoFile": "../../../dist/packages/cms/ui/tsconfig.lib.tsbuildinfo"
   },
-  "include": [
-    "src/**/*.ts", 
-    "src/**/*.tsx", 
-    "src/**/*.d.ts"
-  ],
-  "exclude": [
-    "jest.config.ts",
-    "src/**/*.spec.ts",
-    "src/**/*.test.ts",
-    "src/**/*.spec.tsx",
-    "src/**/*.test.tsx"
-  ]
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/global.d.ts"],
+  "exclude": ["**/*.spec.ts", "**/*.test.ts", "**/*.spec.tsx", "**/*.test.tsx"]
 }

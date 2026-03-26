@@ -3,7 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/testing-utils/src",
   "projectType": "library",
-  "tags": ["scope:shared", "type:util"],
+  "tags": ["scope:shared", "type:util", "layer:infrastructure"],
   "targets": {
     "build": {
       "executor": "@nx/js:tsc",
@@ -13,25 +13,25 @@
         "main": "packages/testing-utils/src/index.ts",
         "tsConfig": "packages/testing-utils/tsconfig.lib.json",
         "assets": ["packages/testing-utils/*.md"],
-        "updateBuildableProjectDepsInPackageJson": true
+        "updateBuildableProjectDepsInPackageJson": true,
+        "clean": true
       }
     },
-    "lint": {
-      "executor": "@nx/eslint:lint"
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+       
+        "command": "tsc -p packages/testing-utils/tsconfig.lib.json --noEmit",
+        "forwardAllArgs": true
+      }
     },
+    "lint": { "executor": "@nx/eslint:lint" },
     "test": {
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/packages/testing-utils"],
       "options": {
         "jestConfig": "packages/testing-utils/jest.config.ts",
         "passWithNoTests": true
-      }
-    },
-    "typecheck": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "tsc -p packages/testing-utils/tsconfig.lib.json --noEmit",
-        "forwardAllArgs": true
       }
     }
   }

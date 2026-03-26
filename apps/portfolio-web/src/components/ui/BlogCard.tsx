@@ -1,41 +1,56 @@
 /**
- * @file apps/portfolio-web/src/components/ui/BlogCard.tsx
+ * @file BlogCard.tsx
  * @description Aparato editorial de alta fidelidad. 
- *              Orquestación resiliente de activos multimedia con optimización de carga.
- * @version 6.1 - Aliasing Hardened & Linter Compliant
+ *              Orquesta la visualización de artículos con enfoque en Core Web Vitals,
+ *              SEO semántico e interacciones de grado boutique.
+ * @version 7.0 - Taxonomy Linking & CLS Protection
  * @author Raz Podestá - MetaShark Tech
  */
 
+'use client';
+
 import React, { useMemo } from 'react';
 import Link from 'next/link';
-import NextImage from 'next/image'; // Aliasing explícito para evitar colisión
+import NextImage from 'next/image';
 import { motion } from 'framer-motion';
 import { 
   ArrowUpRight, 
   Calendar, 
   User, 
-  Image as ImageIcon // Aliasing de Lucide para evitar colisión con next/image
+  Tag as TagIcon,
+  Image as ImageIcon 
 } from 'lucide-react';
 
 /**
  * IMPORTACIONES DE INFRAESTRUCTRURA
+ * @pilar V: Adherencia arquitectónica mediante fronteras Nx.
  */
 import type { BlogPost } from '../../lib/schemas/blog.schema';
 import { cn } from '../../lib/utils/cn';
 
+/**
+ * @interface BlogCardProps
+ * @description Contrato de propiedades alineado con el Shaper Polimórfico.
+ */
 interface BlogCardProps {
+  /** Metadatos del artículo validados por Zod */
   post: BlogPost;
+  /** Identificador semántico para URL */
   slug: string;
+  /** Idioma actual para localización de rutas */
   lang: string;
+  /** Etiqueta de acción inyectada vía diccionario */
   ctaText: string;
+  /** URL de imagen opcional (prioridad CMS) */
   customImage?: string;
+  /** Optimización LCP para elementos por encima del pliegue */
   priority?: boolean;
   className?: string;
 }
 
 /**
  * APARATO: BlogCard
- * @description Renderiza una tarjeta editorial inmutable.
+ * @description Renderiza una cápsula de contenido con profundidad visual y jerarquía clara.
  */
 export function BlogCard({ 
   post, 
@@ -47,21 +62,32 @@ export function BlogCard({
   className 
 }: BlogCardProps) {
   
+  // Resolución de rumbos soberanos
   const postUrl = `/${lang}/blog/${slug}`;
 
+  /**
+   * LOCALIZACIÓN DE FECHAS
+   * @pilar VI: i18n Nativa utilizando APIs del motor de JS.
+   */
   const formattedDate = useMemo(() => {
     try {
       return new Intl.DateTimeFormat(lang, {
-        day: '2-digit', month: 'long', year: 'numeric'
+        day: '2-digit', 
+        month: 'long', 
+        year: 'numeric'
       }).format(new Date(post.published_date));
     } catch {
       return post.published_date;
     }
   }, [post.published_date, lang]);
 
+  /**
+   * GESTIÓN RESILIENTE DE ASSETS
+   * Prioriza la imagen del CMS, luego la local por slug, y finalmente un placeholder.
+   */
   const finalImageUrl = useMemo(() => {
-    return customImage || `/images/blog/${slug}.jpg`;
-  }, [customImage, slug]);
+    return customImage || post.ogImage || `/images/blog/${slug}.jpg` || '/images/placeholder-journal.jpg';
+  }, [customImage, post.ogImage, slug]);
 
   return (
     <motion.article
@@ -71,60 +97,76 @@ export function BlogCard({
       transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
       className={cn(
         "group relative flex flex-col h-full overflow-hidden rounded-[2.5rem] border border-white/5 bg-zinc-900/40 backdrop-blur-sm",
-        "transition-all duration-500 hover:border-purple-500/40 hover:shadow-[0_20px_50px_-20px_rgba(168,85,247,0.15)]",
+        "transition-all duration-500 hover:border-primary/40 hover:shadow-[0_20px_50px_-20px_rgba(168,85,247,0.15)]",
         className
       )}
     >
-      {/* CAPA VISUAL (LCP Optimized) */}
+      {/* 1. CAPA VISUAL (CLS Optimized) */}
       <div className="relative aspect-video w-full overflow-hidden">
         <NextImage
           src={finalImageUrl}
           alt={post.title}
           fill
-          className="object-cover transition-transform duration-700 group-hover:scale-105"
+          className="object-cover transition-transform duration-1000 ease-out group-hover:scale-105 group-hover:rotate-1"
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           priority={priority}
           loading={priority ? 'eager' : 'lazy'}
         />
-        <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/10 to-transparent" />
         
-        <div className="absolute top-6 left-6 z-10">
-           <span className="inline-flex items-center gap-2 rounded-full bg-black/40 backdrop-blur-md border border-white/10 px-4 py-2 text-[8px] font-bold uppercase tracking-[0.25em] text-white">
-             <div className="h-1.5 w-1.5 rounded-full bg-purple-500" />
-             {post.tags[0] || 'Concierge'}
-           </span>
+        {/* Overlay de profundidad cinemática */}
+        <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/20 to-transparent opacity-80" />
+        
+        {/* TAXONOMÍA ACTIVA */}
+        <div className="absolute top-6 left-6 z-30 flex flex-wrap gap-2">
+           {post.tags.slice(0, 2).map((tag) => (
+             <Link 
+               key={tag}
+               href={`/${lang}/blog/tag/${tag.toLowerCase().replace(/\s+/g, '-')}`}
+               className="inline-flex items-center gap-2 rounded-full bg-black/60 backdrop-blur-md border border-white/10 px-4 py-2 text-[8px] font-bold uppercase tracking-[0.25em] text-zinc-300 hover:text-white hover:border-primary/50 transition-all"
+             >
+               <div className="h-1 w-1 rounded-full bg-primary animate-pulse" />
+               {tag}
+             </Link>
+           ))}
         </div>
       </div>
 
-      {/* CUERPO EDITORIAL */}
-      <div className="flex grow flex-col p-8 md:p-10">
-        <div className="mb-4 flex items-center gap-6 text-[9px] font-mono uppercase tracking-widest text-zinc-500">
+      {/* 2. CUERPO NARRATIVO */}
+      <div className="flex grow flex-col p-8 md:p-10 relative">
+        <div className="mb-6 flex items-center gap-6 text-[9px] font-mono uppercase tracking-widest text-zinc-500">
           <div className="flex items-center gap-2">
-            <Calendar size={12} className="text-purple-500" /> {formattedDate}
+            <Calendar size={12} className="text-primary" /> {formattedDate}
           </div>
           <div className="flex items-center gap-2">
             <User size={12} className="text-pink-500" /> {post.author}
           </div>
         </div>
 
-        <h3 className="font-display text-2xl font-bold leading-[1.1] text-white mb-4">
-          <Link href={postUrl} className="after:absolute after:inset-0 after:z-20 outline-none hover:underline">
+        <h3 className="font-display text-2xl md:text-3xl font-bold leading-[1.1] text-white mb-5 group-hover:text-primary transition-colors duration-500">
+          <Link href={postUrl} className="after:absolute after:inset-0 after:z-20 outline-none">
             {post.title}
           </Link>
         </h3>
 
-        <p className="line-clamp-3 text-sm text-zinc-400 font-sans font-light">
+        <p className="line-clamp-3 text-sm md:text-base text-zinc-400 font-sans font-light leading-relaxed">
           {post.description}
         </p>
       </div>
 
-      {/* FOOTER DE CONVERSIÓN */}
-      <div className="relative z-30 border-t border-white/5 p-8 bg-white/1 flex items-center justify-between">
-        <span className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.3em] text-white">
-          {ctaText} <ArrowUpRight size={14} />
+      {/* 3. FOOTER DE ACCIÓN (Conversion Zone) */}
+      <div className="relative z-30 border-t border-white/5 p-8 bg-white/2 flex items-center justify-between">
+        <span className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.4em] text-white group-hover:text-primary transition-all">
+          {ctaText} 
+          <ArrowUpRight size={14} className="transition-transform group-hover:-translate-y-1 group-hover:translate-x-1" />
         </span>
-        <ImageIcon size={14} className="text-zinc-700" />
+        <div className="flex items-center gap-4 text-zinc-800 transition-colors group-hover:text-zinc-600">
+            <TagIcon size={14} />
+            <ImageIcon size={14} />
+        </div>
       </div>
+
+      {/* Acabado de Lujo: Borde interior sutil */}
+      <div className="absolute inset-0 border border-white/0 group-hover:border-white/5 pointer-events-none transition-colors duration-1000" />
     </motion.article>
   );
 }

@@ -1,9 +1,8 @@
 /**
  * @file HeroCarousel.tsx
  * @description Orquestador Cinemático de la Recepción (Fase 1: Awareness).
- *              Implementa narrativa sensorial, optimización de LCP y telemetría de atención.
- *              Refactorizado: 100% i18n, Linter Compliant y Protección de CLS.
- * @version 12.1 - Elite Hygiene Edition
+ *              Refactorizado: 100% Data-Driven, Linter Compliant y Protección de LCP.
+ * @version 14.0 - Linter Compliant & Full Asset Sync
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -27,26 +26,9 @@ import { getLocalizedHref } from '../../../lib/utils/link-helpers';
 import { i18n, type Locale } from '../../../config/i18n.config';
 import type { HeroDictionary } from '../../../lib/schemas/hero.schema';
 
-/**
- * @interface HeroCarouselProps
- */
 interface HeroCarouselProps {
-  /** Diccionario aplanado validado por SSoT */
+  /** Diccionario validado por el contrato soberano v2.0 */
   dictionary: HeroDictionary;
-}
-
-/**
- * @interface SlideConfig
- */
-interface SlideConfig {
-  id: 'hotel' | 'festival';
-  titleKey: keyof HeroDictionary;
-  subtitleKey: keyof HeroDictionary;
-  featuresKey: keyof HeroDictionary;
-  videoUrl: string;
-  posterUrl: string;
-  ctaLink: string;
-  audioTeaser: string;
 }
 
 /**
@@ -54,16 +36,15 @@ interface SlideConfig {
  * @description Erradica el Hydration Mismatch mediante suscripción atómica.
  */
 function useIsMounted(): boolean {
-  const subscribe = useCallback(() => {
+  const subscribe = useCallback((_callback: () => void) => {
     /**
-     * FUNCIÓN DE LIMPIEZA SOBERANA
-     * @description Satisfaciendo @typescript-eslint/no-empty-function.
-     * Al ser un estado de montaje terminal en cliente, no requiere des-suscripción activa.
+     * @pilar X: Higiene.
+     * Operación de limpieza estática. Al ser un estado de montaje terminal,
+     * no se requiere des-suscripción activa de eventos de ventana.
      */
-    const noop = () => {
-      /* No-op: Estado estático alcanzado tras hidratación */
+    return () => {
+      // Intencionalmente vacío para satisfacer @typescript-eslint/no-empty-function
     };
-    return noop;
   }, []);
   return useSyncExternalStore(subscribe, () => true, () => false);
 }
@@ -88,30 +69,27 @@ export function HeroCarousel({ dictionary }: HeroCarouselProps) {
   }, [pathname]);
 
   /**
-   * MATRIZ NARRATIVA
+   * MATRIZ NARRATIVA (Sincronizada con MACS Assets)
+   * @pilar I: Desacoplamiento total de URLs de assets del código fuente.
    */
-  const slides = useMemo<SlideConfig[]>(() => [
+  const slides = useMemo(() => [
     {
       id: 'hotel',
-      titleKey: 'HOTEL_TITLE',
-      subtitleKey: 'HOTEL_SUBTITLE',
-      featuresKey: 'HOTEL_FEATURES',
-      videoUrl: "https://cdn.pixabay.com/video/2021/09/01/87113-596486047_large.mp4",
-      posterUrl: "/images/hotel/hero-hotel-poster.jpg",
-      ctaLink: "/quienes-somos",
-      audioTeaser: "/audio/sanctuary-ambient.mp3"
+      title: dictionary.HOTEL_TITLE,
+      subtitle: dictionary.HOTEL_SUBTITLE,
+      features: dictionary.HOTEL_FEATURES,
+      assets: dictionary.assets.hotel,
+      cta: '/quienes-somos'
     },
     {
       id: 'festival',
-      titleKey: 'FESTIVAL_TITLE',
-      subtitleKey: 'FESTIVAL_SUBTITLE',
-      featuresKey: 'FESTIVAL_FEATURES',
-      videoUrl: "https://cdn.pixabay.com/video/2023/10/24/186358-877995180_large.mp4",
-      posterUrl: "/images/festival/hero-festival-poster.jpg",
-      ctaLink: "/festival",
-      audioTeaser: "/audio/festival-beat.mp3"
+      title: dictionary.FESTIVAL_TITLE,
+      subtitle: dictionary.FESTIVAL_SUBTITLE,
+      features: dictionary.FESTIVAL_FEATURES,
+      assets: dictionary.assets.festival,
+      cta: '/festival'
     }
-  ], []);
+  ], [dictionary]);
 
   const [emblaRef, emblaApi] = useEmblaCarousel(
     { loop: true, duration: 60, skipSnaps: false }, 
@@ -119,7 +97,8 @@ export function HeroCarousel({ dictionary }: HeroCarouselProps) {
   );
 
   /**
-   * MOTOR SENSORIAL (AUDIO FADE-IN)
+   * MOTOR SENSORIAL: Audio Crossfade
+   * @pilar XII: MEA/UX - Transición suave de audio entre dimensiones.
    */
   useEffect(() => {
     if (!isMounted || !audioRef.current) return;
@@ -130,18 +109,18 @@ export function HeroCarousel({ dictionary }: HeroCarouselProps) {
     if (!isMuted) {
       audio.volume = 0;
       audio.play().catch(() => {
-        // Fallback silencioso: El navegador bloqueó el autoplay
+        /** Fallback silencioso: El navegador bloqueó el autoplay sin interacción previa */
       });
       
       let vol = 0;
       fadeIntervalRef.current = setInterval(() => {
-        if (vol < 0.25) {
-          vol = Math.min(0.25, vol + 0.05);
+        if (vol < 0.3) {
+          vol = Math.min(0.3, vol + 0.05);
           audio.volume = vol;
         } else {
           if (fadeIntervalRef.current) clearInterval(fadeIntervalRef.current);
         }
-      }, 150);
+      }, 100);
     } else {
       audio.pause();
     }
@@ -151,14 +130,11 @@ export function HeroCarousel({ dictionary }: HeroCarouselProps) {
     };
   }, [isMuted, isMounted, selectedIndex]);
 
-  /**
-   * PROTOCOLO HEIMDALL: Telemetría de Atención
-   */
   const onSelect = useCallback(() => {
     if (!emblaApi) return;
     const index = emblaApi.selectedScrollSnap();
     setSelectedIndex(index);
-    console.log(`[HEIMDALL][UX] Awareness_Focus: ${slides[index].id}`);
+    console.log(`[HEIMDALL][UX] Awareness_Sync: ${slides[index].id}`);
   }, [emblaApi, slides]);
 
   useEffect(() => {
@@ -175,16 +151,17 @@ export function HeroCarousel({ dictionary }: HeroCarouselProps) {
       role="region" 
       aria-label={dictionary.page_title}
     >
-      {/* 1. CONTROL SENSORIAL */}
+      {/* 1. CONTROL SENSORIAL (Thumb-Driven UX) */}
       <div className="absolute top-32 right-8 z-50">
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => setIsMuted(!isMuted)}
           className={cn(
-            "group flex items-center gap-3 rounded-full border border-white/10 bg-black/40 p-4 text-white backdrop-blur-2xl transition-all hover:bg-white/20 shadow-2xl",
+            "group flex items-center gap-4 rounded-full border border-white/10 bg-black/40 p-4 text-white backdrop-blur-2xl transition-all hover:bg-white/20 shadow-2xl",
             !isMuted && "border-primary/50 shadow-primary/20"
           )}
+          aria-label={isMuted ? dictionary.audio_active_label : dictionary.audio_muted_label}
         >
           {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} className="text-primary animate-pulse" />}
           <AnimatePresence>
@@ -195,14 +172,14 @@ export function HeroCarousel({ dictionary }: HeroCarouselProps) {
                 exit={{ width: 0, opacity: 0 }}
                 className="text-[9px] font-bold uppercase tracking-[0.2em] overflow-hidden whitespace-nowrap"
               >
-                Ambient Active
+                {dictionary.audio_active_label}
               </motion.span>
             )}
           </AnimatePresence>
         </motion.button>
       </div>
 
-      <audio ref={audioRef} src={slides[selectedIndex].audioTeaser} loop />
+      <audio ref={audioRef} src={slides[selectedIndex].assets.audio_url} loop />
 
       {/* 2. MOTOR CINEMÁTICO */}
       <div className="h-full w-full" ref={emblaRef}>
@@ -211,10 +188,10 @@ export function HeroCarousel({ dictionary }: HeroCarouselProps) {
             const isActive = index === selectedIndex;
             return (
               <div className="relative flex-[0_0_100%] h-full min-w-0" key={slide.id}>
-                {/* Visual Architecture */}
+                {/* Capa Visual (CLS & LCP Optimized) */}
                 <div className="absolute inset-0 z-0 overflow-hidden">
                   <Image
-                    src={slide.posterUrl}
+                    src={slide.assets.poster_url}
                     alt=""
                     fill
                     priority={index === 0}
@@ -224,7 +201,8 @@ export function HeroCarousel({ dictionary }: HeroCarouselProps) {
                     )}
                   />
                   <video
-                    src={slide.videoUrl}
+                    src={slide.assets.video_url}
+                    poster={slide.assets.poster_url}
                     autoPlay
                     loop
                     muted
@@ -235,10 +213,10 @@ export function HeroCarousel({ dictionary }: HeroCarouselProps) {
                     )}
                   />
                   <div className="absolute inset-0 bg-radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.8)_100%)" />
-                  <div className="absolute inset-0 bg-linear-to-t from-black via-black/20 to-transparent" />
+                  <div className="absolute inset-0 bg-linear-to-t from-black via-black/10 to-transparent" />
                 </div>
 
-                {/* Narrative Layer */}
+                {/* Narrative Layer (SSoT Driven) */}
                 <div className="relative z-10 container mx-auto h-full flex flex-col justify-center px-6 lg:px-12">
                   <AnimatePresence mode="wait">
                     {isActive && (
@@ -252,19 +230,19 @@ export function HeroCarousel({ dictionary }: HeroCarouselProps) {
                       >
                         <div className="inline-flex items-center gap-4 px-6 py-2 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold text-zinc-300 tracking-[0.5em] uppercase mb-10 backdrop-blur-xl">
                            <Sparkles size={14} className="text-primary" />
-                           {dictionary[slide.featuresKey]}
+                           {slide.features}
                         </div>
                         
-                        <h1 className="font-display text-6xl md:text-8xl lg:text-9xl font-bold text-white tracking-tighter leading-[0.8] mb-12 uppercase">
-                          {dictionary[slide.titleKey]}
+                        <h1 className="font-display text-6xl md:text-8xl lg:text-9xl font-bold text-white tracking-tighter leading-[0.8] mb-12 uppercase drop-shadow-2xl">
+                          {slide.title}
                         </h1>
                         
                         <p className="font-sans text-xl md:text-3xl text-zinc-400 max-w-2xl mb-16 leading-relaxed font-light italic">
-                          {dictionary[slide.subtitleKey]}
+                          {slide.subtitle}
                         </p>
 
                         <Link 
-                          href={getLocalizedHref(slide.ctaLink, currentLang)}
+                          href={getLocalizedHref(slide.cta, currentLang)}
                           className="group relative inline-flex items-center gap-6 rounded-full bg-white px-12 py-6 text-[11px] font-bold text-black uppercase tracking-[0.4em] transition-all hover:bg-primary hover:text-white shadow-3xl active:scale-95"
                         >
                           {dictionary.CTA_BUTTON}
@@ -281,16 +259,16 @@ export function HeroCarousel({ dictionary }: HeroCarouselProps) {
       </div>
 
       {/* 3. NAVEGACIÓN (THUMB-DRIVEN) */}
-      <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-50 flex items-center gap-4 bg-black/40 backdrop-blur-md px-6 py-3 rounded-full border border-white/5">
+      <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-50 flex items-center gap-4 bg-black/40 backdrop-blur-md px-6 py-3 rounded-full border border-white/5 shadow-2xl">
         {slides.map((_, i) => (
           <button
             key={i}
             onClick={() => emblaApi?.scrollTo(i)}
-            className="group relative p-2 outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-full"
+            className="group relative p-2 outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-full transition-all"
             aria-label={`Go to slide ${i + 1}`}
           >
             <div className={cn(
-              "h-1 transition-all duration-500 rounded-full",
+              "h-1 transition-all duration-700 rounded-full",
               i === selectedIndex ? "w-12 bg-white" : "w-4 bg-white/20 group-hover:bg-white/40"
             )} />
           </button>

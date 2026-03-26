@@ -3,7 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/auth-shield/src",
   "projectType": "library",
-  "tags": ["scope:shared", "type:logic"],
+  "tags": ["scope:shared", "type:logic", "layer:security"],
   "targets": {
     "build": {
       "executor": "@nx/js:tsc",
@@ -13,18 +13,8 @@
         "main": "packages/auth-shield/src/index.ts",
         "tsConfig": "packages/auth-shield/tsconfig.lib.json",
         "assets": ["packages/auth-shield/*.md"],
-        "updateBuildableProjectDepsInPackageJson": true
-      }
-    },
-    "lint": {
-      "executor": "@nx/eslint:lint"
-    },
-    "test": {
-      "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/packages/auth-shield"],
-      "options": {
-        "jestConfig": "packages/auth-shield/jest.config.ts",
-        "passWithNoTests": true
+        "updateBuildableProjectDepsInPackageJson": true,
+        "clean": true
       }
     },
     "typecheck": {
@@ -32,6 +22,15 @@
       "options": {
         "command": "tsc -p packages/auth-shield/tsconfig.lib.json --noEmit",
         "forwardAllArgs": true
+      }
+    },
+    "lint": { "executor": "@nx/eslint:lint" },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/packages/auth-shield"],
+      "options": {
+        "jestConfig": "packages/auth-shield/jest.config.ts",
+        "passWithNoTests": true
       }
     }
   }

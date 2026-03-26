@@ -1,11 +1,11 @@
 /**
  * @file packages/cms/ui/src/lib/ui.tsx
  * @description Componente base de MetaShark CMS UI. 
- *              Nivelado para evitar errores de hidratación y asegurar integridad de estilos.
- * @version 2.4 - Type Safe & Resolvable
+ *              Refactorizado: Eliminada importación redundante de React (React 19 Standard).
+ * @version 2.5 - ESM & JSX Transform Optimized
+ * @author Raz Podestá - MetaShark Tech
  */
 
-import React from 'react';
 import styles from './ui.module.css';
 
 /**

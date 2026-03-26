@@ -19,5 +19,6 @@
   "stat_streak": "Streak",
   "xp_next_label": "Next",
   "footer_credits": "MetaShark Tech Infrastructure",
-  "cta_explore": "Explore"
+  "cta_explore": "Explore",
+  "precision_sync_label": "Heimdall Protocol: Precision Sync Active"
 }

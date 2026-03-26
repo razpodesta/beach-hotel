@@ -7,5 +7,19 @@
   "FESTIVAL_TITLE": "PRIDE ESCAPE 2026",
   "FESTIVAL_SUBTITLE": "The new wave of Florianópolis. 7 days of absolute takeover.",
   "FESTIVAL_FEATURES": "Boat Parties • VIP Club Nights • International Line-up",
-  "CTA_BUTTON": "CHECK AVAILABILITY"
+  "CTA_BUTTON": "CHECK AVAILABILITY",
+  "audio_active_label": "Ambient Active",
+  "audio_muted_label": "Sensory Muted",
+  "assets": {
+    "hotel": {
+      "video_url": "/video/hotel-hero-cinematic.mp4",
+      "poster_url": "/images/hotel/hero-hotel-poster.jpg",
+      "audio_url": "/audio/sanctuary-ambient.mp3"
+    },
+    "festival": {
+      "video_url": "/video/festival-hero-teaser.mp4",
+      "poster_url": "/images/festival/hero-festival-poster.jpg",
+      "audio_url": "/audio/festival-beat.mp3"
+    }
+  }
 }

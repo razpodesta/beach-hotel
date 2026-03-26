@@ -1,12 +1,10 @@
-
 {
   "name": "@metashark/protocol-33",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/protocol-33/src",
   "projectType": "library",
-  "tags": ["scope:shared", "type:logic"],
+  "tags": ["scope:shared", "type:logic", "layer:gamification"],
   "targets": {
-
     "build": {
       "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
@@ -15,26 +13,24 @@
         "main": "packages/protocol-33/src/index.ts",
         "tsConfig": "packages/protocol-33/tsconfig.lib.json",
         "assets": ["packages/protocol-33/*.md"],
-        "updateBuildableProjectDepsInPackageJson": true
+        "updateBuildableProjectDepsInPackageJson": true,
+        "clean": true
       }
     },
-    "lint": {
-      "executor": "@nx/eslint:lint"
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc -p packages/protocol-33/tsconfig.lib.json --noEmit",
+        "forwardAllArgs": true
+      }
     },
+    "lint": { "executor": "@nx/eslint:lint" },
     "test": {
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/packages/protocol-33"],
       "options": {
         "jestConfig": "packages/protocol-33/jest.config.ts",
         "passWithNoTests": true
-      }
-    },
- 
-    "typecheck": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "tsc -p packages/protocol-33/tsconfig.lib.json --noEmit",
-        "forwardAllArgs": true
       }
     }
   }

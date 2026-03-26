@@ -179,4 +179,100 @@ El `dictionary.schema.ts` principal actúa como el agregador final que importa y
 
 ---
 
+Concluyendo la Fase 6: El Orquestador del Frontend (portfolio-web).
+A diferencia de las librerías, Next.js ya tiene un comportamiento predeterminado hacia la carpeta .next, pero en un monorepo de élite, debemos forzar que la salida final de producción (build) y los artefactos de desarrollo no contaminen la carpeta apps/.
+He eliminado la ruta circular que enviaba los builds de desarrollo directamente a la carpeta del proyecto, redirigiéndolos a la zona de infraestructura raíz.
+Archivo Refactorizado: apps/portfolio-web/project.json
+code
+JSON
+{
+  "name": "@metashark/portfolio-web",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/portfolio-web/src",
+  "projectType": "application",
+  "tags": ["scope:metashark", "platform:web", "type:app"],
+  "targets": {
+    "build": {
+      "executor": "@nx/next:build",
+      "outputs": ["{workspaceRoot}/dist/apps/portfolio-web"],
+      "defaultConfiguration": "production",
+      "options": {
+        "outputPath": "dist/apps/portfolio-web"
+      },
+      "configurations": {
+        "development": {
+          "outputPath": "dist/apps/portfolio-web/dev"
+        },
+        "production": {}
+      },
+      "dependsOn": ["^build"]
+    },
+    "serve": {
+      "executor": "@nx/next:server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "@metashark/portfolio-web:build",
+        "dev": true,
+        "port": 4200
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "@metashark/portfolio-web:build:development",
+          "dev": true
+        },
+        "production": {
+          "buildTarget": "@metashark/portfolio-web:build:production",
+          "dev": false
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/apps/portfolio-web"],
+      "options": {
+        "jestConfig": "apps/portfolio-web/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc -p apps/portfolio-web/tsconfig.json --noEmit",
+        "forwardAllArgs": true
+      },
+      "description": "Verificación estricta de tipos de la aplicación web sobre el código fuente."
+    }
+  }
+}
+🛡️ FASE FINAL: Script de Purga y Sincronización Total
+Con la infraestructura de Nx y TypeScript redirigida a la raíz, el último paso para erradicar los errores TS6305 y los conflictos de "archivos fantasmas" es realizar una limpieza física.
+1. Ejecuta este comando de Purga (PowerShell/Terminal):
+Este comando eliminará todas las carpetas dist locales y carpetas de compilación residuales que estén fuera de la raíz.
+code
+Powershell
+# Limpieza de carpetas dist locales en paquetes y apps
+Get-ChildItem -Path . -Include "dist",".next","out-tsc" -Recurse -Directory | Remove-Item -Recurse -Force
+
+# Limpieza de metadatos de TypeScript residuales
+Get-ChildItem -Path . -Filter "*.tsbuildinfo" -Recurse | Remove-Item -Force
+
+# Reset del cache de Nx para reconocer los nuevos outputs
+pnpm nx reset
+2. Re-construcción del Ecosistema (Modo Centralizado):
+Ahora que el sistema está limpio, construye todo. Verás que la carpeta dist/ en tu raíz se puebla con todo el conocimiento del proyecto, mientras tus carpetas src/ quedan 100% puras.
+code
+Bash
+pnpm nx run-many --target=build --all
+📜 Actualización de Manifiestos den .docs
+He consolidado los cambios requeridos en el archivo .docs/manifesto-arquitectura.md. Debes asegurarte de que incluya este nuevo pilar:
+Pilar XIII: Soberanía de Artefactos y Pureza de Source
+"El código fuente es sagrado. Ninguna herramienta de construcción (TSC, Next, Nx) tiene autorización para escribir dentro de los directorios de código (/apps o /packages). El único directorio de escritura autorizado para binarios, declaraciones y mapas es la carpeta /dist en la raíz del monorepo, segmentada por el nombre del proyecto."
+
+
+---
+
+
 

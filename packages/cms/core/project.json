@@ -3,9 +3,8 @@
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/cms/core/src",
   "projectType": "library",
-  "tags": ["scope:cms", "type:core"],
+  "tags": ["scope:cms", "type:core", "layer:data"],
   "targets": {
- 
     "build": {
       "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
@@ -21,26 +20,24 @@
             "output": "./"
           }
         ],
-        "updateBuildableProjectDepsInPackageJson": true
+        "updateBuildableProjectDepsInPackageJson": true,
+        "clean": true
       }
     },
-    "lint": {
-      "executor": "@nx/eslint:lint"
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc -p packages/cms/core/tsconfig.lib.json --noEmit",
+        "forwardAllArgs": true
+      }
     },
+    "lint": { "executor": "@nx/eslint:lint" },
     "test": {
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/packages/cms/core"],
       "options": {
         "jestConfig": "packages/cms/core/jest.config.ts",
         "passWithNoTests": true
-      }
-    },
- 
-    "typecheck": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "tsc -p packages/cms/core/tsconfig.lib.json --noEmit",
-        "forwardAllArgs": true
       }
     }
   }

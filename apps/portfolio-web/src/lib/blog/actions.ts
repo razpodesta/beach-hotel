@@ -2,8 +2,8 @@
  * @file actions.ts
  * @description Orquestador soberano de datos para el Hub Editorial (The Concierge Journal).
  *              Implementa un Adaptador Polimórfico para unificar Mocks y Payload CMS 3.0,
- *              compilación JIT de Lexical a Markdown y protocolos de resiliencia para el build.
- * @version 15.0 - Zero Any Compliance
+ *              compilación JIT de Lexical a Markdown y protocolos de resiliencia.
+ * @version 16.0 - Staff Resilience & Polymorphic Mapping
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -15,13 +15,13 @@ import { MOCK_POSTS } from '../../data/mocks/cms.mocks';
 
 /**
  * DETERMINANTES DE INFRAESTRUCTRURA
- * @description Evalúan el entorno para decidir entre datos reales o modo de resiliencia.
+ * @description Protocolo de rescate para la fase de construcción en Vercel (Pilar VIII).
  */
 const IS_BUILD_ENV = process.env.NEXT_PHASE === 'phase-production-build' || process.env.VERCEL === '1';
 const DB_READY = Boolean(process.env.DATABASE_URL);
 
 /**
- * CONTRATOS TÉCNICOS SOBERANOS (Internal Schema)
+ * CONTRATOS TÉCNICOS SOBERANOS
  */
 interface LexicalNode {
   type: string;
@@ -29,6 +29,7 @@ interface LexicalNode {
   tag?: string;
   listType?: 'number' | 'bullet';
   children?: LexicalNode[];
+  url?: string; // Para enlaces
 }
 
 interface LexicalRoot {
@@ -38,7 +39,8 @@ interface LexicalRoot {
 }
 
 /**
- * Interfaz que define la forma cruda esperada desde Payload CMS.
+ * @interface RawPayloadPost
+ * @description Representa la forma cruda polimórfica que entrega el CMS.
  */
 interface RawPayloadPost {
   title?: string | null;
@@ -53,15 +55,10 @@ interface RawPayloadPost {
 }
 
 /**
- * CACHÉ DE INSTANCIA SOBERANA
- * @pilar X: Performance - Singleton para evitar múltiples handshakes con la DB.
+ * CACHÉ DE INSTANCIA SOBERANA (Pilar X)
  */
 let cachedPayload: Payload | null = null;
 
-/**
- * @description Recupera o inicializa la instancia de Payload CMS.
- * @returns {Promise<Payload>} Instancia orquestada del CMS.
- */
 async function getSovereignPayload(): Promise<Payload> {
   if (cachedPayload) return cachedPayload;
   const config = await configPromise;
@@ -71,10 +68,7 @@ async function getSovereignPayload(): Promise<Payload> {
 
 /**
  * COMPILADOR JIT: Lexical AST a Markdown
- * @description Transforma la estructura compleja de Lexical en texto plano Markdown.
- * @pilar VIII: Resiliencia - Maneja recursividad y tipos de bloque editoriales.
- * @param {unknown} contentNode - Nodo raíz del editor Lexical.
- * @returns {string} Contenido listo para MDXRemote.
+ * @description Transforma la estructura de nodos de Payload en Markdown semántico.
  */
 function compileLexicalToMarkdown(contentNode: unknown): string {
   if (!contentNode) return '';
@@ -92,11 +86,13 @@ function compileLexicalToMarkdown(contentNode: unknown): string {
         const level = parseInt(node.tag?.replace('h', '') || '2', 10);
         return `${'#'.repeat(level)} ${childrenText}\n\n`;
       }
-      case 'quote': return `> ${childrenText}\n\n`;
       case 'list': {
         const bullet = node.listType === 'number' ? '1.' : '-';
-        return node.children.map((li: LexicalNode) => `${bullet} ${extract(li)}`).join('\n') + '\n\n';
+        return node.children.map((li) => `${bullet} ${extract(li)}`).join('\n') + '\n\n';
       }
+      case 'listitem': return childrenText;
+      case 'link': return `[${childrenText}](${node.url || '#'})`;
+      case 'quote': return `> ${childrenText}\n\n`;
       default: return childrenText;
     }
   };
@@ -111,32 +107,29 @@ function compileLexicalToMarkdown(contentNode: unknown): string {
 
 /**
  * SHAPER POLIMÓRFICO: mapToSovereignPost
- * @description Normaliza la entrada de datos (Mocks o CMS) al contrato inmutable de Zod.
- * @pilar III: Seguridad de Tipos Absoluta - Erradicación de 'any'.
- * @param {unknown} entry - Datos crudos de cualquier origen.
- * @returns {PostWithSlug} Entidad validada y saneada.
+ * @description Normaliza la entrada de datos (Mocks o CMS) al contrato de Zod.
+ * @pilar III: Erradicación de 'any' mediante validación estricta de esquema.
  */
 function mapToSovereignPost(entry: unknown): PostWithSlug {
-  // @guard: Verificamos si el objeto ya es una entidad procesada (Mocks)
+  // 1. Detección de Mocks (Pilar VIII)
   if (entry && typeof entry === 'object' && 'metadata' in entry && 'slug' in entry) {
     return postWithSlugSchema.parse(entry);
   }
 
-  // @logic: Mapeo de datos crudos desde Payload CMS (Cast controlado)
   const raw = entry as RawPayloadPost;
 
+  // 2. Resolución de Autoría
   let authorName = 'Concierge Team';
   if (raw.author && typeof raw.author === 'object') {
-    authorName = raw.author.username || raw.author.email?.split('@')[0] || 'Concierge Team';
+    authorName = raw.author.username || raw.author.email?.split('@')[0] || authorName;
   }
 
+  // 3. Resolución de Taxonomía
   const sanitizedTags = Array.isArray(raw.tags) 
-    ? raw.tags.map((t) => {
-        if (typeof t === 'string') return t;
-        return t?.tag || '';
-      }).filter(Boolean) 
+    ? raw.tags.map((t) => (typeof t === 'string' ? t : t?.tag || '')).filter(Boolean) 
     : [];
 
+  // 4. Resolución de Imagen (Media Library)
   const ogImageUrl = raw.ogImage && typeof raw.ogImage === 'object' 
     ? raw.ogImage.url 
     : undefined;
@@ -158,17 +151,15 @@ function mapToSovereignPost(entry: unknown): PostWithSlug {
 }
 
 /**
- * ACCIÓN: getAllPosts
- * @description Recupera la colección completa de artículos con protocolo de rescate.
- * @param {Locale} lang - Idioma para la resolución de contenido (SSoT).
- * @returns {Promise<PostWithSlug[]>}
+ * ACCIONES DEL SERVIDOR (Public Actions)
  */
+
 export async function getAllPosts(lang: Locale = i18n.defaultLocale): Promise<PostWithSlug[]> {
   console.group(`[HEIMDALL][FETCH] Editorial Sync: ${lang}`);
   
-  // Protocolo de Resiliencia en Build: Bypass si la DB no está lista
+  // Guardia de Resiliencia en el Build (Pilar VIII)
   if (IS_BUILD_ENV && !DB_READY) {
-    console.warn('[SECURITY] Database bypass active. Using Sovereign Mocks.');
+    console.warn('[SECURITY] Database unavailable during build. Using Sovereign Mocks.');
     console.groupEnd();
     return MOCK_POSTS.map(mapToSovereignPost);
   }
@@ -185,18 +176,12 @@ export async function getAllPosts(lang: Locale = i18n.defaultLocale): Promise<Po
     console.groupEnd();
     return docs.length > 0 ? docs.map(mapToSovereignPost) : MOCK_POSTS.map(mapToSovereignPost);
   } catch (error) {
-    console.error('[CRITICAL] Fallo en la comunicación con el CMS.', error);
+    console.error('[CRITICAL] CMS failure. Defaulting to Mocks.', error);
     console.groupEnd();
     return MOCK_POSTS.map(mapToSovereignPost);
   }
 }
 
-/**
- * ACCIÓN: getPostBySlug
- * @description Localiza un activo editorial único mediante su identificador semántico.
- * @param {string} slug - Identificador de la URL.
- * @param {Locale} lang - Idioma de la solicitud.
- */
 export async function getPostBySlug(slug: string, lang: Locale = i18n.defaultLocale): Promise<PostWithSlug | null> {
   try {
     const payload = await getSovereignPayload();
@@ -212,7 +197,6 @@ export async function getPostBySlug(slug: string, lang: Locale = i18n.defaultLoc
     
     if (docs[0]) return mapToSovereignPost(docs[0]);
     
-    // Búsqueda en Mocks como última línea de defensa (Resiliencia Pilar VIII)
     const mockMatch = MOCK_POSTS.find(p => p.slug === slug);
     return mockMatch ? mapToSovereignPost(mockMatch) : null;
   } catch {
@@ -221,21 +205,12 @@ export async function getPostBySlug(slug: string, lang: Locale = i18n.defaultLoc
   }
 }
 
-/**
- * ACCIÓN: getPostsByTag
- * @description Filtra la base editorial por taxonomía específica.
- * @param {string} tagSlug - Etiqueta de búsqueda.
- * @param {Locale} lang - Idioma de la solicitud.
- */
 export async function getPostsByTag(tagSlug: string, lang: Locale = i18n.defaultLocale): Promise<PostWithSlug[]> {
   try {
     const payload = await getSovereignPayload();
     const { docs } = await payload.find({
       collection: 'blog-posts',
-      where: { 
-        'tags.tag': { equals: tagSlug }, 
-        status: { equals: 'published' } 
-      },
+      where: { 'tags.tag': { equals: tagSlug }, status: { equals: 'published' } },
       locale: lang,
     });
     return docs.map(mapToSovereignPost);

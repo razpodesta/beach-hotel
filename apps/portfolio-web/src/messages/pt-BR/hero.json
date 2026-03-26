@@ -1,11 +1,25 @@
 {
   "page_title": "Beach Hotel Canasvieiras | Florianópolis",
-  "page_description": "Hospedagem boutique e sede oficial do festival Pride Escape 2026.",
+  "page_description": "Hospedagem boutique de luxo e sede oficial do festival Pride Escape 2026.",
   "HOTEL_TITLE": "SANTUÁRIO BOUTIQUE",
   "HOTEL_SUBTITLE": "Onde o luxo sofisticado encontra a energia vibrante do mar.",
   "HOTEL_FEATURES": "Vista Panorâmica • Experiência Gourmet • Concierge Privado",
   "FESTIVAL_TITLE": "PRIDE ESCAPE 2026",
   "FESTIVAL_SUBTITLE": "A nova onda de Florianópolis. 7 dias de takeover absoluto.",
   "FESTIVAL_FEATURES": "Boat Parties • Noites VIP • Line-up Internacional",
-  "CTA_BUTTON": "VER DISPONIBILIDADE"
+  "CTA_BUTTON": "VER DISPONIBILIDADE",
+  "audio_active_label": "Ambiente Ativo",
+  "audio_muted_label": "Sensorial Mudo",
+  "assets": {
+    "hotel": {
+      "video_url": "https://cdn.pixabay.com/video/2021/09/01/87113-596486047_large.mp4",
+      "poster_url": "/images/hotel/hero-hotel-poster.jpg",
+      "audio_url": "/audio/sanctuary-ambient.mp3"
+    },
+    "festival": {
+      "video_url": "https://cdn.pixabay.com/video/2023/10/24/186358-877995180_large.mp4",
+      "poster_url": "/images/festival/hero-festival-poster.jpg",
+      "audio_url": "/audio/festival-beat.mp3"
+    }
+  }
 }

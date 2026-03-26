@@ -1,16 +1,21 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "baseUrl": ".",
+    /* SOBERANÍA DE SALIDA: Directorio de distribución global */
+    "outDir": "../../dist/packages/protocol-33",
+    
+    /* 
+       PROFILAXIS TS6305: 
+       Fijamos rootDir en 'src'. El compilador ignorará la jerarquía 
+       de carpetas superior, resultando en un artefacto limpio.
+    */
+    "rootDir": "src",
+    
+    /* PILAR V: COMPOSITE & PHYSICAL EMISSION */
     "composite": true,
-    "outDir": "../../../dist/packages/protocol-33",
-    "emitDeclarationOnly": false,
-    "tsBuildInfoFile": "../../../dist/packages/protocol-33/tsconfig.lib.tsbuildinfo"
+    "emitDeclarationOnly": false, 
+    "tsBuildInfoFile": "../../dist/packages/protocol-33/tsconfig.lib.tsbuildinfo"
   },
   "include": ["src/**/*.ts"],
-  "exclude": [
-    "jest.config.ts",
-    "**/*.spec.ts",
-    "**/*.test.ts"
-  ]
+  "exclude": ["**/*.spec.ts", "**/*.test.ts"]
 }

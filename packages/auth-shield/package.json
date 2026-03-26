@@ -1,27 +1,18 @@
 {
   "name": "@metashark/auth-shield",
-  "version": "0.0.1",
+  "version": "1.0.0",
+  "private": true,
   "type": "module",
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "exports": {
-    "./package.json": "./package.json",
     ".": {
-      "types": "./src/index.ts",
-      "import": "./src/index.ts"
+      "import": "./src/index.ts",
+      "types": "./src/index.ts"
     }
   },
-  "files":[
-    "dist",
-    "src"
-  ],
   "dependencies": {
     "bcryptjs": "^3.0.3",
-    "jsonwebtoken": "^9.0.3",
-    "tslib": "^2.3.0"
-  },
-  "devDependencies": {
-    "@types/bcryptjs": "^3.0.0",
-    "@types/jsonwebtoken": "^9.0.10"
+    "jsonwebtoken": "^9.0.3"
   }
 }

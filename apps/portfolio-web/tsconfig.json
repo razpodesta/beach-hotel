@@ -2,52 +2,49 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "baseUrl": ".",
+    /* 
+       PILAR V: ADHERENCIA AL GRAFO SOBERANO
+       'composite' es obligatorio para que el proyecto 'tests' 
+       pueda referenciar la lógica de las páginas.
+    */
+    "composite": true,
+    
+    /* 
+       PILAR XIII: PUREZA DE SOURCE (Mata el conflicto noEmit)
+       Next.js usualmente pide noEmit: true. Aquí usamos emitDeclarationOnly
+       hacia el dist para satisfacer a TypeScript sin ensuciar el source.
+    */
+    "noEmit": false,
+    "emitDeclarationOnly": true,
+    "declaration": true,
+    "outDir": "../../dist/apps/portfolio-web/types",
+
+    /* CONFIGURACIÓN NEXT.JS 15 + REACT 19 */
+    "target": "es2022",
+    "lib": ["dom", "dom.iterable", "esnext"],
     "module": "esnext",
     "moduleResolution": "bundler",
     "jsx": "preserve",
-    "allowJs": true,
-    "noEmit": true,
     "incremental": true,
-    "esModuleInterop": true,
-    "resolveJsonModule": true,
     "isolatedModules": true,
-    "strict": true,
-    "plugins":[{ "name": "next" }],
-    /* 
-       @pilar V: Restauración de Alias Soberanos.
-       Debido a que TS no combina 'paths', debemos incluir tanto los alias 
-       locales como los del monorepo para asegurar la resolución.
-       Se elimina el alias de 'collections' para forzar la importación desde la raíz del core.
-    */
-    "paths": {
-      "@/*": ["./src/*"],
-      "@metashark/cms-core/config":["../../packages/cms/core/src/payload.config.ts"],
-      "@metashark/cms-core":["../../packages/cms/core/src/index.ts"],
-      "@metashark/cms-ui":["../../packages/cms/ui/src/index.ts"],
-      "@metashark/protocol-33":["../../packages/protocol-33/src/index.ts"],
-      "@metashark/auth-shield":["../../packages/auth-shield/src/index.ts"],
-      "@metashark/testing-utils":["../../packages/testing-utils/src/index.ts"]
-    }
+    "plugins": [{ "name": "next" }]
   },
-  "include":[
+  "include": [
     "next-env.d.ts", 
     ".next/types/**/*.ts",
-    "**/*.ts", 
-    "**/*.tsx"
+    "src/**/*.ts", 
+    "src/**/*.tsx"
   ],
-  "exclude":[
-    "node_modules",
-    ".next",
-    "dist",
-    "jest.config.ts",
-    "**/*.spec.ts",
-    "**/*.spec.tsx"
-  ],
-  "references":[
-    { "path": "../../packages/protocol-33" },
-    { "path": "../../packages/auth-shield" },
-    { "path": "../../packages/cms/ui" },
+  "exclude": ["node_modules", ".next", "dist"],
+  /* 
+     MAPA DE SUMINISTROS (Project References):
+     Permite que el IDE "salte" al código fuente de las librerías 
+     con un solo click y valida tipos en tiempo real.
+  */
+  "references": [
     { "path": "../../packages/cms/core" },
-    { "path": "../../packages/testing-utils" }
+    { "path": "../../packages/cms/ui" },
+    { "path": "../../packages/protocol-33" },
+    { "path": "../../packages/auth-shield" }
   ]
 }

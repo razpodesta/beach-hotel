@@ -1,9 +1,9 @@
 /**
- * @file apps/portfolio-web/src/app/[lang]/layout.tsx
+ * @file layout.tsx
  * @description Orquestador Soberano del Shell Principal (The Master Shell).
- *              Refactorizado: Cumplimiento del Manifiesto MACS v1.0.
- *              Elimina errores de tipo 'homepage' y sincroniza metadatos SEO.
- * @version 29.0 - Flattened Metadata Sync & CLS Protection
+ *              Implementa la arquitectura Dual-Mode, cumplimiento MACS v1.0 
+ *              y optimización de Core Web Vitals (Zero CLS).
+ * @version 31.0 - Next.js 15 Async Standard & Fix TS2304
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -20,8 +20,8 @@ import { fontInter, fontSignature, fontClashDisplay } from '../../lib/fonts';
 import { cn } from '../../lib/utils/cn';
 
 /**
- * IMPORTACIONES DE COMPONENTES DEL SHELL
- * @pilar IX: Componentización Lego.
+ * IMPORTACIONES DE COMPONENTES DEL SHELL (Lego System)
+ * @pilar IX: Componentización desacoplada y atómica.
  */
 import { Providers } from '../../components/layout/Providers';
 import { Header } from '../../components/layout/Header';
@@ -34,12 +34,14 @@ import { NavigationTracker } from '../../components/layout/NavigationTracker';
 import '../global.css';
 
 /**
- * CONFIGURACIÓN TIPOGRÁFICA (Pilar VII)
+ * CONFIGURACIÓN TIPOGRÁFICA SOBERANA
+ * @pilar VII: Theming Semántico inyectado vía CSS Variables.
  */
 const fontVariables = `${fontInter.variable} ${fontSignature.variable} ${fontClashDisplay.variable}`;
 
 /**
  * GENERACIÓN DE RUTAS ESTÁTICAS (SSG)
+ * @description Garantiza que el Shell esté pre-renderizado para cada idioma.
  */
 export async function generateStaticParams() {
   return i18n.locales.map((locale) => ({ lang: locale }));
@@ -48,10 +50,12 @@ export async function generateStaticParams() {
 /**
  * ORQUESTADOR DE METADATOS SOBERANO
  * @pilar I: Visión Holística - SEO E-E-A-T.
- * @description Refactorizado para acceso MACS directo (dict.hero).
+ * @description Implementa resolución asíncrona de parámetros nativa de Next.js 15.
  */
-export async function generateMetadata({ params }: { params: Promise<{ lang: Locale }> }): Promise<Metadata> {
-  const { lang } = await params;
+export async function generateMetadata(props: { 
+  params: Promise<{ lang: Locale }> 
+}): Promise<Metadata> {
+  const { lang } = await props.params;
   const dict = await getDictionary(lang);
   
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://beachhotelcanasvieiras.com';
@@ -61,32 +65,61 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: Loc
       template: `%s | ${dict.header.personal_portfolio}`, 
       default: `${dict.header.personal_portfolio} | ${dict.header.tagline}` 
     },
-    /** @pilar III: Corregido acceso dict.hero (Flattened Sync) */
+    /** @pilar III: Acceso MACS directo (Sovereign Flat Schema) */
     description: dict.hero.page_description,
     metadataBase: new URL(baseUrl),
-    alternates: { canonical: `${baseUrl}/${lang}` },
+    alternates: { 
+      canonical: `${baseUrl}/${lang}`,
+      languages: {
+        'pt-BR': `${baseUrl}/pt-BR`,
+        'es-ES': `${baseUrl}/es-ES`,
+        'en-US': `${baseUrl}/en-US`,
+      }
+    },
     openGraph: {
       title: dict.header.personal_portfolio,
       description: dict.hero.page_description,
-      type: 'website',
+      url: `${baseUrl}/${lang}`,
+      siteName: 'Beach Hotel Canasvieiras',
       locale: lang,
-    }
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: dict.header.personal_portfolio,
+      description: dict.hero.page_description,
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
+    },
   };
 }
 
 /**
  * APARATO PRINCIPAL: RootLayout
  * @description Orquesta la jerarquía visual base y la inyección de recursos globales.
+ * @fix TS2304: Se desestructura 'children' explícitamente de las props.
  */
-export default async function RootLayout({
-  children,
-  params,
-}: {
+export default async function RootLayout(props: {
   children: React.ReactNode;
   params: Promise<{ lang: Locale }>;
 }) {
-  // @pilar III: Resolución asíncrona de parámetros obligatoria en Next.js 15
+  /** 
+   * @pilar III: Resolución de Props.
+   * Extraemos 'children' y 'params' de forma segura.
+   */
+  const { children, params } = props;
   const { lang } = await params;
+  
+  // Obtención paralela de recursos para optimizar el TTFB (Pilar X)
   const dictionary = await getDictionary(lang);
 
   return (
@@ -96,26 +129,26 @@ export default async function RootLayout({
         "font-sans antialiased min-h-screen flex flex-col bg-[#050505] text-zinc-100 selection:bg-purple-500/30"
       )}>
         <Providers>
-          {/* TRACKING SILENCIOSO (No-UI) */}
+          {/* TRACKING SILENCIOSO (Zero-UI Behavior Tracking) */}
           <Suspense fallback={null}>
             <NavigationTracker />
           </Suspense>
 
-          {/* CABECERA (NavDesk) */}
+          {/* CABECERA SOBERANA (NavDesk) */}
           <Header dictionary={dictionary} />
           
           {/* TELEMETRÍA GLOBAL (Ticker) 
-              @pilar VIII: Fallback con altura reservada para evitar CLS */}
+              @pilar VIII: Fallback con altura reservada para evitar Layout Shift */}
           <Suspense fallback={<div className="h-10 w-full bg-[#050505] border-b border-white/10 animate-pulse" />}>
             <SystemStatusTicker dictionary={dictionary.system_status} />
           </Suspense>
 
-          {/* CONTENIDO PRINCIPAL */}
+          {/* CONTENIDO PRINCIPAL (ViewPort) */}
           <main className="grow relative z-0 flex flex-col">
             {children}
           </main>
 
-          {/* PIE DE PÁGINA INSTITUCIONAL */}
+          {/* PIE DE PÁGINA INSTITUCIONAL (Compliance & Conversion) */}
           <Footer
             content={dictionary.footer}
             navLabels={dictionary['nav-links'].nav_links}

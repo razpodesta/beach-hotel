@@ -3,60 +3,34 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/portfolio-web/src",
   "projectType": "application",
-  "tags": ["scope:metashark", "platform:web", "type:app"],
+  "tags": ["platform:web", "scope:metashark", "type:app"],
   "targets": {
     "build": {
       "executor": "@nx/next:build",
       "outputs": ["{options.outputPath}"],
-      "defaultConfiguration": "production",
       "options": {
+       
         "outputPath": "dist/apps/portfolio-web"
       },
-      "configurations": {
-        "development": {
-          "outputPath": "apps/portfolio-web"
-        },
-        "production": {}
-      },
+     
       "dependsOn": ["^build"]
     },
     "serve": {
       "executor": "@nx/next:server",
-      "defaultConfiguration": "development",
       "options": {
         "buildTarget": "@metashark/portfolio-web:build",
         "dev": true,
         "port": 4200
-      },
-      "configurations": {
-        "development": {
-          "buildTarget": "@metashark/portfolio-web:build:development",
-          "dev": true
-        },
-        "production": {
-          "buildTarget": "@metashark/portfolio-web:build:production",
-          "dev": false
-        }
-      }
-    },
-    "lint": {
-      "executor": "@nx/eslint:lint"
-    },
-    "test": {
-      "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/apps/portfolio-web"],
-      "options": {
-        "jestConfig": "apps/portfolio-web/jest.config.ts",
-        "passWithNoTests": true
       }
     },
     "typecheck": {
       "executor": "nx:run-commands",
       "options": {
+        
         "command": "tsc -p apps/portfolio-web/tsconfig.json --noEmit",
         "forwardAllArgs": true
-      },
-      "description": "Verificación estricta de tipos de la aplicación bajo el estándar @metashark."
-    }
+      }
+    },
+    "lint": { "executor": "@nx/eslint:lint" }
   }
 }

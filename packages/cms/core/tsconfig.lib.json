@@ -1,19 +1,23 @@
-/**
- * @file packages/cms/core/tsconfig.lib.json
- * @description Generador de Metadatos de Tipos.
- *              Nx usa este archivo SOLO para extraer los .d.ts al hacer build.
- */
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
+    /* SOBERANÍA DE SALIDA: Directorio de distribución global */
     "outDir": "../../../dist/packages/cms/core",
+    
+    /* 
+       PROFILAXIS TS6305: 
+       Al fijar rootDir en 'src', evitamos que la carpeta 'dist' contenga 
+       subcarpetas 'packages/cms/core/src'. El resultado será un dist limpio.
+    */
     "rootDir": "src",
-    "composite": false,
-    "noEmit": false,
-    "emitDeclarationOnly": true,
-    "declaration": true,
-    "declarationMap": true
+    
+    "composite": true,
+    "emitDeclarationOnly": false, 
+    "tsBuildInfoFile": "../../../dist/packages/cms/core/tsconfig.lib.tsbuildinfo"
   },
-  "include": ["src/**/*.ts", "payload-types.ts"],
-  "exclude": ["jest.config.ts", "**/*.spec.ts", "**/*.test.ts"]
+  "include": [
+    "src/**/*.ts",
+    "src/payload-types.ts"
+  ],
+  "exclude": ["**/*.spec.ts", "**/*.test.ts"]
 }
