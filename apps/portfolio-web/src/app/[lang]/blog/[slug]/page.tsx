@@ -3,7 +3,7 @@
  * @description Orquestador de detalle editorial (The Concierge Journal). 
  *              Implementa renderizado de alta fidelidad, integración con la Fachada 
  *              Soberana de Blog y navegación localizada resiliente.
- * @version 11.0 - Domain Facade Integration & Link Normalization
+ * @version 13.0 - Nx Module Boundary Compliance (Relative Path Restoration)
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -15,17 +15,18 @@ import Link from 'next/link';
 import { ArrowLeft, Calendar, User, Sparkles } from 'lucide-react';
 
 /**
- * IMPORTACIONES DE INFRAESTRUCTRURA
- * @pilar V: Uso de la Fachada Pública del dominio para garantizar datos saneados.
+ * IMPORTACIONES DE INFRAESTRUCTRURA (Rutas Relativas)
+ * @pilar V: Adherencia arquitectónica. Uso de rutas relativas para cumplir con 
+ * las fronteras de módulo de Nx dentro de la misma aplicación.
  */
-import { i18n } from '../../../../config/i18n.config.js';
-import type { Locale } from '../../../../config/i18n.config.js';
-import { getAllPosts, getPostBySlug } from '../../../../lib/blog-api.js';
-import { getDictionary } from '../../../../lib/get-dictionary.js';
-import { JsonLdScript } from '../../../../components/ui/JsonLdScript.js';
-import { ShareButtons } from '../../../../components/ui/ShareButtons.js';
-import { cn } from '../../../../lib/utils/cn.js';
-import { getLocalizedHref } from '../../../../lib/utils/link-helpers.js';
+import { i18n } from '../../../../config/i18n.config';
+import type { Locale } from '../../../../config/i18n.config';
+import { getAllPosts, getPostBySlug } from '../../../../lib/blog-api';
+import { getDictionary } from '../../../../lib/get-dictionary';
+import { JsonLdScript } from '../../../../components/ui/JsonLdScript';
+import { ShareButtons } from '../../../../components/ui/ShareButtons';
+import { cn } from '../../../../lib/utils/cn';
+import { getLocalizedHref } from '../../../../lib/utils/link-helpers';
 
 /**
  * Contrato de propiedades con parámetros asíncronos (Next.js 15 Standard).
@@ -89,7 +90,8 @@ export async function generateMetadata(props: PostPageProps): Promise<Metadata> 
 
 /**
  * APARATO PRINCIPAL: PostPage
- * @pilar XII: MEA/UX - Renderizado editorial de alta fidelidad.
+ * @description Orquesta la narrativa editorial con renderizado de alta fidelidad.
+ * @pilar XII: MEA/UX - Renderizado editorial optimizado.
  */
 export default async function PostPage(props: PostPageProps) {
   const { slug, lang } = await props.params;
@@ -208,7 +210,6 @@ export default async function PostPage(props: PostPageProps) {
               "prose-img:rounded-3xl prose-img:border prose-img:border-white/10 prose-img:shadow-2xl",
               "prose-strong:text-white"
             )}>
-              {/* Resiliencia: MDXRemote recibe el contenido pre-procesado del CMS */}
               <MDXRemote source={post.content || ''} />
             </div>
 

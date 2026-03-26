@@ -3,7 +3,7 @@
  * @description Orquestador del Hub Editorial (The Concierge Journal). 
  *              Implementa arquitectura Prerender-Safe, integración con la Fachada 
  *              de Dominio y orquestación i18n de alta fidelidad.
- * @version 11.0 - Domain Facade Sync & Build Resilience
+ * @version 13.0 - Path Correction & Type Hardening (TS2307 & TS7006 Fix)
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -11,15 +11,15 @@ import type { Metadata } from 'next';
 import { Suspense } from 'react';
 
 /**
- * IMPORTACIONES DE INFRAESTRUCTRURA
- * @pilar V: Uso de Fachada Pública para garantizar integridad de datos y tipos.
+ * IMPORTACIONES DE INFRAESTRUCTRURA (Rutas Relativas Niveladas)
+ * @pilar V: Adherencia arquitectónica. Ajuste de profundidad (3 niveles) para alcanzar 'src/'.
  */
-import { getDictionary } from '../../../lib/get-dictionary.js';
-import { getAllPosts } from '../../../lib/blog-api.js';
-import type { PostWithSlug } from '../../../lib/blog-api.js';
-import { BlogCard } from '../../../components/ui/BlogCard.js';
-import { BlurText } from '../../../components/razBits/BlurText.js';
-import { type Locale, i18n } from '../../../config/i18n.config.js';
+import { getDictionary } from '../../../lib/get-dictionary';
+import { getAllPosts } from '../../../lib/blog-api';
+import type { PostWithSlug } from '../../../lib/blog-api';
+import { BlogCard } from '../../../components/ui/BlogCard';
+import { BlurText } from '../../../components/razBits/BlurText';
+import { type Locale, i18n } from '../../../config/i18n.config';
 
 /**
  * Contrato de propiedades con parámetros asíncronos (Next.js 15 Standard).
@@ -30,9 +30,10 @@ type BlogIndexProps = {
 
 /**
  * GENERACIÓN DE RUTAS ESTÁTICAS (SSG)
+ * @pilar III: Seguridad de Tipos. Parámetro 'lang' tipado como Locale.
  */
 export async function generateStaticParams() {
-  return i18n.locales.map((lang) => ({ lang }));
+  return i18n.locales.map((lang: Locale) => ({ lang }));
 }
 
 /**
@@ -153,10 +154,6 @@ export default async function BlogIndexPage(props: BlogIndexProps) {
                       slug={post.slug}
                       lang={lang}
                       ctaText={t.read_more_cta}
-                      /** 
-                       * @pilar III: Resolución TS2322. 
-                       * La fachada ya normalizó ogImage, garantizando paridad de tipos.
-                       */
                       customImage={post.metadata.ogImage}
                     />
                   ))}

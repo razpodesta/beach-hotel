@@ -3,7 +3,7 @@
  * @description Orquestador de archivo por etiquetas (taxonomía) del Concierge Journal.
  *              Implementa SSG de alta velocidad, integración con la Fachada Soberana
  *              y normalización de activos bajo estándares de Élite.
- * @version 7.0 - Domain Facade Sync & Syntax Hardening
+ * @version 9.0 - Path Depth Correction & Type Hardening
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -11,16 +11,16 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
 /**
- * IMPORTACIONES DE INFRAESTRUCTRURA
- * @pilar V: Adherencia arquitectónica mediante el uso de la Fachada de Dominio.
+ * IMPORTACIONES DE INFRAESTRUCTRURA (Rutas Relativas Niveladas)
+ * @pilar V: Adherencia arquitectónica. Ajuste de profundidad (5 niveles) para alcanzar 'src/'.
  */
-import { i18n } from '../../../../../config/i18n.config.js';
-import type { Locale } from '../../../../../config/i18n.config.js';
-import { getDictionary } from '../../../../../lib/get-dictionary.js';
-import { getPostsByTag, getAllPosts } from '../../../../../lib/blog-api.js';
-import { BlogCard } from '../../../../../components/ui/BlogCard.js';
-import { BlurText } from '../../../../../components/razBits/BlurText.js';
-import type { PostWithSlug } from '../../../../../lib/schemas/blog.schema.js';
+import { i18n } from '../../../../../config/i18n.config';
+import type { Locale } from '../../../../../config/i18n.config';
+import { getDictionary } from '../../../../../lib/get-dictionary';
+import { getPostsByTag, getAllPosts } from '../../../../../lib/blog-api';
+import { BlogCard } from '../../../../../components/ui/BlogCard';
+import { BlurText } from '../../../../../components/razBits/BlurText';
+import type { PostWithSlug } from '../../../../../lib/schemas/blog.schema';
 
 /**
  * Propiedades de la página con soporte para parámetros asíncronos (Next.js 15 Standard).
@@ -32,6 +32,7 @@ type TagPageProps = {
 /**
  * GENERACIÓN DE RUTAS ESTÁTICAS (SSG)
  * @pilar VIII: Resiliencia de Build.
+ * @pilar III: Seguridad de Tipos - Parámetros explícitamente tipados.
  */
 export async function generateStaticParams() {
   try {
@@ -46,7 +47,7 @@ export async function generateStaticParams() {
       });
     });
 
-    return i18n.locales.flatMap((lang) =>
+    return i18n.locales.flatMap((lang: Locale) =>
       Array.from(tags).map((tagSlug) => ({
         lang,
         slug: tagSlug,
@@ -80,6 +81,7 @@ export async function generateMetadata(props: TagPageProps): Promise<Metadata> {
 
 /**
  * APARATO PRINCIPAL: TagArchivePage
+ * @description Renderiza el listado de artículos filtrados por taxonomía.
  */
 export default async function TagArchivePage(props: TagPageProps) {
   const { lang, slug } = await props.params;
@@ -99,7 +101,7 @@ export default async function TagArchivePage(props: TagPageProps) {
   }
 
   const t = dictionary.blog_page;
-  const tagName = slug.replace(/-/g, ' ');
+  const tagName = decodeURIComponent(slug).replace(/-/g, ' ');
 
   /**
    * @pilar VI: Lógica i18n Soberana.
@@ -141,7 +143,6 @@ export default async function TagArchivePage(props: TagPageProps) {
               slug={post.slug}
               lang={lang}
               ctaText={t.read_more_cta}
-              // ogImage ya viene saneado como string | undefined desde la Fachada
               customImage={post.metadata.ogImage} 
             />
           ))}

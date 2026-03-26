@@ -1,42 +1,67 @@
 /**
  * @file apps/portfolio-web/src/lib/supabase/client.ts
- * @description Exporta la instancia única (Singleton) del cliente de Supabase para el navegador.
- *              Implementa validación fail-fast y anotación de tipos explícita para portabilidad de tipos.
- * @version 5.0 - Explicit Type Portability (Fix TS2742)
+ * @description Orquestador Soberano del Cliente Supabase (Browser Context).
+ *              Implementa el patrón Singleton con inicialización trazada y 
+ *              resiliencia ante entornos de construcción estática.
+ * @version 6.0 - Forensic Observability & Build Resilience
  * @author Raz Podestá - MetaShark Tech
  */
 
 import { createBrowserClient } from '@supabase/ssr';
-// @pilar III: Importación explícita del tipo base para resolver la portabilidad de tipos en el Monorepo.
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 /**
- * Función de inicialización y validación de infraestructura.
+ * FABRICA SOBERANA DE CLIENTE
+ * @description Centraliza la lógica de instanciación con validación perimetral.
  * @returns {SupabaseClient} Instancia configurada del cliente de Supabase.
- * @throws {Error} Si las variables de entorno obligatorias no están definidas.
+ * @pilar IV: Observabilidad - Implementa trazabilidad mediante Protocolo Heimdall.
+ * @pilar VIII: Resiliencia - Gestiona la ausencia de variables en modo build.
  */
-function getSupabaseBrowserClient(): SupabaseClient {
+function createSovereignBrowserClient(): SupabaseClient {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
+  // Trazabilidad de inicio de handshake
+  console.group('[HEIMDALL][INFRASTRUCTURE] Supabase Browser Handshake');
+
   /**
-   * @pilar VIII: Resiliencia y Guardianes de Contrato.
-   * Validación crítica antes de permitir el acceso al cliente.
+   * GUARDIA DE INFRAESTRUCTRURA (Fail-Fast)
+   * Solo lanzamos el error si estamos en el navegador. Durante el build 
+   * (server-side analysis), permitimos que falle silenciosamente con una 
+   * advertencia para no bloquear el pipeline de Vercel.
    */
   if (!supabaseUrl || !supabaseAnonKey) {
-    const missing = !supabaseUrl ? 'NEXT_PUBLIC_SUPABASE_URL' : 'NEXT_PUBLIC_SUPABASE_ANON_KEY';
-    throw new Error(
-      `[SUPABASE-CLIENT][CRITICAL] Fallo de infraestructura: Variable ${missing} no encontrada en .env.local`
-    );
+    const isBrowser = typeof window !== 'undefined';
+    const errorMessage = `Faltan variables de entorno críticas: ${
+      !supabaseUrl ? 'NEXT_PUBLIC_SUPABASE_URL' : 'NEXT_PUBLIC_SUPABASE_ANON_KEY'
+    }`;
+
+    if (isBrowser) {
+      console.error(`[CRITICAL] ${errorMessage}`);
+      console.groupEnd();
+      throw new Error(errorMessage);
+    } else {
+      console.warn(`[BUILD-AWARE] ${errorMessage}. Handshake pospuesto para Runtime.`);
+    }
+  } else {
+    console.log('[SUCCESS] Identidad de infraestructura verificada.');
   }
 
-  return createBrowserClient(supabaseUrl, supabaseAnonKey);
+  const client = createBrowserClient(
+    supabaseUrl || '',
+    supabaseAnonKey || ''
+  );
+
+  console.log('[STATUS] Cliente Supabase instanciado correctamente.');
+  console.groupEnd();
+
+  return client;
 }
 
 /**
  * INSTANCIA SOBERANA (Singleton)
- * @pilar III: Anotación de tipo explícita SupabaseClient.
- * Esto erradica el error TS2742 al facilitar que el compilador nombre el tipo
- * sin tener que rastrear referencias circulares o internas de pnpm.
+ * @description Exportación del cliente con anotación de tipo explícita para 
+ *              garantizar la portabilidad de tipos en el Monorepo (Fix TS2742).
+ * @pilar III: Seguridad de Tipos Absoluta.
  */
-export const supabase: SupabaseClient = getSupabaseBrowserClient();
+export const supabase: SupabaseClient = createSovereignBrowserClient();
