@@ -41,7 +41,8 @@
             "configurations": {},
             "parallelism": true,
             "dependsOn": [
-              "^build"
+              "^build",
+              "prebuild"
             ],
             "inputs": [
               "production",
@@ -74,7 +75,12 @@
             "executor": "@nx/eslint:lint",
             "options": {},
             "configurations": {},
-            "parallelism": true
+            "parallelism": true,
+            "inputs": [
+              "default",
+              "{workspaceRoot}/eslint.config.mjs"
+            ],
+            "cache": true
           },
           "test": {
             "executor": "@nx/jest:jest",
@@ -86,7 +92,13 @@
               "passWithNoTests": true
             },
             "configurations": {},
-            "parallelism": true
+            "parallelism": true,
+            "inputs": [
+              "default",
+              "^production",
+              "{workspaceRoot}/jest.preset.js"
+            ],
+            "cache": true
           }
         },
         "name": "@metashark/testing-utils",
@@ -160,7 +172,8 @@
             "configurations": {},
             "parallelism": true,
             "dependsOn": [
-              "^build"
+              "^build",
+              "prebuild"
             ],
             "inputs": [
               "production",
@@ -193,7 +206,12 @@
             "executor": "@nx/eslint:lint",
             "options": {},
             "configurations": {},
-            "parallelism": true
+            "parallelism": true,
+            "inputs": [
+              "default",
+              "{workspaceRoot}/eslint.config.mjs"
+            ],
+            "cache": true
           },
           "test": {
             "executor": "@nx/jest:jest",
@@ -205,7 +223,13 @@
               "passWithNoTests": true
             },
             "configurations": {},
-            "parallelism": true
+            "parallelism": true,
+            "inputs": [
+              "default",
+              "^production",
+              "{workspaceRoot}/jest.preset.js"
+            ],
+            "cache": true
           }
         },
         "name": "@metashark/auth-shield",
@@ -277,7 +301,8 @@
             "configurations": {},
             "parallelism": true,
             "dependsOn": [
-              "^build"
+              "^build",
+              "prebuild"
             ],
             "inputs": [
               "production",
@@ -310,7 +335,12 @@
             "executor": "@nx/eslint:lint",
             "options": {},
             "configurations": {},
-            "parallelism": true
+            "parallelism": true,
+            "inputs": [
+              "default",
+              "{workspaceRoot}/eslint.config.mjs"
+            ],
+            "cache": true
           },
           "test": {
             "executor": "@nx/jest:jest",
@@ -322,7 +352,13 @@
               "passWithNoTests": true
             },
             "configurations": {},
-            "parallelism": true
+            "parallelism": true,
+            "inputs": [
+              "default",
+              "^production",
+              "{workspaceRoot}/jest.preset.js"
+            ],
+            "cache": true
           }
         },
         "name": "@metashark/protocol-33",
@@ -364,13 +400,19 @@
             "outputs": [
               "{options.outputPath}"
             ],
+            "defaultConfiguration": "production",
             "options": {
               "outputPath": "dist/apps/portfolio-web"
             },
             "dependsOn": [
-              "^build"
+              "^build",
+              "prebuild"
             ],
-            "configurations": {},
+            "configurations": {
+              "production": {
+                "debug": false
+              }
+            },
             "parallelism": true,
             "inputs": [
               "production",
@@ -440,49 +482,52 @@
           },
           "lint": {
             "executor": "@nx/eslint:lint",
+            "inputs": [
+              "default",
+              "{workspaceRoot}/eslint.config.mjs"
+            ],
             "options": {},
             "configurations": {},
-            "parallelism": true
+            "parallelism": true,
+            "cache": true
           },
           "test": {
+            "executor": "@nx/jest:jest",
+            "outputs": [
+              "{workspaceRoot}/coverage/apps/portfolio-web"
+            ],
             "options": {
-              "cwd": "apps/portfolio-web",
-              "env": {
-                "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
-              },
-              "command": "jest"
+              "jestConfig": "apps/portfolio-web/jest.config.ts",
+              "passWithNoTests": true
             },
-            "metadata": {
-              "technologies": [
-                "jest"
-              ],
-              "description": "Run Jest Tests",
-              "help": {
-                "command": "pnpm exec jest --help",
-                "example": {
-                  "options": {
-                    "coverage": true
-                  }
-                }
-              }
-            },
-            "cache": true,
+            "dependsOn": [
+              "prebuild"
+            ],
+            "configurations": {},
+            "parallelism": true,
             "inputs": [
               "default",
               "^production",
-              "{workspaceRoot}\\jest.preset.js",
-              {
-                "externalDependencies": [
-                  "jest"
-                ]
-              }
+              "{workspaceRoot}/jest.preset.js"
+            ],
+            "cache": true
+          },
+          "prebuild": {
+            "executor": "nx:run-commands",
+            "options": {
+              "command": "tsx scripts/prebuild-portfolio-web.ts",
+              "color": true
+            },
+            "inputs": [
+              "{projectRoot}/src/messages/**/*.json"
             ],
             "outputs": [
-              "{workspaceRoot}\\coverage\\apps\\portfolio-web"
+              "{projectRoot}/src/dictionaries/*.json"
             ],
-            "executor": "nx:run-commands",
+            "description": "Protocolo MACS: Ensamblaje y validación soberana de diccionarios i18n.",
             "configurations": {},
-            "parallelism": true
+            "parallelism": true,
+            "cache": true
           },
           "serve": {
             "executor": "@nx/next:server",
@@ -491,7 +536,15 @@
               "dev": true,
               "port": 4200
             },
-            "configurations": {},
+            "dependsOn": [
+              "prebuild"
+            ],
+            "configurations": {
+              "production": {
+                "buildTarget": "@metashark/portfolio-web:build:production",
+                "dev": false
+              }
+            },
             "parallelism": true,
             "continuous": true
           },
@@ -501,11 +554,12 @@
               "command": "tsc -p apps/portfolio-web/tsconfig.json --noEmit",
               "forwardAllArgs": true
             },
+            "dependsOn": [
+              "^build"
+            ],
+            "description": "Verificación estática de tipos sobre el código fuente de la aplicación.",
             "configurations": {},
             "parallelism": true,
-            "dependsOn": [
-              "^typecheck"
-            ],
             "inputs": [
               "default",
               "^default"
@@ -580,7 +634,8 @@
             "configurations": {},
             "parallelism": true,
             "dependsOn": [
-              "^build"
+              "^build",
+              "prebuild"
             ],
             "inputs": [
               "production",
@@ -613,7 +668,12 @@
             "executor": "@nx/eslint:lint",
             "options": {},
             "configurations": {},
-            "parallelism": true
+            "parallelism": true,
+            "inputs": [
+              "default",
+              "{workspaceRoot}/eslint.config.mjs"
+            ],
+            "cache": true
           },
           "test": {
             "executor": "@nx/jest:jest",
@@ -625,7 +685,13 @@
               "passWithNoTests": true
             },
             "configurations": {},
-            "parallelism": true
+            "parallelism": true,
+            "inputs": [
+              "default",
+              "^production",
+              "{workspaceRoot}/jest.preset.js"
+            ],
+            "cache": true
           }
         },
         "name": "@metashark/cms-core",
@@ -648,7 +714,8 @@
               },
               "./config": {
                 "types": "./payload.config.d.ts",
-                "import": "./payload.config.js"
+                "import": "./payload.config.js",
+                "default": "./payload.config.js"
               },
               "./package.json": "./package.json"
             },
@@ -708,7 +775,8 @@
             "configurations": {},
             "parallelism": true,
             "dependsOn": [
-              "^build"
+              "^build",
+              "prebuild"
             ],
             "inputs": [
               "production",
@@ -741,7 +809,12 @@
             "executor": "@nx/eslint:lint",
             "options": {},
             "configurations": {},
-            "parallelism": true
+            "parallelism": true,
+            "inputs": [
+              "default",
+              "{workspaceRoot}/eslint.config.mjs"
+            ],
+            "cache": true
           },
           "test": {
             "executor": "@nx/jest:jest",
@@ -753,7 +826,13 @@
               "passWithNoTests": true
             },
             "configurations": {},
-            "parallelism": true
+            "parallelism": true,
+            "inputs": [
+              "default",
+              "^production",
+              "{workspaceRoot}/jest.preset.js"
+            ],
+            "cache": true
           }
         },
         "name": "@metashark/cms-ui",
@@ -815,14 +894,7 @@
             },
             "inputs": [
               "default",
-              "^default",
-              "{workspaceRoot}/eslint.config.mjs",
-              "{workspaceRoot}/tools/eslint-rules/**/*",
-              {
-                "externalDependencies": [
-                  "eslint"
-                ]
-              }
+              "{workspaceRoot}/eslint.config.mjs"
             ],
             "outputs": [
               "{options.outputFile}"
@@ -855,7 +927,13 @@
               "passWithNoTests": true
             },
             "configurations": {},
-            "parallelism": true
+            "parallelism": true,
+            "inputs": [
+              "default",
+              "^production",
+              "{workspaceRoot}/jest.preset.js"
+            ],
+            "cache": true
           }
         },
         "name": "tests",
@@ -900,12 +978,7 @@
             "inputs": [
               "default",
               "^production",
-              "{projectRoot}\\jest.preset.js",
-              {
-                "externalDependencies": [
-                  "jest"
-                ]
-              }
+              "{workspaceRoot}/jest.preset.js"
             ],
             "outputs": [
               "{projectRoot}\\test-output\\jest\\coverage"
@@ -55678,5 +55751,5 @@
   },
   "version": "6.0",
   "errors": [],
-  "computedAt": 1774483550261
+  "computedAt": 1774560217518
 }

@@ -6,8 +6,20 @@
     "declaration": true,
     "target": "es2022",
     "module": "esnext",
+    /* 
+       PILAR V: moduleResolution "bundler" es el estándar para Next.js 15 y 
+       empaquetadores modernos. Garantiza que las librerías se resuelvan 
+       siguiendo las reglas de exports del package.json.
+    */
     "moduleResolution": "bundler",
-    "lib": ["es2022", "dom", "dom.iterable"],
+    "moduleDetection": "force",
+    /* 
+       PILAR III: verbatimModuleSyntax obliga al uso explícito de 'import type'.
+       Esto es innegociable para evitar que el compilador emita JS con 
+       referencias a tipos que no existen en ejecución.
+    */
+    "verbatimModuleSyntax": true,
+    "lib": ["esnext", "dom", "dom.iterable"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "allowJs": true,
@@ -21,18 +33,24 @@
     "strict": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "noImplicitThis": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
 
-    /* PILAR V: ADHERENCIA ARQUITECTÓNICA (Project References) */
+    /* PILAR V: ADHERENCIA ARQUITECTÓNICA */
     "composite": true,
     "declarationMap": true,
 
     "baseUrl": ".",
     "paths": {
-      /* ALIAS SOBERANOS: Unificados bajo @metashark */
+      /* 
+         MODO 1: SOURCE-FIRST (DX)
+         Los alias apuntan directamente a los archivos fuente (.ts). 
+         Esto permite HMR instantáneo en el desarrollo del Hotel y Festival.
+      */
       "@/*": ["apps/portfolio-web/src/*"],
       "@metashark/cms-core": ["packages/cms/core/src/index.ts"],
       "@metashark/cms-core/config": ["packages/cms/core/src/payload.config.ts"],

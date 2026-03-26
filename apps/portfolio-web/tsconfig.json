@@ -1,23 +1,27 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "baseUrl": ".",
+    /* 
+       PILAR V: NIVELACIÓN DE RESOLUCIÓN
+       Mantenemos el baseUrl en la raíz para que los 'paths' del base
+       mapeen correctamente a las carpetas físicas de /packages
+       sin necesidad de usar Project References locales.
+    */
+    "baseUrl": "../..",
+    
     /* 
        PILAR V: ADHERENCIA AL GRAFO SOBERANO
-       'composite' es obligatorio para que el proyecto 'tests' 
-       pueda referenciar la lógica de las páginas.
+       Mantenemos 'composite' para la integración con la raíz, 
+       pero sin referencias internas para evitar bloqueos de emisión.
     */
     "composite": true,
     
     /* 
-       PILAR XIII: PUREZA DE SOURCE (Mata el conflicto noEmit)
-       Next.js usualmente pide noEmit: true. Aquí usamos emitDeclarationOnly
-       hacia el dist para satisfacer a TypeScript sin ensuciar el source.
+       PILAR XIII: ALINEACIÓN CON EL MOTOR NEXT.JS
+       Next.js 15 requiere estrictamente noEmit: true.
     */
-    "noEmit": false,
-    "emitDeclarationOnly": true,
-    "declaration": true,
-    "outDir": "../../dist/apps/portfolio-web/types",
+    "noEmit": true,
+    "incremental": true,
 
     /* CONFIGURACIÓN NEXT.JS 15 + REACT 19 */
     "target": "es2022",
@@ -25,26 +29,35 @@
     "module": "esnext",
     "moduleResolution": "bundler",
     "jsx": "preserve",
-    "incremental": true,
     "isolatedModules": true,
-    "plugins": [{ "name": "next" }]
+    "resolveJsonModule": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
   },
   "include": [
+    /* 
+       CORRECCIÓN CRÍTICA: Rutas locales sin el prefijo de la carpeta app.
+       TypeScript busca estos archivos RELATIVOS a la ubicación de este tsconfig.
+    */
     "next-env.d.ts", 
     ".next/types/**/*.ts",
     "src/**/*.ts", 
-    "src/**/*.tsx"
+    "src/**/*.tsx",
+    /* 
+       PILAR II: CERO REGRESIONES (Recursive Source Scope)
+       Ruta relativa hacia la carpeta de paquetes desde la app.
+       Esto permite validar tipos de las librerías en modo Source-First.
+    */
+    "../../packages/**/src/**/*.ts",
+    "../../packages/**/src/**/*.tsx"
   ],
-  "exclude": ["node_modules", ".next", "dist"],
-  /* 
-     MAPA DE SUMINISTROS (Project References):
-     Permite que el IDE "salte" al código fuente de las librerías 
-     con un solo click y valida tipos en tiempo real.
-  */
-  "references": [
-    { "path": "../../packages/cms/core" },
-    { "path": "../../packages/cms/ui" },
-    { "path": "../../packages/protocol-33" },
-    { "path": "../../packages/auth-shield" }
+  "exclude": [
+    "node_modules", 
+    "dist",
+    "../../dist",
+    ".next"
   ]
 }

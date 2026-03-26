@@ -1,9 +1,9 @@
 /**
  * @file layout.tsx
  * @description Orquestador Soberano del Shell Principal (The Master Shell).
- *              Implementa la arquitectura Dual-Mode, cumplimiento MACS v1.0 
+ *              Implementa arquitectura Dual-Mode, cumplimiento MACS v1.0 
  *              y optimización de Core Web Vitals (Zero CLS).
- * @version 31.0 - Next.js 15 Async Standard & Fix TS2304
+ * @version 32.0 - Tailwind v4 Sync & ESM Compliance
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -12,36 +12,29 @@ import type { Metadata } from 'next';
 
 /**
  * IMPORTACIONES DE INFRAESTRUCTRURA
- * @pilar V: Adherencia arquitectónica mediante fronteras Nx.
+ * @pilar V: Adherencia arquitectónica mediante extensiones ESM obligatorias.
  */
-import { i18n, type Locale } from '../../config/i18n.config';
-import { getDictionary } from '../../lib/get-dictionary';
-import { fontInter, fontSignature, fontClashDisplay } from '../../lib/fonts';
-import { cn } from '../../lib/utils/cn';
+import { i18n } from '../../config/i18n.config.js';
+import type { Locale } from '../../config/i18n.config.js';
+import { getDictionary } from '../../lib/get-dictionary.js';
+import { fontInter, fontSignature, fontClashDisplay } from '../../lib/fonts.js';
+import { cn } from '../../lib/utils/cn.js';
 
 /**
  * IMPORTACIONES DE COMPONENTES DEL SHELL (Lego System)
- * @pilar IX: Componentización desacoplada y atómica.
  */
-import { Providers } from '../../components/layout/Providers';
-import { Header } from '../../components/layout/Header';
-import { Footer } from '../../components/layout/Footer';
-import { SystemStatusTicker } from '../../components/ui/SystemStatusTicker';
-import { NewsletterModal } from '../../components/ui/NewsletterModal';
-import { VisitorHud } from '../../components/ui/VisitorHud';
-import { NavigationTracker } from '../../components/layout/NavigationTracker';
+import { Providers } from '../../components/layout/Providers.js';
+import { Header } from '../../components/layout/Header.js';
+import { Footer } from '../../components/layout/Footer.js';
+import { SystemStatusTicker } from '../../components/ui/SystemStatusTicker.js';
+import { NewsletterModal } from '../../components/ui/NewsletterModal.js';
+import { VisitorHud } from '../../components/ui/VisitorHud.js';
+import { NavigationTracker } from '../../components/layout/NavigationTracker.js';
 
 import '../global.css';
 
 /**
- * CONFIGURACIÓN TIPOGRÁFICA SOBERANA
- * @pilar VII: Theming Semántico inyectado vía CSS Variables.
- */
-const fontVariables = `${fontInter.variable} ${fontSignature.variable} ${fontClashDisplay.variable}`;
-
-/**
  * GENERACIÓN DE RUTAS ESTÁTICAS (SSG)
- * @description Garantiza que el Shell esté pre-renderizado para cada idioma.
  */
 export async function generateStaticParams() {
   return i18n.locales.map((locale) => ({ lang: locale }));
@@ -50,7 +43,6 @@ export async function generateStaticParams() {
 /**
  * ORQUESTADOR DE METADATOS SOBERANO
  * @pilar I: Visión Holística - SEO E-E-A-T.
- * @description Implementa resolución asíncrona de parámetros nativa de Next.js 15.
  */
 export async function generateMetadata(props: { 
   params: Promise<{ lang: Locale }> 
@@ -65,7 +57,6 @@ export async function generateMetadata(props: {
       template: `%s | ${dict.header.personal_portfolio}`, 
       default: `${dict.header.personal_portfolio} | ${dict.header.tagline}` 
     },
-    /** @pilar III: Acceso MACS directo (Sovereign Flat Schema) */
     description: dict.hero.page_description,
     metadataBase: new URL(baseUrl),
     alternates: { 
@@ -83,6 +74,11 @@ export async function generateMetadata(props: {
       siteName: 'Beach Hotel Canasvieiras',
       locale: lang,
       type: 'website',
+      images: [{
+        url: '/images/hotel/og-main.jpg',
+        width: 1200,
+        height: 630,
+      }]
     },
     twitter: {
       card: 'summary_large_image',
@@ -92,13 +88,6 @@ export async function generateMetadata(props: {
     robots: {
       index: true,
       follow: true,
-      googleBot: {
-        index: true,
-        follow: true,
-        'max-video-preview': -1,
-        'max-image-preview': 'large',
-        'max-snippet': -1,
-      },
     },
   };
 }
@@ -106,30 +95,37 @@ export async function generateMetadata(props: {
 /**
  * APARATO PRINCIPAL: RootLayout
  * @description Orquesta la jerarquía visual base y la inyección de recursos globales.
- * @fix TS2304: Se desestructura 'children' explícitamente de las props.
  */
 export default async function RootLayout(props: {
   children: React.ReactNode;
   params: Promise<{ lang: Locale }>;
 }) {
-  /** 
-   * @pilar III: Resolución de Props.
-   * Extraemos 'children' y 'params' de forma segura.
-   */
   const { children, params } = props;
   const { lang } = await params;
   
   // Obtención paralela de recursos para optimizar el TTFB (Pilar X)
   const dictionary = await getDictionary(lang);
 
+  /**
+   * CONFIGURACIÓN TIPOGRÁFICA SOBERANA
+   * @pilar VII: Sincronización con tokens de global.css.
+   * Forzamos que la variable de Clash Display coincida con el token --font-clash.
+   */
+  const fontVariables = cn(
+    fontInter.variable, 
+    fontSignature.variable, 
+    fontClashDisplay.variable,
+    "[--font-clash:var(--font-clash-display)]" // Inyección de alias para Tailwind v4
+  );
+
   return (
-    <html lang={lang} suppressHydrationWarning>
+    <html lang={lang} suppressHydrationWarning className="scroll-smooth">
       <body className={cn(
         fontVariables, 
-        "font-sans antialiased min-h-screen flex flex-col bg-[#050505] text-zinc-100 selection:bg-purple-500/30"
+        "font-sans antialiased min-h-screen flex flex-col bg-[#050505] text-zinc-100 selection:bg-primary/30"
       )}>
         <Providers>
-          {/* TRACKING SILENCIOSO (Zero-UI Behavior Tracking) */}
+          {/* TRACKING SILENCIOSO (Pilar IV: Heimdall) */}
           <Suspense fallback={null}>
             <NavigationTracker />
           </Suspense>
@@ -138,8 +134,8 @@ export default async function RootLayout(props: {
           <Header dictionary={dictionary} />
           
           {/* TELEMETRÍA GLOBAL (Ticker) 
-              @pilar VIII: Fallback con altura reservada para evitar Layout Shift */}
-          <Suspense fallback={<div className="h-10 w-full bg-[#050505] border-b border-white/10 animate-pulse" />}>
+              @pilar X: Altura exacta de 40px para evitar Layout Shift (CLS) */}
+          <Suspense fallback={<div className="h-10 w-full bg-black border-b border-white/5 animate-pulse" />}>
             <SystemStatusTicker dictionary={dictionary.system_status} />
           </Suspense>
 
@@ -148,7 +144,7 @@ export default async function RootLayout(props: {
             {children}
           </main>
 
-          {/* PIE DE PÁGINA INSTITUCIONAL (Compliance & Conversion) */}
+          {/* PIE DE PÁGINA INSTITUCIONAL (Conversion & Compliance) */}
           <Footer
             content={dictionary.footer}
             navLabels={dictionary['nav-links'].nav_links}

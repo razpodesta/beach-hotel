@@ -1,9 +1,9 @@
 /**
  * @file Header.tsx
- * @description Orquestador soberano de la cabecera (NavDesk). 
+ * @description Orquestador Soberano de la Cabecera (NavDesk). 
  *              Implementa conciencia de scroll, navegación localizada y 
- *              telemetría de usuario integrada.
- * @version 13.0 - Scroll-Aware & Semantic Navigation
+ *              telemetría de usuario integrada con soporte para Tailwind v4.
+ * @version 15.0 - Lucide Import Fix & ESM Compliance
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -13,26 +13,35 @@ import React, { useMemo, useCallback, useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
+/**
+ * @pilar III: Seguridad de Tipos.
+ * @fix Resolución de Error TS2307: Corrección de nombre de módulo de 'lucide-center' a 'lucide-react'.
+ */
 import { Menu, Globe, ChevronDown, CalendarCheck } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 
 /**
  * IMPORTACIONES DE INFRAESTRUCTRURA
+ * @pilar V: Adherencia arquitectónica mediante extensiones ESM obligatorias (.js).
  */
-import { cn } from '../../lib/utils/cn';
-import { useUIStore } from '../../lib/store/ui.store';
-import { LanguageSwitcher } from '../ui/LanguageSwitcher';
-import { ThemeToggle } from '../ui/ThemeToggle';
-import { ColorWaveBar } from '../ui/ColorWaveBar';
-import { DropdownMenu } from '../ui/DropdownMenu';
-import { NestedDropdownContent } from '../ui/NestedDropdownContent';
-import { mainNavStructure, type NavItem } from '../../lib/nav-links';
-import { getLocalizedHref } from '../../lib/utils/link-helpers';
-import { i18n, isValidLocale, type Locale } from '../../config/i18n.config';
-import type { Dictionary } from '../../lib/schemas/dictionary.schema';
+import { cn } from '../../lib/utils/cn.js';
+import { useUIStore } from '../../lib/store/ui.store.js';
+import { LanguageSwitcher } from '../ui/LanguageSwitcher.js';
+import { ThemeToggle } from '../ui/ThemeToggle.js';
+import { ColorWaveBar } from '../ui/ColorWaveBar.js';
+import { DropdownMenu } from '../ui/DropdownMenu.js';
+import { NestedDropdownContent } from '../ui/NestedDropdownContent.js';
+import { mainNavStructure } from '../../lib/nav-links.js';
+import type { NavItem } from '../../lib/nav-links.js';
+import { getLocalizedHref } from '../../lib/utils/link-helpers.js';
+import { i18n, isValidLocale } from '../../config/i18n.config.js';
+import type { Locale } from '../../config/i18n.config.js';
+import type { Dictionary } from '../../lib/schemas/dictionary.schema.js';
 
 /**
  * SUB-APARATO: HeaderBrand
  * @description Identidad visual con micro-interacciones de lujo.
+ *              Sincronizado con tokens de global.css (Oxygen Engine).
  */
 const HeaderBrand = ({ currentLang }: { currentLang: Locale }) => (
   <motion.div
@@ -64,7 +73,7 @@ export function Header({ dictionary }: { dictionary: Dictionary }) {
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
   
-  // Detección de Scroll para dinámica visual (Pilar X)
+  // Detección de Scroll para dinámica visual (Pilar X: Performance)
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -77,7 +86,11 @@ export function Header({ dictionary }: { dictionary: Dictionary }) {
     return isValidLocale(candidate) ? (candidate as Locale) : i18n.defaultLocale;
   }, [pathname]);
 
-  const { isVisitorHudOpen, hasHydrated, toggleVisitorHud, toggleMobileMenu } = useUIStore();
+  // Selección quirúrgica de estado para evitar re-renders innecesarios
+  const isVisitorHudOpen = useUIStore((s) => s.isVisitorHudOpen);
+  const hasHydrated = useUIStore((s) => s.hasHydrated);
+  const toggleVisitorHud = useUIStore((s) => s.toggleVisitorHud);
+  const toggleMobileMenu = useUIStore((s) => s.toggleMobileMenu);
 
   const labels = useMemo(() => ({ 
     ...dictionary.header, 
@@ -86,11 +99,10 @@ export function Header({ dictionary }: { dictionary: Dictionary }) {
 
   /**
    * PROTOCOLO HEIMDALL: Telemetría de Navegación
-   * @description Registra interacciones tácticas para el motor de XP.
    */
   const trackInteraction = useCallback((label: string) => {
-    console.log(`[HEIMDALL][UX] Interaction Triggered: Header -> ${label}`);
-  }, []);
+    console.log(`[HEIMDALL][UX] Interaction: Header -> ${label} | Scroll: ${isScrolled}`);
+  }, [isScrolled]);
 
   return (
     <header 
@@ -109,17 +121,18 @@ export function Header({ dictionary }: { dictionary: Dictionary }) {
             <HeaderBrand currentLang={currentLang} />
 
             {/* NAVEGACIÓN DESKTOP */}
-            <nav className="hidden lg:flex items-center gap-1" aria-label="Navegación Principal">
+            <nav className="hidden lg:flex items-center gap-1" aria-label="Navegação Principal">
               {mainNavStructure.map((nav: NavItem) => {
                 const localizedHref = getLocalizedHref(nav.href ?? '/', currentLang);
                 const isActive = pathname === localizedHref;
                 const label = labels[nav.labelKey as keyof typeof labels] || nav.labelKey;
+                const Icon = nav.Icon as LucideIcon | undefined;
                 
                 if (nav.children?.length) {
                   return (
                     <DropdownMenu key={nav.labelKey} trigger={
                       <button className="flex items-center gap-2 px-5 py-2.5 rounded-full text-[10px] font-bold uppercase tracking-widest text-foreground/70 hover:bg-muted hover:text-foreground transition-all outline-none group">
-                        {nav.Icon && <nav.Icon size={14} className="opacity-70 group-hover:text-primary transition-colors" />}
+                        {Icon && <Icon size={14} className="opacity-70 group-hover:text-primary transition-colors" />}
                         {label}
                         <ChevronDown size={12} className="opacity-40" />
                       </button>
@@ -145,7 +158,7 @@ export function Header({ dictionary }: { dictionary: Dictionary }) {
                         : "text-foreground/70 hover:bg-muted hover:text-foreground"
                     )}
                   >
-                    {nav.Icon && <nav.Icon size={14} className={cn("opacity-70", isActive && "opacity-100")} />}
+                    {Icon && <Icon size={14} className={cn("opacity-70", isActive && "opacity-100")} />}
                     {label}
                     {isActive && (
                       <motion.div 
@@ -166,7 +179,7 @@ export function Header({ dictionary }: { dictionary: Dictionary }) {
               href={getLocalizedHref('/#reservas', currentLang)}
               onClick={() => trackInteraction('Booking_Intent')}
               className={cn(
-                "hidden sm:flex items-center gap-3 rounded-full bg-foreground px-8 py-3 text-[10px] font-bold uppercase tracking-[0.2em] text-background transition-all hover:bg-primary active:scale-95 shadow-xl",
+                "hidden sm:flex items-center gap-3 rounded-full bg-foreground px-8 py-3 text-[10px] font-bold uppercase tracking-[0.2em] text-background transition-all hover:bg-primary hover:text-white active:scale-95 shadow-xl",
                 isScrolled && "py-2.5"
               )}
             >
@@ -180,7 +193,7 @@ export function Header({ dictionary }: { dictionary: Dictionary }) {
                 <ThemeToggle />
               </div>
               
-              {/* BOTÓN HUD (Telemetría) */}
+              {/* BOTÓN HUD (Telemetría) - Blindado con hasHydrated */}
               <button
                 onClick={toggleVisitorHud}
                 disabled={!hasHydrated}
@@ -192,18 +205,26 @@ export function Header({ dictionary }: { dictionary: Dictionary }) {
                 )}
                 aria-label="Abrir Telemetría"
               >
-                <Globe size={20} strokeWidth={1.5} className={cn(isVisitorHudOpen && "animate-spin-slow")} />
+                <Globe 
+                  size={20} 
+                  strokeWidth={1.5} 
+                  className={cn(hasHydrated && isVisitorHudOpen && "animate-spin-slow")} 
+                />
               </button>
             </div>
 
-            <button onClick={toggleMobileMenu} className="lg:hidden p-3 rounded-full hover:bg-muted transition-colors" aria-label="Abrir menú móvil">
+            <button 
+              onClick={toggleMobileMenu} 
+              className="lg:hidden p-3 rounded-full hover:bg-muted transition-colors active:scale-90" 
+              aria-label="Abrir menú móvel"
+            >
               <Menu size={24} />
             </button>
           </div>
         </div>
       </div>
       
-      {/* Indicador de Gradiente (Branding) */}
+      {/* Indicador de Gradiente Branding */}
       <AnimatePresence>
         {!isScrolled && (
           <motion.div

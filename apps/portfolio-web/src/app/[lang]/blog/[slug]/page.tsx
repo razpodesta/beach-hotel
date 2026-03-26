@@ -1,9 +1,9 @@
 /**
  * @file apps/portfolio-web/src/app/[lang]/blog/[slug]/page.tsx
  * @description Orquestador de detalle editorial (The Concierge Journal). 
- *              Implementa resiliencia extrema ante fallos de CMS, SSG optimizado
- *              y cumplimiento estricto de los 12 Pilares de Élite.
- * @version 10.2 - Full Resiliency & i18n Hardening
+ *              Implementa renderizado de alta fidelidad, integración con la Fachada 
+ *              Soberana de Blog y navegación localizada resiliente.
+ * @version 11.0 - Domain Facade Integration & Link Normalization
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -16,14 +16,16 @@ import { ArrowLeft, Calendar, User, Sparkles } from 'lucide-react';
 
 /**
  * IMPORTACIONES DE INFRAESTRUCTRURA
- * @pilar V: Adherencia arquitectónica mediante fronteras Nx.
+ * @pilar V: Uso de la Fachada Pública del dominio para garantizar datos saneados.
  */
-import { i18n, type Locale } from '../../../../config/i18n.config';
-import { getAllPosts, getPostBySlug } from '../../../../lib/blog';
-import { getDictionary } from '../../../../lib/get-dictionary';
-import { JsonLdScript } from '../../../../components/ui/JsonLdScript';
-import { ShareButtons } from '../../../../components/ui/ShareButtons';
-import { cn } from '../../../../lib/utils/cn';
+import { i18n } from '../../../../config/i18n.config.js';
+import type { Locale } from '../../../../config/i18n.config.js';
+import { getAllPosts, getPostBySlug } from '../../../../lib/blog-api.js';
+import { getDictionary } from '../../../../lib/get-dictionary.js';
+import { JsonLdScript } from '../../../../components/ui/JsonLdScript.js';
+import { ShareButtons } from '../../../../components/ui/ShareButtons.js';
+import { cn } from '../../../../lib/utils/cn.js';
+import { getLocalizedHref } from '../../../../lib/utils/link-helpers.js';
 
 /**
  * Contrato de propiedades con parámetros asíncronos (Next.js 15 Standard).
@@ -36,15 +38,11 @@ type PostPageProps = {
 /**
  * GENERACIÓN DE RUTAS ESTÁTICAS (SSG)
  * @pilar VIII: Resiliencia de Build.
- * @description Garantiza que el proceso de compilación no aborte si la base de datos es inaccesible.
  */
 export async function generateStaticParams() {
   try {
     const posts = await getAllPosts();
-    if (!posts || !Array.isArray(posts) || posts.length === 0) {
-      console.warn('[HEIMDALL][STATIC-GEN] Dataset vacío o nulo. Saltando generación de rutas.');
-      return [];
-    }
+    if (!posts || posts.length === 0) return [];
 
     return i18n.locales.flatMap((lang) =>
       posts.map((post) => ({
@@ -60,13 +58,13 @@ export async function generateStaticParams() {
 
 /**
  * ORQUESTADOR DE METADATOS SOBERANO
- * @pilar I: Visión Holística - Asegura SEO íntegro incluso en estados de error.
+ * @pilar I: Visión Holística - SEO E-E-A-T.
  */
 export async function generateMetadata(props: PostPageProps): Promise<Metadata> {
   const { slug, lang } = await props.params;
   
   try {
-    const post = await getPostBySlug(slug);
+    const post = await getPostBySlug(slug, lang);
     if (!post) return { title: 'Post Not Found | The Concierge Journal' };
 
     const { title, description } = post.metadata;
@@ -94,30 +92,29 @@ export async function generateMetadata(props: PostPageProps): Promise<Metadata> 
  * @pilar XII: MEA/UX - Renderizado editorial de alta fidelidad.
  */
 export default async function PostPage(props: PostPageProps) {
-  // @pilar III: Resolución asíncrona de parámetros obligatoria en Next.js 15
   const { slug, lang } = await props.params;
   
-  // Obtención paralela de recursos para optimizar el TTFB (Pilar X)
+  // Ejecución paralela de recursos para optimizar el TTFB (Pilar X)
   const [dictionary, post] = await Promise.all([
     getDictionary(lang),
-    getPostBySlug(slug)
+    getPostBySlug(slug, lang)
   ]);
-
-  const t = dictionary.blog_page;
-  const commonNav = dictionary['nav-links'].nav_links;
 
   // @pilar VIII: Guardia de Resiliencia ante datos nulos
   if (!post) {
     notFound();
   }
 
-  const { title, author, published_date, tags } = post.metadata;
-  const imageUrl = `/images/blog/${slug}.jpg`;
+  const t = dictionary.blog_page;
+  const commonNav = dictionary['nav-links'].nav_links;
+  const { title, author, published_date, tags, ogImage } = post.metadata;
 
   /**
-   * DATOS ESTRUCTURADOS (Schema.org)
-   * Refuerza el E-E-A-T del Hub Editorial.
+   * RESOLUCIÓN DE ACTIVO VISUAL
+   * El Shaper de la Fachada ya normalizó 'ogImage' a string | undefined.
    */
+  const imageUrl = ogImage || `/images/blog/${slug}.jpg`;
+
   const articleSchema = {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
@@ -148,7 +145,7 @@ export default async function PostPage(props: PostPageProps) {
             <div className="container mx-auto max-w-4xl px-6">
               
               <Link 
-                href={`/${lang}/blog`}
+                href={getLocalizedHref('/blog', lang)}
                 className="group inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-500 hover:text-white transition-all mb-12"
               >
                 <ArrowLeft size={14} className="transition-transform group-hover:-translate-x-1" /> 
@@ -211,7 +208,7 @@ export default async function PostPage(props: PostPageProps) {
               "prose-img:rounded-3xl prose-img:border prose-img:border-white/10 prose-img:shadow-2xl",
               "prose-strong:text-white"
             )}>
-              {/* @pilar VIII: Resiliencia - Asegura que MDXRemote solo reciba strings válidos */}
+              {/* Resiliencia: MDXRemote recibe el contenido pre-procesado del CMS */}
               <MDXRemote source={post.content || ''} />
             </div>
 
@@ -220,10 +217,9 @@ export default async function PostPage(props: PostPageProps) {
               <ShareButtons title={title} />
               
               <Link 
-                href={lang === 'pt-BR' ? '/pt-BR/#reservas' : `/${lang}/#reservas`}
+                href={getLocalizedHref('/#reservas', lang)}
                 className="group relative rounded-full bg-white px-10 py-5 text-xs font-bold uppercase tracking-[0.2em] text-black hover:bg-purple-600 hover:text-white transition-all shadow-2xl active:scale-95"
               >
-                {/* @pilar VI: Uso de etiqueta localizada del orquestador de navegación */}
                 {commonNav.reservas}
               </Link>
             </footer>

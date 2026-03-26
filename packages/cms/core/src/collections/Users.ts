@@ -1,9 +1,9 @@
 /**
  * @file packages/cms/core/src/collections/Users.ts
  * @description Colección soberana de identidades y acceso.
- *              Nivelado: Verificación condicional para bootstrapping y 
- *              protección contra errores de validación en modo Seed.
- * @version 3.0 - Genesis-Ready Resilience
+ *              Refactorizado: Implementación de ID tipo Texto para soporte de UUID 
+ *              y compatibilidad con infraestructuras distribuidas.
+ * @version 4.0 - UUID Standard & Auth Resilience
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -13,14 +13,9 @@ import { multiTenantReadAccess } from './Access.js';
 
 export const Users: CollectionConfig = {
   slug: 'users',
-  /**
-   * @description Configuración de Auth resiente.
-   * La validación de email se desactiva en modo Seeding para evitar 
-   * el bloqueo de 'ValidationError' durante el arranque inicial.
-   */
   auth: {
     tokenExpiration: 7200,
-    verify: process.env.IS_SEEDING_MODE !== 'true', // Inyecta validación solo en producción
+    verify: process.env.IS_SEEDING_MODE !== 'true',
     maxLoginAttempts: 5,
     lockTime: 600000,
     depth: 0,
@@ -30,31 +25,24 @@ export const Users: CollectionConfig = {
       sameSite: 'Lax', 
     },
   },
-  
   admin: {
     useAsTitle: 'email',
     defaultColumns: ['email', 'role', 'level', 'tenantId'],
     group: 'System Management',
-    description: 'Gestión centralizada de identidades y reputación.',
   },
-  
   access: {
     read: multiTenantReadAccess,
-    // Permiso total para el Seeder; en producción, el middleware protege el acceso público.
     create: () => true, 
     update: ({ req: { user } }) => user?.role === 'admin' || (!!user),
     delete: ({ req: { user } }) => user?.role === 'admin',
   },
-
   hooks: {
     beforeChange: [
       ({ data, operation }) => {
-        // Garantía de Identidad Multi-Tenant
         if (operation === 'create') {
           if (!data.tenantId) {
             data.tenantId = uuidv4();
           }
-          // Si estamos sembrando, aseguramos estado verificado
           if (process.env.IS_SEEDING_MODE === 'true') {
             data._verified = true;
           }
@@ -63,17 +51,23 @@ export const Users: CollectionConfig = {
       },
     ],
   },
-
   fields: [
+    /* 
+       PILAR I: VISIÓN HOLÍSTICA
+       Forzamos el ID como texto para permitir el uso de UUIDs y evitar 
+       el error de transpilación 'serial' en PostgreSQL remoto.
+    */
+    {
+      name: 'id',
+      type: 'text',
+    },
     {
       name: 'email',
       type: 'email',
       required: true,
       unique: true,
       index: true,
-      admin: { description: 'Identificador único de acceso.' }
     },
-    // Campo oculto interno para el estado de verificación
     {
         name: '_verified',
         type: 'checkbox',
@@ -108,14 +102,14 @@ export const Users: CollectionConfig = {
                   required: true,
                   index: true,
                   saveToJWT: true,
-                  admin: { width: '50%', description: 'ID de propiedad.', readOnly: true },
+                  admin: { width: '50%', readOnly: true },
                 },
               ],
             },
           ],
         },
         {
-          label: 'Protocolo 33 (Evolución)',
+          label: 'Protocolo 33',
           fields: [
             {
               type: 'row',

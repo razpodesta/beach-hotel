@@ -2,31 +2,40 @@
  * @file MobileMenu.tsx
  * @description Centro de Navegación Móvil de Élite (The Takeover).
  *              Implementa ergonomía táctil, coreografía de animaciones secuenciales
- *              y blindaje de hidratación atómica.
- * @version 5.0 - Thumb-Driven UX & Staggered Coreography
+ *              y blindaje de hidratación atómica con soporte para Tailwind v4.
+ * @version 6.0 - TS1484 Fix & ESM Compliance
  * @author Raz Podestá - MetaShark Tech
  */
 
 'use client';
 
 import React, { useEffect, useMemo, useCallback, useSyncExternalStore } from 'react';
-import { motion, AnimatePresence, type Variants } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import type { Variants } from 'framer-motion';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { X, ChevronRight, CalendarCheck, Sparkles } from 'lucide-react';
-import FocusTrap from 'focus-trap-react';
+/**
+ * @pilar III: Resolución de Error TS1484.
+ * Uso de importación nominada para garantizar que el compilador trate 
+ * a FocusTrap como un valor de componente bajo 'verbatimModuleSyntax'.
+ */
+import { FocusTrap } from 'focus-trap-react';
 
 /**
  * IMPORTACIONES DE INFRAESTRUCTRURA
+ * @pilar V: Adherencia arquitectónica mediante extensiones ESM (.js).
  */
-import { cn } from '../../lib/utils/cn';
-import { useUIStore } from '../../lib/store/ui.store';
-import { mainNavStructure, type NavItem, type NavLink } from '../../lib/nav-links';
-import { getLocalizedHref } from '../../lib/utils/link-helpers';
-import { i18n, type Locale } from '../../config/i18n.config';
-import { LanguageSwitcher } from '../ui/LanguageSwitcher';
-import { ThemeToggle } from '../ui/ThemeToggle';
-import type { Dictionary } from '../../lib/schemas/dictionary.schema';
+import { cn } from '../../lib/utils/cn.js';
+import { useUIStore } from '../../lib/store/ui.store.js';
+import { mainNavStructure } from '../../lib/nav-links.js';
+import type { NavItem, NavLink } from '../../lib/nav-links.js';
+import { getLocalizedHref } from '../../lib/utils/link-helpers.js';
+import { i18n } from '../../config/i18n.config.js';
+import type { Locale } from '../../config/i18n.config.js';
+import { LanguageSwitcher } from '../ui/LanguageSwitcher.js';
+import { ThemeToggle } from '../ui/ThemeToggle.js';
+import type { Dictionary } from '../../lib/schemas/dictionary.schema.js';
 
 /**
  * VARIANTES DE ANIMACIÓN (Coreografía MEA/UX)
@@ -56,17 +65,22 @@ const itemVariants: Variants = {
 };
 
 /**
- * Hook de Hidratación de Élite
+ * Hook de Hidratación de Élite: useIsMounted
+ * @pilar X: Higiene de Código - Función no-op documentada para el linter.
  */
 function useIsMounted(): boolean {
-  const subscribe = useCallback(() => () => {
-    /* No-op: Estado estático en cliente */
+  const subscribe = useCallback(() => {
+    const noop = () => {
+      /* No-op: Estado de montaje terminal en el cliente */
+    };
+    return noop;
   }, []);
   return useSyncExternalStore(subscribe, () => true, () => false);
 }
 
 /**
  * APARATO: MobileMenu
+ * @description Orquestador de la navegación táctica a pantalla completa.
  */
 export function MobileMenu({ dictionary }: { dictionary: Dictionary }) {
   const isMounted = useIsMounted();
@@ -88,7 +102,7 @@ export function MobileMenu({ dictionary }: { dictionary: Dictionary }) {
   useEffect(() => {
     if (isMobileMenuOpen) {
       document.body.style.overflow = 'hidden';
-      console.log('[HEIMDALL][UX] Mobile Interface Locked: Focus on Navigation');
+      console.log('[HEIMDALL][UX] Mobile Navigation Active: UI Lock engaged.');
     } else {
       document.body.style.overflow = 'unset';
     }
@@ -118,7 +132,7 @@ export function MobileMenu({ dictionary }: { dictionary: Dictionary }) {
               initial="hidden"
               animate="visible"
               exit="hidden"
-              className="absolute inset-y-0 right-0 w-full max-w-sm bg-background shadow-3xl flex flex-col"
+              className="absolute inset-y-0 right-0 w-full max-w-sm bg-background shadow-3xl flex flex-col border-l border-white/5"
               role="dialog"
               aria-modal="true"
             >
@@ -135,18 +149,18 @@ export function MobileMenu({ dictionary }: { dictionary: Dictionary }) {
                 </div>
                 <button 
                   onClick={closeMobileMenu} 
-                  className="p-3 rounded-full bg-muted/50 hover:bg-muted transition-all active:scale-90"
-                  aria-label="Cerrar menú"
+                  className="p-3 rounded-full bg-muted/50 hover:bg-muted transition-all active:scale-90 outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                  aria-label="Fechar menu"
                 >
                   <X size={24} />
                 </button>
               </div>
 
-              {/* BODY: Navegación Recursiva Staggered */}
+              {/* BODY: Navegación Staggered */}
               <nav className="flex-1 overflow-y-auto px-6 py-8 custom-scrollbar">
                 <div className="flex flex-col gap-2">
                   {mainNavStructure.map((nav: NavItem) => {
-                    const hasChildren = nav.children && nav.children.length > 0;
+                    const hasChildren = !!(nav.children && nav.children.length > 0);
                     const localizedHref = getLocalizedHref(nav.href ?? '/', currentLang);
                     const isActive = pathname === localizedHref;
 
@@ -174,7 +188,7 @@ export function MobileMenu({ dictionary }: { dictionary: Dictionary }) {
                           {hasChildren && <ChevronRight size={18} className="opacity-30" />}
                         </Link>
 
-                        {/* SUB-ENLACES: Indentación de Élite */}
+                        {/* SUB-ENLACES: Indentación Táctica */}
                         {hasChildren && (
                           <div className="ml-16 flex flex-col gap-1 border-l border-border/50 pl-8 mb-4 mt-1">
                             {nav.children?.map((child: NavLink) => {
@@ -185,7 +199,7 @@ export function MobileMenu({ dictionary }: { dictionary: Dictionary }) {
                                   href={childHref}
                                   onClick={closeMobileMenu}
                                   className={cn(
-                                    "py-3 text-lg font-sans transition-colors",
+                                    "py-3 text-lg font-sans transition-colors outline-none",
                                     pathname === childHref ? "text-primary font-bold" : "text-muted-foreground hover:text-foreground"
                                   )}
                                 >
@@ -201,38 +215,29 @@ export function MobileMenu({ dictionary }: { dictionary: Dictionary }) {
                 </div>
               </nav>
 
-              {/* FOOTER: Thumb-Driven Interaction (Zona de Acción Crítica) */}
+              {/* FOOTER: Thumb-Driven Interaction */}
               <div className="p-8 border-t border-white/5 space-y-6 bg-muted/10">
                 <motion.div variants={itemVariants}>
                   <Link
                     href={getLocalizedHref('/#reservas', currentLang)}
                     onClick={closeMobileMenu}
-                    className="flex items-center justify-center gap-4 py-5 rounded-full bg-foreground text-background font-bold uppercase tracking-[0.2em] text-xs shadow-2xl active:scale-95 transition-transform"
+                    className="flex items-center justify-center gap-4 py-5 rounded-full bg-foreground text-background font-bold uppercase tracking-[0.2em] text-xs shadow-2xl active:scale-95 transition-transform hover:bg-primary"
                   >
                     <CalendarCheck size={20} />
                     {labels.talk}
                   </Link>
                 </motion.div>
 
-                <motion.div variants={itemVariants} className="flex items-center justify-between">
-                  <div className="flex gap-3">
+                <motion.div variants={itemVariants} className="flex items-center justify-between px-2">
+                  <div className="flex gap-4">
                     <LanguageSwitcher dictionary={dictionary.language_switcher} />
                     <ThemeToggle />
                   </div>
                   <div className="text-right">
-                    <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-muted-foreground">
-                      Security Level: High
-                    </p>
-                    <p className="text-[9px] font-mono text-zinc-800">
+                    <p className="text-[9px] font-mono uppercase tracking-[0.2em] text-zinc-600">
                       Sovereign Infrastructure
                     </p>
                   </div>
-                </motion.div>
-
-                <motion.div variants={itemVariants} className="bg-primary/5 rounded-2xl p-4 border border-primary/10">
-                  <p className="text-[9px] font-mono uppercase tracking-[0.3em] text-primary/70 text-center leading-relaxed">
-                     {dictionary.header.tagline}
-                  </p>
                 </motion.div>
               </div>
             </motion.div>

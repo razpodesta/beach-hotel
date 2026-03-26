@@ -1,4 +1,5 @@
 {
+  "badge_label": "Hospitality Standards",
   "amenities_title": "Premium Amenities",
   "amenities_cta": "Exclusive access for Beach Hotel guests",
   "amenities_hotel": [
@@ -23,6 +24,7 @@
   "testimonial": {
     "quote": "An absolute sanctuary. The staff understands luxury not just as a price point, but as a personalized service.",
     "author_name": "James Sterling",
-    "author_role": "Loyalty Guest"
+    "author_role": "Loyalty Guest",
+    "avatar_url": "/images/testimonials/james-sterling.jpg"
   }
 }

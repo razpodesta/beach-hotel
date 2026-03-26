@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-
   "main": "./index.js",
   "module": "./index.js",
   "types": "./index.d.ts",
@@ -13,10 +12,10 @@
       "import": "./index.js",
       "default": "./index.js"
     },
- 
     "./config": {
       "types": "./payload.config.d.ts",
-      "import": "./payload.config.js"
+      "import": "./payload.config.js",
+      "default": "./payload.config.js"
     },
     "./package.json": "./package.json"
   },
@@ -27,6 +26,7 @@
     "@payloadcms/richtext-lexical": "^3.79.0",
     "payload": "^3.79.0",
     "sharp": "^0.34.5",
-    "tslib": "^2.3.0"
+    "tslib": "^2.3.0",
+    "uuid": "^13.0.0"
   }
 }

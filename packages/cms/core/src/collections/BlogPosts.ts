@@ -1,9 +1,9 @@
 /**
  * @file BlogPosts.ts
  * @description Colección soberana para el motor editorial (The Concierge Journal).
- *              Implementa orquestación multi-tenant, cálculo automatizado de métricas
- *              y blindaje de autoridad E-E-A-T.
- * @version 2.0 - Metric Automation & Author Resilience
+ *              Refactorizado: Soporte para UUIDs, validación robusta de fechas 
+ *              y automatización de taxonomía.
+ * @version 3.0 - UUID Standard & Date Resilience
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -29,7 +29,7 @@ export const BlogPosts: CollectionConfig = {
   
   /**
    * REGLAS DE ACCESO
-   * @pilar III: Seguridad de Tipos.
+   * @pilar III: Seguridad de Tipos Absoluta.
    */
   access: {
     read: multiTenantReadAccess,
@@ -40,15 +40,14 @@ export const BlogPosts: CollectionConfig = {
 
   /**
    * GUARDIANES DE INTEGRIDAD (Hooks)
-   * @pilar VIII: Resiliencia - Automatización de metadatos.
+   * @pilar VIII: Resiliencia - Automatización de metadatos y limpieza de datos.
    */
   hooks: {
     beforeChange: [
       ({ req, data, operation }) => {
-        // 1. Garantía de Multi-Tenancy
+        // 1. Garantía de Multi-Tenancy y Autoría
         if (operation === 'create' && req.user) {
-          data.tenantId = req.user.tenantId;
-          // Auto-asignación de autor si no se proporciona
+          if (!data.tenantId) data.tenantId = req.user.tenantId;
           if (!data.author) data.author = req.user.id;
         }
         
@@ -61,12 +60,19 @@ export const BlogPosts: CollectionConfig = {
             .replace(/\s+/g, '-');
         }
 
-        // 3. Cálculo de Tiempo de Lectura (Pilar X: Performance)
+        // 3. Normalización de Taxonomía (Tags)
+        // Garantiza que los tags sean consistentes para el filtrado en el Frontend.
+        if (data.tags && Array.isArray(data.tags)) {
+          data.tags = data.tags.map((item: { tag: string }) => ({
+            ...item,
+            tag: item.tag.toLowerCase().trim()
+          }));
+        }
+
+        // 4. Cálculo de Tiempo de Lectura (Pilar X: Performance)
         if (data.content && typeof data.content === 'object') {
-            // Estimación basada en el volumen del AST de Lexical
             const contentString = JSON.stringify(data.content);
             const wordCount = contentString.split(/\s+/g).length;
-            // Estándar: 200 palabras por minuto
             data.readingTime = Math.max(1, Math.ceil(wordCount / 200));
         }
 
@@ -76,6 +82,15 @@ export const BlogPosts: CollectionConfig = {
   },
 
   fields: [
+    /* 
+       PILAR I: VISIÓN HOLÍSTICA
+       Forzamos el ID como texto para permitir el uso de UUIDs y evitar 
+       el error de transpilación 'serial' en entornos remotos.
+    */
+    {
+      name: 'id',
+      type: 'text',
+    },
     {
       name: 'tenantId',
       type: 'text',
@@ -148,7 +163,12 @@ export const BlogPosts: CollectionConfig = {
                   type: 'date', 
                   index: true, 
                   required: true,
-                  admin: { width: '50%' }
+                  admin: { 
+                    width: '50%',
+                    date: {
+                      pickerAppearance: 'dayAndTime',
+                    }
+                  }
                 },
               ]
             },

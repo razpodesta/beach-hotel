@@ -1,6 +1,7 @@
 {
   "about": {
     "title": "Um Santuário de Hospitalidade de Elite.",
+    "badge_label": "Santuário Boutique",
     "paragraphs": [
       {
         "text": "Localizado no coração de Canasvieiras, nosso hotel oferece uma fusão única entre luxo sofisticado e a energia vibrante de Florianópolis.",
@@ -12,6 +13,152 @@
       }
     ],
     "cta_button": "Descubra nossa História"
+  },
+  "blog_page": {
+    "page_title": "Concierge Journal | Beach Hotel Canasvieiras",
+    "page_description": "Descubra os segredos mais bem guardados da ilha, guias exclusivos de vida noturna e novidades do Pride Escape.",
+    "hero_title": "The Concierge Journal",
+    "featured_title": "Leitura em Destaque",
+    "all_posts_title": "Últimas Novidades",
+    "read_more_cta": "Ler Artigo",
+    "empty_state": "Não há artigos disponíveis no momento. Fique conectado.",
+    "tag_results_singular": "Um artigo disponível sob a curadoria de",
+    "tag_results_plural": "Artigos selecionados sob a curadoria de"
+  },
+  "cocreation_page": {
+    "page_title": "Co-criação | Raz Podestá",
+    "page_description": "Descubra meu framework de colaboração para transformar ideias em ativos digitais de alto desempenho.",
+    "title": "Framework de Co-criação",
+    "subtitle": "Meu processo de colaboração com você, desde a concepção da ideia até a implantação e otimização contínua.",
+    "construction_notice": "Esta seção está atualmente em construção. Aqui detalharei minha metodologia de trabalho, fases do projeto e como seremos parceiros para garantir o sucesso da sua visão."
+  },
+  "contact": {
+    "title": "ENTRE EM CONTATO",
+    "form_cta": "Tem uma ideia ou projeto em mente? Adoraria saber sobre isso. Preencha o formulário e entrarei em contato em breve.",
+    "form_placeholder_name": "* Nome",
+    "form_placeholder_email": "* Email",
+    "form_placeholder_message": "* Sua mensagem...",
+    "form_button_submit": "Enviar Mensagem",
+    "form_button_loading": "Processando...",
+    "success_title": "Solicitação Recebida",
+    "success_subtitle": "Nosso concierge entrará em contato em breve para refinar os detalhes da sua estadia ou projeto.",
+    "error_submit": "Falha no envio. Por favor, tente novamente ou entre em contato diretamente por e-mail.",
+    "validation": {
+      "name_required": "O nome é obrigatório",
+      "email_required": "O email é obrigatório",
+      "email_invalid": "Por favor, insira um email válido",
+      "message_too_short": "A mensagem deve ter pelo menos 10 caracteres"
+    }
+  },
+  "contact_page": {
+    "page_title": "Contato | Raz Podestá",
+    "page_description": "Entre em contato para discutir seu próximo projeto. Vamos conversar sobre como podemos construir juntos um ativo digital de elite.",
+    "title": "Vamos Iniciar uma Conversa",
+    "subtitle": "Estou disponível para discutir novas colaborações, projetos ou simplesmente para trocar ideias sobre tecnologia e estratégia. Use o formulário abaixo para me enviar uma mensagem direta."
+  },
+  "design_system_page": {
+    "page_title": "Sistema de Design | Raz Podestá",
+    "page_description": "Explore os componentes, tokens de design e a filosofia visual que constroem a interface deste portfólio.",
+    "title": "Sistema de Design",
+    "subtitle": "Um olhar transparente sobre os blocos de construção visuais e funcionais deste ecossistema digital.",
+    "construction_notice": "Esta seção está atualmente em construção. Em breve, você poderá explorar aqui a paleta de cores, a hierarquia tipográfica e a biblioteca de componentes React que dão vida a este site."
+  },
+  "festival": {
+    "hero": {
+      "title": "PRIDE ESCAPE 2026",
+      "subtitle": "O Takeover Boutique de Canasvieiras",
+      "video_url": "https://cdn.pixabay.com/video/2023/10/24/186358-877995180_large.mp4",
+      "countdown_target": "2026-06-15T20:00:00Z",
+      "cta_label": "GARANTIR MEU LUGAR"
+    },
+    "manifesto": "Uma semana desenhada para conhecer, conectar e desfrutar em comunidade. Fuja do frio e viva uma experiência única no coração da Ilha da Magia. 7 dias de liberdade absoluta, festas exclusivas e o melhor da hotelaria boutique.",
+    "vip_upsell": {
+      "title": "Experiência VIP Diamond",
+      "price_addon": "+R$ 650",
+      "per_guest_label": "por pessoa",
+      "benefits": [
+        "Suíte com vista frontal para o mar",
+        "Acesso prioritário (Fast Pass) em todos os eventos",
+        "Welcome Kit Edição Limitada",
+        "Jantar exclusivo com o Line-up internacional",
+        "Open Bar Premium em todas as Boat Parties"
+      ],
+      "cta_label": "UPGRADE PARA VIP"
+    },
+    "events": [
+      {
+        "id": "sunset-welcome",
+        "day": 1,
+        "title": "HQ SUNSET",
+        "location": "Piscina do Beach Hotel",
+        "startTime": "16:00",
+        "description": "Festa de abertura oficial com coquetel de boas-vindas e DJ sets melódicos.",
+        "vibe": "Chill",
+        "isVipOnly": false,
+        "image": "/images/festival/hq-sunset.jpg",
+        "neon_color": "#3B82F6"
+      },
+      {
+        "id": "main-boat-party",
+        "day": 3,
+        "title": "BOAT PARTY: THE NEW WAVE",
+        "location": "Baía Norte / Escuna Exclusiva",
+        "startTime": "14:00",
+        "description": "Cruzeiro ao pôr do sol con sistema de som de alta fidelidade e paradas estratégicas.",
+        "vibe": "House",
+        "isVipOnly": true,
+        "image": "/images/festival/boat-party-main.jpg",
+        "neon_color": "#A855F7"
+      },
+      {
+        "id": "techno-sanctuary",
+        "day": 5,
+        "title": "THE SANCTUARY NIGHT",
+        "location": "The Cave / Underground Club",
+        "startTime": "23:00",
+        "description": "Uma imersão visual e sonora com o melhor do Techno europeu.",
+        "vibe": "Techno",
+        "isVipOnly": false,
+        "image": "/images/festival/techno-night.jpg",
+        "neon_color": "#EC4899"
+      }
+    ],
+    "packages_section": {
+      "title": "Pacotes de Invasão",
+      "subtitle": "Selecione seu nível de imersão no Santuário",
+      "label_5_nights": "Experiência 5 Noites",
+      "label_7_nights": "Takeover Total 7 Noites",
+      "cta": "Reservar Pacote"
+    },
+    "packages": [
+      {
+        "category": "Experience Base",
+        "price_5_nights": "R$ 2.450",
+        "price_7_nights": "R$ 3.100",
+        "hotel_name": "Beach Hotel Principal",
+        "availability_label": "ÚLTIMAS VAGAS"
+      },
+      {
+        "category": "Luxury Elite",
+        "price_5_nights": "R$ 4.200",
+        "price_7_nights": "R$ 5.500",
+        "hotel_name": "Beach Hotel Suites",
+        "availability_label": "RESERVA EXCLUSIVA"
+      }
+    ],
+    "footer_credits": "Canasvieiras Fest 2026 • Infraestrutura Privada • MetaShark Tech"
+  },
+  "header": {
+    "talk": "RESERVAR AGORA",
+    "tagline": "Sua Experiência Boutique em Canasvieiras",
+    "personal_portfolio": "BEACH HOTEL CANASVIEIRAS",
+    "job_title": "Hotel Boutique & Sede do Pride Escape 2026",
+    "mobile_title": "Beach Hotel",
+    "mobile_subtitle": "Canasvieiras"
+  },
+  "history": {
+    "title": "Forjado em Código",
+    "subtitle": "Descubra a fusão de duas décadas de engenharia de sistemas com uma visão criativa obcecada por resultados. Isto não é apenas um portfólio; é o legado de uma arquitetura construída para durar."
   },
   "ai_gallery_section": {
     "badge": "Impulsionado por Ideogram 3.0",
@@ -74,153 +221,83 @@
       }
     }
   },
-  "blog_page": {
-    "page_title": "Concierge Journal | Beach Hotel Canasvieiras",
-    "page_description": "Descubra os segredos mais bem guardados da ilha, guias exclusivos de vida noturna e novidades do Pride Escape.",
-    "hero_title": "The Concierge Journal",
-    "featured_title": "Leitura em Destaque",
-    "all_posts_title": "Últimas Novidades",
-    "read_more_cta": "Ler Artigo",
-    "empty_state": "Não há artigos disponíveis no momento. Fique conectado.",
-    "tag_results_singular": "Um artigo disponível sob a curadoria de",
-    "tag_results_plural": "Artigos selecionados sob a curadoria de"
-  },
-  "contact": {
-    "title": "ENTRE EM CONTATO",
-    "form_cta": "Tem uma ideia ou projeto em mente? Adoraria saber sobre isso.",
-    "form_placeholder_name": "* Nome",
-    "form_placeholder_email": "* Email",
-    "form_placeholder_message": "* Sua mensagem...",
-    "form_button_submit": "Enviar Mensagem",
-    "validation": {
-      "name_required": "O nome é obrigatório",
-      "email_required": "O email é obrigatório",
-      "email_invalid": "Por favor, insira um email válido",
-      "message_too_short": "A mensagem deve ter pelo menos 10 caracteres"
-    }
-  },
-  "cocreation_page": {
-    "page_title": "Co-criação | Raz Podestá",
-    "page_description": "Descubra meu framework de colaboração para transformar ideias em ativos digitais de alto desempenho.",
-    "title": "Framework de Co-criação",
-    "subtitle": "Meu processo de colaboração com você, desde a concepção da ideia até a implantação e otimização contínua.",
-    "construction_notice": "Esta seção está atualmente em construção. Aqui detalharei minha metodologia de trabalho, fases do projeto e como seremos parceiros para garantir o sucesso da sua visão."
-  },
-  "contact_page": {
-    "page_title": "Contato | Raz Podestá",
-    "page_description": "Entre em contato para discutir seu próximo projeto. Vamos conversar sobre como podemos construir juntos um ativo digital de elite.",
-    "title": "Vamos Iniciar uma Conversa",
-    "subtitle": "Estou disponível para discutir novas colaborações, projetos ou simplesmente para trocar ideias sobre tecnologia e estratégia. Use o formulário abaixo para me enviar uma mensagem direta."
-  },
-  "design_system_page": {
-    "page_title": "Sistema de Design | Raz Podestá",
-    "page_description": "Explore os componentes, tokens de design e a filosofia visual que constroem a interface deste portfólio.",
-    "title": "Sistema de Design",
-    "subtitle": "Um olhar transparente sobre os blocos de construção visuais e funcionais deste ecossistema digital.",
-    "construction_notice": "Esta seção está atualmente em construção. Em breve, você poderá explorar aqui a paleta de cores, a hierarquia tipográfica e a biblioteca de componentes React que dão vida a este site."
-  },
-  "footer": {
-    "newsletter_title": "Junte-se ao Ecossistema",
-    "newsletter_placeholder": "Seu endereço de e-mail",
-    "newsletter_button": "Inscrever-se",
-    "column_nav_title": "Navegação",
-    "column_services_title": "Concierge",
-    "column_legal_title": "Conformidade",
-    "rights_reserved": "© 2026 Beach Hotel Canasvieiras. Todos os direitos reservados.",
-    "made_by": "Forjado por Raz Podestá | MetaShark Tech"
-  },
-  "header": {
-    "talk": "RESERVAR AGORA",
-    "tagline": "Sua Experiência Boutique em Canasvieiras",
-    "personal_portfolio": "BEACH HOTEL CANASVIEIRAS",
-    "job_title": "Hotel Boutique & Sede do Pride Escape 2026",
-    "mobile_title": "Beach Hotel",
-    "mobile_subtitle": "Canasvieiras"
-  },
-  "hero": {
-    "page_title": "Beach Hotel Canasvieiras | Florianópolis",
-    "page_description": "Hospedagem boutique e sede oficial do festival Pride Escape 2026.",
-    "HOTEL_TITLE": "SANTUÁRIO BOUTIQUE",
-    "HOTEL_SUBTITLE": "Onde o luxo sofisticado encontra a energia vibrante do mar.",
-    "HOTEL_FEATURES": "Vista Panorâmica • Experiência Gourmet • Concierge Privado",
-    "FESTIVAL_TITLE": "PRIDE ESCAPE 2026",
-    "FESTIVAL_SUBTITLE": "A nova onda de Florianópolis. 7 dias de takeover absoluto.",
-    "FESTIVAL_FEATURES": "Boat Parties • Noites VIP • Line-up Internacional",
-    "CTA_BUTTON": "VER DISPONIBILIDADE"
-  },
-  "history": {
-    "title": "Forjado em Código",
-    "subtitle": "Descubra a fusão de duas décadas de engenharia de sistemas com uma visão criativa obcecada por resultados. Isto não é apenas um portfólio; é o legado de uma arquitetura construída para durar."
-  },
-  "homepage": {
-    "hero": {
-      "page_title": "Beach Hotel Canasvieiras | Florianópolis",
-      "page_description": "Hospedagem boutique e sede do festival Pride Escape 2026.",
-      "SUITES_SUBTITLE": "Onde o luxo encontra o mar.",
-      "SUITES_TITLE": "SUÍTES BOUTIQUE",
-      "SUITES_FEATURES": "Vista Panorâmica · Café da Manhã Gourmet",
-      "FESTIVAL_SUBTITLE": "A nova onda de Florianópolis.",
-      "FESTIVAL_TITLE": "PRIDE ESCAPE 2026",
-      "FESTIVAL_FEATURES": "Boat Party · VIP Club Nights · 7 Dias de Takeover",
-      "CTA_BUTTON": "VER DISPONIBILIDADE"
-    },
-    "about_section": {
-      "title": "Um Santuário de Hospitalidade de Elite.",
-      "paragraphs": [
-        {
-          "text": "Localizado no coração de Canasvieiras, nosso hotel oferece uma fusão única entre luxo sofisticado e a energia vibrante de Florianópolis.",
-          "highlight": "Redefinimos a experiência à beira-mar."
-        }
-      ],
-      "cta_button": "Descubra nossa História"
-    },
-    "ai_gallery_section": {
-      "badge": "Impulsionado por Ideogram 3.0",
-      "title": "Sintetizador Visual IA",
-      "subtitle": "Explore uma coleção curada de ativos gerados algoritmicamente.",
-      "overlay_indicator": "RENDER AO VIVO • WEBGL 2.0",
-      "drag_label": "ARRASTAR PARA ORBITAR",
-      "item_prefix": "ATIVO",
-      "error_fallback": "MOTOR VISUAL NÃO SUPORTADO",
-      "footer_prompt": "Engenharia de Prompts Avançada",
-      "footer_upscaling": "Upscaling 8K e Otimização",
-      "items": {}
-    }
-  },
   "language_switcher": {
     "label": "Idioma",
     "en-US": "English",
     "es-ES": "Español",
     "pt-BR": "Português"
   },
+  "hero": {
+    "page_title": "Beach Hotel Canasvieiras | Florianópolis",
+    "page_description": "Hospedagem boutique de luxo e sede oficial do festival Pride Escape 2026.",
+    "HOTEL_TITLE": "SANTUÁRIO BOUTIQUE",
+    "HOTEL_SUBTITLE": "Onde o luxo sofisticado encontra a energia vibrante do mar.",
+    "HOTEL_FEATURES": "Vista Panorâmica • Experiência Gourmet • Concierge Privado",
+    "FESTIVAL_TITLE": "PRIDE ESCAPE 2026",
+    "FESTIVAL_SUBTITLE": "A nova onda de Florianópolis. 7 dias de takeover absoluto.",
+    "FESTIVAL_FEATURES": "Boat Parties • Noites VIP • Line-up Internacional",
+    "CTA_BUTTON": "VER DISPONIBILIDADE",
+    "audio_active_label": "Ambiente Ativo",
+    "audio_muted_label": "Sensorial Mudo",
+    "assets": {
+      "hotel": {
+        "video_url": "https://cdn.pixabay.com/video/2021/09/01/87113-596486047_large.mp4",
+        "poster_url": "/images/hotel/hero-hotel-poster.jpg",
+        "audio_url": "/audio/sanctuary-ambient.mp3"
+      },
+      "festival": {
+        "video_url": "https://cdn.pixabay.com/video/2023/10/24/186358-877995180_large.mp4",
+        "poster_url": "/images/festival/hero-festival-poster.jpg",
+        "audio_url": "/audio/festival-beat.mp3"
+      }
+    }
+  },
   "legal": {
     "privacy_policy": {
+      "meta_title": "Política de Privacidade | Beach Hotel Canasvieiras",
+      "meta_description": "Saiba como protegemos seus dados e garantimos sua privacidade no nosso Santuário Digital.",
       "title": "Política de Privacidade",
-      "last_updated": "12 de Novembro de 2025",
+      "badge_label": "CONFORMIDADE E TRANSPARÊNCIA",
+      "last_updated_prefix": "Última atualização:",
+      "last_updated_date": "23 de Março, 2026",
+      "back_button_label": "Voltar para a Recepção",
+      "print_button_label": "Imprimir Documento",
       "content": [
         {
           "heading": "1. Introdução",
-          "body": "Bem-vindo ao meu portfólio. Sua privacidade é de extrema importância. Esta política detalha quais dados pessoais são coletados e como são utilizados."
+          "body": "No Beach Hotel Canasvieiras, a privacidade dos nossos hóspedes é um pilar fundamental da nossa hospitalidade. Este documento detalha como coletamos e processamos informações no nosso ecossistema digital."
         },
         {
-          "heading": "2. Dados que Coletamos",
-          "body": "Para o widget de visitante, coletamos dados de geolocalização anônimos através de APIs públicas (IP-API, Open-Meteo) para personalizar a experiência. Para a inscrição na newsletter, utilizamos o Supabase Auth, que pode envolver o uso de cookies para gerenciar sua sessão. Não vendemos nem compartilhamos seus dados com terceiros."
+          "heading": "2. Telemetria e Geolocalização",
+          "body": "Utilizamos o <strong>Protocolo Heimdall</strong> para processar dados de geolocalização anônimos, permitindo a personalização de fuso horário e clima no HUD do visitante. Nenhuma informação pessoal sensível é armazenada sem consentimento prévio."
+        },
+        {
+          "heading": "3. Segurança de Dados",
+          "body": "Nossa infraestrutura é protegida por protocolos de criptografia de nível militar, garantindo que suas reservas e dados de perfil permaneçam sob soberania digital absoluta."
         }
-      ]
+      ],
+      "infrastructure_label": "Sovereign Digital Infrastructure • MetaShark Tech"
     },
     "terms_of_service": {
+      "meta_title": "Termos de Serviço | Beach Hotel Canasvieiras",
+      "meta_description": "Regras de uso e condições de reserva para a plataforma boutique e Canasvieiras Fest.",
       "title": "Termos de Serviço",
-      "last_updated": "12 de Novembro de 2025",
+      "badge_label": "DIRETRIZES DE USO",
+      "last_updated_prefix": "Última atualização:",
+      "last_updated_date": "23 de Março, 2026",
+      "back_button_label": "Voltar para a Recepção",
+      "print_button_label": "Baixar Termos",
       "content": [
         {
-          "heading": "1. Aceitação dos Termos",
-          "body": "Ao utilizar este site, você concorda em cumprir estes termos e condições de uso. O conteúdo e os projetos aqui exibidos são de minha propriedade intelectual, salvo indicação em contrário."
+          "heading": "1. Escopo da Plataforma",
+          "body": "Este site destina-se à reserva de acomodações boutique e venda de experiências para o Canasvieiras Fest 2026. Ao utilizar nossos serviços, você concorda com os padrões de conduta do Santuário."
         },
         {
-          "heading": "2. Uso do Site",
-          "body": "Este site é fornecido 'como está' para fins informativos e profissionais. Não é permitido o uso de seu conteúdo para fins comerciais sem consentimento explícito prévio. É proibida qualquer tentativa de interromper ou comprometer a segurança do site."
+          "heading": "2. Propriedade Intelectual",
+          "body": "Todos os ativos visuais, incluindo renderizações WebGL e sínteses de IA, são propriedade exclusiva do Beach Hotel Canasvieiras e MetaShark Tech."
         }
-      ]
+      ],
+      "infrastructure_label": "Sovereign Digital Infrastructure • MetaShark Tech"
     }
   },
   "lucide_page": {
@@ -271,19 +348,6 @@
       }
     ]
   },
-  "nav-links": {
-    "nav_links": {
-      "hotel": "O Hotel",
-      "habitaciones": "Suítes",
-      "festival": "Pride Escape 2026",
-      "historia": "Nossa História",
-      "ubicacion": "Localização",
-      "contacto": "Contato",
-      "reservas": "Reservas Online",
-      "politica_privacidad": "Privacidade",
-      "terminos_servicio": "Termos de Uso"
-    }
-  },
   "not_found": {
     "title": "Página Não Encontrada",
     "description": "Parece que você se aventurou em território indefinido. A rota que você procura não existe nesta versão da matrix.",
@@ -298,37 +362,18 @@
     "inventory_title": "Inventário de Artefatos",
     "empty_inventory_message": "Seu inventário está vazio. Explore o ecossistema para descobrir artefatos."
   },
-  "project_details": {
-    "section_title": "Engenharia de Elite",
-    "section_subtitle": "Uma exibição de ativos digitais de alto desempenho.",
-    "label_live_demo": "Ver Demo",
-    "label_source_code": "Ver Código",
-    "label_tech_stack": "Stack Tecnológico",
-    "label_backend_arch": "Arquitetura Backend",
-    "label_elite_options": "Opções de Elite",
-    "label_objective": "Objetivo do Sistema",
-    "label_close_modal": "Fechar Especificações",
-    "empty_state": "Não há projetos disponíveis no momento."
-  },
-  "quienes_somos": {
-    "page_title": "Nossa História | Beach Hotel Canasvieiras",
-    "page_description": "Descubra o legado e a visão por trás do santuário de hospitalidade de elite em Florianópolis.",
-    "hero_title": "O Legado do Santuário",
-    "hero_subtitle": "Fundado sobre os pilares da exclusividade e a energia vibrante do mar, nosso hotel é mais que um destino; é um refúgio curado para o viajero global.",
-    "luxury_pillar": {
-      "title": "Luxo Boutique",
-      "description": "Uma atmosfera sofisticada desenhada para celebrar a diversidade e o conforto de alto padrão em cada detalhe."
-    },
-    "comfort_pillar": {
-      "title": "Refúgio Absoluto",
-      "description": "Suítes modernas integradas com tecnologia inteligente para garantir a paz e o descanso no coração de Canasvieiras."
-    },
-    "service_pillar": {
-      "title": "Concierge de Elite",
-      "description": "Nossa equipe dedicada antecipa suas necessidades, garantindo uma estadia impecável e personalizada 24h por dia."
-    },
-    "cta_title": "Viva o Inesquecível",
-    "cta_button": "Reserve sua Experiência"
+  "nav-links": {
+    "nav_links": {
+      "hotel": "O Hotel",
+      "habitaciones": "Suítes",
+      "festival": "Pride Escape 2026",
+      "historia": "Nossa História",
+      "ubicacion": "Localização",
+      "contacto": "Contato",
+      "reservas": "Reservas Online",
+      "politica_privacidad": "Privacidade",
+      "terminos_servicio": "Termos de Uso"
+    }
   },
   "server_error": {
     "title": "Falha no Sistema",
@@ -344,64 +389,43 @@
     "cat_deluxe": "Quarto Deluxe",
     "cat_standard": "Conforto Standard"
   },
-  "system_status": {
-    "aria_label": "Atualizações de Status do Hotel ao Vivo",
-    "items": [
-      {
-        "category": "PRIDE FEST",
-        "message": "90% das Master Suites ocupadas para a Boat Party.",
-        "iconKey": "Ticket",
-        "colorKey": "purple"
-      },
-      {
-        "category": "METEOROLOGIA",
-        "message": "25°C em Canasvieiras. Perfeito para a praia.",
-        "iconKey": "ThermometerSun",
-        "colorKey": "yellow"
-      },
-      {
-        "category": "SEGURANÇA",
-        "message": "Acesso privado exclusivo monitorado 24/7.",
-        "iconKey": "ShieldCheck",
-        "colorKey": "green"
-      },
-      {
-        "category": "LOUNGE",
-        "message": "Sunset Sessions diárias na piscina do HQ.",
-        "iconKey": "Music",
-        "colorKey": "pink"
-      }
-    ]
-  },
-  "technologies_page": {
-    "page_title": "Tecnologias & Stack | Raz Podestá",
-    "page_description": "Explore o universo completo de tecnologias, linguagens e ferramentas disponíveis no meu arsenal de desenvolvimento.",
-    "title": "Arsenal Tecnológico",
-    "subtitle": "Um índice exaustivo de cada ferramenta, linguagem e framework disponível para construir sua próxima solução digital.",
-    "search_placeholder": "Buscar tecnologia, linguagem ou ferramenta...",
-    "load_more_button": "Carregar Mais Tecnologias",
-    "showing_results": "Exibindo {count} tecnologias",
-    "visit_official": "Site Oficial",
-    "category_all": "Todas",
-    "category_frontend": "Frontend",
-    "category_backend": "Backend",
-    "category_devops": "DevOps & Cloud",
-    "category_ai": "IA & Dados",
-    "category_design": "Design",
-    "category_other": "Outros",
-    "library_help_btn": "Ajuda da Biblioteca",
-    "library_help_title": "Recurso de Arquitetura",
-    "library_help_desc": "Este índice centralizado facilita a seleção de tecnologias para novos projetos, garantindo consistência visual e acesso rápido às fontes de verdade técnica.",
-    "btn_docs": "Documentação dos Ícones",
-    "btn_repo": "Repositório GitHub",
-    "modal_install_title": "Instalação da Biblioteca",
-    "modal_usage_title": "Implementação",
-    "modal_close": "Fechar",
-    "scroll_top": "Rolar para Cima",
-    "scroll_bottom": "Rolar para Baixo",
-    "view_details": "Ver Detalhes"
+  "homepage": {
+    "hero": {
+      "page_title": "Beach Hotel Canasvieiras | Florianópolis",
+      "page_description": "Hospedagem boutique e sede do festival Pride Escape 2026.",
+      "SUITES_SUBTITLE": "Onde o luxo encontra o mar.",
+      "SUITES_TITLE": "SUÍTES BOUTIQUE",
+      "SUITES_FEATURES": "Vista Panorâmica · Café da Manhã Gourmet",
+      "FESTIVAL_SUBTITLE": "A nova onda de Florianópolis.",
+      "FESTIVAL_TITLE": "PRIDE ESCAPE 2026",
+      "FESTIVAL_FEATURES": "Boat Party · VIP Club Nights · 7 Dias de Takeover",
+      "CTA_BUTTON": "VER DISPONIBILIDADE"
+    },
+    "about_section": {
+      "title": "Um Santuário de Hospitalidade de Elite.",
+      "paragraphs": [
+        {
+          "text": "Localizado no coração de Canasvieiras, nosso hotel oferece uma fusão única entre luxo sofisticado e a energia vibrante de Florianópolis.",
+          "highlight": "Redefinimos a experiência à beira-mar."
+        }
+      ],
+      "cta_button": "Descubra nossa História"
+    },
+    "ai_gallery_section": {
+      "badge": "Impulsionado por Ideogram 3.0",
+      "title": "Sintetizador Visual IA",
+      "subtitle": "Explore uma coleção curada de ativos gerados algoritmicamente.",
+      "overlay_indicator": "RENDER AO VIVO • WEBGL 2.0",
+      "drag_label": "ARRASTAR PARA ORBITAR",
+      "item_prefix": "ATIVO",
+      "error_fallback": "MOTOR VISUAL NÃO SUPORTADO",
+      "footer_prompt": "Engenharia de Prompts Avançada",
+      "footer_upscaling": "Upscaling 8K e Otimização",
+      "items": {}
+    }
   },
   "value_proposition": {
+    "badge_label": "Padrões de Excelência",
     "amenities_title": "Comodidades Premium",
     "amenities_cta": "Acesso exclusivo para hóspedes do Beach Hotel",
     "amenities_hotel": [
@@ -459,21 +483,106 @@
     "testimonial": {
       "quote": "Um santuário absoluto. A equipe entende o luxo não apenas como um preço, mas como um serviço personalizado.",
       "author_name": "James Sterling",
-      "author_role": "Hóspede Frequente"
+      "author_role": "Hóspede Frequente",
+      "avatar_url": "/images/testimonials/james-sterling.jpg"
     }
   },
+  "project_details": {
+    "section_title": "Engenharia de Elite",
+    "section_subtitle": "Uma exibição de ativos digitais de alto desempenho.",
+    "label_live_demo": "Ver Demo",
+    "label_source_code": "Ver Código",
+    "label_tech_stack": "Stack Tecnológico",
+    "label_backend_arch": "Arquitetura Backend",
+    "label_elite_options": "Opções de Elite",
+    "label_objective": "Objetivo do Sistema",
+    "label_close_modal": "Fechar Especificações",
+    "empty_state": "Não há projetos disponíveis no momento."
+  },
+  "footer": {
+    "newsletter_title": "Junte-se ao Ecossistema",
+    "newsletter_placeholder": "Seu endereço de e-mail",
+    "newsletter_button": "Inscrever-se",
+    "newsletter_success_title": "Bem-vindo ao Santuário",
+    "newsletter_success_subtitle": "Sua identidade foi vinculada ao núcleo digital. Prepare-se para uma experiência de takeover única.",
+    "newsletter_reward_label": "CONCEDIDOS",
+    "column_nav_title": "Navegação",
+    "column_services_title": "Concierge",
+    "column_legal_title": "Conformidade",
+    "rights_reserved": "© 2026 Beach Hotel Canasvieiras. Todos os direitos reservados.",
+    "made_by": "Forjado por Raz Podestá | MetaShark Tech"
+  },
+  "system_status": {
+    "aria_label": "Atualizações de Status do Hotel ao Vivo",
+    "items": [
+      {
+        "category": "PRIDE FEST",
+        "message": "90% das Master Suites ocupadas para a Boat Party.",
+        "iconKey": "Ticket",
+        "colorKey": "purple"
+      },
+      {
+        "category": "METEOROLOGIA",
+        "message": "25°C em Canasvieiras. Perfeito para a praia.",
+        "iconKey": "ThermometerSun",
+        "colorKey": "yellow"
+      },
+      {
+        "category": "SEGURANÇA",
+        "message": "Acesso privado exclusivo monitorado 24/7.",
+        "iconKey": "ShieldCheck",
+        "colorKey": "green"
+      },
+      {
+        "category": "LOUNGE",
+        "message": "Sunset Sessions diárias na piscina do HQ.",
+        "iconKey": "Music",
+        "colorKey": "pink"
+      }
+    ]
+  },
+  "quienes_somos": {
+    "page_title": "Nossa História | Beach Hotel Canasvieiras",
+    "page_description": "Descubra o legado e a visão por trás do santuário de hospitalidade de elite em Florianópolis.",
+    "hero_title": "O Legado do Santuário",
+    "hero_subtitle": "Fundado sobre os pilares da exclusividade e a energia vibrante do mar, nosso hotel é mais que um destino; é um refúgio curado para o viajero global.",
+    "luxury_pillar": {
+      "title": "Luxo Boutique",
+      "description": "Uma atmosfera sofisticada desenhada para celebrar a diversidade e o conforto de alto padrão em cada detalhe."
+    },
+    "comfort_pillar": {
+      "title": "Refúgio Absoluto",
+      "description": "Suítes modernas integradas com tecnologia inteligente para garantir a paz e o descanso no coração de Canasvieiras."
+    },
+    "service_pillar": {
+      "title": "Concierge de Elite",
+      "description": "Nossa equipe dedicada antecipa suas necessidades, garantindo uma estadia impecável e personalizada 24h por dia."
+    },
+    "cta_title": "Viva o Inesquecível",
+    "cta_button": "Reserve sua Experiência"
+  },
   "visitor_hud": {
-    "label_visitor_info": "INFORMAÇÃO DO VISITANTE",
-    "label_ip_visitor": "I.P. VISITANTE",
-    "footer_credits": "Componente criado por Raz Podestá - MetaShark Tech",
-    "status_calibrating": "CALIBRANDO...",
-    "status_error": "SINAL PERDIDO",
+    "tab_identity": "IDENTIDADE",
+    "tab_telemetry": "TELEMETRIA",
+    "guest_title": "Identidade Não Vinculada",
+    "guest_description": "Acesse para ativar o Protocolo 33 e coletar artefatos exclusivos no Santuário.",
+    "guest_cta": "Vincular Identidade",
+    "label_visitor_info": "INFORMAÇÃO DO HÓSPEDE",
+    "label_ip_visitor": "I.P. DE ORIGEM",
     "label_location": "LOCALIZAÇÃO",
-    "label_weather": "CLIMA",
+    "label_weather": "CLIMA EM CANASVIEIRAS",
+    "label_time": "HORA LOCAL",
+    "status_calibrating": "CALIBRANDO INSTRUMENTOS...",
+    "status_error": "SINAL PERDIDO",
     "weather_sunny": "ENSOLARADO",
     "weather_rainy": "CHUVOSO",
     "weather_cloudy": "NUBLADO",
-    "label_time": "HORA LOCAL",
-    "coords_format": "COORDENADAS"
+    "roaming_label": "EM TRÂNSITO",
+    "stat_artifacts": "Artefatos",
+    "stat_streak": "Sequência",
+    "xp_next_label": "Próximo",
+    "footer_credits": "Tecnologia MetaShark Tech",
+    "cta_explore": "Explorar",
+    "precision_sync_label": "Protocolo Heimdall: Sincronização de Precisão Ativa"
   }
 }

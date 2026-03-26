@@ -10,6 +10,7 @@
   "vip_upsell": {
     "title": "VIP Diamond Experience",
     "price_addon": "+U$ 125",
+    "per_guest_label": "per guest",
     "benefits": [
       "Front-row ocean view room",
       "Priority Access (Fast Pass) to all events",
@@ -57,6 +58,13 @@
       "neon_color": "#EC4899"
     }
   ],
+  "packages_section": {
+    "title": "Takeover Packages",
+    "subtitle": "Select your level of immersion in the Sanctuary",
+    "label_5_nights": "5 Nights Experience",
+    "label_7_nights": "7 Nights Full Takeover",
+    "cta": "Book Package"
+  },
   "packages": [
     {
       "category": "Experience Base",
@@ -72,5 +80,6 @@
       "hotel_name": "Beach Hotel Suites",
       "availability_label": "EXCLUSIVE BOOKING"
     }
-  ]
+  ],
+  "footer_credits": "Canasvieiras Fest 2026 • Private Infrastructure • MetaShark Tech"
 }

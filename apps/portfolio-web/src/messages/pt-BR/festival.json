@@ -10,6 +10,7 @@
   "vip_upsell": {
     "title": "Experiência VIP Diamond",
     "price_addon": "+R$ 650",
+    "per_guest_label": "por pessoa",
     "benefits": [
       "Suíte com vista frontal para o mar",
       "Acesso prioritário (Fast Pass) em todos os eventos",
@@ -38,7 +39,7 @@
       "title": "BOAT PARTY: THE NEW WAVE",
       "location": "Baía Norte / Escuna Exclusiva",
       "startTime": "14:00",
-      "description": "Cruzeiro ao pôr do sol com sistema de som de alta fidelidade e paradas estratégicas.",
+      "description": "Cruzeiro ao pôr do sol con sistema de som de alta fidelidade e paradas estratégicas.",
       "vibe": "House",
       "isVipOnly": true,
       "image": "/images/festival/boat-party-main.jpg",
@@ -57,6 +58,13 @@
       "neon_color": "#EC4899"
     }
   ],
+  "packages_section": {
+    "title": "Pacotes de Invasão",
+    "subtitle": "Selecione seu nível de imersão no Santuário",
+    "label_5_nights": "Experiência 5 Noites",
+    "label_7_nights": "Takeover Total 7 Noites",
+    "cta": "Reservar Pacote"
+  },
   "packages": [
     {
       "category": "Experience Base",
@@ -72,5 +80,6 @@
       "hotel_name": "Beach Hotel Suites",
       "availability_label": "RESERVA EXCLUSIVA"
     }
-  ]
+  ],
+  "footer_credits": "Canasvieiras Fest 2026 • Infraestrutura Privada • MetaShark Tech"
 }

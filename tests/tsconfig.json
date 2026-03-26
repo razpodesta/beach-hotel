@@ -1,7 +1,11 @@
 /**
  * @file tests/tsconfig.json
  * @description Configuración soberana del Espejo de Calidad.
- *              Implementa validación cruzada mediante Project References.
+ *              Nivelado: Transición a ESM ('esnext' / 'bundler') para erradicar 
+ *              el error TS1295 bajo 'verbatimModuleSyntax'. La transpilación
+ *              JIT en tiempo de ejecución se delega exclusivamente a @swc/jest.
+ * @version 12.0 - ESM Sync & TS1295 Resolution
+ * @author Raz Podestá - MetaShark Tech
  */
 {
   "extends": "../tsconfig.base.json",
@@ -9,23 +13,25 @@
     "baseUrl": ".",
     /* 
        PILAR V: ADHERENCIA ARQUITECTÓNICA
-       Activamos 'composite' para que este proyecto pueda ser parte 
-       del grafo referenciado desde la raíz.
+       Mantenemos composite para permitir la orquestación desde la raíz.
     */
     "composite": true,
     
     /* 
-       MODO SOURCE-FIRST:
-       Los tests consumen código fuente. Usamos 'commonjs' y 'node' 
-       porque Jest (nuestro motor de tests) corre en Node.js puro.
+       RESOLUCIÓN ESM SOBERANA:
+       Evita el bloqueo TS1295 al permitir sintaxis import/export nativa.
+       Alineado con el estándar del ecosistema MetaShark.
     */
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "emitDeclarationOnly": false,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    
+    /* 
+       PILAR XIII: PUREZA DE SOURCE
+       Bloqueamos la emisión física para evitar la creación de artefactos
+       redundantes en el directorio de pruebas.
+    */
     "noEmit": true,
-
-    /* Tipado específico para el entorno de pruebas */
-    "types": [
+    "types":[
       "node", 
       "jest", 
       "@testing-library/jest-dom", 
@@ -34,22 +40,10 @@
     ],
     "jsx": "react-jsx"
   },
-  "include": [
+  "include":[
     "**/*.ts", 
     "**/*.tsx",
-    "../apps/portfolio-web/jest.setup.ts" // Inyectamos el setup de la app
-  ],
-  /* 
-     EL PUENTE FÍSICO:
-     Referenciamos todos los proyectos que estos tests van a auditar.
-     Esto garantiza que los tipos de las librerías estén actualizados.
-  */
-  "references": [
-    { "path": "../apps/portfolio-web" },
-    { "path": "../packages/cms/core" },
-    { "path": "../packages/cms/ui" },
-    { "path": "../packages/testing-utils" },
-    { "path": "../packages/protocol-33" },
-    { "path": "../packages/auth-shield" }
+    "../apps/portfolio-web/jest.setup.ts",
+    "../tests/jest.config.ts"
   ]
 }

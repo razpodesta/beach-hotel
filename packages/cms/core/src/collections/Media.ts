@@ -1,9 +1,9 @@
 /**
  * @file Media.ts
- * @description Colección soberana para la gestión de activos multimedia (Sovereign Media Library).
- *              Implementa orquestación multitenant, optimización automática de imágenes
- *              y blindaje de accesibilidad (A11Y).
- * @version 2.0 - Performance & A11Y Hardening
+ * @description Colección soberana para la gestión de activos multimedia.
+ *              Refactorizado: Soporte para UUIDs (ID tipo Texto) para garantizar
+ *              consistencia relacional con el Hub Editorial y el Journal.
+ * @version 3.0 - UUID Standard & Performance Hardening
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -22,7 +22,6 @@ export const Media: CollectionConfig = {
   /**
    * REGLAS DE ACCESO
    * @pilar VIII: Resiliencia en Seguridad.
-   * Lectura pública para el frontend; gestión restringida por Tenant ID.
    */
   access: {
     read: () => true,
@@ -33,42 +32,24 @@ export const Media: CollectionConfig = {
 
   /**
    * CONFIGURACIÓN DE CARGA (Upload Engine)
-   * @pilar X: Performance - Generación de derivados optimizados.
    */
   upload: {
     staticDir: 'media',
     imageSizes: [
-      {
-        name: 'thumbnail',
-        width: 400,
-        height: 300,
-        position: 'centre',
-      },
-      {
-        name: 'card',
-        width: 768,
-        height: 1024,
-        position: 'centre',
-      },
-      {
-        name: 'hero',
-        width: 1920,
-        height: 1080,
-        position: 'centre',
-      },
+      { name: 'thumbnail', width: 400, height: 300, position: 'centre' },
+      { name: 'card', width: 768, height: 1024, position: 'centre' },
+      { name: 'hero', width: 1920, height: 1080, position: 'centre' },
     ],
     adminThumbnail: 'thumbnail',
-    mimeTypes: ['image/*'], // Restricción estricta a imágenes para esta colección
+    mimeTypes: ['image/*'],
   },
 
   /**
    * GUARDIANES DE INTEGRIDAD (Hooks)
-   * @pilar IV: Observabilidad - Trazabilidad de activos.
    */
   hooks: {
     beforeChange: [
       ({ req, data, operation }) => {
-        // Garantía de Identidad Multi-Tenant
         if (operation === 'create' && req.user) {
           data.tenantId = req.user.tenantId;
         }
@@ -85,6 +66,15 @@ export const Media: CollectionConfig = {
   },
 
   fields: [
+    /* 
+       PILAR I: VISIÓN HOLÍSTICA
+       Forzamos el ID como texto para permitir el uso de UUIDs deterministas
+       y evitar colisiones de tipos en tablas de relaciones (_rels).
+    */
+    {
+      name: 'id',
+      type: 'text',
+    },
     {
       name: 'tenantId',
       type: 'text',
@@ -101,10 +91,9 @@ export const Media: CollectionConfig = {
       required: true,
       index: true,
       admin: { 
-        description: 'Crítico para SEO y lectores de pantalla. Describe la imagen con precisión.',
+        description: 'Crítico para SEO y lectores de pantalla.',
         placeholder: 'Ej: Vista panorámica de la suite master al amanecer'
       },
-      // @pilar III: Seguridad de Tipos. Validación de longitud para SEO.
       validate: (val: string | null | undefined) => {
         if (val && val.length > 5) return true;
         return 'El texto alternativo debe ser más descriptivo (mín. 6 caracteres).';
@@ -114,7 +103,7 @@ export const Media: CollectionConfig = {
       name: 'caption',
       type: 'textarea',
       admin: { 
-        description: 'Texto opcional que aparecerá debajo de la imagen en contextos editoriales.' 
+        description: 'Texto opcional editorial.' 
       },
     },
   ],

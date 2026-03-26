@@ -6,15 +6,30 @@
     
     /* 
        ESCUDO ANTI-6305: 
-       Poda el árbol de directorios para que el dist sea plano.
+       Poda el árbol de directorios fijando la raíz en 'src' 
+       para que el dist sea completamente plano.
     */
     "rootDir": "src",
     
     /* PILAR V: COMPOSITE SYNC */
     "composite": true,
+
+    /* 
+       PILAR XIII: FORZADO DE EMISIÓN (Override)
+       Anulamos el "noEmit": true heredado del tsconfig.json padre.
+       Esto permite que el comando 'nx build auth-shield' genere
+       los archivos físicos (.js y .d.ts) en el directorio dist/.
+    */
+    "noEmit": false,
     "emitDeclarationOnly": false, 
+    
     "tsBuildInfoFile": "../../dist/packages/auth-shield/tsconfig.lib.tsbuildinfo"
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["**/*.spec.ts", "**/*.test.ts"]
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude":[
+    "**/*.spec.ts", 
+    "**/*.test.ts"
+  ]
 }

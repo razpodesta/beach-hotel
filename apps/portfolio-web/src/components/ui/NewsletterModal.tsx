@@ -1,8 +1,9 @@
 /**
  * @file apps/portfolio-web/src/components/ui/NewsletterModal.tsx
  * @description Orquestador de captación de leads mediante modal emergente persistente.
- *              Nivelado: Inyección de diccionario desde el Layout raíz para satisfacer contrato.
- * @version 6.3 - Dependency Injected Content
+ *              Nivelado: Resolución de ciclo de vida en React (TS7030) garantizando
+ *              limpieza determinista de timers y prevención de memory leaks.
+ * @version 6.4 - Strict Lifecycle Sync
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -20,9 +21,14 @@ const COOKIE_NAME = 'newsletter_modal_seen';
 
 /**
  * Hook de Hidratación de Élite
+ * @description Previene discrepancias de hidratación detectando el montaje seguro.
  */
 function useIsMounted(): boolean {
-  const subscribe = useCallback(() => () => { /* No-op */ }, []);
+  const subscribe = useCallback(() => {
+    return () => {
+      /* No-op: Estado terminal */
+    };
+  },[]);
   return useSyncExternalStore(subscribe, () => true, () => false);
 }
 
@@ -32,16 +38,22 @@ interface NewsletterModalProps {
 
 export function NewsletterModal({ dictionary }: NewsletterModalProps) {
   const isMounted = useIsMounted();
-  const [isOpen, setIsOpen] = useState(false);
+  const[isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     if (!isMounted) return;
 
+    let timer: ReturnType<typeof setTimeout> | null = null;
     const hasSeen = getCookie(COOKIE_NAME);
+    
     if (!hasSeen) {
-      const timer = setTimeout(() => setIsOpen(true), 5000);
-      return () => clearTimeout(timer);
+      timer = setTimeout(() => setIsOpen(true), 5000);
     }
+
+    // Retorno determinista: Garantiza limpieza independientemente del flujo
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
   }, [isMounted]);
 
   const handleClose = () => {

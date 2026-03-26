@@ -1,7 +1,112 @@
 {
-  "timestamp": "2026-03-18T00:18:54.278Z",
-  "tables": [],
-  "rlsStatus": [],
+  "timestamp": "2026-03-26T19:24:36.411Z",
+  "summary": {
+    "totalTables": 16,
+    "totalPolicies": 0,
+    "tablesWithRlsDisabled": [
+      "users",
+      "tenants",
+      "projects_tags",
+      "projects_tech_stack",
+      "payload_locked_documents",
+      "payload_kv",
+      "payload_locked_documents_rels",
+      "payload_migrations",
+      "users_sessions",
+      "blog_posts",
+      "blog_posts_tags",
+      "media",
+      "projects",
+      "projects_backend_architecture_features",
+      "payload_preferences",
+      "payload_preferences_rels"
+    ],
+    "isSecurityCompliant": false
+  },
+  "tables": [
+    "users",
+    "tenants",
+    "projects_tags",
+    "projects_tech_stack",
+    "payload_kv",
+    "payload_locked_documents",
+    "payload_locked_documents_rels",
+    "payload_preferences_rels",
+    "payload_migrations",
+    "users_sessions",
+    "blog_posts",
+    "blog_posts_tags",
+    "media",
+    "projects",
+    "projects_backend_architecture_features",
+    "payload_preferences"
+  ],
+  "rlsStatus": [
+    {
+      "tablename": "users",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "tenants",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "projects_tags",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "projects_tech_stack",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "payload_locked_documents",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "payload_kv",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "payload_locked_documents_rels",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "payload_migrations",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "users_sessions",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "blog_posts",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "blog_posts_tags",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "media",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "projects",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "projects_backend_architecture_features",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "payload_preferences",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "payload_preferences_rels",
+      "rowsecurity": false
+    }
+  ],
   "policies": [],
   "error": null
 }

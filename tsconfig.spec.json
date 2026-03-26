@@ -1,16 +1,33 @@
 {
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "./dist/out-tsc/jest",
+    /* 
+       ENTORNO DE PRUEBAS GLOBAL
+       Configuración específica para que el IDE y Jest procesen los 
+       archivos de orquestación de pruebas en la raíz del monorepo.
+    */
     "module": "commonjs",
+    "moduleResolution": "node",
     "types": ["jest", "node"],
     "esModuleInterop": true,
-    "allowJs": true
+    "allowJs": true,
+    
+    /* 
+       PILAR XIII: PUREZA DE SOURCE
+       Bloqueamos la emisión física para evitar la creación de la carpeta 
+       redundante 'dist/out-tsc/jest' desde la raíz. La compilación de 
+       tests se gestiona de forma atómica en cada proyecto.
+    */
+    "noEmit": true,
+    "composite": true
   },
   "include": [
     "jest.config.ts",
-    "src/**/*.test.ts",
-    "src/**/*.spec.ts",
-    "src/**/*.d.ts"
+    "jest.preset.js",
+    "scripts/debug-test-paths.js"
+  ],
+  "exclude": [
+    "node_modules", 
+    "dist"
   ]
 }

@@ -1,8 +1,9 @@
 /**
  * @file apps/portfolio-web/src/app/[lang]/blog/tag/[slug]/page.tsx
  * @description Orquestador de archivo por etiquetas (taxonomía) del Concierge Journal.
- *              Implementa SSG, resiliencia Next.js 15 y normalización de tipos para Media.
- * @version 6.3 - Nullability Normalization & TS Sync
+ *              Implementa SSG de alta velocidad, integración con la Fachada Soberana
+ *              y normalización de activos bajo estándares de Élite.
+ * @version 7.0 - Domain Facade Sync & Syntax Hardening
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -10,15 +11,16 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
 /**
- * IMPORTACIONES NIVELADAS
- * @pilar V: Adherencia arquitectónica mediante fronteras Nx.
+ * IMPORTACIONES DE INFRAESTRUCTRURA
+ * @pilar V: Adherencia arquitectónica mediante el uso de la Fachada de Dominio.
  */
-import { type Locale, i18n } from '../../../../../config/i18n.config';
-import { getDictionary } from '../../../../../lib/get-dictionary';
-import { getPostsByTag, getAllPosts } from '../../../../../lib/blog';
-import { BlogCard } from '../../../../../components/ui/BlogCard';
-import { BlurText } from '../../../../../components/razBits/BlurText';
-import type { PostWithSlug } from '../../../../../lib/schemas/blog.schema';
+import { i18n } from '../../../../../config/i18n.config.js';
+import type { Locale } from '../../../../../config/i18n.config.js';
+import { getDictionary } from '../../../../../lib/get-dictionary.js';
+import { getPostsByTag, getAllPosts } from '../../../../../lib/blog-api.js';
+import { BlogCard } from '../../../../../components/ui/BlogCard.js';
+import { BlurText } from '../../../../../components/razBits/BlurText.js';
+import type { PostWithSlug } from '../../../../../lib/schemas/blog.schema.js';
 
 /**
  * Propiedades de la página con soporte para parámetros asíncronos (Next.js 15 Standard).
@@ -37,9 +39,9 @@ export async function generateStaticParams() {
     if (!posts || posts.length === 0) return [];
 
     const tags = new Set<string>();
-    posts.forEach(post => {
-      post.metadata.tags.forEach(tag => {
-        // Normalización kebab-case para URLs SEO-Friendly
+    posts.forEach((post: PostWithSlug) => {
+      post.metadata.tags.forEach((tag: string) => {
+        // Normalización para URLs SEO-Friendly (kebab-case)
         tags.add(tag.toLowerCase().trim().replace(/\s+/g, '-'));
       });
     });
@@ -58,7 +60,7 @@ export async function generateStaticParams() {
 
 /**
  * Orquestador de Metadatos Soberano.
- * @pilar III: Resolución asíncrona de parámetros.
+ * @pilar I: Visión Holística - SEO E-E-A-T.
  */
 export async function generateMetadata(props: TagPageProps): Promise<Metadata> {
   const { lang, slug } = await props.params;
@@ -88,7 +90,7 @@ export default async function TagArchivePage(props: TagPageProps) {
    */
   const [dictionary, posts] = await Promise.all([
     getDictionary(lang),
-    getPostsByTag(slug)
+    getPostsByTag(slug, lang)
   ]);
 
   // @pilar VIII: Guardia de Resiliencia ante nulos o fallos del CMS
@@ -101,7 +103,7 @@ export default async function TagArchivePage(props: TagPageProps) {
 
   /**
    * @pilar VI: Lógica i18n Soberana.
-   * Pluralización dinámica basada en tokens del diccionario.
+   * Selección de plantilla basada en volumen de resultados.
    */
   const resultsCount = posts.length;
   const descriptionTemplate = resultsCount === 1 
@@ -130,7 +132,7 @@ export default async function TagArchivePage(props: TagPageProps) {
           </p>
         </header>
 
-        {/* GRID DINÁMICO: Sincronizado con BlogCard v4.1 */}
+        {/* GRID DINÁMICO SINCRO CON FACHADA */}
         <div className="grid grid-cols-1 gap-x-12 gap-y-20 md:grid-cols-2 lg:grid-cols-3">
           {posts.map((post: PostWithSlug) => (
             <BlogCard
@@ -139,16 +141,13 @@ export default async function TagArchivePage(props: TagPageProps) {
               slug={post.slug}
               lang={lang}
               ctaText={t.read_more_cta}
-              /**
-               * @pilar III: Resolución de Error TS2322. 
-               * Normalizamos 'null' a 'undefined' para cumplir con el contrato de BlogCardProps.
-               */
-              customImage={post.metadata.ogImage ?? undefined} 
+              // ogImage ya viene saneado como string | undefined desde la Fachada
+              customImage={post.metadata.ogImage} 
             />
           ))}
         </div>
 
-        {/* FOOTER DE MARCA */}
+        {/* FOOTER DE MARCA INSTITUCIONAL */}
         <div className="mt-32 pt-12 border-t border-white/5 flex flex-col items-center">
             <p className="text-[10px] font-mono text-zinc-800 tracking-[0.3em] uppercase">
                 Beach Hotel Canasvieiras • Editorial Sanctuary
@@ -156,7 +155,7 @@ export default async function TagArchivePage(props: TagPageProps) {
         </div>
       </div>
 
-      {/* Decoración Estructural Atmosférica */}
+      {/* Artefacto de atmósfera decorativo */}
       <div className="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_center,rgba(168,85,247,0.03),transparent_70%)] pointer-events-none" />
     </main>
   );

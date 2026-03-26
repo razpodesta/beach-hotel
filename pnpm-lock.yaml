@@ -414,9 +414,6 @@ importers:
       jsonwebtoken:
         specifier: ^9.0.3
         version: 9.0.3
-      tslib:
-        specifier: ^2.3.0
-        version: 2.8.1
 
   packages/cms/core:
     dependencies:

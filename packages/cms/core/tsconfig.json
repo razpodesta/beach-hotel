@@ -2,25 +2,48 @@
   "extends": "../../../tsconfig.base.json",
   "compilerOptions": {
     "baseUrl": ".",
+    /* 
+       PILAR V: ADHERENCIA AL GRAFO SOBERANO
+       'composite' se mantiene para permitir que este proyecto sea 
+       referenciado por el orquestador de la raíz y los scripts CLI.
+    */
     "composite": true,
     "rootDir": ".",
+    
     /* 
-       RESOLUCIÓN DE CORE:
-       Usamos 'nodenext' para forzar el cumplimiento de ESM, ya que este 
-       paquete es la base de los scripts de base de datos.
+       PILAR XIII: PUREZA DE SOURCE (Blindaje Total)
+       Se bloquea la emisión física para evitar contaminar la carpeta src/.
+       Al haber eliminado el array 'references' al final de este archivo,
+       resolvemos el error "cannot disable emission" de forma definitiva.
+    */
+    "noEmit": true,
+
+    /* 
+       RESOLUCIÓN DE CORE (Strict ESM):
+       Mantenemos 'nodenext' para forzar el cumplimiento de ESM en el IDE.
+       Esto garantiza que el código sea compatible con Node.js nativo 
+       para los scripts de infraestructura.
     */
     "module": "nodenext",
     "moduleResolution": "nodenext",
+    
     "declaration": true,
     "declarationMap": true,
     "types": ["node"]
   },
   "include": [
     "src/**/*.ts",
-    "src/payload-types.ts" // Inclusión crítica para el autocompletado global
+    "src/payload-types.ts"
   ],
-  "exclude": ["node_modules", "dist", "jest.config.ts", "src/**/*.spec.ts"],
-  "references": [
-    { "path": "./tsconfig.lib.json" }
+  "exclude": [
+    "node_modules", 
+    "dist", 
+    "jest.config.ts", 
+    "src/**/*.spec.ts"
   ]
+  /* 
+     ELIMINACIÓN ESTRATÉGICA: Array 'references' eliminado.
+     Desacoplamos este archivo de desarrollo de la configuración física 
+     de build para evitar errores circulares y bloqueos de emisión.
+  */
 }

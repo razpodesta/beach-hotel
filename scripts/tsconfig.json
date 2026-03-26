@@ -1,11 +1,33 @@
+/**
+ * @file scripts/tsconfig.json
+ * @description Orquestador de tipos para utilidades de infraestructura y scripts CLI.
+ *              Nivelado: Resolución definitiva de TS6307 mediante globbing 
+ *              estricto sobre el código fuente de los paquetes y la app.
+ * @version 12.3 - Global Scope Expansion
+ * @author Raz Podestá - MetaShark Tech
+ */
 {
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "target": "es2022",
-    "types": ["node"],
-    "strict": true
+    "composite": true,
+    "noEmit": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "types": ["node"]
   },
-  "include": ["**/*.ts"]
+  "include": [
+    "**/*.ts",
+    /* 
+       PILAR II: CERO REGRESIONES
+       Ampliamos el scope hacia los esquemas de la app para que el ensamblador
+       pueda validar el contrato dictionarySchema.
+    */
+    "../apps/portfolio-web/src/lib/schemas/**/*.ts",
+    "../packages/**/src/**/*.ts",
+    "../packages/**/src/**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }

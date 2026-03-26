@@ -1,10 +1,13 @@
 {
-  "timestamp": "2026-03-16T16:36:22.816Z",
-  "status": "failed",
+  "timestamp": "2026-03-26T19:23:15.479Z",
+  "status": "success",
   "details": {
-    "DATABASE_URL": false,
-    "SUPABASE_URL": false,
-    "SUPABASE_ANON_KEY": false
+    "DATABASE_URL": true,
+    "SUPABASE_URL": true,
+    "SUPABASE_ANON_KEY": true,
+    "dbName": "postgres",
+    "version": "PostgreSQL 17.6 on aarch64-unknown-linux-gnu, compiled by gcc (GCC) 15.2.0, 64-bit"
   },
-  "error": "DATABASE_URL no definida"
+  "error": null,
+  "latencyMs": 3373
 }

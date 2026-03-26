@@ -2,25 +2,45 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "baseUrl": ".",
+    /* 
+       PILAR V: ADHERENCIA AL GRAFO SOBERANO
+       'composite' permite que este proyecto sea referenciado por el orquestador 
+       de la raíz, garantizando Intellisense en todo el monorepo.
+    */
     "composite": true,
     "rootDir": ".",
     
     /* 
+       PILAR XIII: PUREZA DE SOURCE (Blindaje Total)
+       Bloqueamos la emisión física para el IDE. La eliminación de 
+       'references' resuelve el error de sistema de forma definitiva.
+    */
+    "noEmit": true,
+    
+    /* 
        RESOLUCIÓN ISOMÓRFICA:
-       Usamos 'bundler' para que el VisitorHud (Next.js) consuma 
-       la lógica de XP con la máxima agilidad.
+       Optimizado para que Next.js realice un Tree-Shaking agresivo 
+       de la lógica de reputación en el frontend.
     */
     "module": "esnext",
     "moduleResolution": "bundler",
-    "jsx": "react-jsx",
     
     "declaration": true,
     "declarationMap": true,
     "types": ["node"]
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", "dist", "jest.config.ts", "**/*.spec.ts"],
-  "references": [
-    { "path": "./tsconfig.lib.json" }
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules", 
+    "dist", 
+    "jest.config.ts", 
+    "**/*.spec.ts"
   ]
+  /* 
+     ELIMINACIÓN ESTRATÉGICA: Array 'references' eliminado.
+     Desacoplamos la validación de tipos de la emisión física de artefactos
+     para evitar el bloqueo "cannot disable emission".
+  */
 }

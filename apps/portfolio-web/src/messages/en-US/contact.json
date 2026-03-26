@@ -5,6 +5,10 @@
   "form_placeholder_email": "* Email",
   "form_placeholder_message": "* Your message...",
   "form_button_submit": "Send Message",
+  "form_button_loading": "Processing...",
+  "success_title": "Request Received",
+  "success_subtitle": "Our concierge will contact you shortly to refine the details of your stay or project.",
+  "error_submit": "Submission failed. Please try again or contact us directly via email.",
   "validation": {
     "name_required": "Name is required",
     "email_required": "Email is required",

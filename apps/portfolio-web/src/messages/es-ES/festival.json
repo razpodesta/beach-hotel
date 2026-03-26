@@ -10,6 +10,7 @@
   "vip_upsell": {
     "title": "Experiencia VIP Diamond",
     "price_addon": "+U$ 120",
+    "per_guest_label": "por persona",
     "benefits": [
       "Habitación con vista frontal al mar",
       "Acceso prioritario (Fast Pass) en todos los eventos",
@@ -57,6 +58,13 @@
       "neon_color": "#EC4899"
     }
   ],
+  "packages_section": {
+    "title": "Paquetes de Toma",
+    "subtitle": "Selecciona tu nivel de inmersión en el Santuario",
+    "label_5_nights": "Inmersión 5 Noches",
+    "label_7_nights": "Toma Total 7 Noches",
+    "cta": "Reservar Paquete"
+  },
   "packages": [
     {
       "category": "Experience Base",
@@ -72,5 +80,6 @@
       "hotel_name": "Beach Hotel Suites",
       "availability_label": "RESERVA EXCLUSIVA"
     }
-  ]
+  ],
+  "footer_credits": "Canasvieiras Fest 2026 • Infraestructura Privada • MetaShark Tech"
 }

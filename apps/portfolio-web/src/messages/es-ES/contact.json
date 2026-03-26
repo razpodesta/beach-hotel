@@ -5,6 +5,10 @@
   "form_placeholder_email": "* Email",
   "form_placeholder_message": "* Tu mensaje...",
   "form_button_submit": "Enviar Mensaje",
+  "form_button_loading": "Procesando...",
+  "success_title": "Consulta Recibida",
+  "success_subtitle": "Nuestro concierge se pondrá en contacto a la brevedad para refinar los detalles de su estadía o proyecto.",
+  "error_submit": "Error al enviar. Por favor intente de nuevo o contáctenos directamente por email.",
   "validation": {
     "name_required": "El nombre es obligatorio",
     "email_required": "El email es obligatorio",

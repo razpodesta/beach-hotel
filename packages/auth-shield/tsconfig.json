@@ -2,18 +2,46 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "baseUrl": ".",
+    /* 
+       PILAR V: ADHERENCIA AL GRAFO SOBERANO
+       'composite' permite que el orquestador de la raíz reconozca
+       este paquete de seguridad, manteniendo el Intellisense global.
+    */
     "composite": true,
     "rootDir": ".",
+    
+    /* 
+       PILAR XIII: PUREZA DE SOURCE (Blindaje Total)
+       Bloqueamos la emisión física para el IDE. Al eliminar el array
+       'references' al final de este archivo, resolvemos el error 
+       "cannot disable emission" en el último bastión de seguridad.
+    */
+    "noEmit": true,
  
+    /* 
+       RESOLUCIÓN CRIPTOGRÁFICA (Strict ESM):
+       'nodenext' garantiza que el código sea compatible con Node.js nativo
+       y el Middleware de Vercel, obligando al uso de extensiones '.js'.
+    */
     "module": "nodenext",
     "moduleResolution": "nodenext",
+    
     "declaration": true,
     "declarationMap": true,
     "types": ["node"]
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", "dist", "jest.config.ts", "**/*.spec.ts"],
-  "references": [
-    { "path": "./tsconfig.lib.json" }
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules", 
+    "dist", 
+    "jest.config.ts", 
+    "**/*.spec.ts"
   ]
+  /* 
+     ELIMINACIÓN ESTRATÉGICA: Array 'references' eliminado.
+     Finalizamos la cirugía de desacoplamiento para garantizar un 
+     árbol de TypeScript 100% limpio y sin errores de herencia.
+  */
 }

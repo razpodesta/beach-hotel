@@ -1,4 +1,5 @@
 {
+  "badge_label": "Padrões de Excelência",
   "amenities_title": "Comodidades Premium",
   "amenities_cta": "Acesso exclusivo para hóspedes do Beach Hotel",
   "amenities_hotel": [
@@ -23,6 +24,7 @@
   "testimonial": {
     "quote": "Um santuário absoluto. A equipe entende o luxo não apenas como um preço, mas como um serviço personalizado.",
     "author_name": "James Sterling",
-    "author_role": "Hóspede Frequente"
+    "author_role": "Hóspede Frequente",
+    "avatar_url": "/images/testimonials/james-sterling.jpg"
   }
 }

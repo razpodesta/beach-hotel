@@ -1,27 +1,31 @@
 /**
  * @file apps/portfolio-web/src/app/sitemap.ts
  * @description Generador soberano del mapa del sitio (Sitemap). 
- *              Garantiza la indexación SEO de todos los activos localizados, 
- *              optimizando la prioridad de rastreo para el Hotel y el Festival.
- * @version 3.1
+ *              Implementa orquestación híbrida (Estático + CMS Dinámico) para 
+ *              garantizar indexación total de activos localizados.
+ * @version 4.0 - Dynamic CMS Integration & ESM Hardening
  * @author Raz Podestá - MetaShark Tech
  */
 
 import type { MetadataRoute } from 'next';
-// CUMPLIMIENTO @nx/enforce-module-boundaries: Uso de ruta relativa interna
-import { i18n } from '../config/i18n.config';
+/**
+ * IMPORTACIONES DE INFRAESTRUCTRURA
+ * @pilar V: Consistencia ESM mediante extensiones .js
+ */
+import { i18n } from '../config/i18n.config.js';
+import { getAllPosts } from '../lib/blog-api.js';
 
 /**
- * Orquestador de Sitemap Next.js 15.
- * @returns {MetadataRoute.Sitemap} Colección de URLs canónicas con metadatos de rastreo.
+ * Orquestador de Sitemap Next.js 15 (Asíncrono).
+ * @returns {Promise<MetadataRoute.Sitemap>} Matriz completa de URLs canónicas.
  */
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://beachhotelcanasvieiras.com';
 
   /**
-   * INVENTARIO DE RUTAS PÚBLICAS (Sincronizado con la estructura física del proyecto).
+   * 1. INVENTARIO DE RUTAS ESTÁTICAS
    */
-  const publicRoutes = [
+  const staticRoutes = [
     '',               // Landing Page (Recepção)
     '/festival',      // The Winter Escape 2026
     '/quienes-somos', // Historia y Legado
@@ -33,28 +37,49 @@ export default function sitemap(): MetadataRoute.Sitemap {
   ];
 
   /**
-   * Generación de Matriz Localizada.
-   * Transforma cada ruta lógica en una entrada física por cada idioma soportado.
+   * 2. INVENTARIO DE RUTAS DINÁMICAS (CMS)
+   * @pilar VIII: Resiliencia. Obtenemos los artículos de la Fachada de Dominio.
    */
-  const routes: MetadataRoute.Sitemap = publicRoutes.flatMap((route) =>
+  let blogSlugs: string[] = [];
+  try {
+    const posts = await getAllPosts();
+    blogSlugs = posts.map(post => `/blog/${post.slug}`);
+  } catch (error) {
+    console.error('[HEIMDALL][SITEMAP] Fallo al recuperar rutas dinámicas:', error);
+  }
+
+  const allLogicalRoutes = [...staticRoutes, ...blogSlugs];
+
+  /**
+   * 3. GENERACIÓN DE MATRIZ LOCALIZADA
+   * Transforma rumbos lógicos en URLs físicas para cada locale.
+   */
+  const sitemapEntries: MetadataRoute.Sitemap = allLogicalRoutes.flatMap((route) =>
     i18n.locales.map((locale) => {
       const isHome = route === '';
-      const isCritical = route === '/festival' || route === '/blog';
-      
-      /**
-       * CORRECCIÓN TS2322: Se utiliza un casting explícito a los tipos literales
-       * requeridos por MetadataRoute.Sitemap para evitar la inferencia como 'string'.
-       */
-      const changeFrequency: 'daily' | 'weekly' = isHome ? 'daily' : 'weekly';
-      
+      const isCritical = route === '/festival' || route.startsWith('/blog/');
+      const isLegal = route.startsWith('/legal/');
+
+      // Cálculo de Prioridad Estratégica
+      let priority = 0.7;
+      if (isHome) priority = 1.0;
+      else if (route === '/festival') priority = 0.9;
+      else if (isCritical) priority = 0.8;
+      else if (isLegal) priority = 0.5;
+
+      // Determinación de Frecuencia de Rastreo
+      const changeFrequency: 'daily' | 'weekly' | 'monthly' = isHome || isCritical 
+        ? 'daily' 
+        : isLegal ? 'monthly' : 'weekly';
+
       return {
         url: `${baseUrl}/${locale}${route}`,
         lastModified: new Date().toISOString(),
         changeFrequency,
-        priority: isHome ? 1.0 : isCritical ? 0.9 : 0.7,
+        priority,
       };
     })
   );
 
-  return routes;
+  return sitemapEntries;
 }

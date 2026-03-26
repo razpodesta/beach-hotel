@@ -1,7 +1,7 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    /* SOBERANÍA DE SALIDA: Directorio global dist */
+    /* SOBERANÍA DE SALIDA: Directorio de distribución global */
     "outDir": "../../../dist/packages/cms/ui",
     
     /* 
@@ -12,9 +12,27 @@
     "rootDir": "src",
     
     "composite": true,
+
+    /* 
+       PILAR XIII: FORZADO DE EMISIÓN (Override)
+       Anula el "noEmit": true del archivo padre (tsconfig.json) para permitir
+       que el compilador de Nx genere los artefactos físicos (.js y .d.ts) 
+       requeridos por el pipeline de Vercel.
+    */
+    "noEmit": false,
     "emitDeclarationOnly": false, 
+    
     "tsBuildInfoFile": "../../../dist/packages/cms/ui/tsconfig.lib.tsbuildinfo"
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/global.d.ts"],
-  "exclude": ["**/*.spec.ts", "**/*.test.ts", "**/*.spec.tsx", "**/*.test.tsx"]
+  "include":[
+    "src/**/*.ts", 
+    "src/**/*.tsx", 
+    "src/global.d.ts"
+  ],
+  "exclude":[
+    "**/*.spec.ts", 
+    "**/*.test.ts", 
+    "**/*.spec.tsx", 
+    "**/*.test.tsx"
+  ]
 }

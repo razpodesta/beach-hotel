@@ -1,10 +1,14 @@
 {
   "title": "ENTRE EM CONTATO",
-  "form_cta": "Tem uma ideia ou projeto em mente? Adoraria saber sobre isso.",
+  "form_cta": "Tem uma ideia ou projeto em mente? Adoraria saber sobre isso. Preencha o formulário e entrarei em contato em breve.",
   "form_placeholder_name": "* Nome",
   "form_placeholder_email": "* Email",
   "form_placeholder_message": "* Sua mensagem...",
   "form_button_submit": "Enviar Mensagem",
+  "form_button_loading": "Processando...",
+  "success_title": "Solicitação Recebida",
+  "success_subtitle": "Nosso concierge entrará em contato em breve para refinar os detalhes da sua estadia ou projeto.",
+  "error_submit": "Falha no envio. Por favor, tente novamente ou entre em contato diretamente por e-mail.",
   "validation": {
     "name_required": "O nome é obrigatório",
     "email_required": "O email é obrigatório",

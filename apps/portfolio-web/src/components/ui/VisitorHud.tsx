@@ -3,7 +3,7 @@
  * @description Centro de Mando Perimetral (Heimdall HUD). 
  *              Orquesta la telemetría ambiental y el motor de reputación 
  *              Protocolo 33 con sincronización de estado global.
- * @version 24.1 - Production Final (Zero Regressions)
+ * @version 25.0 - Linter Hygiene & ESM Compliance
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -18,12 +18,14 @@ import {
 
 /**
  * IMPORTACIONES DE INFRAESTRUCTRURA
+ * @pilar V: Adherencia arquitectónica mediante extensiones ESM obligatorias.
  */
-import { cn } from '../../lib/utils/cn';
-import { useVisitorData } from '../../lib/hooks/use-visitor-data';
-import { useUIStore } from '../../lib/store/ui.store';
-import { calculateProgress, type UserProgress } from '@metashark/protocol-33';
-import type { Dictionary } from '../../lib/schemas/dictionary.schema';
+import { cn } from '../../lib/utils/cn.js';
+import { useVisitorData } from '../../lib/hooks/use-visitor-data.js';
+import { useUIStore } from '../../lib/store/ui.store.js';
+import { calculateProgress } from '@metashark/protocol-33';
+import type { UserProgress } from '@metashark/protocol-33';
+import type { Dictionary } from '../../lib/schemas/dictionary.schema.js';
 
 /**
  * CONSTANTES TÉCNICAS
@@ -38,15 +40,15 @@ interface SovereignUserSession {
 }
 
 /**
- * Hook de Hidratación de Élite
+ * Hook de Hidratación de Élite: useIsMounted
  * @pilar VIII: Resiliencia - Detección segura de montaje mediante React 19 Standards.
  */
 function useIsMounted(): boolean {
-  const subscribe = useCallback((_callback: () => void) => {
-    // Suscripción estática: El estado de montaje no cambia tras la hidratación inicial.
-    return () => {
-      /* No-op: Operación de limpieza estática documentada para ESLint */
+  const subscribe = useCallback(() => {
+    const noop = () => {
+      /* No-op: El estado de montaje es terminal en el cliente */
     };
+    return noop;
   }, []);
 
   return useSyncExternalStore(subscribe, () => true, () => false);
@@ -54,7 +56,7 @@ function useIsMounted(): boolean {
 
 /**
  * APARATO: VisitorHud
- * @description Orquesta la telemetría ambiental y el sistema de reputación con i18n nativa.
+ * @description Orquesta la telemetría ambiental y el sistema de reputación.
  */
 export function VisitorHud({ dictionary }: { dictionary: Dictionary }) {
   const isMounted = useIsMounted();
@@ -62,7 +64,7 @@ export function VisitorHud({ dictionary }: { dictionary: Dictionary }) {
   const [currentTime, setCurrentTime] = useState<string>('--:--');
   const [activeTab, setActiveTab] = useState<HudTab>('identity');
   
-  // Estado Global de UI (Zustand)
+  // @pilar X: Selección quirúrgica de estado global (Zustand)
   const isHudOpen = useUIStore((s) => s.isVisitorHudOpen);
   const hasHydrated = useUIStore((s) => s.hasHydrated);
   const closeHud = useUIStore((s) => s.closeVisitorHud);
@@ -77,12 +79,9 @@ export function VisitorHud({ dictionary }: { dictionary: Dictionary }) {
 
   /**
    * SESIÓN DE USUARIO (Bridge Temporario Fase A/B)
-   * @pilar III: Resolución de Error TS2339 (never type fix).
-   * @note Se inicializa mediante useMemo para permitir que el compilador realice
-   * el Narrowing de tipo correctamente en las ramas condicionales.
    */
   const sessionUser = useMemo((): SovereignUserSession | null => {
-    // Aquí se inyectará el hook useSovereignAuth() en la Fase B.
+    // Inyección futura de useSovereignAuth()
     return null; 
   }, []);
 
@@ -93,7 +92,6 @@ export function VisitorHud({ dictionary }: { dictionary: Dictionary }) {
 
   /**
    * PROCESADOR DE TELEMETRÍA: Clima Dinámico
-   * @description Mapea el código WMO a iconos y traducciones soberanas.
    */
   const weatherStatus = useMemo(() => {
     if (!geo?.weather) return { icon: CloudSun, label: t.weather_cloudy };
@@ -108,7 +106,6 @@ export function VisitorHud({ dictionary }: { dictionary: Dictionary }) {
 
   /**
    * RELOJ ATÓMICO (Heimdall Protocol)
-   * Sincroniza la hora local basada en la zona horaria detectada con fallback de hotel.
    */
   useEffect(() => {
     const timezone = geo?.timezone || 'America/Sao_Paulo';
@@ -148,7 +145,7 @@ export function VisitorHud({ dictionary }: { dictionary: Dictionary }) {
         animate={{ opacity: 1, scale: 1, x: 0 }}
         exit={{ opacity: 0, scale: 0.9, x: 40 }}
         className={cn(
-          "fixed top-24 right-6 z-50 w-85 cursor-grab rounded-[2.5rem] border border-white/10",
+          "fixed top-24 right-6 z-100 w-85 cursor-grab rounded-[2.5rem] border border-white/10",
           "bg-zinc-950/70 backdrop-blur-3xl shadow-[0_32px_64px_-16px_rgba(0,0,0,0.8)]",
           "overflow-hidden active:cursor-grabbing select-none"
         )}
@@ -176,8 +173,8 @@ export function VisitorHud({ dictionary }: { dictionary: Dictionary }) {
           </div>
           <button 
             onClick={closeHud} 
-            className="p-1.5 rounded-full hover:bg-white/10 text-zinc-600 transition-colors"
-            aria-label="Cerrar HUD"
+            className="p-1.5 rounded-full hover:bg-white/10 text-zinc-600 transition-colors active:scale-90"
+            aria-label="Fechar HUD"
           >
             <X size={16} />
           </button>

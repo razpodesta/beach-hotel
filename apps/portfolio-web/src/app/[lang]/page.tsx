@@ -1,9 +1,9 @@
 /**
  * @file page.tsx
  * @description Orquestador Soberano de la Landing Page (Recepción).
- *              Implementa un Embudo de Ventas (Conversion Funnel) de próxima generación.
- *              Refactorizado: 100% Data-Driven, Resolución de Error TS2741 y SEO Pro.
- * @version 19.0 - Triple-Check Integrity Edition
+ *              Implementa un Embudo de Conversión de alta fidelidad integrando 
+ *              el motor editorial 3D y la telemetría del Santuario.
+ * @version 20.0 - Full Funnel & Blog Facade Integration
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -12,28 +12,30 @@ import type { Metadata } from 'next';
 
 /**
  * IMPORTACIONES DE INFRAESTRUCTRURA
- * @pilar V: Adherencia arquitectónica mediante fronteras Nx.
+ * @pilar V: Adherencia arquitectónica. Uso de Fachada de Dominio y extensiones ESM.
  */
-import { getDictionary } from '../../lib/get-dictionary';
-import { type Locale } from '../../config/i18n.config';
-import { JsonLdScript } from '../../components/ui/JsonLdScript';
+import { getDictionary } from '../../lib/get-dictionary.js';
+import { getAllPosts } from '../../lib/blog-api.js';
+import type { Locale } from '../../config/i18n.config.js';
+import { JsonLdScript } from '../../components/ui/JsonLdScript.js';
 
 /**
  * APARATOS DE SECCIÓN (Lego System)
  * @pilar IX: Componentización desacoplada.
  */
-import { HeroCarousel } from '../../components/sections/homepage/HeroCarousel';
-import { LiveStatusTicker } from '../../components/sections/homepage/LiveStatusTicker';
-import { AboutSection } from '../../components/sections/homepage/AboutSection';
-import { AiContentSection } from '../../components/sections/homepage/AiContentSection';
-import { ExperienceShowcase3D } from '../../components/sections/homepage/ExperienceShowcase3D';
-import { ValuePropositionSection } from '../../components/sections/homepage/ValuePropositionSection';
-import { HistorySection } from '../../components/sections/homepage/HistorySection';
-import { ContactSection } from '../../components/sections/homepage/ContactSection';
+import { HeroCarousel } from '../../components/sections/homepage/HeroCarousel.js';
+import { LiveStatusTicker } from '../../components/sections/homepage/LiveStatusTicker.js';
+import { AboutSection } from '../../components/sections/homepage/AboutSection.js';
+import { AiContentSection } from '../../components/sections/homepage/AiContentSection.js';
+import { ExperienceShowcase3D } from '../../components/sections/homepage/ExperienceShowcase3D.js';
+import { ValuePropositionSection } from '../../components/sections/homepage/ValuePropositionSection.js';
+import { BlogSection3D } from '../../components/sections/homepage/BlogSection3D.js';
+import { HistorySection } from '../../components/sections/homepage/HistorySection.js';
+import { ContactSection } from '../../components/sections/homepage/ContactSection.js';
 
 /**
  * @interface PageProps
- * @description Contrato de parámetros asíncronos para Next.js 15.
+ * @description Contrato de parámetros asíncronos para Next.js 15 Standard.
  */
 type PageProps = { 
   params: Promise<{ lang: Locale }>;
@@ -73,13 +75,20 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
  * @description Orquesta la composición del embudo comercial mediante inyección atómica de SSoT.
  */
 export default async function HotelHomePage(props: PageProps) {
-  // @pilar III: Resolución asíncrona de parámetros obligatoria
   const { lang } = await props.params;
-  const dict = await getDictionary(lang);
+
+  /**
+   * @pilar X: Rendimiento de Élite.
+   * Obtención paralela de Diccionario y Contenido Editorial para minimizar el bloqueo.
+   */
+  const [dict, posts] = await Promise.all([
+    getDictionary(lang),
+    getAllPosts(lang)
+  ]);
 
   /**
    * DATOS ESTRUCTURADOS (Schema.org)
-   * @description Provee contexto semántico rico para motores de búsqueda.
+   * @description Provee contexto semántico rico para el posicionamiento del Hotel.
    */
   const structuredData = {
     "@context": "https://schema.org",
@@ -97,8 +106,7 @@ export default async function HotelHomePage(props: PageProps) {
       "addressCountry": "BR"
     },
     "telephone": "+5548999999999",
-    "priceRange": "R$$-R$$$",
-    "containsPlace": dict.suite_gallery.cat_all
+    "priceRange": "R$$-R$$$"
   };
 
   return (
@@ -113,7 +121,7 @@ export default async function HotelHomePage(props: PageProps) {
 
       {/* --- FASE 2: VALIDACIÓN SOCIAL (TRUST) --- */}
       <aside id="pulse" className="relative z-20">
-        <Suspense fallback={<div className="h-14 w-full bg-zinc-950 animate-pulse border-y border-white/5" />}>
+        <Suspense fallback={<div className="h-24 w-full bg-[#050505] animate-pulse border-y border-white/5" />}>
           <LiveStatusTicker dictionary={dict.system_status} />
         </Suspense>
       </aside>
@@ -128,9 +136,7 @@ export default async function HotelHomePage(props: PageProps) {
         <AiContentSection dictionary={dict.ai_gallery_section} />
       </section>
 
-      {/* --- FASE 5: TAKEOVER (EXCLUSIVITY) --- 
-          @fix TS2741: Inyección soberana del diccionario festival nivelado.
-      */}
+      {/* --- FASE 5: TAKEOVER (EXCLUSIVITY) --- */}
       <section id="festival-preview" className="relative w-full bg-zinc-950/30 border-t border-white/5" aria-label="Pride Escape Takeover">
         <div className="container mx-auto px-6 pt-24 text-center md:text-left">
             <span className="inline-flex items-center gap-2 rounded-full border border-purple-500/30 bg-purple-500/10 px-5 py-2 text-[10px] font-bold uppercase tracking-[0.4em] text-purple-400">
@@ -147,10 +153,21 @@ export default async function HotelHomePage(props: PageProps) {
         <ValuePropositionSection dictionary={dict.value_proposition} />
       </section>
 
-      {/* --- FASE 7: LEGADO (AUTHORITY) --- */}
+      {/* --- FASE 7: EVIDENCIA EDITORIAL (AUTHORITY) --- 
+          @pilar XII: MEA/UX - Inyección del carrusel 3D con datos de la fachada.
+      */}
+      <section id="journal-preview" className="relative w-full z-10">
+        <BlogSection3D 
+          posts={posts} 
+          dictionary={dict.blog_page} 
+          lang={lang} 
+        />
+      </section>
+
+      {/* --- FASE 8: LEGADO (HERITAGE) --- */}
       <HistorySection dictionary={dict.history} />
 
-      {/* --- FASE 8: CONVERSIÓN FINAL (ACTION) --- */}
+      {/* --- FASE 9: CONVERSIÓN FINAL (ACTION) --- */}
       <footer id="reservas" className="relative w-full border-t border-white/5 z-10 bg-[#020202]">
         <ContactSection dictionary={dict.contact} />
       </footer>

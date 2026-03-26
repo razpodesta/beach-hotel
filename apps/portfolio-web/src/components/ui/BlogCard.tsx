@@ -3,15 +3,16 @@
  * @description Aparato editorial de alta fidelidad. 
  *              Orquesta la visualización de artículos con enfoque en Core Web Vitals,
  *              SEO semántico e interacciones de grado boutique.
- * @version 7.0 - Taxonomy Linking & CLS Protection
+ *              Nivelado para 'verbatimModuleSyntax' y contratos de datos sin nulidad.
+ * @version 8.0 - Strict Schema Sync & Metadata Hardening
  * @author Raz Podestá - MetaShark Tech
  */
 
 'use client';
 
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import Link from 'next/link';
-import NextImage from 'next/image';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { 
   ArrowUpRight, 
@@ -23,34 +24,34 @@ import {
 
 /**
  * IMPORTACIONES DE INFRAESTRUCTRURA
- * @pilar V: Adherencia arquitectónica mediante fronteras Nx.
+ * @pilar V: Adherencia arquitectónica mediante rutas relativas internas.
  */
-import type { BlogPost } from '../../lib/schemas/blog.schema';
-import { cn } from '../../lib/utils/cn';
+import type { BlogPost } from '../../lib/schemas/blog.schema.js';
+import { cn } from '../../lib/utils/cn.js';
 
 /**
  * @interface BlogCardProps
  * @description Contrato de propiedades alineado con el Shaper Polimórfico.
  */
 interface BlogCardProps {
-  /** Metadatos del artículo validados por Zod */
+  /** Metadatos del artículo validados por el esquema soberano */
   post: BlogPost;
-  /** Identificador semántico para URL */
+  /** Identificador semántico para la construcción de rumbos */
   slug: string;
-  /** Idioma actual para localización de rutas */
+  /** Contexto de idioma para localización de rutas */
   lang: string;
   /** Etiqueta de acción inyectada vía diccionario */
   ctaText: string;
-  /** URL de imagen opcional (prioridad CMS) */
+  /** URL de imagen opcional para sobrescribir el asset del CMS */
   customImage?: string;
-  /** Optimización LCP para elementos por encima del pliegue */
+  /** Optimización LCP: Carga prioritaria si el componente está sobre el pliegue */
   priority?: boolean;
   className?: string;
 }
 
 /**
  * APARATO: BlogCard
- * @description Renderiza una cápsula de contenido con profundidad visual y jerarquía clara.
+ * @description Renderiza una cápsula editorial con profundidad visual y jerarquía clara.
  */
 export function BlogCard({ 
   post, 
@@ -62,7 +63,7 @@ export function BlogCard({
   className 
 }: BlogCardProps) {
   
-  // Resolución de rumbos soberanos
+  // Resolución de rumbos soberanos (SEO Friendly)
   const postUrl = `/${lang}/blog/${slug}`;
 
   /**
@@ -83,10 +84,11 @@ export function BlogCard({
 
   /**
    * GESTIÓN RESILIENTE DE ASSETS
-   * Prioriza la imagen del CMS, luego la local por slug, y finalmente un placeholder.
+   * @pilar III: Resolución de tipos sin nulidad. 
+   * Prioridad: Prop manual > Asset del CMS > Slug local > Placeholder.
    */
   const finalImageUrl = useMemo(() => {
-    return customImage || post.ogImage || `/images/blog/${slug}.jpg` || '/images/placeholder-journal.jpg';
+    return customImage || post.ogImage || `/images/blog/${slug}.jpg` || '/images/hotel/og-main.jpg';
   }, [customImage, post.ogImage, slug]);
 
   return (
@@ -102,8 +104,8 @@ export function BlogCard({
       )}
     >
       {/* 1. CAPA VISUAL (CLS Optimized) */}
-      <div className="relative aspect-video w-full overflow-hidden">
-        <NextImage
+      <div className="relative aspect-video w-full overflow-hidden bg-zinc-950">
+        <Image
           src={finalImageUrl}
           alt={post.title}
           fill
@@ -116,12 +118,13 @@ export function BlogCard({
         {/* Overlay de profundidad cinemática */}
         <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/20 to-transparent opacity-80" />
         
-        {/* TAXONOMÍA ACTIVA */}
+        {/* TAXONOMÍA ACTIVA: Vinculación con archivo por etiquetas */}
         <div className="absolute top-6 left-6 z-30 flex flex-wrap gap-2">
            {post.tags.slice(0, 2).map((tag) => (
              <Link 
                key={tag}
-               href={`/${lang}/blog/tag/${tag.toLowerCase().replace(/\s+/g, '-')}`}
+               href={`/${lang}/blog/tag/${tag.toLowerCase().trim().replace(/\s+/g, '-')}`}
+               aria-label={`Ver artículos etiquetados como ${tag}`}
                className="inline-flex items-center gap-2 rounded-full bg-black/60 backdrop-blur-md border border-white/10 px-4 py-2 text-[8px] font-bold uppercase tracking-[0.25em] text-zinc-300 hover:text-white hover:border-primary/50 transition-all"
              >
                <div className="h-1 w-1 rounded-full bg-primary animate-pulse" />
@@ -143,7 +146,7 @@ export function BlogCard({
         </div>
 
         <h3 className="font-display text-2xl md:text-3xl font-bold leading-[1.1] text-white mb-5 group-hover:text-primary transition-colors duration-500">
-          <Link href={postUrl} className="after:absolute after:inset-0 after:z-20 outline-none">
+          <Link href={postUrl} className="after:absolute after:inset-0 after:z-20 outline-none focus-visible:underline">
             {post.title}
           </Link>
         </h3>
@@ -165,7 +168,7 @@ export function BlogCard({
         </div>
       </div>
 
-      {/* Acabado de Lujo: Borde interior sutil */}
+      {/* Acabado de Lujo: Borde interior sutil para profundidad visual */}
       <div className="absolute inset-0 border border-white/0 group-hover:border-white/5 pointer-events-none transition-colors duration-1000" />
     </motion.article>
   );

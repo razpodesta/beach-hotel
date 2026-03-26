@@ -1,28 +1,54 @@
-// RUTA: /packages/testing-utils/src/lib/rendering/custom-render.tsx
-// VERSIÓN: 2.1 - Higienizado
-// DESCRIPCIÓN: Se elimina la importación no utilizada de 'MockI18nProvider'
-//              para resolver el error de build TS6133.
+/**
+ * @file packages/testing-utils/src/lib/rendering/custom-render.tsx
+ * @description Orquestador de renderizado para el Espejo de Calidad.
+ *              Nivelado para cumplir con 'verbatimModuleSyntax' y React 19.
+ * @version 3.0 - Sovereign Syntax Edition
+ * @author Raz Podestá - MetaShark Tech
+ */
 
-import React, { ReactElement } from 'react';
-import { render, RenderOptions, RenderResult } from '@testing-library/react';
+import type { ReactElement, ReactNode } from 'react';
+import { render as rtlRender } from '@testing-library/react';
+import type { RenderOptions, RenderResult } from '@testing-library/react';
 import { ThemeProvider } from 'next-themes';
 
-// El componente 'AllTheProviders' que envuelve a nuestros componentes.
-const AllTheProviders = ({ children }: { children: React.ReactNode }) => {
+/**
+ * @interface AllTheProvidersProps
+ * @description Contrato de propiedades para el shell de infraestructura de pruebas.
+ */
+interface AllTheProvidersProps {
+  children: ReactNode;
+}
+
+/**
+ * Shell de Infraestructura: AllTheProviders
+ * @description Emula el entorno del Master Shell (layout.tsx) inyectando 
+ *              proveedores de tema y contextos necesarios para los tests de UI.
+ */
+const AllTheProviders = ({ children }: AllTheProvidersProps) => {
   return (
-    <ThemeProvider attribute="class" defaultTheme="dark">
+    <ThemeProvider 
+      attribute="class" 
+      defaultTheme="dark" 
+      enableSystem={false} 
+      disableTransitionOnChange
+    >
       {children}
     </ThemeProvider>
   );
 };
 
-// La función 'customRender' que exportaremos y usaremos en las pruebas.
+/**
+ * Motor de Renderizado: customRender
+ * @description Wrapper soberano sobre RTL que inyecta automáticamente el árbol 
+ *              de proveedores del ecosistema MetaShark.
+ */
 const customRender = (
   ui: ReactElement,
   options?: Omit<RenderOptions, 'wrapper'>
-): RenderResult => render(ui, { wrapper: AllTheProviders, ...options });
+): RenderResult => rtlRender(ui, { wrapper: AllTheProviders, ...options });
 
-// Re-exportamos todo desde @testing-library/react para tener un único punto de importación.
+// Re-exportación total para mantener la API unificada del Espejo de Calidad
 export * from '@testing-library/react';
-// Sobrescribimos el 'render' original con el nuestro.
+
+// Sobrescritura soberana del método render
 export { customRender as render };

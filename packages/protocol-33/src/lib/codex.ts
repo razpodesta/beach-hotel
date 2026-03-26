@@ -1,10 +1,20 @@
-// RUTA: packages/protocol-33/src/lib/codex.ts
-// VERSIÓN: 1.1 - ESM Import Fix
-// DESCRIPCIÓN: Corrección de importación para NodeNext (.js explícito).
+/**
+ * @file packages/protocol-33/src/lib/codex.ts
+ * @description Catálogo inmutable de Artefactos Digitales (The Codex).
+ *              Nivelado: Importaciones de tipo explícitas para cumplimiento de 
+ *              verbatimModuleSyntax y prevención de fugas en el empaquetado ESM.
+ * @version 2.0 - Strict Type Import Sync
+ * @author Raz Podestá - MetaShark Tech
+ */
 
-import { ArtifactDefinition } from './types.js'; // <-- CORRECCIÓN AQUÍ
+import type { ArtifactDefinition } from './types.js';
 
-export const ARTIFACTS: ReadonlyArray<ArtifactDefinition> = [
+/**
+ * @description Colección inmutable de artefactos disponibles en el ecosistema.
+ * El uso de `as const` garantiza que TypeScript infiera los valores literales exactos
+ * en lugar de genéricos (string/number), blindando la lógica de recompensas.
+ */
+export const ARTIFACTS: ReadonlyArray<ArtifactDefinition> =[
   // --- CASA I: LOS ARQUITECTOS ---
   {
     id: 'monolito-obsidiana',
@@ -85,8 +95,16 @@ export const ARTIFACTS: ReadonlyArray<ArtifactDefinition> = [
   }
 ] as const;
 
+/**
+ * @description Inferencia de los identificadores exactos disponibles en el catálogo.
+ */
 export type ArtifactId = typeof ARTIFACTS[number]['id'];
 
+/**
+ * Recupera la definición completa de un artefacto basado en su ID.
+ * @param {string} id - El identificador único del artefacto.
+ * @returns {ArtifactDefinition | undefined} El contrato del artefacto o undefined si no existe.
+ */
 export function getArtifactById(id: string): ArtifactDefinition | undefined {
   return ARTIFACTS.find(a => a.id === id);
 }

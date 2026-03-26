@@ -1,29 +1,43 @@
 /**
  * @file apps/portfolio-web/src/app/[lang]/blog/page.tsx
- * @description Orquestador del Hub Editorial. 
- *              Refactorizado para Build-Safety: Protección de componentes con 
- *              Suspense y lógica de renderizado condicional.
- * @version 10.4 - Prerender-Safe Architecture
+ * @description Orquestador del Hub Editorial (The Concierge Journal). 
+ *              Implementa arquitectura Prerender-Safe, integración con la Fachada 
+ *              de Dominio y orquestación i18n de alta fidelidad.
+ * @version 11.0 - Domain Facade Sync & Build Resilience
  * @author Raz Podestá - MetaShark Tech
  */
 
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
-import { getDictionary } from '../../../lib/get-dictionary';
-import { getAllPosts } from '../../../lib/blog';
-import { BlogCard } from '../../../components/ui/BlogCard';
-import { BlurText } from '../../../components/razBits/BlurText';
-import { type Locale, i18n } from '../../../config/i18n.config';
-import type { PostWithSlug } from '../../../lib/schemas/blog.schema';
 
+/**
+ * IMPORTACIONES DE INFRAESTRUCTRURA
+ * @pilar V: Uso de Fachada Pública para garantizar integridad de datos y tipos.
+ */
+import { getDictionary } from '../../../lib/get-dictionary.js';
+import { getAllPosts } from '../../../lib/blog-api.js';
+import type { PostWithSlug } from '../../../lib/blog-api.js';
+import { BlogCard } from '../../../components/ui/BlogCard.js';
+import { BlurText } from '../../../components/razBits/BlurText.js';
+import { type Locale, i18n } from '../../../config/i18n.config.js';
+
+/**
+ * Contrato de propiedades con parámetros asíncronos (Next.js 15 Standard).
+ */
 type BlogIndexProps = {
   params: Promise<{ lang: Locale }>;
 };
 
+/**
+ * GENERACIÓN DE RUTAS ESTÁTICAS (SSG)
+ */
 export async function generateStaticParams() {
   return i18n.locales.map((lang) => ({ lang }));
 }
 
+/**
+ * ORQUESTADOR DE METADATOS SOBERANO
+ */
 export async function generateMetadata(props: BlogIndexProps): Promise<Metadata> {
   const { lang } = await props.params;
   const dictionary = await getDictionary(lang);
@@ -41,6 +55,10 @@ export async function generateMetadata(props: BlogIndexProps): Promise<Metadata>
   };
 }
 
+/**
+ * APARATO PRINCIPAL: BlogIndexPage
+ * @description Orquesta el listado editorial con lógica de tolerancia a fallos.
+ */
 export default async function BlogIndexPage(props: BlogIndexProps) {
   const { lang } = await props.params;
   const dictionary = await getDictionary(lang);
@@ -49,11 +67,15 @@ export default async function BlogIndexPage(props: BlogIndexProps) {
   let posts: PostWithSlug[] = [];
   let isCmsAvailable = true;
 
+  /**
+   * @pilar VIII: Resiliencia de Build.
+   * El sistema intenta sincronizar con el Core; si falla, activa el modo degrade elegante.
+   */
   try {
-    posts = await getAllPosts();
+    posts = await getAllPosts(lang);
   } catch (error) {
     isCmsAvailable = false;
-    console.error('[HEIMDALL][CRITICAL] CMS Inaccesible.', error);
+    console.error('[HEIMDALL][CRITICAL] Fallo en la sincronización editorial:', error);
   }
   
   const hasPosts = posts.length > 0;
@@ -63,6 +85,7 @@ export default async function BlogIndexPage(props: BlogIndexProps) {
   return (
     <main className="min-h-screen bg-[#050505] text-white selection:bg-purple-500/30">
       
+      {/* --- SECCIÓN HERO (AWARENESS) --- */}
       <section className="relative overflow-hidden pt-40 pb-20">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(168,85,247,0.12),transparent_60%)] pointer-events-none" />
         <div className="container relative z-10 mx-auto px-6 text-center">
@@ -70,8 +93,7 @@ export default async function BlogIndexPage(props: BlogIndexProps) {
             {dictionary.header.personal_portfolio}
           </span>
           
-          {/* @pilar VIII: Protección de BlurText contra acceso a contexto en Server-side Build */}
-          <Suspense fallback={<div className="h-20 w-full" />}>
+          <Suspense fallback={<div className="h-20 w-full animate-pulse bg-white/5 rounded-3xl" />}>
             <BlurText
               text={t.hero_title.toUpperCase()}
               className="font-display text-5xl md:text-8xl font-bold justify-center mb-10 tracking-tighter text-white"
@@ -80,21 +102,24 @@ export default async function BlogIndexPage(props: BlogIndexProps) {
             />
           </Suspense>
           
-          <p className="max-w-2xl mx-auto text-zinc-500 text-lg md:text-2xl leading-relaxed font-sans font-light">
+          <p className="max-w-2xl mx-auto text-zinc-500 text-lg md:text-2xl leading-relaxed font-sans font-light italic">
             {t.page_description}
           </p>
         </div>
       </section>
 
+      {/* --- GRID EDITORIAL (CONSIDERATION) --- */}
       <div className="container mx-auto px-6 pb-32">
-        {!isCmsAvailable ? (
-             <div className="text-center py-48 border border-white/5 rounded-[4rem] bg-zinc-900/20">
-                <p className="text-zinc-400 font-mono text-sm uppercase tracking-[0.3em]">
+        {!isCmsAvailable && !hasPosts ? (
+             /* ESTADO DE EMERGENCIA: Fallo total de datos */
+             <div className="text-center py-48 border border-white/5 rounded-[4rem] bg-zinc-900/20 backdrop-blur-sm">
+                <p className="text-zinc-500 font-mono text-xs uppercase tracking-[0.4em] animate-pulse">
                    {dictionary.not_found.description}
                 </p>
              </div>
         ) : (
           <>
+            {/* Artículo Destacado (LCP Optimized) */}
             {featuredPost && (
               <section className="mb-32">
                 <header className="flex items-center gap-4 text-[10px] font-bold text-zinc-500 uppercase tracking-[0.3em] mb-12 border-b border-white/5 pb-8">
@@ -111,6 +136,7 @@ export default async function BlogIndexPage(props: BlogIndexProps) {
               </section>
             )}
 
+            {/* Listado de Artículos */}
             <section>
               <header className="flex items-center justify-between mb-16 border-b border-white/5 pb-8">
                 <h2 className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.3em]">
@@ -127,12 +153,17 @@ export default async function BlogIndexPage(props: BlogIndexProps) {
                       slug={post.slug}
                       lang={lang}
                       ctaText={t.read_more_cta}
+                      /** 
+                       * @pilar III: Resolución TS2322. 
+                       * La fachada ya normalizó ogImage, garantizando paridad de tipos.
+                       */
+                      customImage={post.metadata.ogImage}
                     />
                   ))}
                 </div>
               ) : (
                 <div className="text-center py-32 border border-dashed border-white/5 rounded-[4rem] bg-white/1">
-                  <p className="text-zinc-700 font-mono text-xs uppercase tracking-[0.5em] animate-pulse">
+                  <p className="text-zinc-700 font-mono text-[10px] uppercase tracking-[0.5em] animate-pulse">
                     {t.empty_state}
                   </p>
                 </div>
@@ -142,6 +173,7 @@ export default async function BlogIndexPage(props: BlogIndexProps) {
         )}
       </div>
 
+      {/* Decoración Estructural de Profundidad */}
       <div className="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_bottom_right,rgba(168,85,247,0.03),transparent_40%)] pointer-events-none" />
     </main>
   );

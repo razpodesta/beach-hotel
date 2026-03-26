@@ -2,26 +2,52 @@
   "extends": "../../../tsconfig.base.json",
   "compilerOptions": {
     "baseUrl": ".",
+    /* 
+       PILAR V: ADHERENCIA AL GRAFO SOBERANO
+       Mantenemos 'composite' para permitir que el orquestador de la raíz
+       y la suite de pruebas reconozcan este paquete como parte del monorepo.
+    */
     "composite": true,
     "rootDir": ".",
+    
     /* 
-       RESOLUCIÓN PARA UI:
-       Usamos 'bundler' para máxima compatibilidad con Next.js 15 y React 19.
+       PILAR XIII: PUREZA DE SOURCE (Blindaje Total)
+       Bloqueamos la emisión física para evitar que el IDE genere archivos .js/.d.ts
+       dentro de 'src/'. La eliminación de 'references' al final de este archivo 
+       es lo que resuelve el error "cannot disable emission".
+    */
+    "noEmit": true,
+
+    /* 
+       RESOLUCIÓN PARA UI (React 19 Standards):
+       Optimizado para el empaquetado moderno de Next.js 15 y el motor de 
+       estilos CSS Modules.
     */
     "module": "esnext",
     "moduleResolution": "bundler",
     "jsx": "react-jsx",
+    
     "declaration": true,
     "declarationMap": true,
-    "types": ["node"]
+    
+    /* Tipos globales para el desarrollo de componentes */
+    "types": ["node", "react", "react-dom"]
   },
   "include": [
     "src/**/*.ts", 
     "src/**/*.tsx", 
-    "src/global.d.ts" // Vital para el tipado de archivos .css
+    "src/global.d.ts"
   ],
-  "exclude": ["node_modules", "dist", "jest.config.ts", "**/*.spec.ts", "**/*.spec.tsx"],
-  "references": [
-    { "path": "./tsconfig.lib.json" }
+  "exclude": [
+    "node_modules", 
+    "dist", 
+    "jest.config.ts", 
+    "**/*.spec.ts", 
+    "**/*.spec.tsx"
   ]
+  /* 
+     ELIMINACIÓN ESTRATÉGICA: Array 'references' eliminado.
+     Se rompe la cadena de dependencia circular local para garantizar
+     estabilidad en el IDE y limpieza absoluta en el source.
+  */
 }

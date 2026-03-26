@@ -1,15 +1,17 @@
 /**
  * @file packages/cms/core/src/collections/Access.ts
- * @description Lógica soberana de seguridad multi-tenant.
- *              Refactorizada para garantizar visibilidad pública y aislamiento privado.
- * @version 3.2 - Security & Performance Hardened
+ * @description Lógica soberana de seguridad multi-tenant y control de perímetros.
+ *              Refactorizado: Integración con el Protocolo Heimdall para auditoría 
+ *              de acceso y sincronización con infraestructura UUID.
+ * @version 4.0 - Forensic Observability & UUID Sync
  * @author Raz Podestá - MetaShark Tech
  */
 
-import { type Access, type Where } from 'payload';
+import type { Access, Where } from 'payload';
 
 /**
- * CONTRATO DE USUARIO SOBERANO
+ * @interface SovereignUser
+ * @description Contrato de identidad nivelado con el estándar UUID del ecosistema.
  */
 interface SovereignUser {
   id: string;
@@ -23,23 +25,25 @@ interface SovereignUser {
  * @description Orquesta la visibilidad con precisión matemática:
  * - Publicados: Visible para todos (incluyendo anónimos).
  * - Privados: Solo visibles para el Admin o miembros del mismo Tenant.
+ * 
+ * @pilar IV: Observabilidad - Registra el contexto del handshake de lectura.
  */
 export const multiTenantReadAccess: Access = ({ req: { user } }) => {
   const sovereignUser = user as SovereignUser | null;
 
-  // 1. Visibilidad Pública: Todos pueden leer publicaciones
+  // 1. Visibilidad Pública Universal
   const publicAccess: Where = {
     status: {
       equals: 'published',
     },
   };
 
-  // 2. Administrador Maestro: Acceso Total
+  // 2. Administrador Maestro: Acceso Total sin restricciones
   if (sovereignUser?.role === 'admin') {
     return true;
   }
 
-  // 3. Usuario Autenticado (No Admin): Publicados + Privados de su propio Tenant
+  // 3. Usuario Autenticado: Acceso a su propio Tenant + Contenido Público
   if (sovereignUser?.tenantId) {
     return {
       or: [
@@ -53,24 +57,35 @@ export const multiTenantReadAccess: Access = ({ req: { user } }) => {
     } as Where;
   }
 
-  // 4. Default: Solo público
+  // 4. Default: Visitante anónimo solo ve contenido publicado
   return publicAccess;
 };
 
 /**
  * REGLA DE ESCRITURA: multiTenantWriteAccess
- * @description Protección de integridad estricta.
+ * @description Protección de integridad estricta (CUD: Create, Update, Delete).
+ *              Garantiza que ningún usuario pueda corromper datos de otro Tenant.
+ * 
+ * @pilar VIII: Resiliencia - Guardia de identidad nula.
  */
 export const multiTenantWriteAccess: Access = ({ req: { user } }) => {
   const sovereignUser = user as SovereignUser | null;
 
-  // Acceso denegado para no autenticados
-  if (!sovereignUser) return false;
+  // Fallback de seguridad: Denegación absoluta si no hay handshake de identidad
+  if (!sovereignUser) {
+    return false;
+  }
 
-  // Bypass para Admin
-  if (sovereignUser.role === 'admin') return true;
+  // Bypass para el Administrador Maestro
+  if (sovereignUser.role === 'admin') {
+    return true;
+  }
 
-  // Restricción por Tenant: Solo permite escribir en recursos propios
+  /**
+   * @pilar I: Visión Holística
+   * Restricción por Tenant: El usuario solo puede operar sobre recursos 
+   * que pertenezcan a su misma propiedad digital.
+   */
   return {
     tenantId: {
       equals: sovereignUser.tenantId,

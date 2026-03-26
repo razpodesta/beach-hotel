@@ -1,8 +1,9 @@
 /**
  * @file apps/portfolio-web/src/lib/schemas/blog.schema.ts
- * @description Contrato soberano para el Hub Editorial.
- *              Sincronizado con la colección del CMS Core y la Media Library.
- * @version 6.0 - Media & i18n Template Integration
+ * @description Contrato Soberano para el Hub Editorial (The Concierge Journal).
+ *              Define la validación inmutable para metadatos, taxonomía y 
+ *              páginas. Sincronizado con el motor de renderizado Next.js 15.
+ * @version 8.0 - Absolute Path Support & Chrono-Validation
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -11,45 +12,66 @@ import { z } from 'zod';
 /**
  * ESQUEMA: blogPostMetadataSchema
  * @pilar III: Seguridad de Tipos Absoluta.
+ * @description Define el contrato de metadatos para un artículo.
  */
 export const blogPostMetadataSchema = z.object({
-  title: z.string().min(1),
-  description: z.string().min(1),
-  author: z.string().min(1),
-  published_date: z.string(),
-  tags: z.array(z.string()),
+  /** Título de impacto editorial */
+  title: z.string().min(1, 'El título es obligatorio'),
+  
+  /** Resumen para SEO y tarjetas (Meta Description) */
+  description: z.string().min(1, 'La descripción es obligatoria'),
+  
+  /** Nombre del autor o entidad editorial */
+  author: z.string().min(1, 'El autor es obligatorio'),
+  
+  /** Fecha en formato ISO string (yyyy-mm-dd) */
+  published_date: z.string().datetime({ message: 'Debe ser una fecha ISO válida' }),
+  
+  /** Colección de etiquetas para el motor de taxonomía */
+  tags: z.array(z.string().trim().min(1))
+    .transform(tags => tags.map(t => t.toLowerCase())),
+    
   /**
-   * @property ogImage
-   * Referencia dinámica a la URL de la Media Library del CMS.
+   * Imagen de portada (OpenGraph).
+   * @fix Soporta rutas locales (/images/...) y URLs absolutas (https://...).
    */
-  ogImage: z.string().url().optional().nullable(),
+  ogImage: z.string().min(1).optional(),
 });
 
 /**
  * ESQUEMA: blogPageSchema
- * @pilar VI: Lógica i18n Soberana para plantillas dinámicas.
+ * @pilar VI: Lógica i18n Soberana.
+ * @description Define los tokens de traducción para la interfaz del blog.
  */
 export const blogPageSchema = z.object({
-  page_title: z.string(),
-  page_description: z.string(),
-  hero_title: z.string(),
-  featured_title: z.string(),
-  all_posts_title: z.string(),
-  read_more_cta: z.string(),
-  empty_state: z.string(),
-  // --- NIVELACIÓN DE PLANTILLAS DE TAXONOMÍA ---
-  /** @property tag_results_singular - Plantilla para un único resultado */
+  page_title: z.string().min(1),
+  page_description: z.string().min(1),
+  hero_title: z.string().min(1),
+  featured_title: z.string().min(1),
+  all_posts_title: z.string().min(1),
+  read_more_cta: z.string().min(1),
+  empty_state: z.string().min(1),
   tag_results_singular: z.string().min(1),
-  /** @property tag_results_plural - Plantilla para múltiples resultados */
   tag_results_plural: z.string().min(1),
 });
 
+/**
+ * ESQUEMA: postWithSlugSchema
+ * @description Estructura final de un artículo procesado por el Shaper Polimórfico.
+ */
 export const postWithSlugSchema = z.object({
+  /** Identificador semántico único para rumbos SEO */
   slug: z.string().min(1),
+  /** Metadatos validados */
   metadata: blogPostMetadataSchema,
-  content: z.string().optional(),
+  /** Contenido en Markdown o HTML procesado */
+  content: z.string().optional().default(''),
 });
 
+/**
+ * INFERENCIA SOBERANA DE TIPOS
+ * @pilar III: Inferencia obligatoria desde contrato Zod.
+ */
 export type BlogPost = z.infer<typeof blogPostMetadataSchema>;
 export type PostWithSlug = z.infer<typeof postWithSlugSchema>;
 export type BlogPageDictionary = z.infer<typeof blogPageSchema>;

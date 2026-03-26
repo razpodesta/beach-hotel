@@ -1,48 +1,85 @@
 /**
  * @file scripts/supabase/audit-full-schema.ts
- * @description Auditoría profunda de Supabase: Tablas, RLS y Políticas.
- *              Refactorizado para ser 100% Type-Safe (Sin 'any').
- * @version 1.4 - Linter Compliant
+ * @description Aparato de Auditoría Forense de Infraestructura de Datos.
+ *              Evalúa tablas, políticas RLS y genera un reporte de seguridad
+ *              con resumen ejecutivo y alertas de vulnerabilidad.
+ * @version 2.1 - node: protocol sync & TS1295 resolved
  * @author Raz Podestá - MetaShark Tech
  */
 
 import { Client } from 'pg';
-import * as fs from 'fs/promises';
-import * as path from 'path';
+import * as fs from 'node:fs/promises';
+import * as path from 'node:path';
 import * as dotenv from 'dotenv';
 
-// Carga del entorno
+// 1. Carga del entorno soberano
 const envPath = path.resolve(process.cwd(), '.env.local');
 dotenv.config({ path: envPath });
 
-const colors = { reset: "\x1b[0m", cyan: "\x1b[36m", green: "\x1b[32m", red: "\x1b[31m" };
+const colors = { 
+  reset: "\x1b[0m", 
+  cyan: "\x1b[36m", 
+  green: "\x1b[32m", 
+  red: "\x1b[31m",
+  yellow: "\x1b[33m",
+  gray: "\x1b[90m",
+  bold: "\x1b[1m"
+};
 
 /**
- * Contrato de reporte tipado para garantizar integridad de datos.
+ * @interface AuditReport
+ * @description Contrato extendido para el reporte forense de base de datos.
  */
 interface AuditReport {
   timestamp: string;
+  summary: {
+    totalTables: number;
+    totalPolicies: number;
+    tablesWithRlsDisabled: string[];
+    isSecurityCompliant: boolean;
+  };
   tables: string[];
   rlsStatus: Array<{ tablename: string; rowsecurity: boolean }>;
-  policies: Array<{ policyname: string; tablename: string; permissive: string; roles: string[]; cmd: string }>;
+  policies: Array<{ 
+    policyname: string; 
+    tablename: string; 
+    permissive: string; 
+    roles: string[]; 
+    cmd: string 
+  }>;
   error: string | null;
 }
 
+function maskString(str: string, visibleChars = 5): string {
+  return `${str.substring(0, visibleChars)}****${str.substring(str.length - visibleChars)}`;
+}
+
 async function auditSupabase(): Promise<void> {
+  console.log(`\n${colors.cyan}${colors.bold}🔍 [HEIMDALL] INICIANDO AUDITORÍA INTEGRAL DE ESQUEMA${colors.reset}\n`);
+
   const dbUrl = process.env.DATABASE_URL;
-  const reportDir = path.resolve(process.cwd(), 'reports/databases/supabase');
+  const reportDir = path.resolve(process.cwd(), 'reports', 'databases', 'supabase');
   const reportPath = path.join(reportDir, 'supabase-full-audit.json');
   
   if (!dbUrl) {
-    console.error(`${colors.red}✖ ERROR: DATABASE_URL no definida.${colors.reset}`);
+    console.error(`${colors.red}✖ ERROR CRÍTICO: DATABASE_URL no definida en .env.local${colors.reset}`);
     process.exit(1);
   }
 
-  // Compatibilidad libpq forzada
-  const connectionString = dbUrl.includes('?') ? `${dbUrl}&uselibpqcompat=true` : `${dbUrl}?uselibpqcompat=true`;
+  console.log(`${colors.gray}Target: ${colors.yellow}${maskString(dbUrl)}${colors.reset}`);
+
+  const connectionString = dbUrl.includes('?') 
+    ? `${dbUrl}&uselibpqcompat=true` 
+    : `${dbUrl}?uselibpqcompat=true`;
 
   const report: AuditReport = { 
     timestamp: new Date().toISOString(), 
+    summary: {
+      totalTables: 0,
+      totalPolicies: 0,
+      tablesWithRlsDisabled: [],
+      isSecurityCompliant: true
+    },
     tables: [],
     rlsStatus: [],
     policies: [],
@@ -57,35 +94,59 @@ async function auditSupabase(): Promise<void> {
 
     await client.connect();
 
-    // 1. Auditoría de Tablas
     const tablesRes = await client.query<{ table_name: string }>(`
       SELECT table_name FROM information_schema.tables 
-      WHERE table_schema = 'public'
+      WHERE table_schema = 'public' AND table_type = 'BASE TABLE'
     `);
     report.tables = tablesRes.rows.map(r => r.table_name);
-    console.log(`${colors.green}✔ Tablas detectadas:${colors.reset}`, report.tables);
+    report.summary.totalTables = report.tables.length;
 
-    // 2. Auditoría de RLS
     const rlsRes = await client.query<{ tablename: string; rowsecurity: boolean }>(`
       SELECT tablename, rowsecurity FROM pg_tables WHERE schemaname = 'public'
     `);
     report.rlsStatus = rlsRes.rows;
+    
+    report.summary.tablesWithRlsDisabled = rlsRes.rows
+      .filter(r => !r.rowsecurity)
+      .map(r => r.tablename);
+    
+    report.summary.isSecurityCompliant = report.summary.tablesWithRlsDisabled.length === 0;
 
-    // 3. Auditoría de Políticas
-    const polRes = await client.query<{ policyname: string; tablename: string; permissive: string; roles: string[]; cmd: string }>(`
-      SELECT policyname, tablename, permissive, roles, cmd FROM pg_policies WHERE schemaname = 'public'
+    const polRes = await client.query<{ 
+      policyname: string; 
+      tablename: string; 
+      permissive: string; 
+      roles: string[]; 
+      cmd: string 
+    }>(`
+      SELECT policyname, tablename, permissive, roles, cmd 
+      FROM pg_policies 
+      WHERE schemaname = 'public'
     `);
     report.policies = polRes.rows;
+    report.summary.totalPolicies = report.policies.length;
 
     await client.end();
+
+    console.log(`${colors.green}✔ Inventario:${colors.reset} ${report.summary.totalTables} tablas detectadas.`);
+    console.log(`${colors.green}✔ Políticas:${colors.reset} ${report.summary.totalPolicies} reglas de acceso activas.`);
+
+    if (!report.summary.isSecurityCompliant) {
+      console.warn(`\n${colors.yellow}${colors.bold}⚠️ ALERTA DE SEGURIDAD:${colors.reset}`);
+      report.summary.tablesWithRlsDisabled.forEach(t => console.warn(`   - ${t}`));
+    } else {
+      console.log(`\n${colors.green}${colors.bold}✅ CUMPLIMIENTO TOTAL:${colors.reset} Todas las tablas tienen RLS activo.`);
+    }
+
   } catch (err: unknown) {
-    report.error = err instanceof Error ? err.message : 'Error desconocido';
-    console.error(`${colors.red}✖ Fallo:${colors.reset}`, report.error);
+    const msg = err instanceof Error ? err.message : 'Error desconocido';
+    report.error = msg;
+    console.error(`\n${colors.red}💥 FALLO CATASTRÓFICO EN LA AUDITORÍA:${colors.reset} ${msg}`);
   }
 
   await fs.mkdir(reportDir, { recursive: true });
   await fs.writeFile(reportPath, JSON.stringify(report, null, 2));
-  console.log(`${colors.cyan}[AUDIT]${colors.reset} Reporte generado en ${reportPath}`);
+  console.log(`\n${colors.cyan}[REPORT]${colors.reset} Artefacto forense generado: ${colors.gray}${reportPath}${colors.reset}\n`);
 }
 
 auditSupabase();

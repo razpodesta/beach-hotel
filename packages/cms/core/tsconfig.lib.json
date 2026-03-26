@@ -1,23 +1,37 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    /* SOBERANÍA DE SALIDA: Directorio de distribución global */
+    /* 
+       SOBERANÍA DE SALIDA:
+       Directorio de distribución global segmentado por paquete.
+    */
     "outDir": "../../../dist/packages/cms/core",
     
     /* 
        PROFILAXIS TS6305: 
        Al fijar rootDir en 'src', evitamos que la carpeta 'dist' contenga 
-       subcarpetas 'packages/cms/core/src'. El resultado será un dist limpio.
+       subcarpetas 'packages/cms/core/src'. El resultado será un dist limpio y plano.
     */
     "rootDir": "src",
     
     "composite": true,
+    
+    /* 
+       PILAR XIII: FORZADO DE EMISIÓN (Override)
+       Como el tsconfig.json padre bloquea la emisión para proteger el IDE, 
+       aquí debemos habilitarla explícitamente para el proceso de Build de Nx.
+    */
+    "noEmit": false,
     "emitDeclarationOnly": false, 
+    
     "tsBuildInfoFile": "../../../dist/packages/cms/core/tsconfig.lib.tsbuildinfo"
   },
-  "include": [
+  "include":[
     "src/**/*.ts",
     "src/payload-types.ts"
   ],
-  "exclude": ["**/*.spec.ts", "**/*.test.ts"]
+  "exclude":[
+    "**/*.spec.ts", 
+    "**/*.test.ts"
+  ]
 }
