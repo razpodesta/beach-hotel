@@ -3,18 +3,28 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
-
+   
     "@metashark/cms-core": "workspace:*",
     "@metashark/cms-ui": "workspace:*",
     "@metashark/protocol-33": "workspace:*",
     "@metashark/auth-shield": "workspace:*",
     
-
+   
     "next": "15.2.9",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
+
+   
+    "payload": "3.80.0",
+    "zustand": "^5.0.8",
+
+    
     "framer-motion": "^12.35.2",
     "lucide-react": "^0.552.0",
-    "payload": "^3.79.0"
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.0.1",
+    
+    
+    "sharp": "0.34.5"
   }
 }

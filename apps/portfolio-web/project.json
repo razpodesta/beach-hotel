@@ -17,13 +17,11 @@
     },
     "build": {
       "executor": "@nx/next:build",
-      "outputs": [
-        "{options.outputPath}",
-        "{workspaceRoot}/dist/apps/portfolio-web/.next"
-      ],
+      "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "production",
       "options": {
-        "outputPath": "dist/apps/portfolio-web"
+  
+        "outputPath": "dist/apps/portfolio-web/.next"
       },
       "dependsOn": [
         "^build",
