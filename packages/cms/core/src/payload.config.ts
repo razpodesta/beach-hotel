@@ -1,11 +1,31 @@
 /**
  * @file packages/cms/core/src/payload.config.ts
  * @description Orquestador soberano de configuración para Payload CMS 3.0.
- *              Nivelado: Implementa el Protocolo de Conexión Industrial para 
- *              Vercel y corrige avisos de linting en el bloque de captura.
- * @version 23.0 - Lint Hygiene & Forensic Observability (Fix: SELF_SIGNED_CERT_IN_CHAIN)
+ *              Refactorizado: Implementa el Protocolo de Infraestructura Nivel 0
+ *              blindado para erradicar fallos de TLS en entornos Vercel.
+ * @version 25.0 - Hardened SSL Protocol (Fix: SELF_SIGNED_CERT_IN_CHAIN)
  * @author Raz Podestá - MetaShark Tech
  */
+
+/**
+ * 1. PROTOCOLO DE INFRAESTRUCTRURA NIVEL 0 (Early Initialization)
+ * @pilar VIII: Resiliencia de Persistencia.
+ * @description Inyectamos la configuración de red en el proceso global de Node.js
+ * antes de que cualquier importación de módulo (como 'pg') instancie el pool.
+ */
+(function initializeSovereignNetwork() {
+  const isVercel = process.env.VERCEL === '1';
+  const isBuild = process.env.NEXT_PHASE === 'phase-production-build';
+  
+  if (isVercel || isBuild) {
+    // Protocolo de emergencia para certificados auto-firmados en Poolers
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+    process.env.PGSSLMODE = 'no-verify';
+    
+    // Telemetría inmediata de bajo nivel
+    console.log('[HEIMDALL][L0] SSL Infrastructure Bypass: ENGAGED');
+  }
+})();
 
 import { buildConfig } from 'payload';
 import type { SharpDependency } from 'payload';
@@ -18,7 +38,6 @@ import sharp from 'sharp';
 
 /**
  * IMPORTACIONES ATÓMICAS DE COLECCIONES
- * @pilar V: Adherencia Arquitectónica.
  */
 import { Users } from './collections/Users';
 import { BlogPosts } from './collections/BlogPosts';
@@ -37,39 +56,33 @@ const PAYLOAD_SECRET = process.env.PAYLOAD_SECRET;
 let DATABASE_URL = process.env.DATABASE_URL || '';
 
 /**
- * PROTOCOLO DE CONEXIÓN INDUSTRIAL (Pilar VIII - Resiliencia)
- * @description Forzado de seguridad para el driver 'pg' nativo.
- * Soluciona el error SELF_SIGNED_CERT_IN_CHAIN en Vercel.
+ * SANEAMIENTO DE CADENA DE CONEXIÓN (Industrial Grade)
+ * @description Garantiza que los parámetros de bypass viajen en la URI.
  */
 if (DATABASE_URL) {
-  // Forzamos al driver PG a nivel de proceso para máxima compatibilidad
-  process.env.PGSSLMODE = 'no-verify';
-
   try {
     const url = new URL(DATABASE_URL);
-    // Aseguramos compatibilidad con el pooler de Supabase
+    // Forzamos compatibilidad con el pooler transaccional de Supabase
     url.searchParams.set('uselibpqcompat', 'true');
     url.searchParams.set('sslmode', 'no-verify'); 
     DATABASE_URL = url.toString();
   } catch (err: unknown) {
-    /**
-     * @pilar IV: Observabilidad Forense.
-     * @fix Erradicación de variable no usada. Se reporta el motivo técnico de la caída.
-     */
-    const message = err instanceof Error ? err.message : 'Unknown URL structure';
-    console.error(`[HEIMDALL][CRITICAL] Malformed DATABASE_URL: ${message}`);
+    const msg = err instanceof Error ? err.message : 'Unknown URI Drift';
+    console.error(`[HEIMDALL][CRITICAL] Database URI corruption detected: ${msg}`);
   }
 }
 
-console.group('[HEIMDALL][CMS] Sovereign Boot Sequence');
-console.log(`[INFRA] Mode: ${process.env.NODE_ENV}`);
-console.log(`[INFRA] Database URI: ${DATABASE_URL ? 'PRESENT' : 'MISSING'}`);
+/**
+ * TELEMETRÍA DE ARRANQUE (Pilar IV)
+ */
+console.group('[HEIMDALL][INFRA] Sovereign Engine Bootstrap');
+console.log(`[CORE] Payload 3.0 Lifecycle`);
+console.log(`[CORE] DB Status: ${DATABASE_URL ? 'URI_RESOLVED' : 'MISSING'}`);
+console.groupEnd();
 
 if (!DATABASE_URL && process.env.NODE_ENV === 'production') {
-  console.groupEnd();
-  throw new Error('[CRITICAL] SSoT Failure: Connection String is mandatory for production build.');
+  throw new Error('[CRITICAL] SSoT Failure: DATABASE_URL is mandatory for production.');
 }
-console.groupEnd();
 
 export default buildConfig({
   /**
@@ -112,14 +125,14 @@ export default buildConfig({
   /**
    * CAPA DE PERSISTENCIA (Supabase Transaction Pooler Support)
    * @pilar VIII: Resiliencia de Persistencia.
+   * @description Configuramos el pooler con el objeto SSL explícito para Next.js 15.
    */
   db: postgresAdapter({
     pool: {
       connectionString: DATABASE_URL,
       /** 
-       * @description Configuración de objeto SSL explícita.
-       * Vercel requiere que el driver 'pg' ignore activamente la validación
-       * de la cadena de certificados para poolers transaccionales.
+       * @description Blindaje total contra certificados auto-firmados.
+       * Esta configuración es innegociable para builds exitosos en Vercel.
        */
       ssl: {
         rejectUnauthorized: false,

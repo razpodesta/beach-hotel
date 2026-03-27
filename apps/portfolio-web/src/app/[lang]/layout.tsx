@@ -2,8 +2,8 @@
  * @file apps/portfolio-web/src/app/[lang]/layout.tsx
  * @description Orquestador Soberano del Shell Principal (The Master Shell).
  *              Implementa arquitectura Dual-Mode, cumplimiento MACS v1.0, 
- *              SEO E-E-A-T de alta fidelidad y optimización de Core Web Vitals.
- * @version 33.0 - Vercel Build Normalization & CLS Protection
+ *              y conexión con aparatos atómicos (VisitorHud).
+ * @version 34.0 - Atomic Component Sync & CLS Protection
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -11,8 +11,8 @@ import React, { Suspense } from 'react';
 import type { Metadata, Viewport } from 'next';
 
 /**
- * IMPORTACIONES DE INFRAESTRUCTRURA (Rutas Relativas Saneadas)
- * @pilar V: Eliminación de extensiones .js para resolución nativa en Next.js 15.
+ * IMPORTACIONES DE INFRAESTRUCTRURA
+ * @pilar V: Adherencia arquitectónica a las fronteras de Nx.
  */
 import { i18n } from '../../config/i18n.config';
 import type { Locale } from '../../config/i18n.config';
@@ -28,8 +28,13 @@ import { Header } from '../../components/layout/Header';
 import { Footer } from '../../components/layout/Footer';
 import { SystemStatusTicker } from '../../components/ui/SystemStatusTicker';
 import { NewsletterModal } from '../../components/ui/NewsletterModal';
-import { VisitorHud } from '../../components/ui/VisitorHud';
 import { NavigationTracker } from '../../components/layout/NavigationTracker';
+
+/**
+ * @pilar IV: Consumo Atómico.
+ * Importación sincronizada con el directorio VisitorHud/index.ts.
+ */
+import { VisitorHud } from '../../components/ui/VisitorHud';
 
 import '../global.css';
 
@@ -52,7 +57,7 @@ export async function generateStaticParams() {
 
 /**
  * ORQUESTADOR DE METADATOS SOBERANO
- * @pilar I: Visión Holística - SEO E-E-A-T & Digital Sovereignty.
+ * @pilar I: Visión Holística - SEO E-E-A-T.
  */
 export async function generateMetadata(props: { 
   params: Promise<{ lang: Locale }> 
@@ -91,47 +96,33 @@ export async function generateMetadata(props: {
         height: 630,
         alt: siteName
       }]
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: siteName,
-      description: dict.hero.page_description,
-      images: ['/images/hotel/og-main.jpg'],
-    },
-    robots: {
-      index: true,
-      follow: true,
-      googleBot: {
-        index: true,
-        follow: true,
-        'max-video-preview': -1,
-        'max-image-preview': 'large',
-        'max-snippet': -1,
-      },
-    },
+    }
   };
+}
+
+/**
+ * @interface RootLayoutProps
+ * @description Contrato de propiedades para el orquestador visual.
+ */
+interface RootLayoutProps {
+  children: React.ReactNode;
+  params: Promise<{ lang: Locale }>;
 }
 
 /**
  * APARATO PRINCIPAL: RootLayout
  * @description Orquesta la jerarquía visual base y la inyección de recursos globales.
  */
-export default async function RootLayout(props: {
-  children: React.ReactNode;
-  params: Promise<{ lang: Locale }>;
-}) {
-  const { children, params } = props;
+export default async function RootLayout({ children, params }: RootLayoutProps) {
   const { lang } = await params;
   
   // Protocolo Heimdall: Trazabilidad de montaje del Shell
   console.log(`[HEIMDALL][SHELL] Assembling Master Shell for locale: ${lang}`);
 
-  // Obtención paralela de recursos para optimizar el TTFB (Pilar X)
   const dictionary = await getDictionary(lang);
 
   /**
-   * CONFIGURACIÓN TIPOGRÁFICA SOBERANA
-   * @pilar VII: Sincronización con tokens de global.css.
+   * CONFIGURACIÓN TIPOGRÁFICA SOBERANA (Pilar VII)
    */
   const fontVariables = cn(
     fontInter.variable, 
@@ -143,7 +134,6 @@ export default async function RootLayout(props: {
   return (
     <html lang={lang} suppressHydrationWarning className="scroll-smooth">
       <head>
-        {/* Pre-connect a dominios críticos para optimizar LCP */}
         <link rel="preconnect" href="https://flagcdn.com" />
       </head>
       <body className={cn(
@@ -151,12 +141,12 @@ export default async function RootLayout(props: {
         "font-sans antialiased min-h-screen flex flex-col bg-[#050505] text-zinc-100 selection:bg-primary/30"
       )}>
         <Providers>
-          {/* TRACKING SILENCIOSO (Pilar IV: Heimdall) */}
+          {/* TRACKING COMPORTAMENTAL (Pilar XII) */}
           <Suspense fallback={null}>
             <NavigationTracker />
           </Suspense>
 
-          {/* CABECERA SOBERANA (NavDesk) */}
+          {/* CABECERA SOBERANA */}
           <Header dictionary={dictionary} />
           
           {/* TELEMETRÍA GLOBAL (Ticker) 
@@ -167,19 +157,20 @@ export default async function RootLayout(props: {
             <SystemStatusTicker dictionary={dictionary.system_status} />
           </Suspense>
 
-          {/* CONTENIDO PRINCIPAL (ViewPort) */}
+          {/* VIEWPORT PRINCIPAL */}
           <main className="grow relative z-0 flex flex-col" id="main-content">
             {children}
           </main>
 
-          {/* PIE DE PÁGINA INSTITUCIONAL (Conversion & Compliance) */}
+          {/* PIE DE PÁGINA (Compliance & Conversion) */}
           <Footer
             content={dictionary.footer}
             navLabels={dictionary['nav-links'].nav_links}
             tagline={dictionary.header.tagline}
           />
 
-          {/* APARATOS PERSISTENTES (Overlay Layer) */}
+          {/* CAPA DE PORTALES (Overlay Layer) 
+              @pilar IX: Los aparatos se inyectan con sus fragmentos de diccionario específicos. */}
           <Suspense fallback={null}>
             <NewsletterModal dictionary={dictionary.footer} />
             <VisitorHud dictionary={dictionary} />

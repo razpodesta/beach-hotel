@@ -1,36 +1,33 @@
 /**
- * @file apps/portfolio-web/src/lib/store/ui.store.ts
+ * @file ui.store.ts
  * @description Orquestador Soberano del Estado Global de la Interfaz.
- *              Gestiona la persistencia de preferencias, estados de navegación 
- *              y multi-tenancy mediante una arquitectura reactiva.
- *              Nivelado para 'verbatimModuleSyntax' y resiliencia de hidratación.
- * @version 6.0 - Sovereign Hydration & Type Sync
+ *              Refactorizado: Resolución de errores de inferencia de tipos y 
+ *              limpieza de métodos vacíos para cumplimiento de linter.
+ * @version 8.0 - Absolute Type Integrity & Lint Clean
  * @author Raz Podestá - MetaShark Tech
  */
 
 import { create } from 'zustand';
+import type { StateCreator } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import type { StateStorage } from 'zustand/middleware';
 
 /**
  * @interface UIState
- * @description Contrato de datos persistentes y efímeros de la UI.
- * @pilar III: Seguridad de Tipos Absoluta.
+ * @description Contrato inmutable para los datos de la interfaz.
  */
 interface UIState {
-  /** Estado de visibilidad del panel de telemetría Heimdall */
   isVisitorHudOpen: boolean;
-  /** Estado del menú táctil móvil (Takeover mode) */
   isMobileMenuOpen: boolean;
-  /** Flag de sincronización tras hidratación de cliente (Anti-CLS) */
+  isNewsletterModalOpen: boolean;
+  isAuthModalOpen: boolean;
   hasHydrated: boolean;
-  /** Identificador de propiedad para lógica multi-tenant (Hotel vs Festival) */
   tenantId: string | null;
 }
 
 /**
  * @interface UIActions
- * @description Definición de mutaciones atómicas del estado.
+ * @description Contrato para las mutaciones del estado.
  */
 interface UIActions {
   toggleVisitorHud: () => void;
@@ -38,101 +35,118 @@ interface UIActions {
   openVisitorHud: () => void;
   toggleMobileMenu: () => void;
   closeMobileMenu: () => void;
+  openNewsletterModal: () => void;
+  closeNewsletterModal: () => void;
+  toggleAuthModal: () => void;
+  closeAuthModal: () => void;
   setHasHydrated: (state: boolean) => void;
   setTenant: (tenantId: string | null) => void;
 }
 
 /**
- * SOVEREIGN STORAGE ENGINE (MOCK)
+ * Union Type Soberano para el Store.
+ */
+type UIStore = UIState & UIActions;
+
+/**
+ * SOVEREIGN STORAGE ENGINE (Emergency Fallback)
  * @description Motor de respaldo para entornos sin persistencia física (Node.js/SSR).
- * Garantiza que la aplicación no colapse durante el renderizado en servidor.
  */
 const forensicMockStorage: StateStorage = {
-  getItem: (_name: string): string | null => null,
-  setItem: (_name: string, _value: string): void => {
-    /* No-op: Persistencia deshabilitada en tiempo de compilación o servidor */
+  getItem: (): string | null => null,
+  setItem: (): void => {
+    /* No-op: Persistencia deshabilitada durante la fase de servidor/build */
   },
-  removeItem: (_name: string): void => {
-    /* No-op: Operación de limpieza omitida en entorno no-browser */
+  removeItem: (): void => {
+    /* No-op: Limpieza de storage omitida en entorno no-browser */
   },
 };
 
 /**
  * RESOLVER DE ALMACENAMIENTO SOBERANO
- * @pilar VIII: Resiliencia - Gestiona fallos de acceso a localStorage.
+ * @pilar VIII: Resiliencia - Manejo de fallos en I/O de LocalStorage.
  */
 const resolveStorageEngine = (): StateStorage => {
   if (typeof window === 'undefined') return forensicMockStorage;
-  
   try {
-    const testKey = '__metashark_storage_test__';
+    const testKey = '__metashark_vault_ping__';
     window.localStorage.setItem(testKey, testKey);
     window.localStorage.removeItem(testKey);
     return window.localStorage;
-  } catch (e) {
-    console.warn('[HEIMDALL][STORE] LocalStorage inaccesible o restringido. Modo volátil activo.', e);
+  } catch {
+    console.warn('[HEIMDALL][STORE] LocalStorage inaccesible. Operando en modo volátil.');
     return forensicMockStorage;
   }
 };
 
 /**
- * STORE: useUIStore
- * @description Fuente única de verdad (SSoT) para el estado visual del ecosistema.
+ * CREADOR DE ESTADO: stateCreator
+ * @pilar III: Seguridad de Tipos. Definición explícita para asegurar la inferencia en 'persist'.
  */
-export const useUIStore = create<UIState & UIActions>()(
+const stateCreator: StateCreator<UIStore, [["zustand/persist", unknown]]> = (set) => ({
+  // --- ESTADO INICIAL ---
+  isVisitorHudOpen: true,
+  isMobileMenuOpen: false,
+  isNewsletterModalOpen: false,
+  isAuthModalOpen: false,
+  hasHydrated: false,
+  tenantId: null,
+
+  // --- ACCIONES: INFRAESTRUCTRURA ---
+  setHasHydrated: (state: boolean) => set({ hasHydrated: state }),
+  setTenant: (tenantId: string | null) => set({ tenantId }),
+
+  // --- ACCIONES: HEIMDALL HUD ---
+  toggleVisitorHud: () => set((s) => ({ isVisitorHudOpen: !s.isVisitorHudOpen })),
+  closeVisitorHud: () => set({ isVisitorHudOpen: false }),
+  openVisitorHud: () => set({ isVisitorHudOpen: true }),
+
+  // --- ACCIONES: NAVEGACIÓN ---
+  toggleMobileMenu: () => set((s) => ({ isMobileMenuOpen: !s.isMobileMenuOpen })),
+  closeMobileMenu: () => set({ isMobileMenuOpen: false }),
+
+  // --- ACCIONES: PORTALES ---
+  openNewsletterModal: () => set({ isNewsletterModalOpen: true }),
+  closeNewsletterModal: () => set({ isNewsletterModalOpen: false }),
+  
+  toggleAuthModal: () => set((s) => ({ isAuthModalOpen: !s.isAuthModalOpen })),
+  closeAuthModal: () => set({ isAuthModalOpen: false }),
+});
+
+/**
+ * APARATO: useUIStore
+ * @description Fuente única de verdad (SSoT) para el estado visual MetaShark.
+ */
+export const useUIStore = create<UIStore>()(
   persist(
-    (set) => ({
-      // --- ESTADO INICIAL ---
-      isVisitorHudOpen: true,
-      isMobileMenuOpen: false,
-      hasHydrated: false,
-      tenantId: null,
-
-      // --- MUTACIONES DE SINCRONIZACIÓN ---
-      setHasHydrated: (state: boolean) => set({ hasHydrated: state }),
-      setTenant: (tenantId: string | null) => set({ tenantId }),
-
-      // --- GESTIÓN DE HUD (Telemetría) ---
-      toggleVisitorHud: () => set((state) => ({ isVisitorHudOpen: !state.isVisitorHudOpen })),
-      closeVisitorHud: () => set({ isVisitorHudOpen: false }),
-      openVisitorHud: () => set({ isVisitorHudOpen: true }),
-
-      // --- GESTIÓN DE NAVEGACIÓN MÓVIL (Interacción Táctica) ---
-      toggleMobileMenu: () => set((state) => ({ isMobileMenuOpen: !state.isMobileMenuOpen })),
-      closeMobileMenu: () => set({ isMobileMenuOpen: false }),
-    }),
+    stateCreator,
     {
       name: 'metashark-ui-vault',
       storage: createJSONStorage(resolveStorageEngine),
       
       /**
        * @pilar X: Higiene de Persistencia.
-       * Excluimos estados efímeros (menús abiertos) para evitar comportamientos
-       * inesperados al recargar la página.
        */
-      partialize: (state) => ({
+      partialize: (state: UIStore) => ({
         isVisitorHudOpen: state.isVisitorHudOpen,
         tenantId: state.tenantId,
       }),
 
       /**
        * PROTOCOLO DE HIDRATACIÓN (Pilar VIII)
-       * @description Sincroniza el estado persistido con el DOM.
+       * @description Sincroniza el estado y libera el renderizado del cliente.
        */
       onRehydrateStorage: () => {
-        console.log('[HEIMDALL][STORE] Iniciando sincronización de bóveda UI...');
-        
         return (state, error) => {
           if (error) {
-            console.error('[HEIMDALL][STORE] Fallo en recuperación de persistencia:', error);
+            console.error('[HEIMDALL][STORE] Fallo en la recuperación de estado:', error);
           }
-          // Marcamos como hidratado independientemente del error para liberar el renderizado
+          // El estado aquí ya está correctamente tipado como UIStore | undefined
           state?.setHasHydrated(true);
-          console.log('[HEIMDALL][STORE] Sincronización completada.');
         };
       },
       
-      version: 4, // Incremento de versión por refactorización de tipos
+      version: 5,
     }
   )
 );

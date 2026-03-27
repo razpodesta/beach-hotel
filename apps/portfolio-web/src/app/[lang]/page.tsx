@@ -3,7 +3,8 @@
  * @description Orquestador Soberano de la Landing Page (Recepción).
  *              Implementa un Embudo de Conversión de alta fidelidad integrando 
  *              el motor editorial 3D, telemetría y SEO de autoridad.
- * @version 21.0 - Vercel Build Sync & ESM Hardening
+ *              Refactorizado: Sincronización con aparatos atómicos y optimización TTFB.
+ * @version 22.0 - Atomic Handshake & Vercel Sync
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -12,7 +13,7 @@ import type { Metadata } from 'next';
 
 /**
  * IMPORTACIONES DE INFRAESTRUCTRURA (Rutas Relativas Saneadas)
- * @pilar V: Eliminación de extensiones .js para resolución nativa en Next.js 15.
+ * @pilar V: Adherencia arquitectónica.
  */
 import { getDictionary } from '../../lib/get-dictionary';
 import { getAllPosts } from '../../lib/blog-api';
@@ -21,10 +22,10 @@ import { JsonLdScript } from '../../components/ui/JsonLdScript';
 
 /**
  * APARATOS DE SECCIÓN (Lego System)
- * @pilar IX: Componentización desacoplada y orientada a la conversión.
+ * @pilar IV: Consumo de componentes atomizados (The Pulse).
  */
 import { HeroCarousel } from '../../components/sections/homepage/HeroCarousel';
-import { LiveStatusTicker } from '../../components/sections/homepage/LiveStatusTicker';
+import { LiveStatusTicker } from '../../components/sections/homepage/LiveStatusTicker'; // Resuelto vía barrel
 import { AboutSection } from '../../components/sections/homepage/AboutSection';
 import { AiContentSection } from '../../components/sections/homepage/AiContentSection';
 import { ExperienceShowcase3D } from '../../components/sections/homepage/ExperienceShowcase3D';
@@ -35,7 +36,7 @@ import { ContactSection } from '../../components/sections/homepage/ContactSectio
 
 /**
  * @interface PageProps
- * @description Contrato de parámetros asíncronos para Next.js 15 Standard.
+ * @description Parámetros asíncronos nativos de Next.js 15.
  */
 type PageProps = { 
   params: Promise<{ lang: Locale }>;
@@ -43,7 +44,7 @@ type PageProps = {
 
 /**
  * GENERACIÓN DE METADATOS SOBERANOS
- * @pilar I: Visión Holística - SEO E-E-A-T & i18n.
+ * @pilar I: Visión Holística - SEO E-E-A-T.
  */
 export async function generateMetadata(props: PageProps): Promise<Metadata> {
   const { lang } = await props.params;
@@ -61,7 +62,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
       url: `/${lang}`,
       siteName: siteName,
       images: [{
-        url: '/images/hotel/og-main.jpg',
+        url: `${baseUrl}/images/hotel/og-main.jpg`,
         width: 1200,
         height: 630,
         alt: siteName,
@@ -73,35 +74,36 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 
 /**
  * APARATO PRINCIPAL: HotelHomePage
- * @description Orquesta la composición del embudo comercial mediante inyección atómica de SSoT.
+ * @description Orquesta la composición del embudo comercial mediante inyección de SSoT.
  */
 export default async function HotelHomePage(props: PageProps) {
   const { lang } = await props.params;
 
   /**
    * @pilar X: Rendimiento de Élite.
-   * Obtención paralela masiva para minimizar el tiempo de bloqueo del servidor.
+   * Protocolo Heimdall: Trazabilidad de sincronización paralela.
    */
+  console.log(`[HEIMDALL][ORCHESTRATOR] Assembling Reception Domain for locale: ${lang}`);
+
   const [dict, posts] = await Promise.all([
     getDictionary(lang),
     getAllPosts(lang).catch((error) => {
-      console.error('[HEIMDALL][CRITICAL] Editorial sync failed at Home level:', error);
-      return []; // Fallback resiliente (Pilar VIII)
+      console.error('[HEIMDALL][CRITICAL] Editorial sync failed. Fallback engaged.', error);
+      return []; 
     })
   ]);
 
   /**
    * DATOS ESTRUCTURADOS (Schema.org)
-   * @description Provee contexto semántico rico para el posicionamiento del Hotel.
-   * @fix TS2322: Alineado con el nuevo contrato recursivo de JsonLdScript.
    */
+  const siteUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://beachhotelcanasvieiras.com';
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "Hotel",
     "name": dict.header.personal_portfolio,
     "description": dict.hero.page_description,
-    "image": "/images/hotel/og-main.jpg",
-    "url": process.env.NEXT_PUBLIC_BASE_URL,
+    "image": `${siteUrl}/images/hotel/og-main.jpg`,
+    "url": siteUrl,
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "Av. das Nações, 123",
@@ -124,9 +126,11 @@ export default async function HotelHomePage(props: PageProps) {
         <HeroCarousel dictionary={dict.hero} />
       </header>
 
-      {/* --- FASE 2: VALIDACIÓN SOCIAL (TRUST) --- */}
+      {/* --- FASE 2: VALIDACIÓN SOCIAL (TRUST) --- 
+          @pilar X: Fallback de altura reservada en el Skeleton para evitar CLS.
+      */}
       <aside id="pulse" className="relative z-20">
-        <Suspense fallback={<div className="h-24 w-full bg-[#050505] animate-pulse border-y border-white/5" />}>
+        <Suspense fallback={<div className="h-[82px] w-full bg-[#050505] animate-pulse border-y border-white/5" />}>
           <LiveStatusTicker dictionary={dict.system_status} />
         </Suspense>
       </aside>
@@ -144,7 +148,7 @@ export default async function HotelHomePage(props: PageProps) {
       {/* --- FASE 5: TAKEOVER (EXCLUSIVITY) --- */}
       <section id="festival-preview" className="relative w-full bg-zinc-950/30 border-t border-white/5" aria-label="Pride Escape Takeover">
         <div className="container mx-auto px-6 pt-24 text-center md:text-left">
-            <span className="inline-flex items-center gap-2 rounded-full border border-purple-500/30 bg-purple-500/10 px-5 py-2 text-[10px] font-bold uppercase tracking-[0.4em] text-purple-400">
+            <span className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-5 py-2 text-[10px] font-bold uppercase tracking-[0.4em] text-primary">
                 {dict.festival.hero.title}
             </span>
         </div>

@@ -1,80 +1,116 @@
 /**
  * @file apps/portfolio-web/middleware.ts
- * @description Orquestador de tráfico en el Edge (Vercel).
- *              Blindaje de rutas de infraestructura (/admin, /api) y orquestación i18n.
- *              Corregidas las importaciones de alias que causaban errores TS2307 en Nx.
- * @version 14.1 - Path Aliases & Edge Security Fix
+ * @description Orquestador Soberano de Tráfico en el Edge (Vercel).
+ *              Implementa orquestación i18n proactiva, blindaje RBAC y 
+ *              protocolo de exclusión de infraestructura de alto rendimiento.
+ * @version 15.0 - Next-Gen Edge & Forensic Telemetry
  * @author Raz Podestá - MetaShark Tech
  */
 
-import { NextResponse, type NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
 /**
- * IMPORTACIONES DE CONTRATO (Fronteras Nx)
- * @fix TS2307: Como este archivo está en la raíz de portfolio-web, 
- * las rutas relativas apuntan correctamente dentro de ./src/.
+ * IMPORTACIONES DE CONTRATO (Sincronización Monorepo)
+ * @pilar V: Adherencia arquitectónica mediante rutas relativas internas.
  */
-import { i18n, isValidLocale, type Locale } from './src/config/i18n.config';
+import { i18n, isValidLocale } from './src/config/i18n.config';
 import { routeGuard } from './src/lib/route-guard';
 
 /**
- * RUTAS DE SISTEMA IGNORADAS
- * @pilar X: Rendimiento de Élite. 
+ * MATRIZ DE EXCLUSIÓN DE INFRAESTRUCTRURA (SSoT)
+ * @pilar X: Rendimiento de Élite. Estas rutas nunca activarán la lógica i18n.
  */
-const SYSTEM_PATHS =[
+const INFRA_PREFIXES = [
   '/_next',
-  '/api',        // Incluye /api/payload y /api/visitor
-  '/admin',      // Panel Administrativo de Payload CMS
-  '/_payload',   // Endpoints y assets internos de Payload v3
+  '/_vercel',
+  '/api',
+  '/admin',
+  '/_payload',
   '/static',
   '/images',
-  '/favicon.ico'
+  '/favicon.ico',
+  '/robots.txt',
+  '/sitemap.xml',
 ];
 
 /**
- * APARATO PRINCIPAL: Middleware
- * @description Intercepta, redirige y protege las peticiones entrantes.
- * @pilar VIII: Resiliencia - Manejo seguro de asincronía.
+ * APARATO PRINCIPAL: middleware
+ * @description Controla el ciclo de vida de la petición en el perímetro de Vercel.
  */
 export async function middleware(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
 
-  // 1. BLINDAJE ESTRUCTURAL: Ignorar rutas de sistema y assets
-  if (SYSTEM_PATHS.some((path) => pathname.startsWith(path))) {
+  /**
+   * 1. PROTOCOLO DE EXCLUSIÓN RÁPIDA (Early Exit)
+   */
+  const isInfra = INFRA_PREFIXES.some((path) => pathname.startsWith(path));
+  if (isInfra) {
     return NextResponse.next();
   }
 
-  // 2. ORQUESTACIÓN I18N
+  /**
+   * 2. AUDITORÍA DE LOCALIZACIÓN (i18n Orchestration)
+   * Verifica si el prefijo de idioma está presente en la ruta.
+   */
   const pathnameIsMissingLocale = i18n.locales.every(
     (locale) => !pathname.startsWith(`/${locale}/`) && pathname !== `/${locale}`
   );
 
   if (pathnameIsMissingLocale) {
-    // Redirección al idioma por defecto preservando parámetros de búsqueda
     const locale = i18n.defaultLocale;
-    const redirectUrl = new URL(`/${locale}${pathname}${search}`, request.url);
-    return NextResponse.redirect(redirectUrl);
+    
+    // Protocolo Heimdall: Trazabilidad de redirección i18n
+    console.log(`[HEIMDALL][EDGE] I18N_REDIRECT: ${pathname} -> /${locale}${pathname}`);
+
+    /**
+     * @fix Next.js 15: Normalización de rumbos. 
+     * Preservamos parámetros de búsqueda (UTM, Session IDs).
+     */
+    return NextResponse.redirect(
+      new URL(`/${locale}${pathname}${search}`, request.url)
+    );
   }
 
-  // 3. SEGURIDAD RBAC (Route Guard)
-  const potentialLocale = pathname.split('/')[1];
-  const localeInPath = isValidLocale(potentialLocale) ? (potentialLocale as Locale) : i18n.defaultLocale;
-  
-  // Resolución asíncrona innegociable
+  /**
+   * 3. SEGURIDAD PERIMETRAL (RBAC Guard)
+   * Delegamos la inteligencia de acceso al aparato especializado.
+   */
+  const currentLocale = pathname.split('/')[1];
+  const localeInPath = isValidLocale(currentLocale) ? currentLocale : i18n.defaultLocale;
+
+  // El routeGuard realiza el handshake asíncrono con las cookies de sesión
   const guardResponse = await routeGuard(request, localeInPath);
   
   if (guardResponse) {
+    // Si el guardia retorna una respuesta, abortamos y aplicamos su decisión (Redirect/401)
     return guardResponse;
   }
 
-  return NextResponse.next();
+  /**
+   * 4. FINALIZACIÓN Y HEADER DE RASTREO
+   * Inyectamos cabeceras de infraestructura para depuración en producción.
+   */
+  const response = NextResponse.next();
+  response.headers.set('X-MetaShark-Edge', 'Orchestrated');
+  response.headers.set('X-Locale-Active', localeInPath);
+
+  return response;
 }
 
 /**
- * CONFIGURACIÓN DE EDGE
+ * CONFIGURACIÓN DE SELECTORES (Edge Matcher)
+ * @description Filtra el tráfico antes de ejecutar el JS para maximizar performance.
+ * Se excluyen extensiones estáticas comunes.
  */
 export const config = {
-  matcher:[
-    '/((?!_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|manifest.json).*)',
+  matcher: [
+    /*
+     * Excluir archivos estáticos:
+     * - .svg, .png, .jpg, .jpeg, .gif, .webp (Media)
+     * - .css, .js (Assets)
+     * - favicon.ico, robots.txt (Metadata)
+     */
+    '/((?!api|_next/static|_next/image|images|static|favicon.ico|robots.txt|sitemap.xml|.*\\..*).*)',
   ],
 };

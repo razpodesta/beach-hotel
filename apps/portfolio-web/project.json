@@ -20,7 +20,8 @@
       "outputs": [
         "{options.outputPath}",
         "{workspaceRoot}/dist/apps/portfolio-web/.next",
-        "{workspaceRoot}/dist/apps/portfolio-web/public"
+        "{workspaceRoot}/dist/apps/portfolio-web/.next/routes-manifest.json",
+        "{workspaceRoot}/dist/apps/portfolio-web/.next/required-server-files.json"
       ],
       "defaultConfiguration": "production",
       "options": {
@@ -33,6 +34,7 @@
       "configurations": {
         "production": {
           "debug": false,
+          "fileReplacements": [],
           "generateSourcemaps": false
         }
       }
@@ -59,7 +61,10 @@
         "forwardAllArgs": true
       },
       "cache": true,
-      "dependsOn": ["^build"],
+      "dependsOn": [
+        "^build",
+        "prebuild"
+      ],
       "description": "Verificación estática de tipos de élite sobre el código fuente."
     },
     "test": {

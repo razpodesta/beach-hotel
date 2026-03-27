@@ -1,9 +1,9 @@
 /**
  * @file AboutSection.tsx
  * @description Presentación narrativa del Santuario (Fase 3: Trust).
- *              Refactorizado: 100% Data-Driven, Coreografía de animaciones staggered
- *              y cumplimiento estricto de los 12 Pilares de Élite.
- * @version 10.0 - Elite UX Standard
+ *              Refactorizado: Limpieza de tipos 'any', clases de Tailwind canónicas
+ *              y optimización nativa de Next.js 15 para Core Web Vitals.
+ * @version 12.0 - Clean Linter & Canonical CSS
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -14,52 +14,50 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, type Variants } from 'framer-motion';
-import { ArrowRight, Landmark } from 'lucide-react';
+import { ArrowRight, Landmark, Sparkles } from 'lucide-react';
 
 /**
  * IMPORTACIONES DE INFRAESTRUCTRURA
+ * @pilar V: Adherencia arquitectónica.
  */
 import { FadeIn } from '../../ui/FadeIn';
 import { getLocalizedHref } from '../../../lib/utils/link-helpers';
 import { i18n, type Locale } from '../../../config/i18n.config';
-import type { Dictionary } from '../../../lib/schemas/dictionary.schema';
+import type { AboutDictionary } from '../../../lib/schemas/about_section.schema';
+import { cn } from '../../../lib/utils/cn';
 
-/**
- * @interface AboutSectionProps
- * @description Contrato de propiedades para la sección narrativa.
- */
 interface AboutSectionProps {
   /** Fragmento aplanado del diccionario validado por MACS */
-  dictionary: Dictionary['about'];
+  dictionary: AboutDictionary;
 }
 
 /**
- * VARIANTES DE ANIMACIÓN (MEA/UX)
- * @description Crea una secuencia de entrada elegante para los párrafos.
+ * COREOGRAFÍA MEA/UX (Pilar XII)
  */
 const textContainerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.2,
-      delayChildren: 0.4
+      staggerChildren: 0.25,
+      delayChildren: 0.3
     }
   }
 };
 
 const paragraphVariants: Variants = {
-  hidden: { opacity: 0, x: -20 },
+  hidden: { opacity: 0, x: -15, filter: 'blur(4px)' },
   visible: { 
     opacity: 1, 
     x: 0,
+    filter: 'blur(0px)',
     transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] }
   }
 };
 
 /**
  * APARATO: AboutSection
- * @description Orquesta la conexión emocional con el huésped mediante narrativa y visuales de alta gama.
+ * @description Orquesta la conexión emocional con el huésped.
  */
 export function AboutSection({ dictionary }: AboutSectionProps) {
   const pathname = usePathname();
@@ -78,9 +76,7 @@ export function AboutSection({ dictionary }: AboutSectionProps) {
     [currentLang]
   );
 
-  /**
-   * GUARDIÁN DE RESILIENCIA (Pilar VIII)
-   */
+  // Guardián de Resiliencia (Pilar VIII)
   if (!dictionary?.paragraphs || dictionary.paragraphs.length === 0) {
     return null;
   }
@@ -88,42 +84,43 @@ export function AboutSection({ dictionary }: AboutSectionProps) {
   return (
     <section 
       id="about-sanctuary" 
-      className="relative w-full overflow-hidden py-24 sm:py-32 bg-black selection:bg-purple-500/30"
-      aria-label={dictionary.title}
+      className="relative w-full overflow-hidden py-24 sm:py-40 bg-black selection:bg-primary/30"
+      aria-labelledby="about-title"
+      role="region"
     >
       <div className="relative z-10 container mx-auto px-6">
-        <div className="grid grid-cols-1 items-stretch gap-16 lg:grid-cols-5 lg:gap-24">
+        <div className="grid grid-cols-1 items-stretch gap-16 lg:grid-cols-5 lg:gap-32">
           
-          {/* --- COLUMNA VISUAL: EL PATRIMONIO --- */}
+          {/* --- BLOQUE VISUAL: EL PATRIMONIO --- */}
           <div className="lg:col-span-2">
             <FadeIn delay={0.2} yOffset={40}>
-              <div className="group relative h-full min-h-[450px] rounded-[3.5rem] border border-white/5 bg-zinc-950/30 p-4 backdrop-blur-md transition-colors hover:border-primary/20">
-                <div className="relative h-full w-full overflow-hidden rounded-[2.8rem] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)]">
+              <div className="group relative h-full min-h-[500px] rounded-[4rem] border border-white/5 bg-zinc-950/30 p-4 backdrop-blur-md transition-colors hover:border-primary/20">
+                <div className="relative h-full w-full overflow-hidden rounded-[3.2rem] shadow-3xl">
                   <Image
                     src="/images/hotel/about-building-front.jpg"
                     alt={dictionary.title}
                     fill
-                    className="object-cover transition-transform duration-2000 ease-out group-hover:scale-110"
-                    sizes="(max-width: 1024px) 100vw, 40vw"
-                    priority
+                    className="object-cover transition-transform duration-2000 ease-out group-hover:scale-110 transform-gpu"
+                    sizes="(max-width: 1024px) 100vw, 35vw"
+                    priority={true}
                   />
                   
-                  {/* Overlay de profundidad */}
-                  <div className="absolute inset-0 bg-linear-to-t from-black via-transparent to-transparent opacity-80" />
+                  {/* Overlay de profundidad cinemática */}
+                  <div className="absolute inset-0 bg-linear-to-t from-black via-transparent to-transparent opacity-70" />
                   
-                  {/* IDENTIDAD SOBERANA (Badge) */}
-                  <div className="absolute bottom-8 left-8 flex items-center gap-4">
+                  {/* BADGE DE IDENTIDAD SOBERANA */}
+                  <div className="absolute bottom-10 left-10 flex items-center gap-5">
                     <motion.div 
-                      whileHover={{ rotate: 15, scale: 1.1 }}
-                      className="h-14 w-14 flex items-center justify-center rounded-2xl bg-white/10 backdrop-blur-2xl border border-white/20 text-primary shadow-2xl"
+                      whileHover={{ rotate: 10, scale: 1.1 }}
+                      className="h-16 w-16 flex items-center justify-center rounded-2xl bg-white/5 backdrop-blur-3xl border border-white/20 text-primary shadow-2xl"
                     >
-                      <Landmark size={28} strokeWidth={1.5} />
+                      <Landmark size={32} strokeWidth={1.2} />
                     </motion.div>
                     <div className="flex flex-col">
-                      <span className="text-[10px] font-mono font-bold tracking-[0.4em] text-white uppercase opacity-80">
-                        Sanctuary HQ
+                      <span className="text-[9px] font-mono font-bold tracking-[0.5em] text-zinc-500 uppercase">
+                        Sovereign HQ
                       </span>
-                      <span className="text-[11px] font-bold text-primary uppercase tracking-widest">
+                      <span className="text-[12px] font-bold text-white uppercase tracking-widest mt-1">
                         {dictionary.badge_label}
                       </span>
                     </div>
@@ -133,54 +130,69 @@ export function AboutSection({ dictionary }: AboutSectionProps) {
             </FadeIn>
           </div>
 
-          {/* --- COLUMNA NARRATIVA: LA FILOSOFÍA --- */}
+          {/* --- BLOQUE NARRATIVO: LA FILOSOFÍA --- */}
           <div className="lg:col-span-3 flex flex-col justify-center">
-            <div className="space-y-12">
-              <FadeIn delay={0.3}>
-                <h2 className="font-display text-5xl md:text-7xl lg:text-8xl font-bold tracking-tighter text-white leading-[0.9] drop-shadow-sm">
-                  {dictionary.title}
-                </h2>
-              </FadeIn>
+            <div className="space-y-16">
+              <header className="space-y-6">
+                <FadeIn delay={0.3}>
+                  <div className="inline-flex items-center gap-3 text-primary">
+                    <Sparkles size={18} className="animate-pulse" />
+                    <span className="text-[10px] font-bold uppercase tracking-[0.6em] font-mono">The Sanctuary Philosophy</span>
+                  </div>
+                </FadeIn>
+                <FadeIn delay={0.4}>
+                  <h2 
+                    id="about-title"
+                    className="font-display text-5xl md:text-7xl lg:text-9xl font-bold tracking-tighter text-white leading-[0.85] drop-shadow-sm"
+                  >
+                    {dictionary.title}
+                  </h2>
+                </FadeIn>
+              </header>
 
-              {/* Narrativa Staggered (Pilar XII) */}
+              {/* Narrativa Staggered con Resaltado Dinámico */}
               <motion.div 
                 variants={textContainerVariants}
                 initial="hidden"
                 whileInView="visible"
                 viewport={{ once: true }}
-                className="space-y-8"
+                className="space-y-10"
               >
                 {dictionary.paragraphs.map((p, i) => (
                   <motion.p 
-                    key={`p-${i}`}
+                    key={`p-narrative-${i}`}
                     variants={paragraphVariants}
-                    className="text-lg md:text-2xl text-zinc-400 font-sans font-light leading-relaxed"
+                    className="text-lg md:text-2xl text-zinc-400 font-sans font-light leading-relaxed max-w-3xl"
                   >
                     {p.text} 
                     {p.highlight && (
-                      <strong className="relative inline-block font-bold text-white ml-2">
-                        {p.highlight}
+                      <span className="relative inline-block ml-3">
+                        <strong className="font-bold text-white italic">{p.highlight}</strong>
                         <motion.span 
-                          initial={{ width: 0 }}
-                          whileInView={{ width: '100%' }}
-                          transition={{ delay: 1, duration: 1 }}
-                          className="absolute -bottom-1 left-0 h-px bg-primary/40"
+                          initial={{ scaleX: 0 }}
+                          whileInView={{ scaleX: 1 }}
+                          viewport={{ once: true }}
+                          transition={{ delay: 1.2 + (i * 0.2), duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
+                          className="absolute -bottom-2 left-0 h-0.5 w-full bg-primary/40 origin-left"
                         />
-                      </strong>
+                      </span>
                     )}
                   </motion.p>
                 ))}
               </motion.div>
 
-              {/* ACCIÓN DE CONVERSIÓN SECUNDARIA */}
-              <FadeIn delay={0.8} yOffset={0}>
+              {/* CALL TO ACTION SOBERANO */}
+              <FadeIn delay={0.9} yOffset={20}>
                 <div className="pt-6">
                   <Link
                     href={storyHref}
-                    className="group relative inline-flex items-center gap-6 rounded-full bg-white px-12 py-5 text-[11px] font-bold text-black uppercase tracking-[0.3em] transition-all hover:bg-primary hover:text-white active:scale-95 shadow-[0_20px_50px_rgba(0,0,0,0.3)]"
+                    className={cn(
+                      "group relative inline-flex items-center gap-8 rounded-full bg-white px-12 py-6 text-[11px] font-bold text-black uppercase tracking-[0.4em]",
+                      "transition-all duration-500 hover:bg-primary hover:text-white hover:shadow-primary/20 hover:shadow-4xl active:scale-95 shadow-2xl"
+                    )}
                   >
                     {dictionary.cta_button} 
-                    <ArrowRight size={20} className="transition-transform duration-500 group-hover:translate-x-3" />
+                    <ArrowRight size={20} className="transition-transform duration-700 group-hover:translate-x-4" />
                   </Link>
                 </div>
               </FadeIn>
@@ -190,9 +202,9 @@ export function AboutSection({ dictionary }: AboutSectionProps) {
         </div>
       </div>
       
-      {/* CAPA DE AMBIENTACIÓN (MACS Compliance) */}
-      <div className="absolute -top-24 -right-24 w-96 h-96 bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
-      <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-purple-500/5 blur-[120px] rounded-full pointer-events-none" />
+      {/* CAPAS DE ATMÓSFERA SENSORIAL */}
+      <div className="absolute top-1/4 -right-32 w-[600px] h-[600px] bg-primary/5 blur-[160px] rounded-full pointer-events-none" />
+      <div className="absolute -bottom-32 -left-32 w-[600px] h-[600px] bg-accent/5 blur-[160px] rounded-full pointer-events-none" />
     </section>
   );
 }

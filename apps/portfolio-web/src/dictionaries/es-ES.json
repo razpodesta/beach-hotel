@@ -1,4 +1,122 @@
 {
+  "header": {
+    "talk": "RESERVAR AHORA",
+    "tagline": "Tu Experiencia Boutique en Canasvieiras",
+    "personal_portfolio": "BEACH HOTEL CANASVIEIRAS",
+    "job_title": "Hotel Boutique & Sede del Pride Escape 2026",
+    "mobile_title": "Beach Hotel",
+    "mobile_subtitle": "Canasvieiras"
+  },
+  "nav-links": {
+    "nav_links": {
+      "hotel": "El Hotel",
+      "habitaciones": "Suites de Lujo",
+      "festival": "Pride Escape 2026",
+      "historia": "Nuestra Historia",
+      "ubicacion": "Ubicación",
+      "contacto": "Contacto",
+      "reservas": "Reservas Online",
+      "politica_privacidad": "Privacidad",
+      "terminos_servicio": "Términos de Uso"
+    }
+  },
+  "footer": {
+    "newsletter_title": "Únete al Ecosistema",
+    "newsletter_placeholder": "Tu dirección de e-mail",
+    "newsletter_button": "Suscribirse",
+    "newsletter_success_title": "Bienvenido al Santuario",
+    "newsletter_success_subtitle": "Tu identidad ha sido vinculada al núcleo digital. Prepárate para una experiencia de toma única.",
+    "newsletter_reward_label": "OTORGADOS",
+    "column_nav_title": "Navegación",
+    "column_services_title": "Concierge",
+    "column_legal_title": "Cumplimiento",
+    "rights_reserved": "© 2026 Beach Hotel Canasvieiras. Todos los derechos reservados.",
+    "made_by": "Forjado por Raz Podestá | MetaShark Tech"
+  },
+  "system_status": {
+    "items": [
+      {
+        "category": "PRIDE FEST",
+        "message": "90% de Master Suites ocupadas para la Boat Party.",
+        "iconKey": "Ticket",
+        "colorKey": "purple"
+      },
+      {
+        "category": "METEOROLOGÍA",
+        "message": "25°C en Canasvieiras. Ideal para la playa.",
+        "iconKey": "ThermometerSun",
+        "colorKey": "yellow"
+      },
+      {
+        "category": "SEGURIDAD",
+        "message": "Acceso privado exclusivo monitoreado 24/7.",
+        "iconKey": "ShieldCheck",
+        "colorKey": "green"
+      },
+      {
+        "category": "LOUNGE",
+        "message": "Sunset Sessions diarias en la piscina del HQ.",
+        "iconKey": "Music",
+        "colorKey": "pink"
+      }
+    ],
+    "aria_label": "Actualizaciones de Estado del Hotel en Vivo"
+  },
+  "visitor_hud": {
+    "tab_identity": "IDENTIDAD",
+    "tab_telemetry": "TELEMETRÍA",
+    "guest_title": "Identidad No Vinculada",
+    "guest_description": "Accede para activar el Protocolo 33 y recolectar artefactos exclusivos en el Santuario.",
+    "guest_cta": "Vincular Identidad",
+    "label_visitor_info": "INFORMACIÓN DEL HUÉSPED",
+    "label_ip_visitor": "I.P. DE ORIGEN",
+    "label_location": "UBICACIÓN",
+    "label_weather": "CLIMA EN CANASVIEIRAS",
+    "label_time": "HORA LOCAL",
+    "status_calibrating": "CALIBRANDO INSTRUMENTOS...",
+    "status_error": "SEÑAL PERDIDA",
+    "weather_sunny": "SOLEADO",
+    "weather_rainy": "LLUVIOSO",
+    "weather_cloudy": "NUBLADO",
+    "roaming_label": "EN TRÁNSITO",
+    "precision_sync_label": "Protocolo Heimdall: Sincronización de Precisión Activa",
+    "stat_artifacts": "Artefactos",
+    "stat_streak": "Racha",
+    "xp_next_label": "Siguiente",
+    "footer_credits": "Tecnología MetaShark Tech",
+    "cta_explore": "Explorar"
+  },
+  "language_switcher": {
+    "label": "Idioma",
+    "en-US": "English",
+    "es-ES": "Español",
+    "pt-BR": "Português"
+  },
+  "hero": {
+    "page_title": "Beach Hotel Canasvieiras | Florianópolis",
+    "page_description": "Hospedaje boutique de lujo y sede oficial del festival Pride Escape 2026.",
+    "HOTEL_TITLE": "SANTUARIO BOUTIQUE",
+    "HOTEL_SUBTITLE": "Donde el lujo sofisticado se encuentra con la energía del mar.",
+    "HOTEL_FEATURES": "Vista Panorámica • Experiencia Gourmet • Concierge Privado",
+    "FESTIVAL_TITLE": "PRIDE ESCAPE 2026",
+    "FESTIVAL_SUBTITLE": "La nueva ola de Florianópolis. 7 días de toma absoluta.",
+    "FESTIVAL_FEATURES": "Boat Parties • Noches VIP • Line-up Internacional",
+    "CTA_BUTTON": "VER DISPONIBILIDAD",
+    "audio_active_label": "Ambiente Activo",
+    "audio_muted_label": "Sensorial Silenciado",
+    "assets": {
+      "hotel": {
+        "video_url": "https://cdn.pixabay.com/video/2021/09/01/87113-596486047_large.mp4",
+        "poster_url": "/images/hotel/hero-hotel-poster.jpg",
+        "audio_url": "/audio/sanctuary-ambient.mp3"
+      },
+      "festival": {
+        "video_url": "https://cdn.pixabay.com/video/2023/10/24/186358-877995180_large.mp4",
+        "poster_url": "/images/festival/hero-festival-poster.jpg",
+        "audio_url": "/audio/festival-beat.mp3"
+      }
+    }
+  },
   "about": {
     "title": "Un Santuario de Hospitalidad de Élite.",
     "badge_label": "Santuario Boutique",
@@ -14,44 +132,137 @@
     ],
     "cta_button": "Descubre nuestra Historia"
   },
-  "contact": {
-    "title": "PONTE EN CONTACTO",
-    "form_cta": "¿Tienes una idea o un proyecto en mente? Me encantaría saber de ello. Rellena el formulario y me pondré en contacto en breve.",
-    "form_placeholder_name": "* Nombre",
-    "form_placeholder_email": "* Email",
-    "form_placeholder_message": "* Tu mensaje...",
-    "form_button_submit": "Enviar Mensaje",
-    "form_button_loading": "Procesando...",
-    "success_title": "Consulta Recibida",
-    "success_subtitle": "Nuestro concierge se pondrá en contacto a la brevedad para refinar los detalles de su estadía o proyecto.",
-    "error_submit": "Error al enviar. Por favor intente de nuevo o contáctenos directamente por email.",
-    "validation": {
-      "name_required": "El nombre es obligatorio",
-      "email_required": "El email es obligatorio",
-      "email_invalid": "Por favor, introduce un email válido",
-      "message_too_short": "El mensaje debe tener al menos 10 caracteres"
+  "value_proposition": {
+    "badge_label": "Estándares de Excelencia",
+    "amenities_title": "Servicios Premium",
+    "amenities_cta": "Acceso exclusivo para huéspedes del Beach Hotel",
+    "amenities_hotel": [
+      {
+        "name": "WiFi 6",
+        "iconKey": "wifi"
+      },
+      {
+        "name": "Vista al Mar",
+        "iconKey": "waves"
+      },
+      {
+        "name": "Gourmet",
+        "iconKey": "utensils"
+      },
+      {
+        "name": "Concierge",
+        "iconKey": "shield"
+      }
+    ],
+    "amenities_festival": [
+      {
+        "name": "Acceso VIP",
+        "iconKey": "ticket"
+      },
+      {
+        "name": "Boat Party",
+        "iconKey": "ship"
+      },
+      {
+        "name": "DJ Sets",
+        "iconKey": "music"
+      },
+      {
+        "name": "Sunset Lounge",
+        "iconKey": "martini"
+      }
+    ],
+    "title": "Hospitalidad Redefinida",
+    "subtitle": "Nuestra filosofía se basa en tres pilares fundamentales diseñados para transformar tu estadía en un recuerdo inolvidable.",
+    "pillars": [
+      {
+        "title": "Ubicación Prime",
+        "description": "En el corazón de Canasvieiras, a solo pasos del océano azul."
+      },
+      {
+        "title": "Lujo Inclusivo",
+        "description": "Un ambiente sofisticado donde cada huésped se siente parte de nuestra comunidad."
+      },
+      {
+        "title": "Vida Inteligente",
+        "description": "Check-in digital y soporte total para nómadas internacionales."
+      }
+    ],
+    "testimonial": {
+      "quote": "Un absoluto santuario. El equipo entiende el lujo no solo como un precio, sino como un servicio personalizado.",
+      "author_name": "James Sterling",
+      "author_role": "Huésped Frecuente",
+      "avatar_url": "/images/testimonials/james-sterling.jpg"
     }
   },
-  "cocreation_page": {
-    "page_title": "Co-creación | Raz Podestá",
-    "page_description": "Descubre mi framework de colaboración para transformar ideas en activos digitales de alto rendimiento.",
-    "title": "Framework de Co-creación",
-    "subtitle": "Mi proceso para colaborar contigo, desde la concepción de la idea hasta el despliegue y la optimización continua.",
-    "construction_notice": "Esta sección está actualmente en construcción. Aquí detallaré mi metodología de trabajo, fases del proyecto y cómo nos asociaremos para garantizar el éxito de tu visión."
-  },
-  "contact_page": {
-    "title": "PONTE EN CONTACTO",
-    "form_cta": "¿Tienes una idea o un proyecto en mente? Me encantaría saber de ello.",
-    "form_placeholder_name": "* Nombre",
-    "form_placeholder_email": "* Email",
-    "form_placeholder_message": "* Tu mensaje...",
-    "form_button_submit": "Enviar Mensaje",
-    "validation": {
-      "name_required": "El nombre es obligatorio",
-      "email_required": "El email es obligatorio",
-      "email_invalid": "Por favor, introduce un email válido",
-      "message_too_short": "El mensaje debe tener al menos 10 caracteres"
+  "ai_gallery_section": {
+    "badge": "Impulsado por Ideogram 3.0",
+    "title": "Sintetizador Visual IA",
+    "subtitle": "Explora una colección curada de activos generados algorítmicamente. Fotorrealismo, tipografía perfecta y consistencia estilística, orquestados por nuestro CMS soberano.",
+    "overlay_indicator": "RENDER EN VIVO • WEBGL 2.0",
+    "drag_label": "ARRASTRAR PARA ORBITAR",
+    "item_prefix": "ACTIVO",
+    "error_fallback": "MOTOR VISUAL NO COMPATIBLE EN ESTE NAVEGADOR",
+    "footer_prompt": "Ingeniería de Prompts Avanzada",
+    "footer_upscaling": "Escalado 8K y Optimización",
+    "items": {
+      "neon-typography": {
+        "title": "Cristal Neón",
+        "description": "Renderizado 3D de tubos de neón."
+      },
+      "editorial-fashion": {
+        "title": "Alta Costura",
+        "description": "Síntesis textil fotorrealista."
+      },
+      "tech-badge": {
+        "title": "Titanio Tech",
+        "description": "Visualización macro de producto."
+      },
+      "transparent-gadget": {
+        "title": "Hardware Cristal",
+        "description": "Ingeniería de dispositivos futuristas."
+      },
+      "luxury-perfume": {
+        "title": "Escencia Oro",
+        "description": "Fotografía comercial publicitaria."
+      },
+      "concept-car": {
+        "title": "Auto Concepto",
+        "description": "Detalles abstractos de fibra de carbono."
+      },
+      "concrete-workspace": {
+        "title": "Espacio Crudo",
+        "description": "Diseño de interiores minimalista."
+      },
+      "cyberpunk-street": {
+        "title": "Ciudad Nocturna",
+        "description": "Atmósfera con luces volumétricas."
+      },
+      "abstract-geometry": {
+        "title": "Forma Paramétrica",
+        "description": "Arquitectura algorítmica."
+      },
+      "fluid-shapes": {
+        "title": "Flujo Iridiscente",
+        "description": "Simulación 3D de metal líquido."
+      },
+      "mechanical-insect": {
+        "title": "Vida Mecánica",
+        "description": "Macro steampunk de alta precisión."
+      },
+      "neural-network": {
+        "title": "Flujo de Datos",
+        "description": "Visualización neural abstracta."
+      }
     }
+  },
+  "suite_gallery": {
+    "title": "Suites de Lujo",
+    "search_placeholder": "Busca tu santuario...",
+    "cat_all": "Todas las Suites",
+    "cat_master": "Santuario Master",
+    "cat_deluxe": "Habitación Deluxe",
+    "cat_standard": "Confort Standard"
   },
   "festival": {
     "hero": {
@@ -138,129 +349,109 @@
     ],
     "footer_credits": "Canasvieiras Fest 2026 • Infraestructura Privada • MetaShark Tech"
   },
-  "design_system_page": {
-    "page_title": "Sistema de Diseño | Raz Podestá",
-    "page_description": "Explora los componentes, tokens de diseño y la filosofía visual que construyen la interfaz de este portafolio.",
-    "title": "Sistema de Diseño",
-    "subtitle": "Una mirada transparente a los bloques de construcción visuales y funcionales de este ecosistema digital.",
-    "construction_notice": "Esta sección está actualmente en construcción. Pronto podrás explorar aquí la paleta de colores, la jerarquía tipográfica y la librería de componentes de React que dan vida a este sitio."
-  },
-  "header": {
-    "talk": "RESERVAR AHORA",
-    "tagline": "Tu Experiencia Boutique en Canasvieiras",
-    "personal_portfolio": "BEACH HOTEL CANASVIEIRAS",
-    "job_title": "Hotel Boutique & Sede del Pride Escape 2026",
-    "mobile_title": "Beach Hotel",
-    "mobile_subtitle": "Canasvieiras"
-  },
-  "footer": {
-    "newsletter_title": "Únete al Ecosistema",
-    "newsletter_placeholder": "Tu dirección de e-mail",
-    "newsletter_button": "Suscribirse",
-    "newsletter_success_title": "Bienvenido al Santuario",
-    "newsletter_success_subtitle": "Tu identidad ha sido vinculada al núcleo digital. Prepárate para una experiencia de toma única.",
-    "newsletter_reward_label": "OTORGADOS",
-    "column_nav_title": "Navegación",
-    "column_services_title": "Concierge",
-    "column_legal_title": "Cumplimiento",
-    "rights_reserved": "© 2026 Beach Hotel Canasvieiras. Todos los derechos reservados.",
-    "made_by": "Forjado por Raz Podestá | MetaShark Tech"
+  "quienes_somos": {
+    "page_title": "Nuestra Historia | Beach Hotel Canasvieiras",
+    "page_description": "Descubra el legado y la visión detrás del santuario de hospitalidad de élite en Florianópolis.",
+    "hero_title": "El Legado del Santuario",
+    "hero_subtitle": "Fundado sobre los pilares de la exclusividad y la energía vibrante del mar, nuestro hotel es más que un destino; es un refugio curado para el viajero global.",
+    "luxury_pillar": {
+      "title": "Lujo Boutique",
+      "description": "Una atmósfera sofisticada diseñada para celebrar la diversidad y el confort de alta gama en cada detalle."
+    },
+    "comfort_pillar": {
+      "title": "Refugio Absoluto",
+      "description": "Suites modernas integradas con tecnología inteligente para garantizar la paz y el descanso en el corazón de Canasvieiras."
+    },
+    "service_pillar": {
+      "title": "Concierge de Élite",
+      "description": "Nuestro equipo dedicado anticipa sus necesidades, asegurando una estancia impecable y personalizada las 24 horas."
+    },
+    "cta_title": "Viva lo Inolvidable",
+    "cta_button": "Reserve su Experiencia"
   },
   "history": {
     "title": "Forjado en Código",
     "subtitle": "Descubre la fusión de dos décadas de ingeniería de sistemas con una visión creativa obsesionada por los resultados. Esto no es solo un portafolio; es el legado de una arquitectura construida para perdurar."
   },
-  "ai_gallery_section": {
-    "badge": "Impulsado por Ideogram 3.0",
-    "title": "Sintetizador Visual IA",
-    "subtitle": "Explora una colección curada de activos generados algorítmicamente. Fotorrealismo, tipografía perfecta y consistencia estilística, orquestados por nuestro CMS soberano.",
-    "overlay_indicator": "RENDER EN VIVO • WEBGL 2.0",
-    "drag_label": "ARRASTRAR PARA ORBITAR",
-    "item_prefix": "ACTIVO",
-    "error_fallback": "MOTOR VISUAL NO COMPATIBLE EN ESTE NAVEGADOR",
-    "footer_prompt": "Ingeniería de Prompts Avanzada",
-    "footer_upscaling": "Escalado 8K y Optimización",
-    "items": {
-      "neon-typography": {
-        "title": "Cristal Neón",
-        "description": "Renderizado 3D de tubos de neón."
-      },
-      "editorial-fashion": {
-        "title": "Alta Costura",
-        "description": "Síntesis textil fotorrealista."
-      },
-      "tech-badge": {
-        "title": "Titanio Tech",
-        "description": "Visualización macro de producto."
-      },
-      "transparent-gadget": {
-        "title": "Hardware Cristal",
-        "description": "Ingeniería de dispositivos futuristas."
-      },
-      "luxury-perfume": {
-        "title": "Escencia Oro",
-        "description": "Fotografía comercial publicitaria."
-      },
-      "concept-car": {
-        "title": "Auto Concepto",
-        "description": "Detalles abstractos de fibra de carbono."
-      },
-      "concrete-workspace": {
-        "title": "Espacio Crudo",
-        "description": "Diseño de interiores minimalista."
-      },
-      "cyberpunk-street": {
-        "title": "Ciudad Nocturna",
-        "description": "Atmósfera con luces volumétricas."
-      },
-      "abstract-geometry": {
-        "title": "Forma Paramétrica",
-        "description": "Arquitectura algorítmica."
-      },
-      "fluid-shapes": {
-        "title": "Flujo Iridiscente",
-        "description": "Simulación 3D de metal líquido."
-      },
-      "mechanical-insect": {
-        "title": "Vida Mecánica",
-        "description": "Macro steampunk de alta precisión."
-      },
-      "neural-network": {
-        "title": "Flujo de Datos",
-        "description": "Visualización neural abstracta."
-      }
+  "contact": {
+    "title": "PONTE EN CONTACTO",
+    "form_cta": "¿Tienes una idea o un proyecto en mente? Me encantaría saber de ello. Rellena el formulario y me pondré en contacto en breve.",
+    "form_placeholder_name": "* Nombre",
+    "form_placeholder_email": "* Email",
+    "form_placeholder_message": "* Tu mensaje...",
+    "form_button_submit": "Enviar Mensaje",
+    "form_button_loading": "Procesando...",
+    "success_title": "Consulta Recibida",
+    "success_subtitle": "Nuestro concierge se pondrá en contacto a la brevedad para refinar los detalles de su estadía o proyecto.",
+    "error_submit": "Error al enviar. Por favor intente de nuevo o contáctenos directamente por email.",
+    "validation": {
+      "name_required": "El nombre es obligatorio",
+      "email_required": "El email es obligatorio",
+      "email_invalid": "Por favor, introduce un email válido",
+      "message_too_short": "El mensaje debe tener al menos 10 caracteres"
     }
   },
-  "language_switcher": {
-    "label": "Idioma",
-    "en-US": "English",
-    "es-ES": "Español",
-    "pt-BR": "Português"
+  "blog_page": {
+    "page_title": "Concierge Journal | Beach Hotel Canasvieiras",
+    "page_description": "Descubre los secretos mejor guardados de la isla, guías exclusivas de vida nocturna y novedades del Pride Escape.",
+    "hero_title": "The Concierge Journal",
+    "featured_title": "Lectura Destacada",
+    "all_posts_title": "Últimas Novedades",
+    "read_more_cta": "Leer Artículo",
+    "empty_state": "No hay artículos disponibles en este momento. Mantente conectado.",
+    "tag_results_singular": "Un artículo disponible bajo la curaduría de",
+    "tag_results_plural": "Artículos seleccionados bajo la curaduría de"
   },
-  "hero": {
-    "page_title": "Beach Hotel Canasvieiras | Florianópolis",
-    "page_description": "Hospedaje boutique de lujo y sede oficial del festival Pride Escape 2026.",
-    "HOTEL_TITLE": "SANTUARIO BOUTIQUE",
-    "HOTEL_SUBTITLE": "Donde el lujo sofisticado se encuentra con la energía del mar.",
-    "HOTEL_FEATURES": "Vista Panorámica • Experiencia Gourmet • Concierge Privado",
-    "FESTIVAL_TITLE": "PRIDE ESCAPE 2026",
-    "FESTIVAL_SUBTITLE": "La nueva ola de Florianópolis. 7 días de toma absoluta.",
-    "FESTIVAL_FEATURES": "Boat Parties • Noches VIP • Line-up Internacional",
-    "CTA_BUTTON": "VER DISPONIBILIDAD",
-    "audio_active_label": "Ambiente Activo",
-    "audio_muted_label": "Sensorial Silenciado",
-    "assets": {
-      "hotel": {
-        "video_url": "https://cdn.pixabay.com/video/2021/09/01/87113-596486047_large.mp4",
-        "poster_url": "/images/hotel/hero-hotel-poster.jpg",
-        "audio_url": "/audio/sanctuary-ambient.mp3"
+  "mission_vision": {
+    "mission_title": "Nuestra Misión",
+    "mission_description": "Orquestar el ciclo de vida completo de la conversión digital. Forjamos ecosistemas inteligentes y soberanos que unifican la estrategia de marca, la creación de experiencias y la optimización continua, transformando el marketing de un juego de adivinación en una ciencia de crecimiento predecible.",
+    "vision_title": "Nuestra Visión: El Volante de Crecimiento",
+    "vision_subtitle": "Nuestra visión es ser la fuerza motriz de un nuevo paradigma: la web como un ecosistema vivo y auto-optimizado, donde cada interacción alimenta un volante de crecimiento perpetuo (growth flywheel).",
+    "vision_pillars": [
+      {
+        "title": "Entender",
+        "description": "No solo capturamos métricas; obtenemos una observabilidad holística. Integramos datos cualitativos y cuantitativos para construir un perfil de visitante dinámico, entendiendo el 'porqué' detrás de cada 'qué'."
       },
-      "festival": {
-        "video_url": "https://cdn.pixabay.com/video/2023/10/24/186358-877995180_large.mp4",
-        "poster_url": "/images/festival/hero-festival-poster.jpg",
-        "audio_url": "/audio/festival-beat.mp3"
+      {
+        "title": "Adaptarse",
+        "description": "Las plataformas que creamos no son estáticas. Son entidades vivas que utilizan la inteligencia artificial para adaptarse y evolucionar armónicamente, personalizando la experiencia en tiempo real para satisfacer las necesidades de cada usuario."
+      },
+      {
+        "title": "Maximizar",
+        "description": "La conversión no es un evento, es una ciencia. Nuestro ecosistema utiliza los insights generados para alimentar un ciclo de optimización continua, asegurando que cada activo y cada campaña se vuelvan inherentemente más eficaces con el tiempo, maximizando los objetivos de negocio."
       }
-    }
+    ]
+  },
+  "profile_page": {
+    "page_title": "Mi Perfil | Raz Podestá",
+    "welcome_title": "Santuario Digital",
+    "level_label": "Nivel Actual",
+    "xp_label": "Experiencia",
+    "inventory_title": "Inventario de Artefactos",
+    "empty_inventory_message": "Tu inventario está vacío. Explora el ecosistema para descubrir artefactos."
+  },
+  "lucide_page": {
+    "page_title": "Iconografía Lucide | Raz Podestá",
+    "page_description": "Explora la colección completa de iconos Lucide disponibles en el sistema de diseño.",
+    "header_title": "Universo Lucide",
+    "header_subtitle": "Una colección de iconos SVG hermosos y consistentes para interfaces modernas.",
+    "search_placeholder": "Buscar icono por nombre...",
+    "load_more_button": "Cargar más Iconos",
+    "showing_results": "Mostrando {count} de {total} iconos",
+    "visit_official": "Ver Documentación",
+    "copy_import": "Copiar JSX",
+    "view_details": "Ver Detalles",
+    "modal_install_title": "Instalación de Librería",
+    "modal_usage_title": "Implementación",
+    "modal_close": "Cerrar",
+    "scroll_top": "Ir Arriba",
+    "scroll_bottom": "Ir Abajo",
+    "library_help_btn": "Ayuda de Librería",
+    "library_help_title": "Recurso de Arquitectura",
+    "library_help_desc": "Este índice centralizado facilita la selección de iconos para nuevos proyectos.",
+    "btn_docs": "Documentación de Iconos",
+    "btn_repo": "Repositorio GitHub",
+    "category_all": "Todos"
   },
   "homepage": {
     "hero": {
@@ -337,252 +528,21 @@
       "infrastructure_label": "Sovereign Digital Infrastructure • MetaShark Tech"
     }
   },
-  "maintenance": {
-    "title": "Actualización del Sistema en Curso",
-    "description": "Estamos desplegando mejoras arquitectónicas en el ecosistema. El acceso está temporalmente restringido para garantizar la integridad de los datos.",
-    "estimated_return": "Retorno esperado: En breve."
-  },
-  "blog_page": {
-    "page_title": "Concierge Journal | Beach Hotel Canasvieiras",
-    "page_description": "Descubre los secretos mejor guardados de la isla, guías exclusivas de vida nocturna y novedades del Pride Escape.",
-    "hero_title": "The Concierge Journal",
-    "featured_title": "Lectura Destacada",
-    "all_posts_title": "Últimas Novedades",
-    "read_more_cta": "Leer Artículo",
-    "empty_state": "No hay artículos disponibles en este momento. Mantente conectado.",
-    "tag_results_singular": "Un artículo disponible bajo la curaduría de",
-    "tag_results_plural": "Artículos seleccionados bajo la curaduría de"
-  },
   "not_found": {
     "title": "Página No Encontrada",
     "description": "Parece que te has aventurado en territorio indefinido. La ruta que buscas no existe en esta versión de la matriz.",
     "cta_button": "Volver a la Base",
     "error_code": "ERR_ROUTE_MISSING • SYSTEM_ID_404"
   },
-  "profile_page": {
-    "page_title": "Mi Perfil | Raz Podestá",
-    "welcome_title": "Santuario Digital",
-    "level_label": "Nivel Actual",
-    "xp_label": "Experiencia",
-    "inventory_title": "Inventario de Artefactos",
-    "empty_inventory_message": "Tu inventario está vacío. Explora el ecosistema para descubrir artefactos."
-  },
-  "lucide_page": {
-    "page_title": "Iconografía Lucide | Raz Podestá",
-    "page_description": "Explora la colección completa de iconos Lucide disponibles en el sistema de diseño.",
-    "header_title": "Universo Lucide",
-    "header_subtitle": "Una colección de iconos SVG hermosos y consistentes para interfaces modernas.",
-    "search_placeholder": "Buscar icono por nombre...",
-    "load_more_button": "Cargar más Iconos",
-    "showing_results": "Mostrando {count} de {total} iconos",
-    "visit_official": "Ver Documentación",
-    "copy_import": "Copiar JSX",
-    "category_all": "Todos",
-    "view_details": "Ver Detalles",
-    "modal_install_title": "Instalación de Librería",
-    "modal_usage_title": "Implementación",
-    "modal_close": "Cerrar",
-    "scroll_top": "Ir Arriba",
-    "scroll_bottom": "Ir Abajo",
-    "library_help_btn": "Ayuda de Librería",
-    "library_help_title": "Recurso de Arquitectura",
-    "library_help_desc": "Este índice centralizado facilita la selección de iconos para nuevos proyectos.",
-    "btn_docs": "Documentación de Iconos",
-    "btn_repo": "Repositorio GitHub"
-  },
-  "nav-links": {
-    "nav_links": {
-      "hotel": "El Hotel",
-      "habitaciones": "Suites de Lujo",
-      "festival": "Pride Escape 2026",
-      "historia": "Nuestra Historia",
-      "ubicacion": "Ubicación",
-      "contacto": "Contacto",
-      "reservas": "Reservas Online",
-      "politica_privacidad": "Privacidad",
-      "terminos_servicio": "Términos de Uso"
-    }
-  },
-  "mission_vision": {
-    "mission_title": "Nuestra Misión",
-    "mission_description": "Orquestar el ciclo de vida completo de la conversión digital. Forjamos ecosistemas inteligentes y soberanos que unifican la estrategia de marca, la creación de experiencias y la optimización continua, transformando el marketing de un juego de adivinación en una ciencia de crecimiento predecible.",
-    "vision_title": "Nuestra Visión: El Volante de Crecimiento",
-    "vision_subtitle": "Nuestra visión es ser la fuerza motriz de un nuevo paradigma: la web como un ecosistema vivo y auto-optimizado, donde cada interacción alimenta un volante de crecimiento perpetuo (growth flywheel).",
-    "vision_pillars": [
-      {
-        "title": "Entender",
-        "description": "No solo capturamos métricas; obtenemos una observabilidad holística. Integramos datos cualitativos y cuantitativos para construir un perfil de visitante dinámico, entendiendo el 'porqué' detrás de cada 'qué'."
-      },
-      {
-        "title": "Adaptarse",
-        "description": "Las plataformas que creamos no son estáticas. Son entidades vivas que utilizan la inteligencia artificial para adaptarse y evolucionar armónicamente, personalizando la experiencia en tiempo real para satisfacer las necesidades de cada usuario."
-      },
-      {
-        "title": "Maximizar",
-        "description": "La conversión no es un evento, es una ciencia. Nuestro ecosistema utiliza los insights generados para alimentar un ciclo de optimización continua, asegurando que cada activo y cada campaña se vuelvan inherentemente más eficaces con el tiempo, maximizando los objetivos de negocio."
-      }
-    ]
+  "maintenance": {
+    "title": "Actualización del Sistema en Curso",
+    "description": "Estamos desplegando mejoras arquitectónicas en el ecosistema. El acceso está temporalmente restringido para garantizar la integridad de los datos.",
+    "estimated_return": "Retorno esperado: En breve."
   },
   "server_error": {
     "title": "Fallo del Sistema",
     "description": "Se ha detectado una anomalía crítica en el núcleo. Nuestros centinelas automatizados han sido notificados y los protocolos de recuperación están en marcha.",
     "retry_button": "Reintentar Conexión",
     "home_button": "Evacuación de Emergencia (Inicio)"
-  },
-  "suite_gallery": {
-    "title": "Suites de Lujo",
-    "search_placeholder": "Busca tu santuario...",
-    "cat_all": "Todas las Suites",
-    "cat_master": "Santuario Master",
-    "cat_deluxe": "Habitación Deluxe",
-    "cat_standard": "Confort Standard"
-  },
-  "value_proposition": {
-    "badge_label": "Estándares de Excelencia",
-    "amenities_title": "Servicios Premium",
-    "amenities_cta": "Acceso exclusivo para huéspedes del Beach Hotel",
-    "amenities_hotel": [
-      {
-        "name": "WiFi 6",
-        "iconKey": "wifi"
-      },
-      {
-        "name": "Vista al Mar",
-        "iconKey": "waves"
-      },
-      {
-        "name": "Gourmet",
-        "iconKey": "utensils"
-      },
-      {
-        "name": "Concierge",
-        "iconKey": "shield"
-      }
-    ],
-    "amenities_festival": [
-      {
-        "name": "Acceso VIP",
-        "iconKey": "ticket"
-      },
-      {
-        "name": "Boat Party",
-        "iconKey": "ship"
-      },
-      {
-        "name": "DJ Sets",
-        "iconKey": "music"
-      },
-      {
-        "name": "Sunset Lounge",
-        "iconKey": "martini"
-      }
-    ],
-    "title": "Hospitalidad Redefinida",
-    "subtitle": "Nuestra filosofía se basa en tres pilares fundamentales diseñados para transformar tu estadía en un recuerdo inolvidable.",
-    "pillars": [
-      {
-        "title": "Ubicación Prime",
-        "description": "En el corazón de Canasvieiras, a solo pasos del océano azul."
-      },
-      {
-        "title": "Lujo Inclusivo",
-        "description": "Un ambiente sofisticado donde cada huésped se siente parte de nuestra comunidad."
-      },
-      {
-        "title": "Vida Inteligente",
-        "description": "Check-in digital y soporte total para nómadas internacionales."
-      }
-    ],
-    "testimonial": {
-      "quote": "Un absoluto santuario. El equipo entiende el lujo no solo como un precio, sino como un servicio personalizado.",
-      "author_name": "James Sterling",
-      "author_role": "Huésped Frecuente",
-      "avatar_url": "/images/testimonials/james-sterling.jpg"
-    }
-  },
-  "project_details": {
-    "section_title": "Ingeniería de Élite",
-    "section_subtitle": "Una exhibición de activos digitales de alto rendimiento.",
-    "label_live_demo": "Ver Demo",
-    "label_source_code": "Ver Código",
-    "label_tech_stack": "Stack Tecnológico",
-    "label_backend_arch": "Arquitectura Backend",
-    "label_elite_options": "Opciones de Élite",
-    "label_objective": "Objetivo del Sistema",
-    "label_close_modal": "Cerrar Especificaciones",
-    "empty_state": "No hay proyectos disponibles en este momento."
-  },
-  "visitor_hud": {
-    "tab_identity": "IDENTIDAD",
-    "tab_telemetry": "TELEMETRÍA",
-    "guest_title": "Identidad No Vinculada",
-    "guest_description": "Accede para activar el Protocolo 33 y recolectar artefactos exclusivos en el Santuario.",
-    "guest_cta": "Vincular Identidad",
-    "label_visitor_info": "INFORMACIÓN DEL HUÉSPED",
-    "label_ip_visitor": "I.P. DE ORIGEN",
-    "label_location": "UBICACIÓN",
-    "label_weather": "CLIMA EN CANASVIEIRAS",
-    "label_time": "HORA LOCAL",
-    "status_calibrating": "CALIBRANDO INSTRUMENTOS...",
-    "status_error": "SEÑAL PERDIDA",
-    "weather_sunny": "SOLEADO",
-    "weather_rainy": "LLUVIOSO",
-    "weather_cloudy": "NUBLADO",
-    "roaming_label": "EN TRÁNSITO",
-    "stat_artifacts": "Artefactos",
-    "stat_streak": "Racha",
-    "xp_next_label": "Siguiente",
-    "footer_credits": "Tecnología MetaShark Tech",
-    "cta_explore": "Explorar",
-    "precision_sync_label": "Protocolo Heimdall: Sincronización de Precisión Activa"
-  },
-  "system_status": {
-    "aria_label": "Actualizaciones de Estado del Hotel en Vivo",
-    "items": [
-      {
-        "category": "PRIDE FEST",
-        "message": "90% de Master Suites ocupadas para la Boat Party.",
-        "iconKey": "Ticket",
-        "colorKey": "purple"
-      },
-      {
-        "category": "METEOROLOGÍA",
-        "message": "25°C en Canasvieiras. Ideal para la playa.",
-        "iconKey": "ThermometerSun",
-        "colorKey": "yellow"
-      },
-      {
-        "category": "SEGURIDAD",
-        "message": "Acceso privado exclusivo monitoreado 24/7.",
-        "iconKey": "ShieldCheck",
-        "colorKey": "green"
-      },
-      {
-        "category": "LOUNGE",
-        "message": "Sunset Sessions diarias en la piscina del HQ.",
-        "iconKey": "Music",
-        "colorKey": "pink"
-      }
-    ]
-  },
-  "quienes_somos": {
-    "page_title": "Nuestra Historia | Beach Hotel Canasvieiras",
-    "page_description": "Descubra el legado y la visión detrás del santuario de hospitalidad de élite en Florianópolis.",
-    "hero_title": "El Legado del Santuario",
-    "hero_subtitle": "Fundado sobre los pilares de la exclusividad y la energía vibrante del mar, nuestro hotel es más que un destino; es un refugio curado para el viajero global.",
-    "luxury_pillar": {
-      "title": "Lujo Boutique",
-      "description": "Una atmósfera sofisticada diseñada para celebrar la diversidad y el confort de alta gama en cada detalle."
-    },
-    "comfort_pillar": {
-      "title": "Refugio Absoluto",
-      "description": "Suites modernas integradas con tecnología inteligente para garantizar la paz y el descanso en el corazón de Canasvieiras."
-    },
-    "service_pillar": {
-      "title": "Concierge de Élite",
-      "description": "Nuestro equipo dedicado anticipa sus necesidades, asegurando una estancia impecable y personalizada las 24 horas."
-    },
-    "cta_title": "Viva lo Inolvidable",
-    "cta_button": "Reserve su Experiencia"
   }
 }

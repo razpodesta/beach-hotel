@@ -1,9 +1,9 @@
 /**
  * @file apps/portfolio-web/src/lib/blog/actions.ts
  * @description Orquestador soberano de datos para el Hub Editorial.
- *              Implementa arquitectura de datos híbrida, validación Zod 
- *              y erradicación total de tipos 'any'.
- * @version 23.0 - Zero Any Compliance & Forensic Logging
+ *              Implementa un Shaper infalible, compilador Lexical de alta fidelidad
+ *              y blindaje total contra corrupciones de datos en Vercel.
+ * @version 25.0 - Zero Any & Forensic Standard
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -12,7 +12,7 @@ import type { Payload } from 'payload';
 import configPromise from '@metashark/cms-core/config';
 
 /**
- * IMPORTACIONES DE CONTRATO
+ * IMPORTACIONES DE CONTRATO (SSoT)
  * @pilar V: Adherencia arquitectónica.
  */
 import { postWithSlugSchema } from '../schemas/blog.schema';
@@ -22,13 +22,13 @@ import type { Locale } from '../../config/i18n.config';
 import { MOCK_POSTS } from '../../data/mocks/cms.mocks';
 
 /**
- * ESTADO DE INFRAESTRUCTRURA
+ * ESTADO DE INFRAESTRUCTRURA (Detectado en tiempo de ejecución)
  */
 const IS_BUILD_ENV = process.env.NEXT_PHASE === 'phase-production-build' || process.env.VERCEL === '1';
 const DB_READY = Boolean(process.env.DATABASE_URL);
 
 /**
- * CONTRATOS TÉCNICOS (SSoT)
+ * CONTRATOS TÉCNICOS: Lexical AST & Raw Content
  */
 interface LexicalNode {
   type: string;
@@ -47,17 +47,17 @@ interface LexicalRoot {
 
 /**
  * @interface RawPayloadPost
- * @description Representación del esquema de Payload para evitar 'any'.
+ * @description Representación tipada del esquema del CMS para evitar 'any'.
  */
 interface RawPayloadPost {
-  title: string;
-  slug: string;
-  description: string;
-  content: LexicalRoot | string;
-  publishedDate: string;
-  author: string | { username?: string; email?: string };
-  tags?: Array<{ tag: string }>;
-  ogImage?: string | { url: string };
+  title?: string | null;
+  slug?: string | null;
+  description?: string | null;
+  content?: LexicalRoot | string | null;
+  publishedDate?: string | null;
+  author?: string | { username?: string; email?: string } | null;
+  tags?: Array<{ tag: string }> | null;
+  ogImage?: string | { url: string } | null;
 }
 
 let cachedPayload: Payload | null = null;
@@ -73,7 +73,8 @@ async function getSovereignPayload(): Promise<Payload> {
 }
 
 /**
- * COMPILADOR JIT: Lexical to Markdown (Recursivo)
+ * COMPILADOR JIT: Lexical to Markdown (Deep Recursive)
+ * @description Transforma el AST del editor en narrativa Markdown pura.
  */
 function compileLexicalToMarkdown(contentNode: unknown): string {
   if (!contentNode) return '';
@@ -105,54 +106,70 @@ function compileLexicalToMarkdown(contentNode: unknown): string {
   try {
     const ast = contentNode as LexicalRoot;
     return extractRecursive(ast.root?.children);
-  } catch {
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : 'Parser Error';
+    console.warn(`[HEIMDALL][PARSER] Lexical conversion degraded: ${msg}`);
     return typeof contentNode === 'string' ? contentNode : '';
   }
 }
 
 /**
  * SHAPER POLIMÓRFICO: mapToSovereignPost
+ * @description Garantiza que el objeto de salida sea 100% compatible con Zod.
  * @pilar III: Seguridad de Tipos Absoluta.
  */
 function mapToSovereignPost(entry: unknown): PostWithSlug {
   try {
-    const parsedResult = postWithSlugSchema.safeParse(entry);
-    if (parsedResult.success) return parsedResult.data;
+    // 1. Verificación de tipo para entrada de Mocks
+    const quickResult = postWithSlugSchema.safeParse(entry);
+    if (quickResult.success) return quickResult.data;
 
-    const raw = entry as RawPayloadPost;
+    // 2. Procesamiento del objeto crudo del CMS
+    const raw = (entry || {}) as RawPayloadPost;
+
+    // Resolución de Autor (Blindaje contra undefined/null)
+    let resolvedAuthor = 'Sanctuary Team';
+    const authorData = raw.author;
+    if (authorData) {
+      if (typeof authorData === 'object') {
+        resolvedAuthor = authorData.username || authorData.email?.split('@')[0] || resolvedAuthor;
+      } else {
+        resolvedAuthor = authorData;
+      }
+    }
 
     const mappedData = {
-      slug: raw.slug,
+      slug: raw.slug || `journal-${Date.now()}`,
       metadata: {
-        title: raw.title,
-        description: raw.description,
-        author: typeof raw.author === 'object' 
-          ? raw.author.username || raw.author.email?.split('@')[0] || 'Concierge Team'
-          : raw.author,
-        published_date: raw.publishedDate,
+        title: raw.title || 'Untitled Article',
+        description: raw.description || 'Editorial content in progress.',
+        author: resolvedAuthor,
+        published_date: raw.publishedDate || new Date().toISOString(),
         tags: Array.isArray(raw.tags) 
           ? raw.tags.map((t) => t.tag).filter(Boolean) 
-          : [],
-        ogImage: typeof raw.ogImage === 'object' ? raw.ogImage.url : raw.ogImage,
+          : ['sanctuary'],
+        ogImage: typeof raw.ogImage === 'object' ? raw.ogImage?.url : (raw.ogImage || undefined),
       },
       content: compileLexicalToMarkdown(raw.content),
     };
 
     return postWithSlugSchema.parse(mappedData);
+
   } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : 'Unknown Corruption';
-    console.error(`[HEIMDALL][DATA-CORRUPTION] Article Shaper Failed: ${msg}`);
+    const msg = err instanceof Error ? err.message : 'Unknown Structural Corruption';
+    console.error(`[HEIMDALL][DATA-CORRUPTION] Article Shaper failed: ${msg}`);
     
+    // OBJETO DE RESCATE: Garantiza que generateStaticParams no falle por tipos.
     return {
-      slug: 'rescue-sync',
+      slug: 'recovery-sync-active',
       metadata: {
-        title: 'Editorial Sync in Progress',
-        description: 'Synchronizing sanctuary assets.',
+        title: 'Editorial Sync Active',
+        description: 'Synchronizing with the digital core.',
         author: 'System',
         published_date: new Date().toISOString(),
-        tags: ['system'],
+        tags: ['maintenance'],
       },
-      content: 'Data recovery protocol active.'
+      content: 'The Sanctuary is updating its editorial assets.'
     };
   }
 }
@@ -161,9 +178,10 @@ function mapToSovereignPost(entry: unknown): PostWithSlug {
  * ACCIÓN PÚBLICA: getAllPosts
  */
 export async function getAllPosts(lang: Locale = i18n.defaultLocale): Promise<PostWithSlug[]> {
-  console.group(`[HEIMDALL][EDITORIAL] Syncing Journal [${lang}]`);
+  console.group(`[HEIMDALL][EDITORIAL] Syncing Hub Journal [${lang}]`);
   
   if (IS_BUILD_ENV && !DB_READY) {
+    console.log('[BUILD-MODE] Persistencia offline. Sirviendo Génesis Mocks.');
     console.groupEnd();
     return MOCK_POSTS.map(mapToSovereignPost);
   }
@@ -177,11 +195,15 @@ export async function getAllPosts(lang: Locale = i18n.defaultLocale): Promise<Po
       locale: lang,
     });
     
+    const result = docs.length > 0 
+      ? docs.map((doc) => mapToSovereignPost(doc)) 
+      : MOCK_POSTS.map((mock) => mapToSovereignPost(mock));
+      
     console.groupEnd();
-    return docs.length > 0 ? docs.map(mapToSovereignPost) : MOCK_POSTS.map(mapToSovereignPost);
+    return result;
   } catch (error: unknown) {
-    const msg = error instanceof Error ? error.message : 'Database Timeout';
-    console.warn(`[RECOVERY] Logic fallback engaged: ${msg}`);
+    const msg = error instanceof Error ? error.message : 'Database Connection Timeout';
+    console.warn(`[RECOVERY] Fallback activado: ${msg}`);
     console.groupEnd();
     return MOCK_POSTS.map(mapToSovereignPost);
   }
@@ -191,7 +213,7 @@ export async function getAllPosts(lang: Locale = i18n.defaultLocale): Promise<Po
  * ACCIÓN PÚBLICA: getPostBySlug
  */
 export async function getPostBySlug(slug: string, lang: Locale = i18n.defaultLocale): Promise<PostWithSlug | null> {
-  console.group(`[HEIMDALL][EDITORIAL] Fetching Detail: ${slug}`);
+  console.group(`[HEIMDALL][EDITORIAL] Deep-Fetch: ${slug}`);
   
   try {
     const payload = await getSovereignPayload();
@@ -208,8 +230,8 @@ export async function getPostBySlug(slug: string, lang: Locale = i18n.defaultLoc
     const mockMatch = MOCK_POSTS.find(p => p.slug === slug);
     return mockMatch ? mapToSovereignPost(mockMatch) : null;
   } catch (error: unknown) {
-    const msg = error instanceof Error ? error.message : 'Fetch Aborted';
-    console.warn(`[HEIMDALL][RECOVERY] Search failed for ${slug}: ${msg}`);
+    const msg = error instanceof Error ? error.message : 'Search Aborted';
+    console.warn(`[HEIMDALL][RECOVERY] Detail failed for ${slug}: ${msg}`);
     console.groupEnd();
     const mockMatch = MOCK_POSTS.find(p => p.slug === slug);
     return mockMatch ? mapToSovereignPost(mockMatch) : null;
@@ -221,7 +243,7 @@ export async function getPostBySlug(slug: string, lang: Locale = i18n.defaultLoc
  */
 export async function getPostsByTag(tagSlug: string, lang: Locale = i18n.defaultLocale): Promise<PostWithSlug[]> {
   const normalized = tagSlug.toLowerCase().trim().replace(/\s+/g, '-');
-  console.group(`[HEIMDALL][EDITORIAL] Taxonomy Search: ${normalized}`);
+  console.group(`[HEIMDALL][EDITORIAL] Filter by Tag: ${normalized}`);
 
   try {
     const payload = await getSovereignPayload();
@@ -232,21 +254,17 @@ export async function getPostsByTag(tagSlug: string, lang: Locale = i18n.default
     });
 
     console.groupEnd();
-    if (docs.length > 0) return docs.map(mapToSovereignPost);
+    if (docs.length > 0) return docs.map((doc) => mapToSovereignPost(doc));
 
     return MOCK_POSTS
-      .map(mapToSovereignPost)
-      .filter((p: PostWithSlug) => 
-        p.metadata.tags.some((t) => t.toLowerCase().replace(/\s+/g, '-') === normalized)
-      );
+      .map((mock) => mapToSovereignPost(mock))
+      .filter((p) => p.metadata.tags.some((t) => t.toLowerCase().replace(/\s+/g, '-') === normalized));
   } catch (error: unknown) {
-    const msg = error instanceof Error ? error.message : 'Taxonomy Error';
+    const msg = error instanceof Error ? error.message : 'Filter Failed';
     console.warn(`[HEIMDALL][RECOVERY] Tag fallback active: ${msg}`);
     console.groupEnd();
     return MOCK_POSTS
-      .map(mapToSovereignPost)
-      .filter((p: PostWithSlug) => 
-        p.metadata.tags.some((t) => t.toLowerCase().replace(/\s+/g, '-') === normalized)
-      );
+      .map((mock) => mapToSovereignPost(mock))
+      .filter((p) => p.metadata.tags.some((t) => t.toLowerCase().replace(/\s+/g, '-') === normalized));
   }
 }
