@@ -1,34 +1,40 @@
 /**
- * @file Projects.ts
+ * @file packages/cms/core/src/collections/Projects.ts
  * @description Colección soberana para la gestión de activos digitales de ingeniería.
- *              Refactorizado: Nivelación UUID (ID tipo Texto), validación de color hex
- *              y normalización de datos resiliente para el Genesis Engine.
- * @version 7.0 - UUID Standard & Color Validation
+ *              Implementa arquitectura multitenant, normalización polimórfica para 
+ *              el Genesis Engine y validación de branding estricta.
+ * @version 8.0 - Vercel Build Normalization & Hook Resilience
  * @author Raz Podestá - MetaShark Tech
  */
 
 import { type CollectionConfig } from 'payload';
-import { multiTenantReadAccess, multiTenantWriteAccess } from './Access.js';
+
+/**
+ * IMPORTACIONES DE PERÍMETRO (Saneadas)
+ * @pilar V: Adherencia Arquitectónica. Eliminación de extensión .js para 
+ * garantizar resolución nativa en Next.js 15 y el pipeline de Vercel.
+ */
+import { multiTenantReadAccess, multiTenantWriteAccess } from './Access';
 
 /**
  * @type ProjectLayoutStyleType
- * @description Exportación de contrato para el Shaper de datos y el Seeder.
+ * @description Contrato inmutable para los estilos de maquetación permitidos.
  */
 export type ProjectLayoutStyleType = 'minimal' | 'immersive' | 'editorial' | 'corporate' | 'brutalist';
 
+/**
+ * CONFIGURACIÓN DE COLECCIÓN: Projects
+ * @pilar III: Seguridad de Tipos Absoluta.
+ */
 export const Projects: CollectionConfig = {
   slug: 'projects',
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'status', 'reputationWeight', 'tenantId'],
     group: 'Hospitality Assets',
-    description: 'Catálogo de infraestructuras digitales y proyectos de alto rendimiento.',
+    description: 'Catálogo de infraestructuras digitales y activos de alta ingeniería.',
   },
   
-  /**
-   * REGLAS DE ACCESO
-   * @pilar III: Seguridad de Tipos.
-   */
   access: {
     read: multiTenantReadAccess,
     create: ({ req: { user } }) => !!user,
@@ -38,18 +44,18 @@ export const Projects: CollectionConfig = {
 
   /**
    * GUARDIANES DE INTEGRIDAD (Hooks)
-   * @pilar VIII: Resiliencia - Normalización polimórfica de datos.
+   * @description Orquesta la normalización de datos y la garantía multi-tenant.
    */
   hooks: {
     beforeChange: [
       ({ req, data, operation }) => {
-        // 1. Garantía Multi-Tenant
+        // 1. Garantía de Identidad Multi-Tenant
         if (operation === 'create' && req.user?.tenantId) {
           if (!data.tenantId) data.tenantId = req.user.tenantId;
         }
 
         // 2. Slugificación Automática Sanitizada
-        if (typeof data.title === 'string' && !data.slug) {
+        if (data.title && typeof data.title === 'string' && !data.slug) {
           data.slug = data.title
             .toLowerCase()
             .trim()
@@ -57,8 +63,8 @@ export const Projects: CollectionConfig = {
             .replace(/\s+/g, '-');
         }
 
-        // 3. Normalización de Arrays (Tags y Tech Stack)
-        // Permite que el Seeder envíe strings simples y el CMS los convierta a objetos.
+        // 3. Normalización "Mirror Sync" (Strings to Objects)
+        // @pilar VIII: Resiliencia - Asegura paridad entre Seeding y API.
         if (Array.isArray(data.tags) && typeof data.tags[0] === 'string') {
           data.tags = data.tags.map((tag: string) => ({ tag }));
         }
@@ -67,27 +73,35 @@ export const Projects: CollectionConfig = {
           data.tech_stack = data.tech_stack.map((technology: string) => ({ technology }));
         }
 
-        // 4. Normalización de Arquitectura Backend
-        if (data.backend_architecture && 
-            Array.isArray(data.backend_architecture.features) && 
-            typeof data.backend_architecture.features[0] === 'string') {
-          data.backend_architecture.features = data.backend_architecture.features.map((feature: string) => ({ feature }));
+        // 4. Normalización Profunda de Arquitectura
+        if (data.backend_architecture?.features && Array.isArray(data.backend_architecture.features)) {
+          if (typeof data.backend_architecture.features[0] === 'string') {
+            data.backend_architecture.features = data.backend_architecture.features.map((feature: string) => ({ feature }));
+          }
         }
 
         return data;
       },
     ],
+    afterChange: [
+      ({ doc, operation }) => {
+        if (operation === 'create') {
+          console.log(`[HEIMDALL][INFRASTRUCTURE] Digital Asset Ingested: ${doc.title} (Weight: ${doc.reputationWeight} RZB)`);
+        }
+      }
+    ]
   },
 
   fields: [
-    /* 
-       PILAR I: VISIÓN HOLÍSTICA
-       Forzamos el ID como texto para permitir UUIDs y evitar la colisión 
-       de tipos con tablas de relaciones internas de Payload.
-    */
+    /**
+     * @pilar I: Visión Holística - Soberanía UUID.
+     * Mantenemos ID como texto para evitar colisiones relacionales en despliegue.
+     */
     {
       name: 'id',
       type: 'text',
+      required: true,
+      admin: { position: 'sidebar' }
     },
     { 
       name: 'tenantId', 
@@ -117,17 +131,17 @@ export const Projects: CollectionConfig = {
                 { name: 'slug', type: 'text', unique: true, index: true, admin: { width: '30%' } },
             ]},
             { name: 'description', type: 'textarea', required: true },
-            { name: 'imageUrl', type: 'text', required: true, admin: { description: 'URL del activo visual principal.' } },
+            { name: 'imageUrl', type: 'text', required: true, admin: { description: 'URL canónica del activo visual.' } },
             { type: 'row', fields: [
                 { name: 'liveUrl', type: 'text', admin: { placeholder: 'https://...' } },
-                { name: 'codeUrl', type: 'text', admin: { placeholder: 'GitHub URL' } },
+                { name: 'codeUrl', type: 'text', admin: { placeholder: 'GitHub Repository' } },
             ]},
             { 
               name: 'tags', 
               type: 'array', 
               required: true, 
               fields: [{ name: 'tag', type: 'text', required: true }],
-              admin: { description: 'Etiquetas de categorización para el Frontend.' }
+              admin: { description: 'Taxonomía de clasificación para el frontend.' }
             }
           ],
         },
@@ -178,11 +192,14 @@ export const Projects: CollectionConfig = {
                   name: 'primary_color', 
                   type: 'text', 
                   required: true,
-                  // @pilar III: Seguridad de Datos. Regex para validar formato Hex.
+                  /**
+                   * @pilar III: Seguridad de Datos. 
+                   * Validación Regex para asegurar compatibilidad con Oxygen Engine (Tailwind v4).
+                   */
                   validate: (val: string | null | undefined) => {
                     return val && /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(val) 
                       ? true 
-                      : 'Debe ser un código hexadecimal válido (ej: #FF0000)';
+                      : 'Debe ser un código hexadecimal válido (ej: #A855F7)';
                   }
                 },
                 { 
@@ -211,7 +228,7 @@ export const Projects: CollectionConfig = {
               defaultValue: 10, 
               min: 0, 
               required: true,
-              admin: { description: 'Valor de recompensa en XP (RazTokens).' }
+              admin: { description: 'Peso de reputación en RazTokens (XP).' }
             }
           ]
         }

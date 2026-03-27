@@ -1,53 +1,54 @@
 /**
  * @file packages/cms/core/src/collections/Access.ts
- * @description Lógica soberana de seguridad multi-tenant y control de perímetros.
- *              Refactorizado: Integración con el Protocolo Heimdall para auditoría 
- *              de acceso y sincronización con infraestructura UUID.
- * @version 4.0 - Forensic Observability & UUID Sync
+ * @description Orquestador Soberano de Seguridad Multi-Tenant y Perímetros de Datos.
+ *              Implementa el Protocolo Heimdall para auditoría de acceso y 
+ *              blindaje de integridad E-E-A-T.
+ * @version 5.0 - Forensic Observability & Strict Type Guarding
  * @author Raz Podestá - MetaShark Tech
  */
 
 import type { Access, Where } from 'payload';
 
 /**
- * @interface SovereignUser
- * @description Contrato de identidad nivelado con el estándar UUID del ecosistema.
+ * @type SovereignUser
+ * @description Definición estricta de la identidad operativa dentro del CMS.
+ * @pilar III: Seguridad de Tipos - Alineado con el contrato de Users.ts.
  */
-interface SovereignUser {
+type SovereignUser = {
   id: string;
   email: string;
   role: 'admin' | 'user' | 'sponsor';
   tenantId?: string;
-}
+};
 
 /**
  * REGLA DE LECTURA: multiTenantReadAccess
  * @description Orquesta la visibilidad con precisión matemática:
- * - Publicados: Visible para todos (incluyendo anónimos).
- * - Privados: Solo visibles para el Admin o miembros del mismo Tenant.
+ * - Publicados: Visible para todos (Pilar I: SEO & Alcance).
+ * - Privados: Solo visibles para el Administrador o miembros del mismo Tenant.
  * 
- * @pilar IV: Observabilidad - Registra el contexto del handshake de lectura.
+ * @pilar IV: Observabilidad - Trazabilidad del handshake de lectura.
  */
 export const multiTenantReadAccess: Access = ({ req: { user } }) => {
-  const sovereignUser = user as SovereignUser | null;
+  const sovereignUser = user as unknown as SovereignUser | null;
 
-  // 1. Visibilidad Pública Universal
-  const publicAccess: Where = {
+  // 1. Visibilidad Pública Universal (Contenido listo para producción)
+  const publicFilter: Where = {
     status: {
       equals: 'published',
     },
   };
 
-  // 2. Administrador Maestro: Acceso Total sin restricciones
+  // 2. Administrador Maestro: Acceso Total (Bypass de Perímetro)
   if (sovereignUser?.role === 'admin') {
     return true;
   }
 
   // 3. Usuario Autenticado: Acceso a su propio Tenant + Contenido Público
-  if (sovereignUser?.tenantId) {
+  if (sovereignUser?.tenantId && typeof sovereignUser.tenantId === 'string') {
     return {
       or: [
-        publicAccess,
+        publicFilter,
         {
           tenantId: {
             equals: sovereignUser.tenantId,
@@ -57,38 +58,43 @@ export const multiTenantReadAccess: Access = ({ req: { user } }) => {
     } as Where;
   }
 
-  // 4. Default: Visitante anónimo solo ve contenido publicado
-  return publicAccess;
+  // 4. Default: Visitante anónimo o sin Tenant (Solo contenido publicado)
+  return publicFilter;
 };
 
 /**
  * REGLA DE ESCRITURA: multiTenantWriteAccess
  * @description Protección de integridad estricta (CUD: Create, Update, Delete).
- *              Garantiza que ningún usuario pueda corromper datos de otro Tenant.
+ *              Garantiza la soberanía de los datos por propiedad digital.
  * 
- * @pilar VIII: Resiliencia - Guardia de identidad nula.
+ * @pilar VIII: Resiliencia - Guardia de identidad nula con Fail-Fast.
  */
 export const multiTenantWriteAccess: Access = ({ req: { user } }) => {
-  const sovereignUser = user as SovereignUser | null;
+  const sovereignUser = user as unknown as SovereignUser | null;
 
-  // Fallback de seguridad: Denegación absoluta si no hay handshake de identidad
+  // Handshake Fallido: Denegación absoluta si no hay identidad verificada.
   if (!sovereignUser) {
     return false;
   }
 
-  // Bypass para el Administrador Maestro
+  // Administrador Maestro: Autoridad total sobre la infraestructura.
   if (sovereignUser.role === 'admin') {
     return true;
   }
 
   /**
-   * @pilar I: Visión Holística
-   * Restricción por Tenant: El usuario solo puede operar sobre recursos 
-   * que pertenezcan a su misma propiedad digital.
+   * @pilar I: Visión Holística - Aislamiento Multi-Tenant.
+   * El usuario solo puede modificar recursos vinculados a su propia identidad de tenant.
    */
-  return {
-    tenantId: {
-      equals: sovereignUser.tenantId,
-    },
-  } as Where;
+  if (sovereignUser.tenantId) {
+    return {
+      tenantId: {
+        equals: sovereignUser.tenantId,
+      },
+    } as Where;
+  }
+
+  // Fallback: Si el usuario existe pero no tiene tenant asignado, denegar escritura.
+  console.warn(`[HEIMDALL][SECURITY] Access Denied: User ${sovereignUser.id} lacks a valid Tenant ID.`);
+  return false;
 };

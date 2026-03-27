@@ -2,8 +2,8 @@
  * @file apps/portfolio-web/src/components/ui/VisitorHud.tsx
  * @description Centro de Mando Perimetral (Heimdall HUD). 
  *              Orquesta la telemetría ambiental y el motor de reputación 
- *              Protocolo 33 con sincronización de estado global.
- * @version 26.0 - Vercel Build Normalization & Forensic Observability
+ *              Protocolo 33 con sincronización de estado global (Zustand).
+ * @version 26.0 - Vercel Build Sync & Resolution Purge
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -18,7 +18,8 @@ import {
 
 /**
  * IMPORTACIONES DE INFRAESTRUCTRURA (Rutas Saneadas)
- * @pilar V: Eliminación de extensiones .js para resolución nativa en Next.js 15.
+ * @pilar V: Adherencia arquitectónica. Se eliminan las extensiones .js para 
+ * garantizar la resolución nativa de TypeScript en el pipeline de Next.js 15.
  */
 import { cn } from '../../lib/utils/cn';
 import { useVisitorData } from '../../lib/hooks/use-visitor-data';
@@ -41,7 +42,7 @@ interface SovereignUserSession {
 
 /**
  * Hook de Hidratación de Élite: useIsMounted
- * @pilar VIII: Resiliencia - Detección segura de montaje mediante React 19 Standards.
+ * @pilar VIII: Resiliencia - Detección segura de montaje en el cliente.
  */
 function useIsMounted(): boolean {
   const subscribe = useCallback(() => {
@@ -64,22 +65,22 @@ export function VisitorHud({ dictionary }: { dictionary: Dictionary }) {
   const [currentTime, setCurrentTime] = useState<string>('--:--');
   const [activeTab, setActiveTab] = useState<HudTab>('identity');
   
-  // @pilar X: Selección quirúrgica de estado global para evitar re-renders
+  // @pilar X: Selección quirúrgica de estado global para evitar re-renders innecesarios
   const isHudOpen = useUIStore((s) => s.isVisitorHudOpen);
   const hasHydrated = useUIStore((s) => s.hasHydrated);
   const closeHud = useUIStore((s) => s.closeVisitorHud);
   
-  // Motores de Movimiento Físico (Pilar XII)
+  // Motores de Movimiento Físico para una UX de Lujo (Pilar XII)
   const x = useMotionValue(0);
   const y = useMotionValue(0);
 
-  // Desestructuración defensiva (MACS Compliance)
+  // Desestructuración de contratos i18n (MACS Compliance)
   const t = dictionary.visitor_hud;
   const p = dictionary.profile_page;
 
   /**
    * SESIÓN DE USUARIO (Handshake Bridge)
-   * Preparado para inyección de auth-shield.
+   * Preparado para la futura inyección del authStore soberano.
    */
   const sessionUser = useMemo((): SovereignUserSession | null => {
     return null; 
@@ -106,6 +107,7 @@ export function VisitorHud({ dictionary }: { dictionary: Dictionary }) {
 
   /**
    * RELOJ ATÓMICO (Heimdall Protocol)
+   * Sincroniza la hora local basada en la geolocalización detectada.
    */
   useEffect(() => {
     const timezone = geo?.timezone || 'America/Sao_Paulo';
@@ -135,30 +137,29 @@ export function VisitorHud({ dictionary }: { dictionary: Dictionary }) {
    */
   useEffect(() => {
     if (isMounted && hasHydrated) {
-      console.log('[HEIMDALL][HUD] Perimetric Command Center Calibrated.');
+      console.log('[HEIMDALL][HUD] Command Center Synchronized.');
     }
   }, [isMounted, hasHydrated]);
 
-  // Guardián de Hidratación (Pilar VIII)
+  // Guardián de Hidratación (Pilar VIII) - Evita el flash de contenido no estilizado
   if (!isMounted || !hasHydrated || !isHudOpen || !dictionary) return null;
 
   return (
-    <AnimatePresence mode="wait">
-      <motion.div
+    <AnimatePresence>
+      <motion.aside
         drag
         dragMomentum={false}
         style={{ x, y }}
         initial={{ opacity: 0, scale: 0.95, x: 40, filter: 'blur(10px)' }}
         animate={{ opacity: 1, scale: 1, x: 0, filter: 'blur(0px)' }}
         exit={{ opacity: 0, scale: 0.9, x: 40, filter: 'blur(10px)' }}
-        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
         className={cn(
-          "fixed top-24 right-6 z-100 w-85 cursor-grab rounded-[2.5rem] border border-white/10",
-          "bg-zinc-950/70 backdrop-blur-3xl shadow-[0_32px_64px_-16px_rgba(0,0,0,0.8)]",
-          "overflow-hidden active:cursor-grabbing select-none transform-gpu"
+          "fixed top-24 right-6 z-[100] w-85 cursor-grab rounded-[2.5rem] border border-white/10",
+          "bg-zinc-950/80 backdrop-blur-3xl shadow-[0_32px_64px_-16px_rgba(0,0,0,0.8)]",
+          "overflow-hidden active:cursor-grabbing select-none"
         )}
         role="complementary"
-        aria-label="Visitor HUD"
+        aria-label="Visitor HUD Telemetry"
       >
         {/* 1. HEADER: NAVEGACIÓN TÁCTICA */}
         <div className="flex items-center justify-between px-6 py-5 bg-white/5 border-b border-white/5">
@@ -174,15 +175,15 @@ export function VisitorHud({ dictionary }: { dictionary: Dictionary }) {
               >
                 {tab === 'identity' ? t.tab_identity : t.tab_telemetry}
                 {activeTab === tab && (
-                  <motion.div layoutId="hud-tab-active" className="absolute bottom-0 left-0 right-0 h-px bg-primary" />
+                  <motion.div layoutId="hud-tab-indicator" className="absolute bottom-0 left-0 right-0 h-px bg-primary" />
                 )}
               </button>
             ))}
           </div>
           <button 
             onClick={closeHud} 
-            className="p-1.5 rounded-full hover:bg-white/10 text-zinc-600 transition-colors active:scale-90 outline-none"
-            aria-label={dictionary.lucide_page.modal_close}
+            className="p-1.5 rounded-full hover:bg-white/10 text-zinc-600 transition-colors active:scale-90"
+            aria-label="Fechar HUD"
           >
             <X size={16} />
           </button>
@@ -204,13 +205,13 @@ export function VisitorHud({ dictionary }: { dictionary: Dictionary }) {
                   <>
                     <div className="flex items-center gap-5">
                       <div className="relative">
-                        <div className="h-16 w-16 rounded-2xl bg-linear-to-br from-primary to-pink-500 p-px shadow-2xl">
+                        <div className="h-16 w-16 rounded-2xl bg-linear-to-br from-primary to-pink-500 p-px">
                           <div className="flex h-full w-full items-center justify-center rounded-2xl bg-zinc-950">
                             <User size={28} className="text-white opacity-80" />
                           </div>
                         </div>
                         <motion.div 
-                          animate={{ scale: [1, 1.1, 1], boxShadow: ["0 0 0px #a855f7", "0 0 15px #a855f7", "0 0 0px #a855f7"] }}
+                          animate={{ scale: [1, 1.1, 1] }}
                           transition={{ repeat: Infinity, duration: 2 }}
                           className="absolute -bottom-2 -right-2 flex h-8 w-8 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-white shadow-xl border-2 border-zinc-950"
                         >
@@ -218,7 +219,7 @@ export function VisitorHud({ dictionary }: { dictionary: Dictionary }) {
                         </motion.div>
                       </div>
                       <div>
-                        <p className="text-[9px] font-mono text-primary uppercase tracking-[0.3em] mb-1 font-bold">{sessionUser.role}</p>
+                        <p className="text-[9px] font-mono text-primary uppercase tracking-[0.3em] mb-1">{sessionUser.role}</p>
                         <h4 className="font-display text-xl font-bold text-white tracking-tight">{sessionUser.name}</h4>
                       </div>
                     </div>
@@ -228,7 +229,7 @@ export function VisitorHud({ dictionary }: { dictionary: Dictionary }) {
                         <span>{p.xp_label}: {progress?.currentXp}</span>
                         <span>{t.xp_next_label}: {progress?.nextLevelXp}</span>
                       </div>
-                      <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/5 border border-white/5">
+                      <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/5">
                         <motion.div 
                           initial={{ width: 0 }}
                           animate={{ width: `${progress?.progressPercent}%` }}
@@ -242,7 +243,7 @@ export function VisitorHud({ dictionary }: { dictionary: Dictionary }) {
                   /* --- VISTA: INVITADO (CONVERSIÓN) --- */
                   <div className="py-4 text-center space-y-6">
                     <div className="relative mx-auto h-20 w-20 flex items-center justify-center">
-                        <div className="absolute inset-0 rounded-full border border-dashed border-zinc-800 animate-spin-slow opacity-40" />
+                        <div className="absolute inset-0 rounded-full border border-dashed border-zinc-800 animate-spin-slow" />
                         <ScanFace size={40} className="text-zinc-700 animate-pulse" />
                     </div>
                     <div className="space-y-2">
@@ -251,8 +252,8 @@ export function VisitorHud({ dictionary }: { dictionary: Dictionary }) {
                         {t.guest_description}
                       </p>
                     </div>
-                    <button className="group w-full flex items-center justify-center gap-3 py-4 rounded-2xl bg-white text-black text-[10px] font-bold uppercase tracking-[0.3em] hover:bg-primary hover:text-white transition-all active:scale-95 shadow-2xl">
-                      <LogIn size={14} className="group-hover:rotate-12 transition-transform" /> {t.guest_cta}
+                    <button className="w-full flex items-center justify-center gap-3 py-4 rounded-2xl bg-white text-black text-[10px] font-bold uppercase tracking-[0.3em] hover:bg-primary hover:text-white transition-all active:scale-95 shadow-2xl">
+                      <LogIn size={14} /> {t.guest_cta}
                     </button>
                   </div>
                 )}
@@ -290,7 +291,7 @@ export function VisitorHud({ dictionary }: { dictionary: Dictionary }) {
                     <span className="text-[9px] font-bold uppercase tracking-[0.4em]">{t.status_error}</span>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 gap-4 transform-gpu">
+                  <div className="grid grid-cols-1 gap-4">
                     <div className="flex items-center justify-between p-5 rounded-3xl bg-white/2 border border-white/5">
                       <div className="space-y-1">
                         <p className="flex items-center gap-2 text-[9px] font-mono text-zinc-600 uppercase tracking-widest font-bold">
@@ -324,10 +325,7 @@ export function VisitorHud({ dictionary }: { dictionary: Dictionary }) {
                     </div>
                     
                     <div className="p-4 rounded-3xl bg-primary/5 border border-primary/20 flex items-center gap-4">
-                        <div className="relative">
-                           <Target size={16} className="text-primary" />
-                           <div className="absolute inset-0 bg-primary/20 blur-sm rounded-full animate-pulse" />
-                        </div>
+                        <Target size={16} className="text-primary animate-pulse" />
                         <span className="text-[9px] font-mono text-zinc-400 uppercase tracking-[0.2em] leading-tight">
                             {t.precision_sync_label}
                         </span>
@@ -349,7 +347,7 @@ export function VisitorHud({ dictionary }: { dictionary: Dictionary }) {
             <ChevronRight size={10} className="group-hover:translate-x-1 transition-transform" />
           </button>
         </div>
-      </motion.div>
+      </motion.aside>
     </AnimatePresence>
   );
 }

@@ -14,8 +14,7 @@
         "tsConfig": "packages/cms/core/tsconfig.lib.json",
         /**
          * @pilar XIII: Alineación con el Motor.
-         * Forzamos exclusivamente el formato 'esm' para erradicar la colisión 
-         * con la directiva "type": "module" detectada por Vercel.
+         * Emisión exclusiva en ESM para erradicar ruidos de construcción en Vercel.
          */
         "format": ["esm"],
         "assets": [
@@ -28,13 +27,13 @@
         ],
         /**
          * @pilar VIII: Resiliencia de Dependencias.
-         * Garantiza que el package.json generado en /dist sea un artefacto 
-         * de producción puro y coherente.
+         * Genera un bundle de producción autónomo con sus propias definiciones de módulos.
          */
         "generatePackageJson": true,
         "updateBuildableProjectDepsInPackageJson": true,
         "clean": true
-      }
+      },
+      "description": "Compilación soberana del núcleo de datos MetaShark."
     },
     "typecheck": {
       "executor": "nx:run-commands",
@@ -42,11 +41,18 @@
         "command": "tsc -p packages/cms/core/tsconfig.lib.json --noEmit",
         "forwardAllArgs": true
       },
-      "description": "Verificación forense de tipos para el núcleo de datos."
+      /**
+       * @pilar X: Performance - Definición de inputs para habilitar el caché de Nx.
+       * Esto evita validaciones redundantes en el pipeline de Vercel.
+       */
+      "inputs": ["production", "^production"],
+      "dependsOn": ["^build"],
+      "description": "Verificación forense de integridad de tipos del CMS."
     },
     "lint": { 
       "executor": "@nx/eslint:lint",
-      "inputs": ["default", "{workspaceRoot}/eslint.config.mjs"]
+      "inputs": ["default", "{workspaceRoot}/eslint.config.mjs"],
+      "description": "Auditoría estática de calidad y fronteras de módulo."
     },
     "test": {
       "executor": "@nx/jest:jest",
@@ -54,7 +60,8 @@
       "options": {
         "jestConfig": "packages/cms/core/jest.config.ts",
         "passWithNoTests": true
-      }
+      },
+      "description": "Ejecución de validaciones de lógica en el Espejo de Calidad."
     }
   }
 }

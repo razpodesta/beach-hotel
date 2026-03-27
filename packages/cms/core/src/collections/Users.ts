@@ -1,18 +1,30 @@
 /**
  * @file packages/cms/core/src/collections/Users.ts
- * @description Colección soberana de identidades y acceso.
- *              Refactorizado: Implementación de ID tipo Texto para soporte de UUID 
- *              y compatibilidad con infraestructuras distribuidas.
- * @version 4.0 - UUID Standard & Auth Resilience
+ * @description Colección soberana de identidades y acceso (Access Control).
+ *              Implementa arquitectura multitenant, soporte para UUID deterministas
+ *              y blindaje contra errores de validación en entornos de CI/CD.
+ * @version 5.0 - Resolution Sync & Auth Resilience
  * @author Raz Podestá - MetaShark Tech
  */
 
 import { type CollectionConfig } from 'payload';
 import { v4 as uuidv4 } from 'uuid';
-import { multiTenantReadAccess } from './Access.js';
+
+/**
+ * IMPORTACIONES DE PERÍMETRO (Saneadas)
+ * @pilar V: Adherencia arquitectónica. Eliminación de extensión .js para 
+ * sincronización con el motor 'bundler' de Next.js 15.
+ */
+import { multiTenantReadAccess } from './Access';
 
 export const Users: CollectionConfig = {
   slug: 'users',
+  
+  /**
+   * CONFIGURACIÓN DE AUTENTICACIÓN
+   * @pilar VIII: Resiliencia - Desactiva la verificación de email en modo Seeding
+   * para permitir el arranque inmaculado de la infraestructura.
+   */
   auth: {
     tokenExpiration: 7200,
     verify: process.env.IS_SEEDING_MODE !== 'true',
@@ -25,24 +37,38 @@ export const Users: CollectionConfig = {
       sameSite: 'Lax', 
     },
   },
+
   admin: {
     useAsTitle: 'email',
     defaultColumns: ['email', 'role', 'level', 'tenantId'],
     group: 'System Management',
+    description: 'Gestión centralizada de identidades, roles y reputación (P33).',
   },
+
+  /**
+   * REGLAS DE ACCESO PERIMETRAL
+   * @pilar III: Seguridad de Tipos Absoluta.
+   */
   access: {
     read: multiTenantReadAccess,
-    create: () => true, 
+    create: () => true, // Permite creación inicial (Genesis); el Middleware protege el resto.
     update: ({ req: { user } }) => user?.role === 'admin' || (!!user),
     delete: ({ req: { user } }) => user?.role === 'admin',
   },
+
+  /**
+   * GUARDIANES DE INTEGRIDAD (Hooks)
+   * @description Orquesta la generación de identidad y estados de validación.
+   */
   hooks: {
     beforeChange: [
       ({ data, operation }) => {
+        // 1. Garantía de Identidad Multi-Tenant
         if (operation === 'create') {
           if (!data.tenantId) {
             data.tenantId = uuidv4();
           }
+          // 2. Protocolo de Rescate: Verificación automática en modo Seeding
           if (process.env.IS_SEEDING_MODE === 'true') {
             data._verified = true;
           }
@@ -51,12 +77,13 @@ export const Users: CollectionConfig = {
       },
     ],
   },
+
   fields: [
-    /* 
-       PILAR I: VISIÓN HOLÍSTICA
-       Forzamos el ID como texto para permitir el uso de UUIDs y evitar 
-       el error de transpilación 'serial' en PostgreSQL remoto.
-    */
+    /**
+     * @pilar I: Visión Holística - Soberanía UUID.
+     * Forzamos ID como texto para compatibilidad absoluta con Supabase
+     * y evitar errores de transpilación de tipos 'serial' en despliegue.
+     */
     {
       name: 'id',
       type: 'text',
@@ -67,6 +94,7 @@ export const Users: CollectionConfig = {
       required: true,
       unique: true,
       index: true,
+      admin: { description: 'Identificador único de acceso perimetral.' }
     },
     {
         name: '_verified',
@@ -102,20 +130,34 @@ export const Users: CollectionConfig = {
                   required: true,
                   index: true,
                   saveToJWT: true,
-                  admin: { width: '50%', readOnly: true },
+                  admin: { 
+                    width: '50%', 
+                    readOnly: true,
+                    description: 'Identificador único de propiedad digital.' 
+                  },
                 },
               ],
             },
           ],
         },
         {
-          label: 'Protocolo 33',
+          label: 'Protocolo 33 (Evolución)',
           fields: [
             {
               type: 'row',
               fields: [
-                { name: 'level', type: 'number', defaultValue: 1, admin: { width: '50%', readOnly: true } },
-                { name: 'experiencePoints', type: 'number', defaultValue: 0, admin: { width: '50%', readOnly: true } },
+                { 
+                  name: 'level', 
+                  type: 'number', 
+                  defaultValue: 1, 
+                  admin: { width: '50%', readOnly: true } 
+                },
+                { 
+                  name: 'experiencePoints', 
+                  type: 'number', 
+                  defaultValue: 0, 
+                  admin: { width: '50%', readOnly: true } 
+                },
               ],
             },
           ],

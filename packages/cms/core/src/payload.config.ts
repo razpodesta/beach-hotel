@@ -1,9 +1,9 @@
 /**
  * @file packages/cms/core/src/payload.config.ts
  * @description Orquestador Soberano de Configuración para Payload CMS 3.0.
- *              Implementa arquitectura Next.js 15 Standard, resolución ESM Estricta,
- *              optimización de pool para latencias altas y blindaje de infraestructura.
- * @version 16.0 - Forensic Health Sync & Pool Optimization
+ *              Implementa arquitectura Next.js 15 Standard, resolución híbrida
+ *              resiliente y optimización de infraestructura para Vercel.
+ * @version 17.0 - Resolution Paradox Fix & Hybrid Build Sync
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -17,18 +17,20 @@ import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 
 /**
- * IMPORTACIONES ATÓMICAS DE COLECCIONES (Strict ESM)
+ * IMPORTACIONES ATÓMICAS DE COLECCIONES
  * @pilar V: Adherencia Arquitectónica. 
- * @fix TS2835: Sincronización obligatoria de extensiones físicas .js.
+ * @fix Erradicación del error 'Module not found'. Se eliminan las extensiones .js 
+ * para permitir que el compilador de Next.js resuelva los archivos fuente .ts 
+ * durante la fase de transpilePackages en Vercel.
  */
-import { Users } from './collections/Users.js';
-import { BlogPosts } from './collections/BlogPosts.js';
-import { Projects } from './collections/Projects.js';
-import { Media } from './collections/Media.js';
-import { Tenants } from './collections/Tenants.js';
+import { Users } from './collections/Users';
+import { BlogPosts } from './collections/BlogPosts';
+import { Projects } from './collections/Projects';
+import { Media } from './collections/Media';
+import { Tenants } from './collections/Tenants';
 
 /**
- * DETERMINACIÓN DE PERÍMETRO DE INFRAESTRUCTRURA (ESM Protocol)
+ * DETERMINACIÓN DE PERÍMETRO DE INFRAESTRUCTRURA
  */
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -40,21 +42,19 @@ const BASE_CONFIG_DIR = __dirname;
 const PAYLOAD_SECRET = process.env.PAYLOAD_SECRET;
 const DATABASE_URL = process.env.DATABASE_URL;
 
-// Protocolo Heimdall: Trazabilidad forense de handshake y salud de entorno
+// Protocolo Heimdall: Trazabilidad forense de salud de entorno
 console.group('[HEIMDALL][CMS] Sovereign Boot Protocol');
-console.log(`Core_Engine_Path: ${BASE_CONFIG_DIR}`);
-console.log(`Node_Runtime: ${process.version}`);
-console.log(`Supabase_URL_Presence: ${!!DATABASE_URL}`);
+console.log(`Core_Path: ${BASE_CONFIG_DIR}`);
+console.log(`Runtime: ${process.env.NODE_ENV}`);
 if (!DATABASE_URL && process.env.NODE_ENV === 'production') {
-  console.error('[CRITICAL] Missing DATABASE_URL in Vercel. Process halted.');
-  throw new Error('SSoT Failure: Missing infrastructure secrets.');
+  console.error('[CRITICAL] Missing DATABASE_URL in Vercel.');
+  throw new Error('SSoT Failure: Infrastructure secrets missing.');
 }
 console.groupEnd();
 
 export default buildConfig({
   /**
    * @pilar VI: Internacionalización de Infraestructura.
-   * Centraliza la identidad comunicacional del Santuario.
    */
   email: nodemailerAdapter({
     defaultFromAddress: 'admin@beachhotelcanasvieiras.com',
@@ -63,15 +63,15 @@ export default buildConfig({
 
   /**
    * @pilar III: Seguridad de Tipos & IX: Escape de Emergencia.
-   * @description Sincronización robusta con el motor de procesamiento Sharp.
+   * Sincronización con el motor Sharp para procesamiento de activos visuales.
    */
   sharp: (sharp as unknown) as SharpDependency,
 
   admin: {
     user: Users.slug,
     /**
-     * @description El importMap es el cimiento de la hidratación de componentes 
-     * en el panel administrativo dentro del runtime de Next.js 15.
+     * @description El importMap es crítico para la hidratación de componentes 
+     * en el panel administrativo dentro de Next.js 15.
      */
     importMap: { 
       baseDir: BASE_CONFIG_DIR, 
@@ -80,7 +80,6 @@ export default buildConfig({
 
   /**
    * REGISTRO SOBERANO DE COLECCIONES (SSoT)
-   * Orquesta la base del conocimiento del Hotel, Festival y Journal.
    */
   collections: [
     Users, 
@@ -103,26 +102,20 @@ export default buildConfig({
   typescript: {
     /**
      * @pilar III: Inferencia Obligatoria.
-     * Generación de tipos sincronizada para el desarrollo Source-First.
      */
     outputFile: path.resolve(BASE_CONFIG_DIR, 'payload-types.ts'),
   },
   
   /**
    * @pilar VIII: Resiliencia de Persistencia.
-   * @pilar X: Optimización para entornos Serverless (Vercel).
+   * @pilar X: Optimización para latencias de pooler detectadas (>4s).
    */
   db: postgresAdapter({
     pool: {
       connectionString: DATABASE_URL || '',
-      /** 
-       * @description Ajuste basado en auditoría forense: 
-       * Se incrementan los timeouts para compensar latencias de pooler > 4s.
-       */
       max: 10,
-      min: 0,
       idleTimeoutMillis: 30000,
-      connectionTimeoutMillis: 15000,
+      connectionTimeoutMillis: 20000, // Margen de seguridad incrementado
       ssl: process.env.NODE_ENV === 'production' 
         ? { rejectUnauthorized: true } 
         : { rejectUnauthorized: false },

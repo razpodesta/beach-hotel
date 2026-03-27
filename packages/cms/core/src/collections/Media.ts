@@ -1,14 +1,20 @@
 /**
- * @file Media.ts
- * @description Colección soberana para la gestión de activos multimedia.
- *              Refactorizado: Soporte para UUIDs (ID tipo Texto) para garantizar
- *              consistencia relacional con el Hub Editorial y el Journal.
- * @version 3.0 - UUID Standard & Performance Hardening
+ * @file packages/cms/core/src/collections/Media.ts
+ * @description Colección soberana para la gestión de activos multimedia (Sovereign Media Library).
+ *              Implementa orquestación multitenant, optimización automática de imágenes
+ *              y blindaje de accesibilidad (A11Y). Sincronizado con UUIDs de Supabase.
+ * @version 4.0 - Vercel Build Normalization & Forensic Logging
  * @author Raz Podestá - MetaShark Tech
  */
 
 import { type CollectionConfig } from 'payload';
-import { multiTenantWriteAccess } from './Access.js';
+
+/**
+ * IMPORTACIONES DE PERÍMETRO (Saneadas)
+ * @pilar V: Adherencia arquitectónica. Eliminación de extensión .js para 
+ * garantizar resolución nativa en Next.js 15 y el pipeline de Vercel.
+ */
+import { multiTenantWriteAccess } from './Access';
 
 export const Media: CollectionConfig = {
   slug: 'media',
@@ -22,6 +28,7 @@ export const Media: CollectionConfig = {
   /**
    * REGLAS DE ACCESO
    * @pilar VIII: Resiliencia en Seguridad.
+   * Lectura pública para el frontend; gestión (CUD) restringida por Tenant ID.
    */
   access: {
     read: () => true,
@@ -32,24 +39,42 @@ export const Media: CollectionConfig = {
 
   /**
    * CONFIGURACIÓN DE CARGA (Upload Engine)
+   * @pilar X: Performance - Generación de derivados optimizados para Core Web Vitals.
    */
   upload: {
     staticDir: 'media',
     imageSizes: [
-      { name: 'thumbnail', width: 400, height: 300, position: 'centre' },
-      { name: 'card', width: 768, height: 1024, position: 'centre' },
-      { name: 'hero', width: 1920, height: 1080, position: 'centre' },
+      {
+        name: 'thumbnail',
+        width: 400,
+        height: 300,
+        position: 'centre',
+      },
+      {
+        name: 'card',
+        width: 768,
+        height: 1024,
+        position: 'centre',
+      },
+      {
+        name: 'hero',
+        width: 1920,
+        height: 1080,
+        position: 'centre',
+      },
     ],
     adminThumbnail: 'thumbnail',
-    mimeTypes: ['image/*'],
+    mimeTypes: ['image/*'], // Restricción estricta a imágenes para asegurar pureza de la galería.
   },
 
   /**
    * GUARDIANES DE INTEGRIDAD (Hooks)
+   * @pilar IV: Observabilidad - Trazabilidad de activos mediante Protocolo Heimdall.
    */
   hooks: {
     beforeChange: [
       ({ req, data, operation }) => {
+        // Garantía de Identidad Multi-Tenant
         if (operation === 'create' && req.user) {
           data.tenantId = req.user.tenantId;
         }
@@ -59,18 +84,20 @@ export const Media: CollectionConfig = {
     afterChange: [
       ({ doc, operation }) => {
         if (operation === 'create') {
-          console.log(`[HEIMDALL][MEDIA] Asset Ingested: ${doc.filename} | Alt: ${doc.alt}`);
+          console.log(
+            `[HEIMDALL][MEDIA] Asset Ingested: ${doc.filename} | Mime: ${doc.mimeType} | Tenant: ${doc.tenantId}`
+          );
         }
       }
     ]
   },
 
   fields: [
-    /* 
-       PILAR I: VISIÓN HOLÍSTICA
-       Forzamos el ID como texto para permitir el uso de UUIDs deterministas
-       y evitar colisiones de tipos en tablas de relaciones (_rels).
-    */
+    /**
+     * @pilar I: Visión Holística - Soberanía UUID.
+     * Forzamos el ID como texto para permitir identificadores deterministas
+     * y evitar colisiones de tipos relacionales en Supabase.
+     */
     {
       name: 'id',
       type: 'text',
@@ -91,19 +118,23 @@ export const Media: CollectionConfig = {
       required: true,
       index: true,
       admin: { 
-        description: 'Crítico para SEO y lectores de pantalla.',
+        description: 'Crítico para SEO y lectores de pantalla. Describe la imagen con precisión.',
         placeholder: 'Ej: Vista panorámica de la suite master al amanecer'
       },
+      /**
+       * @pilar III: Seguridad de Tipos.
+       * Validación de longitud mínima para asegurar calidad de metadatos.
+       */
       validate: (val: string | null | undefined) => {
-        if (val && val.length > 5) return true;
-        return 'El texto alternativo debe ser más descriptivo (mín. 6 caracteres).';
+        if (val && val.length >= 6) return true;
+        return 'El texto alternativo debe ser descriptivo (mín. 6 caracteres).';
       }
     },
     {
       name: 'caption',
       type: 'textarea',
       admin: { 
-        description: 'Texto opcional editorial.' 
+        description: 'Texto opcional que aparecerá debajo de la imagen en contextos editoriales.' 
       },
     },
   ],

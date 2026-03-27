@@ -1,9 +1,9 @@
 /**
- * @file BlogPosts.ts
+ * @file packages/cms/core/src/collections/BlogPosts.ts
  * @description Colección soberana para el motor editorial (The Concierge Journal).
- *              Refactorizado: Soporte para UUIDs, validación robusta de fechas 
- *              y automatización de taxonomía.
- * @version 3.0 - UUID Standard & Date Resilience
+ *              Implementa orquestación multitenant, cálculo automatizado de métricas
+ *              de lectura y blindaje de autoridad SEO E-E-A-T.
+ * @version 4.0 - Resolution Sync & Reading Metrics Hardening
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -15,7 +15,13 @@ import {
   HeadingFeature, 
   LinkFeature 
 } from '@payloadcms/richtext-lexical';
-import { multiTenantReadAccess, multiTenantWriteAccess } from './Access.js';
+
+/**
+ * IMPORTACIONES DE PERÍMETRO (Saneadas)
+ * @pilar V: Adherencia arquitectónica. Eliminación de extensión .js para 
+ * garantizar resolución nativa en Next.js 15 y el pipeline de Vercel.
+ */
+import { multiTenantReadAccess, multiTenantWriteAccess } from './Access';
 
 export const BlogPosts: CollectionConfig = {
   slug: 'blog-posts',
@@ -28,7 +34,7 @@ export const BlogPosts: CollectionConfig = {
   },
   
   /**
-   * REGLAS DE ACCESO
+   * REGLAS DE ACCESO PERIMETRAL
    * @pilar III: Seguridad de Tipos Absoluta.
    */
   access: {
@@ -40,28 +46,27 @@ export const BlogPosts: CollectionConfig = {
 
   /**
    * GUARDIANES DE INTEGRIDAD (Hooks)
-   * @pilar VIII: Resiliencia - Automatización de metadatos y limpieza de datos.
+   * @pilar VIII: Resiliencia - Automatización de metadatos y saneamiento.
    */
   hooks: {
     beforeChange: [
       ({ req, data, operation }) => {
-        // 1. Garantía de Multi-Tenancy y Autoría
+        // 1. Garantía de Identidad Multi-Tenant y Atribución
         if (operation === 'create' && req.user) {
           if (!data.tenantId) data.tenantId = req.user.tenantId;
           if (!data.author) data.author = req.user.id;
         }
         
-        // 2. Slugificación Dinámica Sanitizada
+        // 2. Slugificación Automática (Fail-Safe)
         if (data.title && typeof data.title === 'string' && !data.slug) {
            data.slug = data.title
             .toLowerCase()
             .trim()
-            .replace(/[^\w\s-]/g, '')
+            .replace(/[^\w\s-]/g, '') // Sanatización de caracteres
             .replace(/\s+/g, '-');
         }
 
-        // 3. Normalización de Taxonomía (Tags)
-        // Garantiza que los tags sean consistentes para el filtrado en el Frontend.
+        // 3. Normalización de Taxonomía
         if (data.tags && Array.isArray(data.tags)) {
           data.tags = data.tags.map((item: { tag: string }) => ({
             ...item,
@@ -69,27 +74,39 @@ export const BlogPosts: CollectionConfig = {
           }));
         }
 
-        // 4. Cálculo de Tiempo de Lectura (Pilar X: Performance)
+        // 4. Inteligencia Editorial: Cálculo de Tiempo de Lectura
+        // @pilar X: Performance - Estimación asíncrona basada en volumen Lexical.
         if (data.content && typeof data.content === 'object') {
             const contentString = JSON.stringify(data.content);
             const wordCount = contentString.split(/\s+/g).length;
+            // Estándar de la industria: 200 PPM
             data.readingTime = Math.max(1, Math.ceil(wordCount / 200));
         }
 
         return data;
       },
     ],
+    afterChange: [
+      ({ doc, operation }) => {
+        if (operation === 'create' || operation === 'update') {
+          console.log(
+            `[HEIMDALL][EDITORIAL] Sync: "${doc.title}" | Status: ${doc.status} | ETA: ${doc.readingTime} min.`
+          );
+        }
+      }
+    ]
   },
 
   fields: [
-    /* 
-       PILAR I: VISIÓN HOLÍSTICA
-       Forzamos el ID como texto para permitir el uso de UUIDs y evitar 
-       el error de transpilación 'serial' en entornos remotos.
-    */
+    /**
+     * @pilar I: Visión Holística - Soberanía UUID.
+     * Mantenemos el ID como texto para compatibilidad absoluta con Supabase.
+     */
     {
       name: 'id',
       type: 'text',
+      required: true,
+      admin: { position: 'sidebar' }
     },
     {
       name: 'tenantId',
@@ -110,7 +127,7 @@ export const BlogPosts: CollectionConfig = {
                   name: 'title', 
                   type: 'text', 
                   required: true, 
-                  admin: { width: '60%', placeholder: 'Título del artículo' } 
+                  admin: { width: '60%', placeholder: 'Título de impacto' } 
                 },
                 { 
                   name: 'slug', 
@@ -118,7 +135,7 @@ export const BlogPosts: CollectionConfig = {
                   unique: true, 
                   required: true, 
                   index: true, 
-                  admin: { width: '40%', description: 'Identificador único de URL' } 
+                  admin: { width: '40%', description: 'Ruta semántica para SEO' } 
                 },
               ]
             },
@@ -126,7 +143,7 @@ export const BlogPosts: CollectionConfig = {
               name: 'content', 
               type: 'richText', 
               required: true,
-              admin: { description: 'Contenido principal enriquecido.' },
+              admin: { description: 'Contenido enriquecido del artículo.' },
               editor: lexicalEditor({
                 features: () => [
                   HeadingFeature({ enabledHeadingSizes: ['h2', 'h3', 'h4'] }),
@@ -140,7 +157,7 @@ export const BlogPosts: CollectionConfig = {
               name: 'description', 
               type: 'textarea', 
               required: true,
-              admin: { description: 'Resumen corto para la tarjeta del blog (SEO Meta Description).' }
+              admin: { description: 'Resumen para Meta-Description (SEO E-E-A-T).' }
             },
           ],
         },
@@ -167,6 +184,7 @@ export const BlogPosts: CollectionConfig = {
                     width: '50%',
                     date: {
                       pickerAppearance: 'dayAndTime',
+                      displayFormat: 'dd/MM/yyyy HH:mm'
                     }
                   }
                 },
@@ -189,27 +207,27 @@ export const BlogPosts: CollectionConfig = {
               admin: { 
                 position: 'sidebar', 
                 readOnly: true,
-                description: 'Cálculo automático en minutos.' 
+                description: 'Minutos calculados automáticamente.' 
               } 
             },
             { 
               name: 'tags', 
               type: 'array', 
               fields: [{ name: 'tag', type: 'text', required: true }],
-              admin: { description: 'Taxonomía para filtrado en la UI.' }
+              admin: { description: 'Categorización para el motor de búsqueda.' }
             }
           ],
         },
         {
           label: 'SEO & Social',
           fields: [
-            { name: 'metaTitle', type: 'text', admin: { description: 'Opcional: Título para buscadores.' } },
+            { name: 'metaTitle', type: 'text', admin: { description: 'Título alternativo para buscadores.' } },
             { 
               name: 'ogImage', 
               type: 'upload', 
               relationTo: 'media', 
               required: true,
-              admin: { description: 'Imagen de portada y miniatura compartida (E-E-A-T).' }
+              admin: { description: 'Imagen de alta fidelidad para redes sociales.' }
             },
           ],
         }

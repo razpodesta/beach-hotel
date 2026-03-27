@@ -1,9 +1,9 @@
 /**
  * @file packages/cms/core/tsconfig.json
  * @description Orquestador soberano de tipos para el Núcleo CMS (DX Mode).
- *              Implementa arquitectura Source-First, resolución ESM estricta 
- *              y blindaje de emisión para garantizar la pureza del directorio src/.
- * @version 6.0 - Verbatim Syntax & Dual-Mode Alignment
+ *              Implementa arquitectura Source-First alineada con Next.js 15,
+ *              resolución dinámica para el IDE y blindaje de emisión.
+ * @version 7.0 - Bundler Resolution Sync & DX Optimization
  * @author Raz Podestá - MetaShark Tech
  */
 {
@@ -12,41 +12,40 @@
     "baseUrl": ".",
     /** 
      * PILAR V: ADHERENCIA AL GRAFO SOBERANO
-     * 'composite' permite que el proyecto sea referenciado por la raíz del monorepo,
-     * habilitando Intellisense transversal sin necesidad de compilación previa.
+     * Mantenemos 'composite' para que la raíz reconozca este dominio,
+     * pero sin referencias locales para evitar el bloqueo TS6305.
      */
     "composite": true,
     "rootDir": ".",
     
     /** 
      * PILAR XIII: PUREZA DE SOURCE (Blindaje Total)
-     * Se bloquea la emisión física para evitar la generación de archivos .js/.d.ts 
-     * que contaminen la carpeta de código fuente. La emisión se delega a tsconfig.lib.json.
+     * Se bloquea la emisión física en el entorno de desarrollo para evitar 
+     * contaminar 'src/' con basura compilada.
      */
     "noEmit": true,
 
     /** 
-     * RESOLUCIÓN DE CORE (Strict ESM):
-     * @pilar XIII: Alineación con el Motor.
-     * 'nodenext' fuerza el cumplimiento de ESM en el IDE, asegurando paridad
-     * con los scripts de infraestructura y el runtime de Next.js 15.
+     * RESOLUCIÓN HÍBRIDA (DX Mode):
+     * @fix Resolución del conflicto de extensiones. Cambiamos 'nodenext' por 
+     * 'bundler' para permitir importaciones sin extensión en el IDE, 
+     * alineándonos con el motor SWC de Next.js 15.
      */
-    "module": "nodenext",
-    "moduleResolution": "nodenext",
+    "module": "esnext",
+    "moduleResolution": "bundler",
 
     /**
      * @pilar III: Seguridad de Tipos Absoluta.
-     * 'verbatimModuleSyntax' obliga al uso explícito de 'import type'.
-     * Crucial para evitar que el compilador emita JS con referencias a tipos 
-     * que no existen en el bundle de ejecución de Vercel.
+     * Fuerza el estándar 'import type' para evitar fugas de código en producción.
      */
     "verbatimModuleSyntax": true,
 
     /**
      * @pilar VIII: Resiliencia de Transpilación.
-     * Garantiza que cada archivo pueda ser transpilado de forma independiente por SWC.
      */
     "isolatedModules": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
     
     "declaration": true,
     "declarationMap": true,
@@ -56,7 +55,7 @@
     "src/**/*.ts",
     /** 
      * @pilar I: Visión Holística.
-     * Inclusión del contrato generado por Payload para sincronía total de tipos.
+     * Sincronía total con el contrato generado por Payload.
      */
     "src/payload-types.ts"
   ],
@@ -66,9 +65,4 @@
     "jest.config.ts", 
     "src/**/*.spec.ts"
   ]
-  /** 
-   * ELIMINACIÓN ESTRATÉGICA: Array 'references' eliminado.
-   * Se rompe la cadena de dependencia circular local para permitir 'noEmit: true'
-   * bajo el estándar de 'composite', erradicando el error TS6305.
-   */
 }
