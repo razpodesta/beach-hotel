@@ -1,9 +1,10 @@
 /**
- * @file BlogSection3D.tsx
- * @description Orquestador de visualización editorial con profundidad interactiva (3D Stack).
+ * @file apps/portfolio-web/src/components/sections/homepage/BlogSection3D.tsx
+ * @description Orquestador de visualización editorial con profundidad cinemática.
  *              Fase 7 del Embudo: Autoridad y Legado Narrativo.
- *              Nivelado para Next.js 15, React 19 y Resiliencia Energética.
- * @version 17.0 - Vercel Build Normalization & Power-Aware Autoplay
+ *              Nivelado: Corrección de sintaxis canónica de Tailwind OKLCH y
+ *              optimización de transiciones de estado para Build de Vercel.
+ * @version 19.0 - Tailwind Canonical Fix & UX Hardening
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -14,8 +15,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
 
 /**
- * IMPORTACIONES DE INFRAESTRUCTRURA (Saneadas)
- * @pilar V: Adherencia arquitectónica. Purga de extensiones .js para resolución nativa.
+ * IMPORTACIONES DE INFRAESTRUCTRURA
  */
 import { BlurText } from '../../razBits/BlurText';
 import { BlogCard3D } from '../../ui/BlogCard3D';
@@ -35,7 +35,7 @@ interface BlogSection3DProps {
   posts: PostWithSlug[];
   /** Diccionario nivelado tras el Protocolo MACS */
   dictionary: Dictionary['blog_page'];
-  /** Contexto de idioma para formateo y rumbos */
+  /** Contexto de idioma para rumbos SEO */
   lang: string;
   className?: string;
 }
@@ -116,8 +116,11 @@ export function BlogSection3D({ posts, dictionary, lang, className }: BlogSectio
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
-      {/* CAPA ATMOSFÉRICA (Luxury Glow) */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,oklch(65%_0.25_270_/_0.04),transparent_70%)] pointer-events-none" />
+      {/* 
+          CAPA ATMOSFÉRICA (Luxury Glow con OKLCH) 
+          @fix sintaxis canónica de Tailwind arbitraria (remover espacios en opacidad).
+      */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,oklch(65%_0.25_270/0.04),transparent_70%)] pointer-events-none" />
 
       {/* HEADER NARRATIVO */}
       <div className="container mx-auto px-6 mb-20 flex flex-col items-center text-center">
@@ -140,9 +143,10 @@ export function BlogSection3D({ posts, dictionary, lang, className }: BlogSectio
         />
       </div>
 
-      {/* CARRETE 3D (Core Engine) */}
+      {/* CARRETE 3D (Core Engine - Pure DOM) */}
       <div 
         className="relative h-[550px] md:h-[650px] w-full flex items-center justify-center perspective-2000"
+        style={{ transformStyle: "preserve-3d" }}
         role="region"
         aria-roledescription="carousel"
       >
@@ -154,11 +158,33 @@ export function BlogSection3D({ posts, dictionary, lang, className }: BlogSectio
             return (
               <motion.div
                 key={post.slug}
-                initial={{ opacity: 0, scale: 0.8, x: 150, rotateY: 35, filter: 'blur(10px)' }}
-                animate={{ opacity: 1, scale: 1, x: 0, rotateY: 0, filter: 'blur(0px)' }}
-                exit={{ opacity: 0, scale: 1.1, x: -150, rotateY: -35, filter: 'blur(10px)' }}
-                transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+                initial={{ 
+                  opacity: 0, 
+                  scale: 0.8, 
+                  x: 150, 
+                  rotateY: 35, 
+                  filter: 'blur(10px)' 
+                }}
+                animate={{ 
+                  opacity: 1, 
+                  scale: 1, 
+                  x: 0, 
+                  rotateY: 0, 
+                  filter: 'blur(0px)' 
+                }}
+                exit={{ 
+                  opacity: 0, 
+                  scale: 1.1, 
+                  x: -150, 
+                  rotateY: -35, 
+                  filter: 'blur(10px)' 
+                }}
+                transition={{ 
+                  duration: 0.9, 
+                  ease: [0.16, 1, 0.3, 1] 
+                }}
                 className="z-20 transform-gpu"
+                style={{ transformStyle: "preserve-3d" }}
               >
                 <BlogCard3D 
                    post={post} 
@@ -175,14 +201,14 @@ export function BlogSection3D({ posts, dictionary, lang, className }: BlogSectio
         <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-6 sm:px-12 pointer-events-none z-30">
           <button 
             onClick={handlePrev} 
-            className="group p-6 sm:p-8 rounded-full border border-white/10 bg-black/60 text-white pointer-events-auto backdrop-blur-2xl transition-all hover:bg-primary hover:border-primary/50 active:scale-90 shadow-3xl"
+            className="group p-6 sm:p-8 rounded-full border border-white/10 bg-black/60 text-white pointer-events-auto backdrop-blur-2xl transition-all hover:bg-primary hover:border-primary/50 active:scale-90 shadow-3xl outline-none focus-visible:ring-2 focus-visible:ring-primary"
             aria-label="Artigo Anterior"
           >
             <ChevronLeft size={28} strokeWidth={1.5} className="group-hover:-translate-x-1 transition-transform" />
           </button>
           <button 
             onClick={handleNext} 
-            className="group p-6 sm:p-8 rounded-full border border-white/10 bg-black/60 text-white pointer-events-auto backdrop-blur-2xl transition-all hover:bg-primary hover:border-primary/50 active:scale-90 shadow-3xl"
+            className="group p-6 sm:p-8 rounded-full border border-white/10 bg-black/60 text-white pointer-events-auto backdrop-blur-2xl transition-all hover:bg-primary hover:border-primary/50 active:scale-90 shadow-3xl outline-none focus-visible:ring-2 focus-visible:ring-primary"
             aria-label="Próximo Artigo"
           >
             <ChevronRight size={28} strokeWidth={1.5} className="group-hover:translate-x-1 transition-transform" />
@@ -204,7 +230,7 @@ export function BlogSection3D({ posts, dictionary, lang, className }: BlogSectio
             <motion.div 
               animate={{ 
                 width: i === activeIndex ? 48 : 12,
-                backgroundColor: i === activeIndex ? 'var(--color-primary)' : 'var(--color-border)'
+                backgroundColor: i === activeIndex ? 'var(--color-primary)' : 'oklch(var(--border-light))'
               }}
               className="h-1.5 rounded-full transition-colors group-hover:bg-zinc-500"
             />

@@ -3,7 +3,8 @@
  * @description Orquestador soberano de datos para el Hub Editorial (The Concierge Journal).
  *              Implementa arquitectura de datos híbrida (CMS + Mocks), instrumentación 
  *              Heimdall para observabilidad y compilación JIT de Lexical a Markdown.
- * @version 20.0 - Forensic Observability & Module Path Hardening
+ *              Refactorizado: Higiene absoluta de variables y telemetría de errores persistente.
+ * @version 21.0 - Linter Hygiene & Forensic Error Tracking
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -13,7 +14,7 @@ import configPromise from '@metashark/cms-core/config';
 
 /**
  * IMPORTACIONES DE CONTRATO (Saneadas)
- * @pilar V: Eliminación de extensiones .js para compatibilidad nativa con Next.js 15.
+ * @pilar V: Adherencia arquitectónica a las fronteras de Nx.
  */
 import { postWithSlugSchema } from '../schemas/blog.schema';
 import type { PostWithSlug } from '../schemas/blog.schema';
@@ -112,7 +113,6 @@ function compileLexicalToMarkdown(contentNode: unknown): string {
 /**
  * SHAPER POLIMÓRFICO: mapToSovereignPost
  * @description Normaliza datos del CMS o Mocks al contrato inmutable de Zod.
- * @pilar VIII: Resiliencia - Fallback forense ante fallos de esquema.
  */
 function mapToSovereignPost(entry: unknown): PostWithSlug {
   const parsedResult = postWithSlugSchema.safeParse(entry);
@@ -120,7 +120,6 @@ function mapToSovereignPost(entry: unknown): PostWithSlug {
 
   const raw = entry as RawPayloadPost;
 
-  // Resolución determinista de Autoría
   let authorName = 'Concierge Team';
   if (raw.author) {
     if (typeof raw.author === 'object') {
@@ -130,7 +129,6 @@ function mapToSovereignPost(entry: unknown): PostWithSlug {
     }
   }
 
-  // Normalización de Taxonomía
   const sanitizedTags = Array.isArray(raw.tags) 
     ? raw.tags.map((t) => (typeof t === 'string' ? t : t?.tag || '')).filter(Boolean) 
     : [];
@@ -152,11 +150,10 @@ function mapToSovereignPost(entry: unknown): PostWithSlug {
     content: compileLexicalToMarkdown(raw.content),
   };
 
-  // Validación final contra esquema SSoT
   const validation = postWithSlugSchema.safeParse(mappedData);
   if (!validation.success) {
     console.error('[HEIMDALL][DATA-CORRUPTION] Article Shaper Failed:', validation.error.format());
-    return postWithSlugSchema.parse(MOCK_POSTS[0]); // Rescate in-extremis
+    return postWithSlugSchema.parse(MOCK_POSTS[0]); 
   }
 
   return validation.data;
@@ -191,8 +188,13 @@ export async function getAllPosts(lang: Locale = i18n.defaultLocale): Promise<Po
     console.log(`[SUCCESS] Synchronized ${result.length} articles.`);
     console.groupEnd();
     return result;
-  } catch (error) {
-    console.warn('[RECOVERY] Logic fallback engaged due to CMS latence.');
+  } catch (error: unknown) {
+    /**
+     * @pilar IV: Observabilidad Forense.
+     * @fix Erradicación de variable no usada. Se reporta el motivo técnico de la caída.
+     */
+    const message = error instanceof Error ? error.message : 'DATABASE_HANDSHAKE_FAILED';
+    console.warn(`[RECOVERY] Logic fallback engaged due to CMS latency: ${message}`);
     console.groupEnd();
     return MOCK_POSTS.map(mapToSovereignPost);
   }
@@ -224,7 +226,9 @@ export async function getPostBySlug(slug: string, lang: Locale = i18n.defaultLoc
     console.log(mockMatch ? '[INFO] Article served from Genesis Mirror.' : '[FAILED] Content not located.');
     console.groupEnd();
     return mockMatch ? mapToSovereignPost(mockMatch) : null;
-  } catch {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'FETCH_ABORTED';
+    console.warn(`[HEIMDALL][EDITORIAL] Error al recuperar artículo: ${message}`);
     const mockMatch = MOCK_POSTS.find(p => p.slug === slug);
     console.groupEnd();
     return mockMatch ? mapToSovereignPost(mockMatch) : null;
@@ -260,7 +264,9 @@ export async function getPostsByTag(tagSlug: string, lang: Locale = i18n.default
     console.log(`[INFO] Serving ${mockMatches.length} mock matches for taxonomy.`);
     console.groupEnd();
     return mockMatches.map(mapToSovereignPost);
-  } catch {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'FILTERING_FAILED';
+    console.warn(`[HEIMDALL][EDITORIAL] Error en filtrado por etiqueta: ${message}`);
     const mockMatches = MOCK_POSTS.filter((p: RawMockPost) => 
       p.tags.some((t: string) => t.toLowerCase().replace(/\s+/g, '-') === normalizedTarget)
     );

@@ -1,23 +1,19 @@
 /**
- * @file BlogCard3D.tsx
- * @description Aparato de visualización híbrida avanzada (WebGL/HTML). 
- *              Refactorizado: Sincronización con Shaper v14.0, 100% Data-Driven
- *              y blindaje contra colisiones de compilador en Next.js 15.
- * @version 13.0 - Elite Hybrid Architecture
+ * @file apps/portfolio-web/src/components/ui/BlogCard3D.tsx
+ * @description Aparato editorial de alta fidelidad con profundidad cinemática.
+ *              Refactorizado: Migración de WebGL a Framer Motion 3D para erradicar
+ *              el error de contexto R3F y optimizar el rendimiento (Pilar X).
+ * @version 14.0 - DOM-Native 3D Evolution (Vercel Build Fix)
  * @author Raz Podestá - MetaShark Tech
  */
 
 'use client';
 
-import React, { useState, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
-import { useSpring, a as a3d } from '@react-spring/three';
-import { a as aDom } from '@react-spring/web';
-import { Html as DreiHtml } from '@react-three/drei';
-import type { ThreeEvent, ThreeElements } from '@react-three/fiber';
+import React, { useMemo } from 'react';
+import Link from 'next/link';
 import Image from 'next/image';
+import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { ArrowRight, Sparkles, User, Calendar } from 'lucide-react';
-import * as THREE from 'three';
 
 /**
  * IMPORTACIONES DE INFRAESTRUCTRURA
@@ -26,46 +22,56 @@ import type { PostWithSlug } from '../../lib/schemas/blog.schema';
 import { cn } from '../../lib/utils/cn';
 
 /**
- * Definición de propiedades extendidas.
- * @pilar III: Seguridad de Tipos Absoluta.
+ * @interface BlogCard3DProps
+ * @description Contrato de propiedades alineado con el Shaper de Dominio.
  */
-type BlogCard3DProps = {
-  /** Entidad editorial normalizada por el Shaper polimórfico */
+interface BlogCard3DProps {
+  /** Entidad editorial normalizada */
   post: PostWithSlug;
-  /** Contexto de idioma para navegación SEO-Friendly */
+  /** Contexto de idioma para rumbos SEO */
   lang: string;
-  /** Etiqueta de acción (vía diccionario) */
+  /** Etiqueta de acción inyectada */
   ctaText: string;
-  /** Etiqueta de categoría por defecto (vía diccionario) */
+  /** Etiqueta de categoría por defecto */
   tagLabel: string;
-} & ThreeElements['group'];
+  className?: string;
+}
 
 /**
  * APARATO: BlogCard3D
- * @description Renderiza una tarjeta interactiva dentro de un entorno WebGL 2.0.
+ * @description Renderiza una tarjeta editorial con efecto de inclinación (Tilt) 3D nativo.
  */
 export function BlogCard3D({ 
   post, 
   lang, 
   ctaText, 
   tagLabel,
-  ...props 
+  className 
 }: BlogCard3DProps) {
-  const router = useRouter();
-  const [isHovered, setIsHovered] = useState(false);
   const { metadata, slug } = post;
 
   /**
-   * RESOLUCIÓN DE ACTIVO VISUAL (Pilar I)
-   * Prioriza la imagen procesada por el CMS o construye el fallback basado en slug.
+   * MOTOR DE INERCIA FÍSICA (Pilar XII - MEA/UX)
+   * Implementa una rotación basada en la posición del puntero.
+   */
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+
+  // Suavizado de movimiento (Spring)
+  const mouseX = useSpring(x, { stiffness: 150, damping: 20 });
+  const mouseY = useSpring(y, { stiffness: 150, damping: 20 });
+
+  // Mapeo de coordenadas a grados de rotación
+  const rotateX = useTransform(mouseY, [-0.5, 0.5], [10, -10]);
+  const rotateY = useTransform(mouseX, [-0.5, 0.5], [-10, 10]);
+
+  /**
+   * RESOLUCIÓN DE ACTIVO VISUAL
    */
   const imageUrl = useMemo(() => {
     return metadata.ogImage || `/images/blog/${slug}.jpg`;
   }, [metadata.ogImage, slug]);
 
-  /**
-   * FORMATEO DE FECHA LOCALIZADO (Pilar VI)
-   */
   const formattedDate = useMemo(() => {
     return new Date(metadata.published_date).toLocaleDateString(lang, { 
       day: '2-digit', month: 'short' 
@@ -73,67 +79,48 @@ export function BlogCard3D({
   }, [metadata.published_date, lang]);
 
   /**
-   * CONFIGURACIÓN DE FÍSICAS LUXURY
-   * @pilar XII: MEA/UX - Transiciones suaves con react-spring.
+   * MANEJADORES DE INTERACCIÓN
    */
-  const { scale, opacity, positionZ } = useSpring({
-    scale: isHovered ? 1.08 : 1,
-    opacity: isHovered ? 1 : 0.9,
-    positionZ: isHovered ? 0.5 : 0,
-    config: { mass: 2, tension: 180, friction: 28 },
-  });
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const width = rect.width;
+    const height = rect.height;
+    const mouseXPos = e.clientX - rect.left;
+    const mouseYPos = e.clientY - rect.top;
 
-  /**
-   * MANEJADORES DE RAYCASTING (Pilar VIII)
-   */
-  const handlePointerOver = (e: ThreeEvent<PointerEvent>) => {
-    e.stopPropagation();
-    setIsHovered(true);
-    if (typeof document !== 'undefined') document.body.style.cursor = 'pointer';
+    x.set(mouseXPos / width - 0.5);
+    y.set(mouseYPos / height - 0.5);
   };
 
-  const handlePointerOut = () => {
-    setIsHovered(false);
-    if (typeof document !== 'undefined') document.body.style.cursor = 'auto';
-  };
-
-  const handleClick = (e: ThreeEvent<MouseEvent>) => {
-    e.stopPropagation();
-    router.push(`/${lang}/blog/${slug}`);
+  const handleMouseLeave = () => {
+    x.set(0);
+    y.set(0);
   };
 
   return (
-    <a3d.group
-      {...props}
-      scale={scale}
-      position-z={positionZ}
-      onPointerOver={handlePointerOver}
-      onPointerOut={handlePointerOut}
-      onClick={handleClick}
+    <motion.div
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={{
+        rotateX,
+        rotateY,
+        transformStyle: "preserve-3d",
+      }}
+      className={cn(
+        "relative w-[320px] h-[450px] group cursor-pointer perspective-1000",
+        className
+      )}
     >
-      {/* CAPA DE COLISIÓN (Invisible pero necesaria para el Raycaster) */}
-      <mesh>
-        <planeGeometry args={[3.2, 4.5]} />
-        <meshBasicMaterial transparent opacity={0} side={THREE.DoubleSide} />
-      </mesh>
-
-      {/* PROYECCIÓN HÍBRIDA (DOM dentro de WebGL) */}
-      <DreiHtml
-        transform
-        occlude="blending"
-        center
-        distanceFactor={4.2}
-        className="w-[320px] h-[450px] select-none pointer-events-none"
-      >
-        <aDom.div
-          style={{ opacity }}
+      <Link href={`/${lang}/blog/${slug}`} className="block h-full w-full outline-none">
+        <div 
           className={cn(
-            "group flex h-full flex-col overflow-hidden rounded-[3rem] border transition-all duration-700",
+            "relative h-full w-full flex flex-col overflow-hidden rounded-[3rem] border transition-all duration-700",
             "bg-zinc-950/95 shadow-3xl",
-            isHovered ? "border-purple-500/50 shadow-purple-500/20" : "border-white/5"
+            "border-white/5 group-hover:border-primary/40 group-hover:shadow-primary/20"
           )}
+          style={{ transform: "translateZ(0px)" }} // Forzar aceleración hardware
         >
-          {/* 1. VISUAL LAYER (Media Library Integrated) */}
+          {/* 1. VISUAL LAYER (Media Library) */}
           <div className="relative h-56 w-full overflow-hidden shrink-0">
             <Image
               src={imageUrl}
@@ -141,12 +128,14 @@ export function BlogCard3D({
               fill
               className="object-cover transition-transform duration-1000 group-hover:scale-110"
               sizes="320px"
-              priority
             />
             <div className="absolute inset-0 bg-linear-to-t from-zinc-950 via-transparent to-transparent opacity-90" />
             
-            <div className="absolute top-6 left-6">
-              <span className="inline-flex items-center gap-2 rounded-full bg-black/40 backdrop-blur-xl border border-white/10 px-3 py-1.5 text-[8px] font-bold uppercase tracking-[0.2em] text-purple-400">
+            <div 
+              className="absolute top-6 left-6"
+              style={{ transform: "translateZ(40px)" }} // Efecto Parallax interno
+            >
+              <span className="inline-flex items-center gap-2 rounded-full bg-black/40 backdrop-blur-xl border border-white/10 px-3 py-1.5 text-[8px] font-bold uppercase tracking-[0.2em] text-primary">
                 <Sparkles size={10} className="animate-pulse" />
                 {metadata.tags[0] || tagLabel}
               </span>
@@ -154,13 +143,13 @@ export function BlogCard3D({
           </div>
 
           {/* 2. TYPOGRAPHY LAYER (Data-Driven) */}
-          <div className="flex grow flex-col p-8 bg-zinc-950/50">
+          <div className="flex grow flex-col p-8 bg-zinc-950/50" style={{ transform: "translateZ(30px)" }}>
             <div className="flex items-center gap-4 text-[8px] font-mono text-zinc-600 uppercase tracking-widest mb-4">
                <div className="flex items-center gap-1.5"><User size={10} /> {metadata.author}</div>
                <div className="flex items-center gap-1.5"><Calendar size={10} /> {formattedDate}</div>
             </div>
 
-            <h3 className="font-display text-xl sm:text-2xl font-bold leading-tight text-white line-clamp-2 group-hover:text-purple-300 transition-colors duration-500 mb-4">
+            <h3 className="font-display text-xl sm:text-2xl font-bold leading-tight text-white line-clamp-2 group-hover:text-primary transition-colors duration-500 mb-4">
               {metadata.title}
             </h3>
             <p className="line-clamp-3 text-xs leading-relaxed text-zinc-500 font-sans font-light">
@@ -168,19 +157,19 @@ export function BlogCard3D({
             </p>
           </div>
 
-          {/* 3. ACTION FOOTER (i18n Compliant) */}
+          {/* 3. ACTION FOOTER */}
           <div className="border-t border-white/5 p-6 flex justify-between items-center bg-white/2">
-            <div className="text-[9px] font-bold text-white group-hover:text-purple-400 transition-all duration-500 flex items-center gap-2 uppercase tracking-[0.3em]">
+            <div className="text-[9px] font-bold text-white group-hover:text-primary transition-all duration-500 flex items-center gap-2 uppercase tracking-[0.3em]">
               {ctaText} 
               <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
             </div>
-            <div className="h-1.5 w-1.5 rounded-full bg-zinc-800 group-hover:bg-purple-500 transition-colors" />
+            <div className="h-1.5 w-1.5 rounded-full bg-zinc-800 group-hover:bg-primary transition-colors" />
           </div>
 
-          {/* Efecto de acabado de lujo */}
-          <div className="absolute inset-0 border border-white/0 group-hover:border-white/5 pointer-events-none transition-colors duration-1000" />
-        </aDom.div>
-      </DreiHtml>
-    </a3d.group>
+          {/* Acabado de Lujo: Borde interior sutil */}
+          <div className="absolute inset-0 border border-white/0 group-hover:border-white/10 pointer-events-none transition-colors duration-1000" />
+        </div>
+      </Link>
+    </motion.div>
   );
 }
