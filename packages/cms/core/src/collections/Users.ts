@@ -3,7 +3,7 @@
  * @description Colección soberana de identidades y acceso (Access Control).
  *              Implementa arquitectura multitenant, soporte para UUID deterministas
  *              y blindaje contra errores de validación en entornos de CI/CD.
- * @version 5.2 - ESM Resolution & Hook Hygiene
+ * @version 6.0 - Pure Source Resolution (No Ext)
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -12,9 +12,9 @@ import { v4 as uuidv4 } from 'uuid';
 
 /**
  * IMPORTACIONES DE PERÍMETRO (Saneadas)
- * @fix Resolución TS2835: Extensión .js obligatoria para resolución en ESM/nodenext.
+ * @nivelación: Extensión .js eliminada para alineación con Next.js 15 (Bundler Resolution).
  */
-import { multiTenantReadAccess } from './Access.js';
+import { multiTenantReadAccess } from './Access';
 
 export const Users: CollectionConfig = {
   slug: 'users',
@@ -39,7 +39,7 @@ export const Users: CollectionConfig = {
 
   admin: {
     useAsTitle: 'email',
-    defaultColumns: ['email', 'role', 'level', 'tenantId'],
+    defaultColumns:['email', 'role', 'level', 'tenantId'],
     group: 'System Management',
     description: 'Gestión centralizada de identidades, roles y reputación (P33).',
   },
@@ -58,7 +58,7 @@ export const Users: CollectionConfig = {
    * GUARDIANES DE INTEGRIDAD (Hooks)
    */
   hooks: {
-    beforeChange: [
+    beforeChange:[
       ({ data, operation: _operation }) => {
         // Corrección TS6133: Parámetro ignorado con guion bajo
         if (_operation === 'create') {
@@ -75,7 +75,7 @@ export const Users: CollectionConfig = {
     ],
   },
 
-  fields: [
+  fields:[
     {
       name: 'id',
       type: 'text',
@@ -96,20 +96,20 @@ export const Users: CollectionConfig = {
     },
     {
       type: 'tabs',
-      tabs: [
+      tabs:[
         {
           label: 'Identidad y Acceso',
-          fields: [
+          fields:[
             {
               type: 'row',
-              fields: [
+              fields:[
                 {
                   name: 'role',
                   type: 'select',
                   required: true,
                   defaultValue: 'user',
                   saveToJWT: true,
-                  options: [
+                  options:[
                     { label: 'Administrador Global', value: 'admin' },
                     { label: 'Huésped Boutique', value: 'user' },
                     { label: 'Sponsor / VIP', value: 'sponsor' },
@@ -134,10 +134,10 @@ export const Users: CollectionConfig = {
         },
         {
           label: 'Protocolo 33 (Evolución)',
-          fields: [
+          fields:[
             {
               type: 'row',
-              fields: [
+              fields:[
                 { 
                   name: 'level', 
                   type: 'number', 

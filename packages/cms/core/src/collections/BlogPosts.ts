@@ -3,7 +3,7 @@
  * @description Colección soberana para el motor editorial (The Concierge Journal).
  *              Implementa orquestación multitenant, cálculo automatizado de métricas
  *              de lectura y blindaje de autoridad SEO E-E-A-T.
- * @version 4.2 - ESM Resolution & Hook Hygiene
+ * @version 5.0 - Pure Source Resolution (No Ext)
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -18,16 +18,16 @@ import {
 
 /**
  * IMPORTACIONES DE PERÍMETRO (Saneadas)
- * @fix Resolución TS2835: extensión .js obligatoria para ESM/nodenext.
+ * @nivelación: Extensión .js eliminada para alineación con Next.js 15 (Bundler Resolution).
  */
-import { multiTenantReadAccess, multiTenantWriteAccess } from './Access.js';
+import { multiTenantReadAccess, multiTenantWriteAccess } from './Access';
 
 export const BlogPosts: CollectionConfig = {
   slug: 'blog-posts',
   defaultSort: '-publishedDate',
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'author', 'status', 'publishedDate', 'tenantId'],
+    defaultColumns:['title', 'author', 'status', 'publishedDate', 'tenantId'],
     group: 'Editorial Sanctuary',
     description: 'Curaduría de artículos exclusivos para el Santuario Digital.',
   },
@@ -46,7 +46,7 @@ export const BlogPosts: CollectionConfig = {
    * GUARDIANES DE INTEGRIDAD (Hooks)
    */
   hooks: {
-    beforeChange: [
+    beforeChange:[
       ({ req: _req, data, operation: _operation }) => {
         // 1. Garantía de Identidad Multi-Tenant y Atribución
         if (_operation === 'create' && _req.user) {
@@ -81,7 +81,7 @@ export const BlogPosts: CollectionConfig = {
         return data;
       },
     ],
-    afterChange: [
+    afterChange:[
       ({ doc, operation: _operation }) => {
         // Corrección TS6133: Ignorar parámetros no usados con guion bajo
         if (_operation === 'create' || _operation === 'update') {
@@ -93,7 +93,7 @@ export const BlogPosts: CollectionConfig = {
     ]
   },
 
-  fields: [
+  fields:[
     {
       name: 'id',
       type: 'text',
@@ -111,10 +111,10 @@ export const BlogPosts: CollectionConfig = {
       tabs: [
         {
           label: 'Narrativa Editorial',
-          fields: [
+          fields:[
             {
               type: 'row',
-              fields: [
+              fields:[
                 { 
                   name: 'title', 
                   type: 'text', 
@@ -137,7 +137,7 @@ export const BlogPosts: CollectionConfig = {
               required: true,
               admin: { description: 'Contenido enriquecido del artículo.' },
               editor: lexicalEditor({
-                features: () => [
+                features: () =>[
                   HeadingFeature({ enabledHeadingSizes: ['h2', 'h3', 'h4'] }),
                   FixedToolbarFeature(),
                   LinkFeature({}),
@@ -158,7 +158,7 @@ export const BlogPosts: CollectionConfig = {
           fields: [
             {
               type: 'row',
-              fields: [
+              fields:[
                 { 
                   name: 'author', 
                   type: 'relationship', 
@@ -186,7 +186,7 @@ export const BlogPosts: CollectionConfig = {
               name: 'status', 
               type: 'select', 
               index: true,
-              options: [
+              options:[
                 { label: 'Borrador', value: 'draft' },
                 { label: 'Publicado', value: 'published' }
               ], 
@@ -212,7 +212,7 @@ export const BlogPosts: CollectionConfig = {
         },
         {
           label: 'SEO & Social',
-          fields: [
+          fields:[
             { name: 'metaTitle', type: 'text', admin: { description: 'Título alternativo para buscadores.' } },
             { 
               name: 'ogImage', 

@@ -1,50 +1,29 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    /** 
-     * SOBERANÍA DE SALIDA:
-     * Directorio de distribución global segmentado por paquete.
-     */
     "outDir": "../../../dist/packages/cms/core",
-    
-    /** 
-     * PROFILAXIS TS6305: 
-     * Fijamos rootDir en 'src' para garantizar un artefacto plano en dist/.
-     */
     "rootDir": "src",
     
-    /** 
-     * RESOLUCIÓN NATIVA (Strict ESM):
-     * @pilar XIII: Alineación con el Motor.
-     * Usamos 'nodenext' para forzar la compatibilidad absoluta con Node.js 22+ 
-     * y erradicar la crisis de identidad CJS/ESM detectada en Vercel.
-     */
-    "module": "nodenext",
-    "moduleResolution": "nodenext",
-
-    /**
-     * @pilar III: Seguridad de Tipos.
-     * Obliga al uso de 'import type', evitando la inyección de metadatos de tipos 
-     * que no existen en el bundle de ejecución de Vercel.
-     */
+    /* 
+       RESOLUCIÓN NATIVA ALINEADA:
+       El uso de 'bundler' permite importaciones limpias sin extensiones .js,
+       garantizando que el IDE, Nx (vía tsx) y Next.js (vía SWC/Vercel) 
+       interpreten y compilen el código sin colisiones.
+    */
+    "module": "esnext",
+    "moduleResolution": "bundler",
     "verbatimModuleSyntax": true,
-
     "composite": true,
     
-    /** 
-     * PILAR XIII: FORZADO DE EMISIÓN
-     * Habilitamos la generación física de artefactos para el proceso de Build de Nx.
-     */
     "noEmit": false,
     "emitDeclarationOnly": false, 
-    
     "tsBuildInfoFile": "../../../dist/packages/cms/core/tsconfig.lib.tsbuildinfo"
   },
-  "include": [
+  "include":[
     "src/**/*.ts",
     "src/payload-types.ts"
   ],
-  "exclude": [
+  "exclude":[
     "**/*.spec.ts", 
     "**/*.test.ts"
   ]

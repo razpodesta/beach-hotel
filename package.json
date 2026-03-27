@@ -18,7 +18,7 @@
     "lint": "nx run-many --target=lint --all --parallel=1",
     "test": "nx run-many --target=test --all --parallel=1",
     "typecheck": "nx run-many --target=typecheck --all --parallel=1",
-    "prebuild": "nx prebuild portfolio-web",
+    "build:dictionaries": "nx prebuild portfolio-web",
     "db:connection": "tsx scripts/supabase/check-connection.ts",
     "db:schema": "tsx scripts/supabase/audit-full-schema.ts",
     "db:seed": "tsx scripts/supabase/seed-database.ts"

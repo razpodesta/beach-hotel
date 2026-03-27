@@ -3,7 +3,7 @@
  * @description Colección soberana para la gestión de activos multimedia (Sovereign Media Library).
  *              Implementa orquestación multitenant, optimización automática de imágenes
  *              y blindaje de accesibilidad (A11Y). Sincronizado con UUIDs de Supabase.
- * @version 4.2 - ESM Resolution & Hook Hygiene
+ * @version 5.0 - Pure Source Resolution (No Ext)
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -11,9 +11,9 @@ import { type CollectionConfig } from 'payload';
 
 /**
  * IMPORTACIONES DE PERÍMETRO (Saneadas)
- * @fix Resolución TS2835: Extensión .js obligatoria para resolución en ESM/nodenext.
+ * @nivelación: Extensión .js eliminada para alineación con Next.js 15 (Bundler Resolution).
  */
-import { multiTenantWriteAccess } from './Access.js';
+import { multiTenantWriteAccess } from './Access';
 
 export const Media: CollectionConfig = {
   slug: 'media',
@@ -40,7 +40,7 @@ export const Media: CollectionConfig = {
    */
   upload: {
     staticDir: 'media',
-    imageSizes: [
+    imageSizes:[
       {
         name: 'thumbnail',
         width: 400,
@@ -68,7 +68,7 @@ export const Media: CollectionConfig = {
    * GUARDIANES DE INTEGRIDAD (Hooks)
    */
   hooks: {
-    beforeChange: [
+    beforeChange:[
       ({ req: _req, data, operation: _operation }) => {
         // Corrección TS6133: Parámetros ignorados con guion bajo
         if (_operation === 'create' && _req.user) {
@@ -77,7 +77,7 @@ export const Media: CollectionConfig = {
         return data;
       },
     ],
-    afterChange: [
+    afterChange:[
       ({ doc, operation: _operation }) => {
         // Corrección TS6133: Parámetro ignorado con guion bajo
         if (_operation === 'create') {
@@ -89,7 +89,7 @@ export const Media: CollectionConfig = {
     ]
   },
 
-  fields: [
+  fields:[
     {
       name: 'id',
       type: 'text',

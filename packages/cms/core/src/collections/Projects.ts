@@ -3,7 +3,7 @@
  * @description Colección soberana para la gestión de activos digitales de ingeniería.
  *              Implementa arquitectura multitenant, normalización polimórfica para 
  *              el Genesis Engine y validación de branding estricta.
- * @version 8.2 - ESM Resolution & Hook Hygiene
+ * @version 9.0 - Pure Source Resolution (No Ext)
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -11,9 +11,9 @@ import { type CollectionConfig } from 'payload';
 
 /**
  * IMPORTACIONES DE PERÍMETRO (Saneadas)
- * @fix Resolución TS2835: extensión .js obligatoria para resolución en ESM/nodenext.
+ * @nivelación: Extensión .js eliminada para alineación con Next.js 15 (Bundler Resolution).
  */
-import { multiTenantReadAccess, multiTenantWriteAccess } from './Access.js';
+import { multiTenantReadAccess, multiTenantWriteAccess } from './Access';
 
 /**
  * @type ProjectLayoutStyleType
@@ -45,7 +45,7 @@ export const Projects: CollectionConfig = {
    * GUARDIANES DE INTEGRIDAD (Hooks)
    */
   hooks: {
-    beforeChange: [
+    beforeChange:[
       ({ req: _req, data, operation: _operation }) => {
         // 1. Garantía de Identidad Multi-Tenant
         if (_operation === 'create' && _req.user?.tenantId) {
@@ -80,7 +80,7 @@ export const Projects: CollectionConfig = {
         return data;
       },
     ],
-    afterChange: [
+    afterChange:[
       ({ doc, operation: _operation }) => {
         // Corrección TS6133: Parámetro ignorado con guion bajo
         if (_operation === 'create') {
@@ -90,7 +90,7 @@ export const Projects: CollectionConfig = {
     ]
   },
 
-  fields: [
+  fields:[
     {
       name: 'id',
       type: 'text',
@@ -107,7 +107,7 @@ export const Projects: CollectionConfig = {
       name: 'status', 
       type: 'select', 
       index: true, 
-      options: [
+      options:[
         { label: 'Borrador', value: 'draft' }, 
         { label: 'Publicado', value: 'published' }
       ], 
@@ -116,17 +116,17 @@ export const Projects: CollectionConfig = {
     },
     {
       type: 'tabs',
-      tabs: [
+      tabs:[
         {
           label: 'Identidad del Activo',
           fields: [
-            { type: 'row', fields: [
+            { type: 'row', fields:[
                 { name: 'title', type: 'text', required: true, admin: { width: '70%' } },
                 { name: 'slug', type: 'text', unique: true, index: true, admin: { width: '30%' } },
             ]},
             { name: 'description', type: 'textarea', required: true },
             { name: 'imageUrl', type: 'text', required: true, admin: { description: 'URL canónica del activo visual.' } },
-            { type: 'row', fields: [
+            { type: 'row', fields:[
                 { name: 'liveUrl', type: 'text', admin: { placeholder: 'https://...' } },
                 { name: 'codeUrl', type: 'text', admin: { placeholder: 'GitHub Repository' } },
             ]},
@@ -141,12 +141,12 @@ export const Projects: CollectionConfig = {
         },
         {
           label: 'Ingeniería de Élite',
-          fields: [
+          fields:[
             {
               name: 'introduction',
               type: 'group',
               required: true,
-              fields: [
+              fields:[
                 { name: 'heading', type: 'text', required: true },
                 { name: 'body', type: 'textarea', required: true }
               ]
@@ -161,14 +161,14 @@ export const Projects: CollectionConfig = {
               name: 'backend_architecture',
               type: 'group',
               required: true,
-              fields: [
+              fields:[
                 { name: 'title', type: 'text', required: true },
                 { name: 'description', type: 'textarea' },
                 { 
                   name: 'features', 
                   type: 'array', 
                   required: true, 
-                  fields: [{ name: 'feature', type: 'text', required: true }] 
+                  fields:[{ name: 'feature', type: 'text', required: true }] 
                 }
               ]
             }
@@ -176,12 +176,12 @@ export const Projects: CollectionConfig = {
         },
         {
           label: 'Estética & Branding',
-          fields: [
+          fields:[
             {
               name: 'branding',
               type: 'group',
               required: true,
-              fields: [
+              fields:[
                 { 
                   name: 'primary_color', 
                   type: 'text', 
@@ -197,7 +197,7 @@ export const Projects: CollectionConfig = {
                   type: 'select', 
                   required: true, 
                   defaultValue: 'minimal',
-                  options: [
+                  options:[
                     { label: 'Minimalista', value: 'minimal' },
                     { label: 'Inmersivo', value: 'immersive' },
                     { label: 'Editorial', value: 'editorial' },
@@ -211,7 +211,7 @@ export const Projects: CollectionConfig = {
         },
         {
           label: 'Protocolo 33',
-          fields: [
+          fields:[
             { 
               name: 'reputationWeight', 
               type: 'number', 

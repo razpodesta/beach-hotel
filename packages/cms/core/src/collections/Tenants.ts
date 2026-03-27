@@ -3,7 +3,7 @@
  * @description Colección soberana para la gestión de propiedades (Multi-Tenancy).
  *              Orquesta las fronteras de datos para el Hotel, Festival y Journal.
  *              Nivelado para resolución nativa en Next.js 15 y observabilidad forense.
- * @version 2.3 - ESM Resolution & Linter Hardening (Fix unused vars)
+ * @version 3.0 - Pure Source Resolution (No Ext)
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -11,9 +11,9 @@ import type { CollectionConfig } from 'payload';
 
 /**
  * IMPORTACIONES DE PERÍMETRO (Saneadas)
- * @fix Resolución TS2835: Extensión .js obligatoria para resolución en ESM/nodenext.
+ * @nivelación: Extensión .js eliminada para alineación con Next.js 15 (Bundler Resolution).
  */
-import { multiTenantReadAccess, multiTenantWriteAccess } from './Access.js';
+import { multiTenantReadAccess, multiTenantWriteAccess } from './Access';
 
 export const Tenants: CollectionConfig = {
   slug: 'tenants',
@@ -38,7 +38,7 @@ export const Tenants: CollectionConfig = {
    * GUARDIANES DE INTEGRIDAD (Hooks)
    */
   hooks: {
-    beforeChange: [
+    beforeChange:[
       ({ data }) => { // Eliminado parámetro 'operation' ya que no se utilizaba
         // 1. Slugificación Automática (Fail-Safe)
         if (data.name && typeof data.name === 'string' && !data.slug) {
@@ -51,7 +51,7 @@ export const Tenants: CollectionConfig = {
         return data;
       },
     ],
-    afterChange: [
+    afterChange:[
       ({ doc, operation }) => {
         // Corrección de Linter: Usamos operation directamente o lo comparamos
         if (operation === 'create') {
@@ -61,7 +61,7 @@ export const Tenants: CollectionConfig = {
     ]
   },
 
-  fields: [
+  fields:[
     {
       name: 'id',
       type: 'text',
