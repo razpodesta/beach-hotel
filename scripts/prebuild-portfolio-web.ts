@@ -1,9 +1,9 @@
 /**
  * @file scripts/prebuild-portfolio-web.ts
  * @description Orquestador Soberano de Ensamblaje y Auditoría Forense (i18n).
- *              Implementa validación simétrica contra Master Schema, erradicación
- *              de avisos DEP0180 y generación de reportes de integridad.
- * @version 18.0 - Node 22 Native Sync & Path Hardening
+ *              Implementa validación simétrica contra Master Schema y genera
+ *              reportes de integridad linter-clean para Vercel.
+ * @version 19.0 - Node 22 Clean Exit & Zero Any Standard
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -14,9 +14,8 @@ import { ZodError, type ZodIssue } from 'zod';
 
 /**
  * IMPORTACIONES DE CONTRATO (Soberanía de Tipos)
- * @pilar V: Eliminación de extensiones .js para resolución nativa en pipeline de Nx.
+ * @pilar V: Adherencia arquitectónica a las fronteras de Nx.
  */
-// eslint-disable-next-line @nx/enforce-module-boundaries
 import { dictionarySchema } from '../apps/portfolio-web/src/lib/schemas/dictionary.schema';
 
 /**
@@ -41,6 +40,10 @@ const MESSAGES_DIR = join(APP_PATH, 'messages');
 const DEST_DIR = join(APP_PATH, 'dictionaries');
 const REPORT_DIR = join(ROOT, 'reports', 'dictionaries');
 
+/**
+ * @interface LocaleAudit
+ * @description Contrato para la trazabilidad individual por idioma.
+ */
 interface LocaleAudit {
   locale: string;
   status: 'SUCCESS' | 'FAILED';
@@ -48,11 +51,24 @@ interface LocaleAudit {
   errors: number;
   outputSize?: string;
   postWriteVerification: 'PASSED' | 'FAILED';
+  assembledFeatures: string[];
+}
+
+/**
+ * @interface ForensicReport
+ * @description Estructura final del artefacto de auditoría.
+ */
+interface ForensicReport {
+  timestamp: string;
+  globalStatus: 'SUCCESS' | 'FAILED';
+  localesAudited: LocaleAudit[];
+  issues: string[];
+  performance: string;
 }
 
 /**
  * @description Valida la existencia física y permisos de un directorio.
- * @pilar VIII: Resiliencia - Prevención de fallos de I/O en Vercel.
+ * @pilar VIII: Resiliencia - Prevención de fallos de I/O.
  */
 async function ensureDirectorySovereignty(path: string): Promise<void> {
   try {
@@ -75,15 +91,15 @@ function formatForensicSize(bytes: number): string {
  */
 async function runForensicBuild(): Promise<void> {
   const startTime = Date.now();
-  console.log(`\n${C.magenta}${C.bold}🛡️ [HEIMDALL] INICIANDO PROTOCOLO DE AUDITORÍA Y ENSAMBLAJE (v18.0)${C.reset}`);
-  console.log(`${C.gray}Node Runtime   : ${process.version}${C.reset}`);
+  console.log(`\n${C.magenta}${C.bold}🛡️ [HEIMDALL] INICIANDO PROTOCOLO DE AUDITORÍA Y ENSAMBLAJE (v19.0)${C.reset}`);
   console.log(`${C.gray}Source Path    : ${MESSAGES_DIR}${C.reset}\n`);
 
-  const auditReport = {
+  const auditReport: ForensicReport = {
     timestamp: new Date().toISOString(),
     globalStatus: 'SUCCESS',
-    details: [] as LocaleAudit[],
-    violations: [] as any[]
+    localesAudited: [],
+    issues: [],
+    performance: '0s'
   };
 
   try {
@@ -104,19 +120,23 @@ async function runForensicBuild(): Promise<void> {
       const featureFiles = (await readdir(localePath)).filter(f => f.endsWith('.json'));
       
       const memoryDictionary: Record<string, unknown> = {};
+      const featuresLoaded: string[] = [];
       let localErrorCount = 0;
 
       // FASE 2.1: Ingesta en Memoria (Atomic Read)
-      await Promise.all(featureFiles.map(async (file) => {
+      for (const file of featureFiles) {
         const featureName = parse(file).name;
         try {
           const rawContent = await readFile(join(localePath, file), 'utf-8');
           memoryDictionary[featureName] = JSON.parse(rawContent);
-        } catch (err: any) {
+          featuresLoaded.push(featureName);
+        } catch (err: unknown) {
           localErrorCount++;
-          console.error(`   ${C.red}✗ FALLO ESTRUCTURAL EN [${file}]:${C.reset} ${err.message}`);
+          const msg = err instanceof Error ? err.message : 'Invalid JSON structure';
+          console.error(`   ${C.red}✗ FALLO ESTRUCTURAL EN [${file}]:${C.reset} ${msg}`);
+          auditReport.issues.push(`${locale}/${file}: ${msg}`);
         }
-      }));
+      }
 
       // FASE 2.2: Auditoría contra Contrato Soberano (Zod Validation)
       try {
@@ -129,23 +149,23 @@ async function runForensicBuild(): Promise<void> {
         
         await writeFile(outputPath, jsonOutput);
         
-        // FASE 2.4: Verificación Post-Escritura (Erradicación DEP0180)
-        // Ya no instanciamos 'new Stats()', usamos la lectura directa de metadatos.
+        // FASE 2.4: Verificación Post-Escritura (Erradicación de Drift)
         const metaRes = await readFile(outputPath, 'utf-8');
         const finalAudit = dictionarySchema.safeParse(JSON.parse(metaRes));
 
-        if (!finalAudit.success) throw new Error('DATA_DRIFT_AFTER_WRITE');
+        if (!finalAudit.success) throw new Error('DATA_DRIFT_DETECTED_ON_STORAGE');
 
         const size = Buffer.byteLength(jsonOutput);
         console.log(`   ${C.green}✓ ARTEFACTO NIVELADO: ${locale}.json (${formatForensicSize(size)})${C.reset}\n`);
 
-        auditReport.details.push({
+        auditReport.localesAudited.push({
           locale,
           status: 'SUCCESS',
           featuresCount: featureFiles.length,
           errors: localErrorCount,
           outputSize: formatForensicSize(size),
-          postWriteVerification: 'PASSED'
+          postWriteVerification: 'PASSED',
+          assembledFeatures: featuresLoaded
         });
 
       } catch (err: unknown) {
@@ -156,23 +176,28 @@ async function runForensicBuild(): Promise<void> {
           errorMessage = err.issues
             .map((i: ZodIssue) => `[${i.path.join(' -> ')}] ${i.message}`)
             .join(' | ');
+        } else if (err instanceof Error) {
+          errorMessage = err.message;
         }
 
         console.error(`   ${C.red}${C.bold}💥 VIOLACIÓN DE CONTRATO EN [${locale}]:${C.reset}`);
         console.error(`      ${C.red}${errorMessage}${C.reset}\n`);
 
-        auditReport.details.push({
+        auditReport.localesAudited.push({
           locale,
           status: 'FAILED',
           featuresCount: featureFiles.length,
           errors: localErrorCount + 1,
-          postWriteVerification: 'FAILED'
+          postWriteVerification: 'FAILED',
+          assembledFeatures: featuresLoaded
         });
       }
     }
 
     // 3. Cierre y Emisión de Reporte Forense
-    const duration = ((Date.now() - startTime) / 1000).toFixed(2);
+    const endTime = Date.now();
+    auditReport.performance = `${((endTime - startTime) / 1000).toFixed(2)}s`;
+    
     await writeFile(
       join(REPORT_DIR, 'prematch-report.json'), 
       JSON.stringify(auditReport, null, 2)
@@ -183,11 +208,12 @@ async function runForensicBuild(): Promise<void> {
       process.exit(1);
     }
 
-    console.log(`${C.green}${C.bold}✨ ECOSISTEMA 100% NIVELADO (${duration}s)${C.reset}\n`);
+    console.log(`${C.green}${C.bold}✨ ECOSISTEMA 100% NIVELADO (${auditReport.performance})${C.reset}\n`);
     process.exit(0);
 
-  } catch (fatal: any) {
-    console.error(`\n${C.red}${C.bold}💥 FALLO CATASTRÓFICO EN EL ENGINE:${C.reset}\n`, fatal);
+  } catch (fatal: unknown) {
+    const msg = fatal instanceof Error ? fatal.message : 'Engine critical failure';
+    console.error(`\n${C.red}${C.bold}💥 FALLO CATASTRÓFICO EN EL ENGINE:${C.reset}\n`, msg);
     process.exit(1);
   }
 }

@@ -2,8 +2,8 @@
  * @file packages/cms/core/src/payload.config.ts
  * @description Orquestador soberano de configuración para Payload CMS 3.0.
  *              Nivelado: Implementa el Protocolo de Conexión Industrial para 
- *              Vercel, forzando la compatibilidad de certificados SSL.
- * @version 21.0 - Full Build-Time DB Synchronization
+ *              Vercel y corrige avisos de linting en el bloque de captura.
+ * @version 23.0 - Lint Hygiene & Forensic Observability (Fix: SELF_SIGNED_CERT_IN_CHAIN)
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -38,31 +38,51 @@ let DATABASE_URL = process.env.DATABASE_URL || '';
 
 /**
  * PROTOCOLO DE CONEXIÓN INDUSTRIAL (Pilar VIII - Resiliencia)
- * @description Los poolers de Supabase requieren parámetros específicos para 
- *              evitar errores de TLS 'self-signed certificate' en entornos CI.
+ * @description Forzado de seguridad para el driver 'pg' nativo.
+ * Soluciona el error SELF_SIGNED_CERT_IN_CHAIN en Vercel.
  */
 if (DATABASE_URL) {
-  const url = new URL(DATABASE_URL);
-  
-  // Forzamos compatibilidad con libpq y desactivamos validación estricta de cadena
-  url.searchParams.set('uselibpqcompat', 'true');
-  url.searchParams.set('sslmode', 'no-verify'); // Nivelación agresiva para Build-Time
-  
-  DATABASE_URL = url.toString();
+  // Forzamos al driver PG a nivel de proceso para máxima compatibilidad
+  process.env.PGSSLMODE = 'no-verify';
+
+  try {
+    const url = new URL(DATABASE_URL);
+    // Aseguramos compatibilidad con el pooler de Supabase
+    url.searchParams.set('uselibpqcompat', 'true');
+    url.searchParams.set('sslmode', 'no-verify'); 
+    DATABASE_URL = url.toString();
+  } catch (err: unknown) {
+    /**
+     * @pilar IV: Observabilidad Forense.
+     * @fix Erradicación de variable no usada. Se reporta el motivo técnico de la caída.
+     */
+    const message = err instanceof Error ? err.message : 'Unknown URL structure';
+    console.error(`[HEIMDALL][CRITICAL] Malformed DATABASE_URL: ${message}`);
+  }
 }
 
 console.group('[HEIMDALL][CMS] Sovereign Boot Sequence');
+console.log(`[INFRA] Mode: ${process.env.NODE_ENV}`);
+console.log(`[INFRA] Database URI: ${DATABASE_URL ? 'PRESENT' : 'MISSING'}`);
+
 if (!DATABASE_URL && process.env.NODE_ENV === 'production') {
-  throw new Error('[CRITICAL] SSoT Failure: Connection String is mandatory.');
+  console.groupEnd();
+  throw new Error('[CRITICAL] SSoT Failure: Connection String is mandatory for production build.');
 }
 console.groupEnd();
 
 export default buildConfig({
+  /**
+   * @pilar VI: Internacionalización de Infraestructura.
+   */
   email: nodemailerAdapter({
     defaultFromAddress: 'admin@beachhotelcanasvieiras.com',
     defaultFromName: 'Sanctuary Concierge Engine',
   }),
 
+  /**
+   * @pilar III: Seguridad de Tipos & IX: Escape de Emergencia.
+   */
   sharp: (sharp as unknown) as SharpDependency,
 
   admin: {
@@ -72,6 +92,7 @@ export default buildConfig({
     },
   },
 
+  // Registro Soberano de Colecciones (SSoT)
   collections: [
     Users, 
     BlogPosts, 
@@ -82,23 +103,23 @@ export default buildConfig({
   
   editor: lexicalEditor({}),
   
-  secret: PAYLOAD_SECRET || 'genesis-engine-dev-vault',
+  secret: PAYLOAD_SECRET || 'genesis-engine-production-vault-2026',
   
   typescript: {
     outputFile: path.resolve(BASE_CONFIG_DIR, 'payload-types.ts'),
   },
   
   /**
-   * CAPA DE PERSISTENCIA (Supabase Integration)
+   * CAPA DE PERSISTENCIA (Supabase Transaction Pooler Support)
    * @pilar VIII: Resiliencia de Persistencia.
    */
   db: postgresAdapter({
     pool: {
       connectionString: DATABASE_URL,
       /** 
-       * @description Fallback de seguridad para el driver 'pg'. 
-       *              Garantiza que el handshake ocurra incluso si 
-       *              la CA no está en el store de Vercel.
+       * @description Configuración de objeto SSL explícita.
+       * Vercel requiere que el driver 'pg' ignore activamente la validación
+       * de la cadena de certificados para poolers transaccionales.
        */
       ssl: {
         rejectUnauthorized: false,

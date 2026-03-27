@@ -17,10 +17,13 @@
     },
     "build": {
       "executor": "@nx/next:build",
-      "outputs": ["{options.outputPath}"],
+      "outputs": [
+        "{options.outputPath}",
+        "{workspaceRoot}/dist/apps/portfolio-web/.next",
+        "{workspaceRoot}/dist/apps/portfolio-web/public"
+      ],
       "defaultConfiguration": "production",
       "options": {
-      
         "outputPath": "dist/apps/portfolio-web"
       },
       "dependsOn": [
@@ -29,7 +32,8 @@
       ],
       "configurations": {
         "production": {
-          "debug": false
+          "debug": false,
+          "generateSourcemaps": false
         }
       }
     },
@@ -54,8 +58,9 @@
         "command": "tsc -p apps/portfolio-web/tsconfig.json --noEmit",
         "forwardAllArgs": true
       },
+      "cache": true,
       "dependsOn": ["^build"],
-      "description": "Verificación estática de tipos sobre el código fuente de la aplicación."
+      "description": "Verificación estática de tipos de élite sobre el código fuente."
     },
     "test": {
       "executor": "@nx/jest:jest",
@@ -64,13 +69,14 @@
         "jestConfig": "apps/portfolio-web/jest.config.ts",
         "passWithNoTests": true
       },
+      "cache": true,
       "dependsOn": ["prebuild"]
     },
     "lint": {
       "executor": "@nx/eslint:lint",
       "inputs": ["default", "{workspaceRoot}/eslint.config.mjs"],
+      "cache": true,
       "options": {
-       
         "lintFilePatterns": ["apps/portfolio-web/**/*.{ts,tsx,js,jsx}"]
       }
     }
