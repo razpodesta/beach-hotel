@@ -1,8 +1,9 @@
 /**
  * @file apps/portfolio-web/eslint.config.mjs
  * @description Constitución de Calidad Estática para el orquestador Web.
- *              Integra reglas de Next.js Core Web Vitals, React Hooks y Jest.
- * @version 6.0 - Next.js 15 Stable Sync (Flat Config)
+ *              Refactorizado: Registro global de plugins para satisfacer el 
+ *              analizador AST de Next.js 15 en Vercel (Mitigación de Warning).
+ * @version 6.1 - Flat Config Global Sync
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -16,38 +17,42 @@ export default tseslint.config(
   // 1. HERENCIA SOBERANA: Se asumen las reglas base del Monorepo Nx.
   ...baseConfig,
 
-  // 2. CAPA DE CÓDIGO FUENTE (Next.js & React)
+  // 2. REGISTRO GLOBAL DE PLUGINS (Vercel Build Sync)
+  // @pilar V: Extraer la declaración de plugins al nivel superior permite 
+  // que el CLI de Next.js detecte la presencia de '@next/next' sin emitir warnings.
   {
-    files: ['src/**/*.ts', 'src/**/*.tsx'],
     plugins: {
-      /* 
-         @pilar V: Adherencia Arquitectónica.
-         Vinculación directa del plugin para evitar colisiones de parsers.
-      */
       '@next/next': nextPlugin,
       'react-hooks': reactHooksPlugin,
     },
+  },
+
+  // 3. CAPA DE CÓDIGO FUENTE (Next.js & React)
+  {
+    files:['src/**/*.ts', 'src/**/*.tsx'],
     rules: {
       // Reglas Recomendadas de Next.js
       ...nextPlugin.configs.recommended.rules,
+      
       // Reglas de Élite para Performance (LCP, CLS, INP)
       ...nextPlugin.configs['core-web-vitals'].rules,
+      
       // Reglas de integridad de Hooks
       ...reactHooksPlugin.configs.recommended.rules,
       
       // Ajustes de Élite: Desactivamos la advertencia de links internos 
-      // ya que Next.js 15 gestiona esto nativamente mediante tipos.
+      // ya que Next.js 15 gestiona esto nativamente mediante App Router y tipado estricto.
       '@next/next/no-html-link-for-pages': 'off',
       
       // @pilar III: Seguridad de Tipos Absoluta.
       '@typescript-eslint/no-explicit-any': 'error',
-      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-unused-vars':['warn', { argsIgnorePattern: '^_' }],
     },
   },
 
-  // 3. CAPA DE PRUEBAS (Arquitectura de Espejo)
+  // 4. CAPA DE PRUEBAS (Arquitectura de Espejo)
   {
-    files: [
+    files:[
       '**/*.spec.ts', 
       '**/*.spec.tsx', 
       '**/*.test.ts', 
@@ -70,12 +75,17 @@ export default tseslint.config(
     },
   },
 
-  // 4. ANULACIONES QUIRÚRGICAS (Config Files)
+  // 5. ANULACIONES QUIRÚRGICAS (Config Files)
   {
-    files: ['next.config.js', 'postcss.config.js', 'tailwind.config.js'],
+    files:[
+      'next.config.js', 
+      'next.config.ts', 
+      'postcss.config.js', 
+      'tailwind.config.js'
+    ],
     languageOptions: {
       parserOptions: {
-        sourceType: 'script', // Estos archivos son CommonJS en Node.js
+        sourceType: 'script', // Estos archivos son consumidos en contexto Node.js
       },
     },
     rules: {

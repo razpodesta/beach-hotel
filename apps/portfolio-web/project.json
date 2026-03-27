@@ -3,7 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/portfolio-web/src",
   "projectType": "application",
-  "tags": ["platform:web", "scope:metashark", "type:app"],
+  "tags":["platform:web", "scope:metashark", "type:app"],
   "targets": {
     "prebuild": {
       "executor": "nx:run-commands",
@@ -12,12 +12,12 @@
         "color": true
       },
       "inputs": ["{projectRoot}/src/messages/**/*.json"],
-      "outputs": ["{projectRoot}/src/dictionaries/*.json"],
+      "outputs":["{projectRoot}/src/dictionaries/*.json"],
       "description": "Protocolo MACS: Ensamblaje y validación soberana de diccionarios i18n."
     },
     "build": {
       "executor": "@nx/next:build",
-      "outputs": [
+      "outputs":[
         "{options.outputPath}",
         "{workspaceRoot}/dist/apps/portfolio-web/.next",
         "{workspaceRoot}/dist/apps/portfolio-web/.next/routes-manifest.json",
@@ -25,16 +25,17 @@
       ],
       "defaultConfiguration": "production",
       "options": {
-        "outputPath": "dist/apps/portfolio-web"
+        "outputPath": "dist/apps/portfolio-web",
+        "generatePackageJson": true
       },
-      "dependsOn": [
+      "dependsOn":[
         "^build",
         "prebuild"
       ],
       "configurations": {
         "production": {
           "debug": false,
-          "fileReplacements": [],
+          "fileReplacements":[],
           "generateSourcemaps": false
         }
       }
@@ -61,7 +62,7 @@
         "forwardAllArgs": true
       },
       "cache": true,
-      "dependsOn": [
+      "dependsOn":[
         "^build",
         "prebuild"
       ],
@@ -82,7 +83,7 @@
       "inputs": ["default", "{workspaceRoot}/eslint.config.mjs"],
       "cache": true,
       "options": {
-        "lintFilePatterns": ["apps/portfolio-web/**/*.{ts,tsx,js,jsx}"]
+        "lintFilePatterns":["apps/portfolio-web/**/*.{ts,tsx,js,jsx}"]
       }
     }
   }
