@@ -1,9 +1,9 @@
 /**
  * @file packages/cms/core/src/payload.config.ts
  * @description Orquestador soberano de configuración para Payload CMS 3.0.
- *              Nivelado: Eliminación de extensiones .js y blindaje de conexión SSL
- *              para erradicar errores de certificado en el pipeline de Vercel.
- * @version 20.0 - SSL Resilience & SSoT Hardening
+ *              Nivelado: Implementa el Protocolo de Conexión Industrial para 
+ *              Vercel, forzando la compatibilidad de certificados SSL.
+ * @version 21.0 - Full Build-Time DB Synchronization
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -18,7 +18,7 @@ import sharp from 'sharp';
 
 /**
  * IMPORTACIONES ATÓMICAS DE COLECCIONES
- * @pilar V: Adherencia Arquitectónica. 
+ * @pilar V: Adherencia Arquitectónica.
  */
 import { Users } from './collections/Users';
 import { BlogPosts } from './collections/BlogPosts';
@@ -37,22 +37,23 @@ const PAYLOAD_SECRET = process.env.PAYLOAD_SECRET;
 let DATABASE_URL = process.env.DATABASE_URL || '';
 
 /**
- * PROTOCOLO DE SANEAMIENTO DE CONEXIÓN (Pilar VIII - Resiliencia)
- * @description Inyecta parámetros de compatibilidad para evitar fallos de SSL 
- *              durante la fase de 'Collecting page data' en Vercel.
+ * PROTOCOLO DE CONEXIÓN INDUSTRIAL (Pilar VIII - Resiliencia)
+ * @description Los poolers de Supabase requieren parámetros específicos para 
+ *              evitar errores de TLS 'self-signed certificate' en entornos CI.
  */
-if (DATABASE_URL && !DATABASE_URL.includes('uselibpqcompat')) {
-  const separator = DATABASE_URL.includes('?') ? '&' : '?';
-  DATABASE_URL = `${DATABASE_URL}${separator}uselibpqcompat=true`;
+if (DATABASE_URL) {
+  const url = new URL(DATABASE_URL);
+  
+  // Forzamos compatibilidad con libpq y desactivamos validación estricta de cadena
+  url.searchParams.set('uselibpqcompat', 'true');
+  url.searchParams.set('sslmode', 'no-verify'); // Nivelación agresiva para Build-Time
+  
+  DATABASE_URL = url.toString();
 }
 
 console.group('[HEIMDALL][CMS] Sovereign Boot Sequence');
-if (!DATABASE_URL) {
-  if (process.env.NODE_ENV === 'production') {
-    throw new Error('[CRITICAL] SSoT Failure: DATABASE_URL missing.');
-  }
-} else {
-  console.log('[STATUS] Infrastructure Identity: Verified.');
+if (!DATABASE_URL && process.env.NODE_ENV === 'production') {
+  throw new Error('[CRITICAL] SSoT Failure: Connection String is mandatory.');
 }
 console.groupEnd();
 
@@ -95,12 +96,12 @@ export default buildConfig({
     pool: {
       connectionString: DATABASE_URL,
       /** 
-       * @description Configuración SSL adaptada para entornos Serverless.
-       *              Se añade 'rejectUnauthorized: false' como fallback 
-       *              específicamente para mitigar el error detectado en Vercel.
+       * @description Fallback de seguridad para el driver 'pg'. 
+       *              Garantiza que el handshake ocurra incluso si 
+       *              la CA no está en el store de Vercel.
        */
       ssl: {
-        rejectUnauthorized: false, // Necesario para poolers de Supabase en Vercel
+        rejectUnauthorized: false,
       },
     },
   }),

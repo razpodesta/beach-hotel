@@ -20,8 +20,8 @@
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "production",
       "options": {
-  
-        "outputPath": "dist/apps/portfolio-web/.next"
+      
+        "outputPath": "dist/apps/portfolio-web"
       },
       "dependsOn": [
         "^build",
@@ -68,11 +68,9 @@
     },
     "lint": {
       "executor": "@nx/eslint:lint",
-      "inputs": [
-        "default", 
-        "{workspaceRoot}/eslint.config.mjs"
-      ],
+      "inputs": ["default", "{workspaceRoot}/eslint.config.mjs"],
       "options": {
+       
         "lintFilePatterns": ["apps/portfolio-web/**/*.{ts,tsx,js,jsx}"]
       }
     }
