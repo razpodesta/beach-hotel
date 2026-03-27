@@ -1,9 +1,9 @@
 /**
  * @file packages/cms/core/src/payload.config.ts
- * @description Orquestador soberano de configuración para Payload CMS 3.0.
- *              Implementa arquitectura Next.js 15 Standard, resolución ESM Estricta
- *              y blindaje de infraestructura para entornos de Vercel.
- * @version 15.0 - TS2835 ESM Compliance & Strict Resolution
+ * @description Orquestador Soberano de Configuración para Payload CMS 3.0.
+ *              Implementa arquitectura Next.js 15 Standard, resolución ESM Estricta,
+ *              optimización de pool para latencias altas y blindaje de infraestructura.
+ * @version 16.0 - Forensic Health Sync & Pool Optimization
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -19,8 +19,7 @@ import sharp from 'sharp';
 /**
  * IMPORTACIONES ATÓMICAS DE COLECCIONES (Strict ESM)
  * @pilar V: Adherencia Arquitectónica. 
- * @fix TS2835: El uso de '.js' es OBLIGATORIO en el source cuando 
- * el motor de resolución es 'nodenext' para garantizar la paridad con el output.
+ * @fix TS2835: Sincronización obligatoria de extensiones físicas .js.
  */
 import { Users } from './collections/Users.js';
 import { BlogPosts } from './collections/BlogPosts.js';
@@ -29,28 +28,33 @@ import { Media } from './collections/Media.js';
 import { Tenants } from './collections/Tenants.js';
 
 /**
- * DETERMINACIÓN DE PERÍMETRO DE INFRAESTRUCTRURA
+ * DETERMINACIÓN DE PERÍMETRO DE INFRAESTRUCTRURA (ESM Protocol)
  */
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const BASE_CONFIG_DIR = __dirname;
 
 /**
- * VALIDACIÓN PERIMETRAL DE SECRETO
+ * VALIDACIÓN PERIMETRAL DE SECRETOS (Pilar X)
  */
 const PAYLOAD_SECRET = process.env.PAYLOAD_SECRET;
 const DATABASE_URL = process.env.DATABASE_URL;
 
+// Protocolo Heimdall: Trazabilidad forense de handshake y salud de entorno
+console.group('[HEIMDALL][CMS] Sovereign Boot Protocol');
+console.log(`Core_Engine_Path: ${BASE_CONFIG_DIR}`);
+console.log(`Node_Runtime: ${process.version}`);
+console.log(`Supabase_URL_Presence: ${!!DATABASE_URL}`);
 if (!DATABASE_URL && process.env.NODE_ENV === 'production') {
-  throw new Error('[HEIMDALL][CRITICAL] DATABASE_URL is missing. Production build aborted.');
+  console.error('[CRITICAL] Missing DATABASE_URL in Vercel. Process halted.');
+  throw new Error('SSoT Failure: Missing infrastructure secrets.');
 }
-
-// Protocolo Heimdall: Trazabilidad forense de handshake
-console.log(`[HEIMDALL][CMS] Bootstrapping Sovereign Core at: ${BASE_CONFIG_DIR}`);
+console.groupEnd();
 
 export default buildConfig({
   /**
    * @pilar VI: Internacionalización de Infraestructura.
+   * Centraliza la identidad comunicacional del Santuario.
    */
   email: nodemailerAdapter({
     defaultFromAddress: 'admin@beachhotelcanasvieiras.com',
@@ -59,15 +63,15 @@ export default buildConfig({
 
   /**
    * @pilar III: Seguridad de Tipos & IX: Escape de Emergencia.
-   * @description Sincronización con el motor Sharp para procesamiento de activos visuales.
+   * @description Sincronización robusta con el motor de procesamiento Sharp.
    */
   sharp: (sharp as unknown) as SharpDependency,
 
   admin: {
     user: Users.slug,
     /**
-     * @description El importMap es crítico para la hidratación de componentes 
-     * en el panel administrativo dentro de Next.js 15.
+     * @description El importMap es el cimiento de la hidratación de componentes 
+     * en el panel administrativo dentro del runtime de Next.js 15.
      */
     importMap: { 
       baseDir: BASE_CONFIG_DIR, 
@@ -76,7 +80,7 @@ export default buildConfig({
 
   /**
    * REGISTRO SOBERANO DE COLECCIONES (SSoT)
-   * @description Orquesta la base del conocimiento del Hotel, Festival y Journal.
+   * Orquesta la base del conocimiento del Hotel, Festival y Journal.
    */
   collections: [
     Users, 
@@ -94,7 +98,7 @@ export default buildConfig({
   /**
    * @pilar X: Configuración Segura.
    */
-  secret: PAYLOAD_SECRET || 'genesis-engine-dev-key',
+  secret: PAYLOAD_SECRET || 'genesis-engine-dev-vault',
   
   typescript: {
     /**
@@ -105,15 +109,20 @@ export default buildConfig({
   },
   
   /**
-   * @pilar VIII: Resiliencia de Persistencia (Supabase Connectivity).
+   * @pilar VIII: Resiliencia de Persistencia.
+   * @pilar X: Optimización para entornos Serverless (Vercel).
    */
   db: postgresAdapter({
     pool: {
       connectionString: DATABASE_URL || '',
       /** 
-       * @description Límites de pool optimizados para el entorno Serverless de Vercel.
+       * @description Ajuste basado en auditoría forense: 
+       * Se incrementan los timeouts para compensar latencias de pooler > 4s.
        */
       max: 10,
+      min: 0,
+      idleTimeoutMillis: 30000,
+      connectionTimeoutMillis: 15000,
       ssl: process.env.NODE_ENV === 'production' 
         ? { rejectUnauthorized: true } 
         : { rejectUnauthorized: false },

@@ -1,83 +1,47 @@
 {
-  "timestamp": "2026-03-26T19:24:36.411Z",
+  "timestamp": "2026-03-27T15:54:05.276Z",
   "summary": {
     "totalTables": 16,
     "totalPolicies": 0,
     "tablesWithRlsDisabled": [
-      "users",
-      "tenants",
-      "projects_tags",
-      "projects_tech_stack",
-      "payload_locked_documents",
-      "payload_kv",
-      "payload_locked_documents_rels",
-      "payload_migrations",
-      "users_sessions",
       "blog_posts",
       "blog_posts_tags",
       "media",
       "projects",
+      "projects_tech_stack",
       "projects_backend_architecture_features",
+      "tenants",
+      "projects_tags",
+      "payload_kv",
+      "users",
       "payload_preferences",
-      "payload_preferences_rels"
+      "payload_preferences_rels",
+      "payload_migrations",
+      "users_sessions",
+      "payload_locked_documents",
+      "payload_locked_documents_rels"
     ],
     "isSecurityCompliant": false
   },
   "tables": [
     "users",
-    "tenants",
+    "blog_posts_tags",
+    "blog_posts",
     "projects_tags",
     "projects_tech_stack",
+    "projects_backend_architecture_features",
+    "projects",
+    "media",
+    "tenants",
     "payload_kv",
     "payload_locked_documents",
     "payload_locked_documents_rels",
+    "payload_preferences",
     "payload_preferences_rels",
     "payload_migrations",
-    "users_sessions",
-    "blog_posts",
-    "blog_posts_tags",
-    "media",
-    "projects",
-    "projects_backend_architecture_features",
-    "payload_preferences"
+    "users_sessions"
   ],
   "rlsStatus": [
-    {
-      "tablename": "users",
-      "rowsecurity": false
-    },
-    {
-      "tablename": "tenants",
-      "rowsecurity": false
-    },
-    {
-      "tablename": "projects_tags",
-      "rowsecurity": false
-    },
-    {
-      "tablename": "projects_tech_stack",
-      "rowsecurity": false
-    },
-    {
-      "tablename": "payload_locked_documents",
-      "rowsecurity": false
-    },
-    {
-      "tablename": "payload_kv",
-      "rowsecurity": false
-    },
-    {
-      "tablename": "payload_locked_documents_rels",
-      "rowsecurity": false
-    },
-    {
-      "tablename": "payload_migrations",
-      "rowsecurity": false
-    },
-    {
-      "tablename": "users_sessions",
-      "rowsecurity": false
-    },
     {
       "tablename": "blog_posts",
       "rowsecurity": false
@@ -95,7 +59,27 @@
       "rowsecurity": false
     },
     {
+      "tablename": "projects_tech_stack",
+      "rowsecurity": false
+    },
+    {
       "tablename": "projects_backend_architecture_features",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "tenants",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "projects_tags",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "payload_kv",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "users",
       "rowsecurity": false
     },
     {
@@ -104,6 +88,22 @@
     },
     {
       "tablename": "payload_preferences_rels",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "payload_migrations",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "users_sessions",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "payload_locked_documents",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "payload_locked_documents_rels",
       "rowsecurity": false
     }
   ],
