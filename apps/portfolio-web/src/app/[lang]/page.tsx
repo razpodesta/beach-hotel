@@ -1,9 +1,9 @@
 /**
- * @file page.tsx
+ * @file apps/portfolio-web/src/app/[lang]/page.tsx
  * @description Orquestador Soberano de la Landing Page (Recepción).
  *              Implementa un Embudo de Conversión de alta fidelidad integrando 
- *              el motor editorial 3D y la telemetría del Santuario.
- * @version 20.0 - Full Funnel & Blog Facade Integration
+ *              el motor editorial 3D, telemetría y SEO de autoridad.
+ * @version 21.0 - Vercel Build Sync & ESM Hardening
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -11,27 +11,27 @@ import { Suspense } from 'react';
 import type { Metadata } from 'next';
 
 /**
- * IMPORTACIONES DE INFRAESTRUCTRURA
- * @pilar V: Adherencia arquitectónica. Uso de Fachada de Dominio y extensiones ESM.
+ * IMPORTACIONES DE INFRAESTRUCTRURA (Rutas Relativas Saneadas)
+ * @pilar V: Eliminación de extensiones .js para resolución nativa en Next.js 15.
  */
-import { getDictionary } from '../../lib/get-dictionary.js';
-import { getAllPosts } from '../../lib/blog-api.js';
-import type { Locale } from '../../config/i18n.config.js';
-import { JsonLdScript } from '../../components/ui/JsonLdScript.js';
+import { getDictionary } from '../../lib/get-dictionary';
+import { getAllPosts } from '../../lib/blog-api';
+import type { Locale } from '../../config/i18n.config';
+import { JsonLdScript } from '../../components/ui/JsonLdScript';
 
 /**
  * APARATOS DE SECCIÓN (Lego System)
- * @pilar IX: Componentización desacoplada.
+ * @pilar IX: Componentización desacoplada y orientada a la conversión.
  */
-import { HeroCarousel } from '../../components/sections/homepage/HeroCarousel.js';
-import { LiveStatusTicker } from '../../components/sections/homepage/LiveStatusTicker.js';
-import { AboutSection } from '../../components/sections/homepage/AboutSection.js';
-import { AiContentSection } from '../../components/sections/homepage/AiContentSection.js';
-import { ExperienceShowcase3D } from '../../components/sections/homepage/ExperienceShowcase3D.js';
-import { ValuePropositionSection } from '../../components/sections/homepage/ValuePropositionSection.js';
-import { BlogSection3D } from '../../components/sections/homepage/BlogSection3D.js';
-import { HistorySection } from '../../components/sections/homepage/HistorySection.js';
-import { ContactSection } from '../../components/sections/homepage/ContactSection.js';
+import { HeroCarousel } from '../../components/sections/homepage/HeroCarousel';
+import { LiveStatusTicker } from '../../components/sections/homepage/LiveStatusTicker';
+import { AboutSection } from '../../components/sections/homepage/AboutSection';
+import { AiContentSection } from '../../components/sections/homepage/AiContentSection';
+import { ExperienceShowcase3D } from '../../components/sections/homepage/ExperienceShowcase3D';
+import { ValuePropositionSection } from '../../components/sections/homepage/ValuePropositionSection';
+import { BlogSection3D } from '../../components/sections/homepage/BlogSection3D';
+import { HistorySection } from '../../components/sections/homepage/HistorySection';
+import { ContactSection } from '../../components/sections/homepage/ContactSection';
 
 /**
  * @interface PageProps
@@ -43,27 +43,28 @@ type PageProps = {
 
 /**
  * GENERACIÓN DE METADATOS SOBERANOS
- * @pilar I: Visión Holística - SEO E-E-A-T.
+ * @pilar I: Visión Holística - SEO E-E-A-T & i18n.
  */
 export async function generateMetadata(props: PageProps): Promise<Metadata> {
   const { lang } = await props.params;
   const dict = await getDictionary(lang);
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://beachhotelcanasvieiras.com';
-  
+  const siteName = dict.header.personal_portfolio;
+
   return {
-    title: `Beach Hotel Canasvieiras | ${dict.header.tagline}`,
+    title: `${siteName} | ${dict.header.tagline}`,
     description: dict.hero.page_description,
     alternates: { canonical: `${baseUrl}/${lang}` },
     openGraph: {
-      title: `Beach Hotel Canasvieiras | ${dict.header.tagline}`,
+      title: `${siteName} | ${dict.header.tagline}`,
       description: dict.hero.page_description,
-      url: `${baseUrl}/${lang}`,
-      siteName: 'Beach Hotel Canasvieiras',
+      url: `/${lang}`,
+      siteName: siteName,
       images: [{
         url: '/images/hotel/og-main.jpg',
         width: 1200,
         height: 630,
-        alt: dict.header.personal_portfolio,
+        alt: siteName,
       }],
       type: 'website',
     }
@@ -79,16 +80,20 @@ export default async function HotelHomePage(props: PageProps) {
 
   /**
    * @pilar X: Rendimiento de Élite.
-   * Obtención paralela de Diccionario y Contenido Editorial para minimizar el bloqueo.
+   * Obtención paralela masiva para minimizar el tiempo de bloqueo del servidor.
    */
   const [dict, posts] = await Promise.all([
     getDictionary(lang),
-    getAllPosts(lang)
+    getAllPosts(lang).catch((error) => {
+      console.error('[HEIMDALL][CRITICAL] Editorial sync failed at Home level:', error);
+      return []; // Fallback resiliente (Pilar VIII)
+    })
   ]);
 
   /**
    * DATOS ESTRUCTURADOS (Schema.org)
    * @description Provee contexto semántico rico para el posicionamiento del Hotel.
+   * @fix TS2322: Alineado con el nuevo contrato recursivo de JsonLdScript.
    */
   const structuredData = {
     "@context": "https://schema.org",
@@ -96,7 +101,7 @@ export default async function HotelHomePage(props: PageProps) {
     "name": dict.header.personal_portfolio,
     "description": dict.hero.page_description,
     "image": "/images/hotel/og-main.jpg",
-    "url": "https://beachhotelcanasvieiras.com",
+    "url": process.env.NEXT_PUBLIC_BASE_URL,
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "Av. das Nações, 123",
@@ -153,9 +158,7 @@ export default async function HotelHomePage(props: PageProps) {
         <ValuePropositionSection dictionary={dict.value_proposition} />
       </section>
 
-      {/* --- FASE 7: EVIDENCIA EDITORIAL (AUTHORITY) --- 
-          @pilar XII: MEA/UX - Inyección del carrusel 3D con datos de la fachada.
-      */}
+      {/* --- FASE 7: EVIDENCIA EDITORIAL (AUTHORITY) --- */}
       <section id="journal-preview" className="relative w-full z-10">
         <BlogSection3D 
           posts={posts} 
