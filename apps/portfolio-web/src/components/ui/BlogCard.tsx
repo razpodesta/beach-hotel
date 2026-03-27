@@ -1,10 +1,9 @@
 /**
- * @file BlogCard.tsx
+ * @file apps/portfolio-web/src/components/ui/BlogCard.tsx
  * @description Aparato editorial de alta fidelidad. 
  *              Orquesta la visualización de artículos con enfoque en Core Web Vitals,
  *              SEO semántico e interacciones de grado boutique.
- *              Nivelado para 'verbatimModuleSyntax' y contratos de datos sin nulidad.
- * @version 8.0 - Strict Schema Sync & Metadata Hardening
+ * @version 9.0 - Vercel Build Normalization & Asset Resilience
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -23,15 +22,15 @@ import {
 } from 'lucide-react';
 
 /**
- * IMPORTACIONES DE INFRAESTRUCTRURA
- * @pilar V: Adherencia arquitectónica mediante rutas relativas internas.
+ * IMPORTACIONES DE INFRAESTRUCTRURA (Rutas Saneadas)
+ * @pilar V: Eliminación de extensiones físicas para resolución nativa en Next.js 15.
  */
-import type { BlogPost } from '../../lib/schemas/blog.schema.js';
-import { cn } from '../../lib/utils/cn.js';
+import type { BlogPost } from '../../lib/schemas/blog.schema';
+import { cn } from '../../lib/utils/cn';
 
 /**
  * @interface BlogCardProps
- * @description Contrato de propiedades alineado con el Shaper Polimórfico.
+ * @description Contrato de propiedades alineado con el Shaper de Dominio.
  */
 interface BlogCardProps {
   /** Metadatos del artículo validados por el esquema soberano */
@@ -83,9 +82,8 @@ export function BlogCard({
   }, [post.published_date, lang]);
 
   /**
-   * GESTIÓN RESILIENTE DE ASSETS
-   * @pilar III: Resolución de tipos sin nulidad. 
-   * Prioridad: Prop manual > Asset del CMS > Slug local > Placeholder.
+   * GESTIÓN RESILIENTE DE ASSETS (Pilar VIII)
+   * Prioridad: Prop manual > Asset del CMS > Slug local > Placeholder Global.
    */
   const finalImageUrl = useMemo(() => {
     return customImage || post.ogImage || `/images/blog/${slug}.jpg` || '/images/hotel/og-main.jpg';
@@ -93,13 +91,13 @@ export function BlogCard({
 
   return (
     <motion.article
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 15 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.1 }}
       transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
       className={cn(
         "group relative flex flex-col h-full overflow-hidden rounded-[2.5rem] border border-white/5 bg-zinc-900/40 backdrop-blur-sm",
-        "transition-all duration-500 hover:border-primary/40 hover:shadow-[0_20px_50px_-20px_rgba(168,85,247,0.15)]",
+        "transition-all duration-500 hover:border-primary/40 hover:shadow-[0_30px_60px_-20px_rgba(168,85,247,0.15)]",
         className
       )}
     >
@@ -109,7 +107,7 @@ export function BlogCard({
           src={finalImageUrl}
           alt={post.title}
           fill
-          className="object-cover transition-transform duration-1000 ease-out group-hover:scale-105 group-hover:rotate-1"
+          className="object-cover transition-transform duration-1000 ease-out group-hover:scale-105"
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           priority={priority}
           loading={priority ? 'eager' : 'lazy'}
@@ -124,8 +122,8 @@ export function BlogCard({
              <Link 
                key={tag}
                href={`/${lang}/blog/tag/${tag.toLowerCase().trim().replace(/\s+/g, '-')}`}
-               aria-label={`Ver artículos etiquetados como ${tag}`}
-               className="inline-flex items-center gap-2 rounded-full bg-black/60 backdrop-blur-md border border-white/10 px-4 py-2 text-[8px] font-bold uppercase tracking-[0.25em] text-zinc-300 hover:text-white hover:border-primary/50 transition-all"
+               aria-label={`Ver artigos sobre ${tag}`}
+               className="inline-flex items-center gap-2 rounded-full bg-black/60 backdrop-blur-md border border-white/10 px-4 py-2 text-[8px] font-bold uppercase tracking-[0.25em] text-zinc-300 hover:text-white hover:border-primary/50 transition-all outline-none focus-visible:ring-1 focus-visible:ring-primary"
              >
                <div className="h-1 w-1 rounded-full bg-primary animate-pulse" />
                {tag}
@@ -138,7 +136,8 @@ export function BlogCard({
       <div className="flex grow flex-col p-8 md:p-10 relative">
         <div className="mb-6 flex items-center gap-6 text-[9px] font-mono uppercase tracking-widest text-zinc-500">
           <div className="flex items-center gap-2">
-            <Calendar size={12} className="text-primary" /> {formattedDate}
+            <Calendar size={12} className="text-primary" /> 
+            <time dateTime={post.published_date}>{formattedDate}</time>
           </div>
           <div className="flex items-center gap-2">
             <User size={12} className="text-pink-500" /> {post.author}
@@ -146,7 +145,7 @@ export function BlogCard({
         </div>
 
         <h3 className="font-display text-2xl md:text-3xl font-bold leading-[1.1] text-white mb-5 group-hover:text-primary transition-colors duration-500">
-          <Link href={postUrl} className="after:absolute after:inset-0 after:z-20 outline-none focus-visible:underline">
+          <Link href={postUrl} className="after:absolute after:inset-0 after:z-20 outline-none">
             {post.title}
           </Link>
         </h3>
@@ -168,7 +167,7 @@ export function BlogCard({
         </div>
       </div>
 
-      {/* Acabado de Lujo: Borde interior sutil para profundidad visual */}
+      {/* Acabado de Lujo: Borde interior sutil */}
       <div className="absolute inset-0 border border-white/0 group-hover:border-white/5 pointer-events-none transition-colors duration-1000" />
     </motion.article>
   );
