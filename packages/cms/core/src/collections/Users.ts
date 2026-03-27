@@ -3,7 +3,7 @@
  * @description Colección soberana de identidades y acceso (Access Control).
  *              Implementa arquitectura multitenant, soporte para UUID deterministas
  *              y blindaje contra errores de validación en entornos de CI/CD.
- * @version 5.1 - ESM Resolution & Hook Hygiene
+ * @version 5.2 - ESM Resolution & Hook Hygiene
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -14,7 +14,7 @@ import { v4 as uuidv4 } from 'uuid';
  * IMPORTACIONES DE PERÍMETRO (Saneadas)
  * @fix Resolución TS2835: Extensión .js obligatoria para resolución en ESM/nodenext.
  */
-import { multiTenantReadAccess } from './Access';
+import { multiTenantReadAccess } from './Access.js';
 
 export const Users: CollectionConfig = {
   slug: 'users',
@@ -49,7 +49,7 @@ export const Users: CollectionConfig = {
    */
   access: {
     read: multiTenantReadAccess,
-    create: () => true,
+    create: () => true, // Permite creación inicial (Genesis); el Middleware protege el resto.
     update: ({ req: { user } }) => user?.role === 'admin' || (!!user),
     delete: ({ req: { user } }) => user?.role === 'admin',
   },

@@ -3,7 +3,7 @@
  * @description Colección soberana para el motor editorial (The Concierge Journal).
  *              Implementa orquestación multitenant, cálculo automatizado de métricas
  *              de lectura y blindaje de autoridad SEO E-E-A-T.
- * @version 4.1 - NodeNext Resolution & Hook Hygiene
+ * @version 4.2 - ESM Resolution & Hook Hygiene
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -18,9 +18,9 @@ import {
 
 /**
  * IMPORTACIONES DE PERÍMETRO (Saneadas)
- * @fix Resolución TS2835: extensiones .js obligatorias para ESM.
+ * @fix Resolución TS2835: extensión .js obligatoria para ESM/nodenext.
  */
-import { multiTenantReadAccess, multiTenantWriteAccess } from './Access';
+import { multiTenantReadAccess, multiTenantWriteAccess } from './Access.js';
 
 export const BlogPosts: CollectionConfig = {
   slug: 'blog-posts',
@@ -47,11 +47,11 @@ export const BlogPosts: CollectionConfig = {
    */
   hooks: {
     beforeChange: [
-      ({ req, data, operation }) => {
+      ({ req: _req, data, operation: _operation }) => {
         // 1. Garantía de Identidad Multi-Tenant y Atribución
-        if (operation === 'create' && req.user) {
-          if (!data.tenantId) data.tenantId = req.user.tenantId;
-          if (!data.author) data.author = req.user.id;
+        if (_operation === 'create' && _req.user) {
+          if (!data.tenantId) data.tenantId = _req.user.tenantId;
+          if (!data.author) data.author = _req.user.id;
         }
         
         // 2. Slugificación Automática

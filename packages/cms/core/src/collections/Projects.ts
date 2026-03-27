@@ -3,7 +3,7 @@
  * @description Colección soberana para la gestión de activos digitales de ingeniería.
  *              Implementa arquitectura multitenant, normalización polimórfica para 
  *              el Genesis Engine y validación de branding estricta.
- * @version 8.1 - ESM Resolution & Hook Hygiene
+ * @version 8.2 - ESM Resolution & Hook Hygiene
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -13,7 +13,7 @@ import { type CollectionConfig } from 'payload';
  * IMPORTACIONES DE PERÍMETRO (Saneadas)
  * @fix Resolución TS2835: extensión .js obligatoria para resolución en ESM/nodenext.
  */
-import { multiTenantReadAccess, multiTenantWriteAccess } from './Access';
+import { multiTenantReadAccess, multiTenantWriteAccess } from './Access.js';
 
 /**
  * @type ProjectLayoutStyleType
@@ -46,10 +46,10 @@ export const Projects: CollectionConfig = {
    */
   hooks: {
     beforeChange: [
-      ({ req, data, operation }) => {
+      ({ req: _req, data, operation: _operation }) => {
         // 1. Garantía de Identidad Multi-Tenant
-        if (operation === 'create' && req.user?.tenantId) {
-          if (!data.tenantId) data.tenantId = req.user.tenantId;
+        if (_operation === 'create' && _req.user?.tenantId) {
+          if (!data.tenantId) data.tenantId = _req.user.tenantId;
         }
 
         // 2. Slugificación Automática Sanitizada

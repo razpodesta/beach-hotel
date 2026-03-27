@@ -3,7 +3,7 @@
  * @description Colección soberana para la gestión de propiedades (Multi-Tenancy).
  *              Orquesta las fronteras de datos para el Hotel, Festival y Journal.
  *              Nivelado para resolución nativa en Next.js 15 y observabilidad forense.
- * @version 2.2 - ESM Resolution & Linter Hardening
+ * @version 2.3 - ESM Resolution & Linter Hardening (Fix unused vars)
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -13,7 +13,7 @@ import type { CollectionConfig } from 'payload';
  * IMPORTACIONES DE PERÍMETRO (Saneadas)
  * @fix Resolución TS2835: Extensión .js obligatoria para resolución en ESM/nodenext.
  */
-import { multiTenantReadAccess, multiTenantWriteAccess } from './Access';
+import { multiTenantReadAccess, multiTenantWriteAccess } from './Access.js';
 
 export const Tenants: CollectionConfig = {
   slug: 'tenants',
@@ -39,7 +39,7 @@ export const Tenants: CollectionConfig = {
    */
   hooks: {
     beforeChange: [
-      ({ data, operation: _operation }) => {
+      ({ data }) => { // Eliminado parámetro 'operation' ya que no se utilizaba
         // 1. Slugificación Automática (Fail-Safe)
         if (data.name && typeof data.name === 'string' && !data.slug) {
           data.slug = data.name
@@ -52,9 +52,9 @@ export const Tenants: CollectionConfig = {
       },
     ],
     afterChange: [
-      ({ doc, operation: _operation }) => {
-        // Corrección TS6133: operación marcada con guion bajo
-        if (_operation === 'create') {
+      ({ doc, operation }) => {
+        // Corrección de Linter: Usamos operation directamente o lo comparamos
+        if (operation === 'create') {
           console.log(`[HEIMDALL][INFRASTRUCTURE] New Property Created: ${doc.name} (ID: ${doc.id})`);
         }
       }
