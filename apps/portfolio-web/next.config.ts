@@ -2,8 +2,8 @@
  * @file next.config.ts
  * @description Orquestador Soberano de Compilación para portfolio-web.
  *              Implementa arquitectura Next.js 15.2 Standard, integración con Payload 3.0
- *              y habilitación de Modo Source-First para el Monorepo.
- * @version 16.0 - TypeScript Migration & Next 15 Stable Sync
+ *              y alineación estricta con el pipeline de construcción de Vercel.
+ * @version 17.0 - Next 15 Stable Sync & Infrastructure Noise Reduction
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -13,14 +13,14 @@ import { withPayload } from '@payloadcms/next/withPayload';
 
 /**
  * CONFIGURACIÓN MAESTRA: nextConfig
- * @pilar II: CERO REGRESIONES - Mantiene el mapeo directo a fuentes de librerías.
- * @pilar XIII: ALINEACIÓN CON EL MOTOR - Optimizado para despliegue en Vercel.
+ * @pilar II: CERO REGRESIONES - Preserva el acceso a fuentes de las librerías internas.
+ * @pilar XIII: ALINEACIÓN CON EL MOTOR - Erradica advertencias de claves obsoletas.
  */
 const nextConfig: NextConfig = {
   /**
-   * MODO SOURCE-FIRST (DX)
-   * Obliga al compilador SWC a procesar el código fuente de las librerías internas.
-   * Esto erradica el error de "módulo no encontrado" en el despliegue de Vercel.
+   * MODO SOURCE-FIRST (DX & Build)
+   * Obliga al compilador a procesar el código fuente de los paquetes del monorepo.
+   * Crucial para evitar errores de "Module not found" en el despliegue standalone.
    */
   transpilePackages: [
     '@metashark/cms-core',
@@ -31,7 +31,7 @@ const nextConfig: NextConfig = {
 
   /**
    * MOTOR DE IMÁGENES SOBERANO
-   * @description Configuración de perímetros para activos externos y soporte SVG.
+   * @description Configuración de perímetros de seguridad y optimización de activos.
    */
   images: {
     remotePatterns: [
@@ -39,27 +39,32 @@ const nextConfig: NextConfig = {
       { protocol: 'https', hostname: '*.supabase.co' }
     ],
     dangerouslyAllowSVG: true,
+    // @pilar VIII: Resiliencia - Cabeceras de seguridad para entrega de activos.
+    contentDispositionType: 'attachment',
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
 
   /**
-   * INFRAESTRUCTRURA DE PRODUCCIÓN
-   * @description 'standalone' es mandatorio para despliegues eficientes en Vercel.
+   * INFRAESTRUCTRURA DE DESPLIEGUE
+   * 'standalone' genera un bundle optimizado con solo las dependencias necesarias.
    */
   output: 'standalone',
 
   /**
-   * @pilar III: Seguridad de Tipos.
-   * Habilita la validación de rutas tipadas en el ecosistema.
+   * GESTIÓN DE BINARIOS EXTERNOS
+   * Sharp se marca como externo para que Vercel utilice el binario optimizado de su runtime
+   * en lugar de intentar empaquetarlo, evitando fallos de memoria en el build.
+   */
+  serverExternalPackages: ['sharp'],
+
+  /**
+   * CONFIGURACIÓN EXPERIMENTAL NIVELADA
+   * @pilar III: Seguridad de Tipos - Soporte para rutas tipadas nativas.
    */
   experimental: {
     typedRoutes: true,
+    // Eliminamos 'turbopack' de aquí si existiera para evitar el ruido detectado en los logs.
   },
-
-  /**
-   * @description Exclusión de binarios pesados del bundle.
-   * Sharp se gestiona como dependencia externa del servidor para evitar fallos de memoria.
-   */
-  serverExternalPackages: ['sharp'],
 
   /**
    * GOVERNANCE: Privacidad y Telemetría

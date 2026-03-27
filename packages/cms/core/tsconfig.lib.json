@@ -1,36 +1,50 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    /* 
-       SOBERANÍA DE SALIDA:
-       Directorio de distribución global segmentado por paquete.
-    */
+    /** 
+     * SOBERANÍA DE SALIDA:
+     * Directorio de distribución global segmentado por paquete.
+     */
     "outDir": "../../../dist/packages/cms/core",
     
-    /* 
-       PROFILAXIS TS6305: 
-       Al fijar rootDir en 'src', evitamos que la carpeta 'dist' contenga 
-       subcarpetas 'packages/cms/core/src'. El resultado será un dist limpio y plano.
-    */
+    /** 
+     * PROFILAXIS TS6305: 
+     * Fijamos rootDir en 'src' para garantizar un artefacto plano en dist/.
+     */
     "rootDir": "src",
     
+    /** 
+     * RESOLUCIÓN NATIVA (Strict ESM):
+     * @pilar XIII: Alineación con el Motor.
+     * Usamos 'nodenext' para forzar la compatibilidad absoluta con Node.js 22+ 
+     * y erradicar la crisis de identidad CJS/ESM detectada en Vercel.
+     */
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+
+    /**
+     * @pilar III: Seguridad de Tipos.
+     * Obliga al uso de 'import type', evitando la inyección de metadatos de tipos 
+     * que no existen en el bundle de ejecución de Vercel.
+     */
+    "verbatimModuleSyntax": true,
+
     "composite": true,
     
-    /* 
-       PILAR XIII: FORZADO DE EMISIÓN (Override)
-       Como el tsconfig.json padre bloquea la emisión para proteger el IDE, 
-       aquí debemos habilitarla explícitamente para el proceso de Build de Nx.
-    */
+    /** 
+     * PILAR XIII: FORZADO DE EMISIÓN
+     * Habilitamos la generación física de artefactos para el proceso de Build de Nx.
+     */
     "noEmit": false,
     "emitDeclarationOnly": false, 
     
     "tsBuildInfoFile": "../../../dist/packages/cms/core/tsconfig.lib.tsbuildinfo"
   },
-  "include":[
+  "include": [
     "src/**/*.ts",
     "src/payload-types.ts"
   ],
-  "exclude":[
+  "exclude": [
     "**/*.spec.ts", 
     "**/*.test.ts"
   ]

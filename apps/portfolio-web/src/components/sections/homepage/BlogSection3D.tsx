@@ -2,8 +2,8 @@
  * @file BlogSection3D.tsx
  * @description Orquestador de visualización editorial con profundidad interactiva (3D Stack).
  *              Fase 7 del Embudo: Autoridad y Legado Narrativo.
- *              Nivelado para cumplimiento del React Compiler y 'verbatimModuleSyntax'.
- * @version 16.0 - React Compiler Sync & Granular Memoization
+ *              Nivelado para Next.js 15, React 19 y Resiliencia Energética.
+ * @version 17.0 - Vercel Build Normalization & Power-Aware Autoplay
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -14,24 +14,24 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
 
 /**
- * IMPORTACIONES DE INFRAESTRUCTRURA
- * @pilar V: Adherencia arquitectónica mediante rutas relativas internas.
+ * IMPORTACIONES DE INFRAESTRUCTRURA (Saneadas)
+ * @pilar V: Adherencia arquitectónica. Purga de extensiones .js para resolución nativa.
  */
-import { BlurText } from '../../razBits/BlurText.js';
-import { BlogCard3D } from '../../ui/BlogCard3D.js';
-import { cn } from '../../../lib/utils/cn.js';
+import { BlurText } from '../../razBits/BlurText';
+import { BlogCard3D } from '../../ui/BlogCard3D';
+import { cn } from '../../../lib/utils/cn';
 
 /**
- * IMPORTACIONES DE CONTRATO (Solo Tipos)
+ * IMPORTACIONES DE CONTRATO
  * @pilar III: Seguridad de Tipos Absoluta.
  */
-import type { PostWithSlug } from '../../../lib/schemas/blog.schema.js';
-import type { Dictionary } from '../../../lib/schemas/dictionary.schema.js';
+import type { PostWithSlug } from '../../../lib/schemas/blog.schema';
+import type { Dictionary } from '../../../lib/schemas/dictionary.schema';
 
 const AUTOPLAY_INTERVAL = 8000;
 
 interface BlogSection3DProps {
-  /** Colección de artículos saneada por el Orquestador de Datos (Fachada) */
+  /** Colección de artículos saneada por la Fachada de Dominio */
   posts: PostWithSlug[];
   /** Diccionario nivelado tras el Protocolo MACS */
   dictionary: Dictionary['blog_page'];
@@ -50,21 +50,17 @@ export function BlogSection3D({ posts, dictionary, lang, className }: BlogSectio
 
   /**
    * @pilar II: Cero Regresiones - Desestructuración defensiva.
-   * Al extraer la propiedad hero_title aquí, creamos una referencia estable que resuelve
-   * el error 'preserve-manual-memoization' de ESLint.
    */
-  const { hero_title, featured_title, read_more_cta } = dictionary || {};
+  const { hero_title, featured_title, read_more_cta } = useMemo(() => 
+    dictionary || {}, 
+  [dictionary]);
 
   /**
    * @pilar X: Rendimiento de Élite. 
-   * Limitamos el stack visual para optimizar el consumo de memoria de la GPU.
+   * Limitamos el stack visual para optimizar el consumo de VRAM en el cliente.
    */
   const displayPosts = useMemo(() => (posts || []).slice(0, 5), [posts]);
 
-  /**
-   * RESOLUCIÓN DE ETIQUETA DE CONTEXTO
-   * @fix Resolución del error de memoización manual mediante dependencia en referencia extraída.
-   */
   const contextTag = useMemo(() => {
     if (!hero_title) return 'Sanctuary';
     const parts = hero_title.split(' ');
@@ -92,24 +88,28 @@ export function BlogSection3D({ posts, dictionary, lang, className }: BlogSectio
   }, [activeIndex, displayPosts]);
 
   /**
-   * MOTOR DE AUTOPLAY RESILIENTE
+   * MOTOR DE AUTOPLAY RESILIENTE Y CONSCIENTE (Power-Aware)
+   * @pilar VIII: Detiene la animación si la pestaña no es visible para ahorrar recursos.
    */
   useEffect(() => {
     if (isPaused || displayPosts.length <= 1) return;
-    const timer = setInterval(handleNext, AUTOPLAY_INTERVAL);
-    return () => clearInterval(timer);
+
+    const interval = setInterval(() => {
+      if (document.visibilityState === 'visible') {
+        handleNext();
+      }
+    }, AUTOPLAY_INTERVAL);
+
+    return () => clearInterval(interval);
   }, [handleNext, isPaused, displayPosts.length]);
 
-  /**
-   * @pilar VIII: GUARDIA DE RESILIENCIA
-   * Los retornos tempranos se realizan ÚNICAMENTE después de declarar todos los hooks.
-   */
+  // Guardia de Resiliencia ante datos nulos
   if (!posts || displayPosts.length === 0 || !dictionary) return null;
 
   return (
     <section 
       className={cn(
-        "relative w-full overflow-hidden bg-[#020202] py-24 sm:py-40 border-y border-white/5",
+        "relative w-full overflow-hidden bg-[#020202] py-24 sm:py-40 border-y border-white/5 selection:bg-primary/20",
         className
       )} 
       aria-label={hero_title}
@@ -117,7 +117,7 @@ export function BlogSection3D({ posts, dictionary, lang, className }: BlogSectio
       onMouseLeave={() => setIsPaused(false)}
     >
       {/* CAPA ATMOSFÉRICA (Luxury Glow) */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(168,85,247,0.04),transparent_70%)] pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,oklch(65%_0.25_270_/_0.04),transparent_70%)] pointer-events-none" />
 
       {/* HEADER NARRATIVO */}
       <div className="container mx-auto px-6 mb-20 flex flex-col items-center text-center">
@@ -125,9 +125,9 @@ export function BlogSection3D({ posts, dictionary, lang, className }: BlogSectio
           initial={{ opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="flex items-center gap-3 mb-8 text-purple-500"
+          className="flex items-center gap-3 mb-8"
         >
-          <Sparkles size={16} className="animate-pulse" />
+          <Sparkles size={16} className="animate-pulse text-primary" />
           <span className="text-[10px] font-bold tracking-[0.6em] text-zinc-500 uppercase font-mono">
             {hero_title}
           </span>
@@ -175,14 +175,14 @@ export function BlogSection3D({ posts, dictionary, lang, className }: BlogSectio
         <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-6 sm:px-12 pointer-events-none z-30">
           <button 
             onClick={handlePrev} 
-            className="group p-6 sm:p-8 rounded-full border border-white/10 bg-black/60 text-white pointer-events-auto backdrop-blur-2xl transition-all hover:bg-purple-600 hover:border-purple-400 active:scale-90 shadow-2xl"
+            className="group p-6 sm:p-8 rounded-full border border-white/10 bg-black/60 text-white pointer-events-auto backdrop-blur-2xl transition-all hover:bg-primary hover:border-primary/50 active:scale-90 shadow-3xl"
             aria-label="Artigo Anterior"
           >
             <ChevronLeft size={28} strokeWidth={1.5} className="group-hover:-translate-x-1 transition-transform" />
           </button>
           <button 
             onClick={handleNext} 
-            className="group p-6 sm:p-8 rounded-full border border-white/10 bg-black/60 text-white pointer-events-auto backdrop-blur-2xl transition-all hover:bg-purple-600 hover:border-purple-400 active:scale-90 shadow-2xl"
+            className="group p-6 sm:p-8 rounded-full border border-white/10 bg-black/60 text-white pointer-events-auto backdrop-blur-2xl transition-all hover:bg-primary hover:border-primary/50 active:scale-90 shadow-3xl"
             aria-label="Próximo Artigo"
           >
             <ChevronRight size={28} strokeWidth={1.5} className="group-hover:translate-x-1 transition-transform" />
@@ -191,18 +191,20 @@ export function BlogSection3D({ posts, dictionary, lang, className }: BlogSectio
       </div>
 
       {/* INDICADORES DE PROGRESO */}
-      <div className="flex justify-center items-center gap-4 mt-16">
+      <div className="flex justify-center items-center gap-4 mt-16" role="tablist">
         {displayPosts.map((_, i) => (
           <button
             key={`dot-${i}`}
             onClick={() => setActiveIndex(i)}
-            className="group p-2 outline-none"
+            role="tab"
+            aria-selected={i === activeIndex}
+            className="group p-2 outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-full transition-all"
             aria-label={`Ir para slide ${i + 1}`}
           >
             <motion.div 
               animate={{ 
                 width: i === activeIndex ? 48 : 12,
-                backgroundColor: i === activeIndex ? '#a855f7' : '#3f3f46'
+                backgroundColor: i === activeIndex ? 'var(--color-primary)' : 'var(--color-border)'
               }}
               className="h-1.5 rounded-full transition-colors group-hover:bg-zinc-500"
             />

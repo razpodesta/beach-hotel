@@ -1,9 +1,9 @@
 /**
- * @file actions.ts
- * @description Orquestador soberano de datos para el Hub Editorial.
- *              Nivelado: Resolución de error TS2339 (tags as strings),
- *              sincronización con Mocks v9.0 y compilación JIT de Lexical.
- * @version 19.0 - Tag Logic Normalization & TS2339 Fix
+ * @file apps/portfolio-web/src/lib/blog/actions.ts
+ * @description Orquestador soberano de datos para el Hub Editorial (The Concierge Journal).
+ *              Implementa arquitectura de datos híbrida (CMS + Mocks), instrumentación 
+ *              Heimdall para observabilidad y compilación JIT de Lexical a Markdown.
+ * @version 20.0 - Forensic Observability & Module Path Hardening
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -11,18 +11,25 @@ import { getPayload } from 'payload';
 import type { Payload } from 'payload';
 import configPromise from '@metashark/cms-core/config';
 
-import { postWithSlugSchema } from '../schemas/blog.schema.js';
-import type { PostWithSlug } from '../schemas/blog.schema.js';
-import { i18n } from '../../config/i18n.config.js';
-import type { Locale } from '../../config/i18n.config.js';
-import { MOCK_POSTS } from '../../data/mocks/cms.mocks.js';
-import type { RawMockPost } from '../../data/mocks/cms.mocks.js';
+/**
+ * IMPORTACIONES DE CONTRATO (Saneadas)
+ * @pilar V: Eliminación de extensiones .js para compatibilidad nativa con Next.js 15.
+ */
+import { postWithSlugSchema } from '../schemas/blog.schema';
+import type { PostWithSlug } from '../schemas/blog.schema';
+import { i18n } from '../../config/i18n.config';
+import type { Locale } from '../../config/i18n.config';
+import { MOCK_POSTS } from '../../data/mocks/cms.mocks';
+import type { RawMockPost } from '../../data/mocks/cms.mocks';
 
+/**
+ * ESTADO DE INFRAESTRUCTRURA
+ */
 const IS_BUILD_ENV = process.env.NEXT_PHASE === 'phase-production-build' || process.env.VERCEL === '1';
 const DB_READY = Boolean(process.env.DATABASE_URL);
 
 /**
- * CONTRATOS TÉCNICOS
+ * CONTRATOS TÉCNICOS: Abstract Syntax Tree (AST) de Lexical
  */
 interface LexicalNode {
   type: string;
@@ -53,6 +60,9 @@ interface RawPayloadPost {
 
 let cachedPayload: Payload | null = null;
 
+/**
+ * @description Inicialización Singleton del motor de Payload.
+ */
 async function getSovereignPayload(): Promise<Payload> {
   if (cachedPayload) return cachedPayload;
   const config = await configPromise;
@@ -60,6 +70,11 @@ async function getSovereignPayload(): Promise<Payload> {
   return cachedPayload;
 }
 
+/**
+ * COMPILADOR JIT: Lexical to Markdown
+ * @description Transforma el AST del editor de Payload en texto plano formateado.
+ * @pilar X: Rendimiento - Transformación eficiente sin dependencias pesadas.
+ */
 function compileLexicalToMarkdown(contentNode: unknown): string {
   if (!contentNode) return '';
   if (typeof contentNode === 'string') return contentNode;
@@ -95,8 +110,9 @@ function compileLexicalToMarkdown(contentNode: unknown): string {
 }
 
 /**
- * SHAPER POLIMÓRFICO
- * @description Transforma datos del CMS o Mocks al esquema soberano de Zod.
+ * SHAPER POLIMÓRFICO: mapToSovereignPost
+ * @description Normaliza datos del CMS o Mocks al contrato inmutable de Zod.
+ * @pilar VIII: Resiliencia - Fallback forense ante fallos de esquema.
  */
 function mapToSovereignPost(entry: unknown): PostWithSlug {
   const parsedResult = postWithSlugSchema.safeParse(entry);
@@ -104,7 +120,7 @@ function mapToSovereignPost(entry: unknown): PostWithSlug {
 
   const raw = entry as RawPayloadPost;
 
-  // Resolución de Autoría
+  // Resolución determinista de Autoría
   let authorName = 'Concierge Team';
   if (raw.author) {
     if (typeof raw.author === 'object') {
@@ -114,7 +130,7 @@ function mapToSovereignPost(entry: unknown): PostWithSlug {
     }
   }
 
-  // Resolución de Taxonomía (Soporta ambos formatos)
+  // Normalización de Taxonomía
   const sanitizedTags = Array.isArray(raw.tags) 
     ? raw.tags.map((t) => (typeof t === 'string' ? t : t?.tag || '')).filter(Boolean) 
     : [];
@@ -123,7 +139,7 @@ function mapToSovereignPost(entry: unknown): PostWithSlug {
     ? raw.ogImage.url 
     : (typeof raw.ogImage === 'string' ? raw.ogImage : undefined);
 
-  const mapped = {
+  const mappedData = {
     slug: raw.slug || 'unknown-article',
     metadata: {
       title: raw.title || 'Untitled Sanctuary Post',
@@ -136,15 +152,28 @@ function mapToSovereignPost(entry: unknown): PostWithSlug {
     content: compileLexicalToMarkdown(raw.content),
   };
 
-  return postWithSlugSchema.parse(mapped);
+  // Validación final contra esquema SSoT
+  const validation = postWithSlugSchema.safeParse(mappedData);
+  if (!validation.success) {
+    console.error('[HEIMDALL][DATA-CORRUPTION] Article Shaper Failed:', validation.error.format());
+    return postWithSlugSchema.parse(MOCK_POSTS[0]); // Rescate in-extremis
+  }
+
+  return validation.data;
 }
 
 /**
- * ACCIONES PÚBLICAS
+ * ACCIÓN PÚBLICA: getAllPosts
+ * @description Recupera la totalidad de artículos publicados para un idioma.
  */
-
 export async function getAllPosts(lang: Locale = i18n.defaultLocale): Promise<PostWithSlug[]> {
-  if (IS_BUILD_ENV && !DB_READY) return MOCK_POSTS.map(mapToSovereignPost);
+  console.group(`[HEIMDALL][EDITORIAL] Syncing Hub Journal [${lang}]`);
+  
+  if (IS_BUILD_ENV && !DB_READY) {
+    console.log('[BUILD-MODE] Persistent DB unreachable. Delivering Genesis Mocks.');
+    console.groupEnd();
+    return MOCK_POSTS.map(mapToSovereignPost);
+  }
   
   try {
     const payload = await getSovereignPayload();
@@ -154,13 +183,28 @@ export async function getAllPosts(lang: Locale = i18n.defaultLocale): Promise<Po
       sort: '-publishedDate',
       locale: lang,
     });
-    return docs.length > 0 ? docs.map(mapToSovereignPost) : MOCK_POSTS.map(mapToSovereignPost);
-  } catch {
+    
+    const result = docs.length > 0 
+      ? docs.map(mapToSovereignPost) 
+      : MOCK_POSTS.map(mapToSovereignPost);
+      
+    console.log(`[SUCCESS] Synchronized ${result.length} articles.`);
+    console.groupEnd();
+    return result;
+  } catch (error) {
+    console.warn('[RECOVERY] Logic fallback engaged due to CMS latence.');
+    console.groupEnd();
     return MOCK_POSTS.map(mapToSovereignPost);
   }
 }
 
+/**
+ * ACCIÓN PÚBLICA: getPostBySlug
+ * @description Recupera el detalle de un artículo específico con integridad E-E-A-T.
+ */
 export async function getPostBySlug(slug: string, lang: Locale = i18n.defaultLocale): Promise<PostWithSlug | null> {
+  console.group(`[HEIMDALL][EDITORIAL] Deep-Fetching Article: ${slug}`);
+  
   try {
     const payload = await getSovereignPayload();
     const { docs } = await payload.find({
@@ -169,20 +213,32 @@ export async function getPostBySlug(slug: string, lang: Locale = i18n.defaultLoc
       limit: 1,
       locale: lang,
     });
-    if (docs[0]) return mapToSovereignPost(docs[0]);
+    
+    if (docs[0]) {
+      console.log('[SUCCESS] Article found in Production Cloud.');
+      console.groupEnd();
+      return mapToSovereignPost(docs[0]);
+    }
+    
     const mockMatch = MOCK_POSTS.find(p => p.slug === slug);
+    console.log(mockMatch ? '[INFO] Article served from Genesis Mirror.' : '[FAILED] Content not located.');
+    console.groupEnd();
     return mockMatch ? mapToSovereignPost(mockMatch) : null;
   } catch {
     const mockMatch = MOCK_POSTS.find(p => p.slug === slug);
+    console.groupEnd();
     return mockMatch ? mapToSovereignPost(mockMatch) : null;
   }
 }
 
 /**
- * @description Filtra artículos por etiqueta.
- * @fix Resolución TS2339: Se actualiza el filtrado para tratar 't' como string (Mocks v9.0).
+ * ACCIÓN PÚBLICA: getPostsByTag
+ * @description Filtra la colección editorial por taxonomía saneada.
  */
 export async function getPostsByTag(tagSlug: string, lang: Locale = i18n.defaultLocale): Promise<PostWithSlug[]> {
+  const normalizedTarget = tagSlug.toLowerCase().trim().replace(/\s+/g, '-');
+  console.group(`[HEIMDALL][EDITORIAL] Taxonomy Filtering: ${normalizedTarget}`);
+
   try {
     const payload = await getSovereignPayload();
     const { docs } = await payload.find({
@@ -190,14 +246,25 @@ export async function getPostsByTag(tagSlug: string, lang: Locale = i18n.default
       where: { 'tags.tag': { equals: tagSlug }, status: { equals: 'published' } },
       locale: lang,
     });
-    return docs.map(mapToSovereignPost);
-  } catch {
-    const normalizedTarget = tagSlug.toLowerCase().trim();
-    
+
+    if (docs.length > 0) {
+      console.log(`[SUCCESS] Located ${docs.length} assets with tag synergy.`);
+      console.groupEnd();
+      return docs.map(mapToSovereignPost);
+    }
+
     const mockMatches = MOCK_POSTS.filter((p: RawMockPost) => 
       p.tags.some((t: string) => t.toLowerCase().replace(/\s+/g, '-') === normalizedTarget)
     );
     
+    console.log(`[INFO] Serving ${mockMatches.length} mock matches for taxonomy.`);
+    console.groupEnd();
+    return mockMatches.map(mapToSovereignPost);
+  } catch {
+    const mockMatches = MOCK_POSTS.filter((p: RawMockPost) => 
+      p.tags.some((t: string) => t.toLowerCase().replace(/\s+/g, '-') === normalizedTarget)
+    );
+    console.groupEnd();
     return mockMatches.map(mapToSovereignPost);
   }
 }

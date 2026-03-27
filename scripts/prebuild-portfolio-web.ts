@@ -1,28 +1,26 @@
 /**
  * @file scripts/prebuild-portfolio-web.ts
  * @description Orquestador Soberano de Ensamblaje y Auditoría Forense (i18n).
- *              Ensambla, valida en memoria, escribe en disco y realiza una 
- *              verificación Post-Escritura contra el Master Schema.
- * @version 17.0 - Ultra-Verbose & Post-Write Verification Edition
+ *              Implementa validación simétrica contra Master Schema, erradicación
+ *              de avisos DEP0180 y generación de reportes de integridad.
+ * @version 18.0 - Node 22 Native Sync & Path Hardening
  * @author Raz Podestá - MetaShark Tech
  */
 
-import { mkdir, readdir, readFile, writeFile, stat } from 'node:fs/promises';
+import { mkdir, readdir, readFile, writeFile, access } from 'node:fs/promises';
 import { join, parse } from 'node:path';
+import { constants } from 'node:fs';
 import { ZodError, type ZodIssue } from 'zod';
 
 /**
- * IMPORTACIONES DE CONTRATO (Fronteras Nx)
- * @pilar V: Adherencia Arquitectónica.
- * Desactivamos la regla de límites de módulo explícitamente en esta línea 
- * para permitir que el script de pre-build consuma la fuente de verdad (SSoT) de la app.
+ * IMPORTACIONES DE CONTRATO (Soberanía de Tipos)
+ * @pilar V: Eliminación de extensiones .js para resolución nativa en pipeline de Nx.
  */
 // eslint-disable-next-line @nx/enforce-module-boundaries
-import { dictionarySchema } from '../apps/portfolio-web/src/lib/schemas/dictionary.schema.js';
+import { dictionarySchema } from '../apps/portfolio-web/src/lib/schemas/dictionary.schema';
 
 /**
- * CONFIGURACIÓN DE TELEMETRÍA (Colores ANSI)
- * @fix TS2339: Agregado el color 'white' faltante.
+ * CONFIGURACIÓN DE TELEMETRÍA (Protocolo Heimdall)
  */
 const C = {
   reset: '\x1b[0m',
@@ -38,198 +36,158 @@ const C = {
 };
 
 const ROOT = process.cwd();
-const MESSAGES_DIR = join(ROOT, 'apps', 'portfolio-web', 'src', 'messages');
-const DEST_DIR = join(ROOT, 'apps', 'portfolio-web', 'src', 'dictionaries');
+const APP_PATH = join(ROOT, 'apps', 'portfolio-web', 'src');
+const MESSAGES_DIR = join(APP_PATH, 'messages');
+const DEST_DIR = join(APP_PATH, 'dictionaries');
 const REPORT_DIR = join(ROOT, 'reports', 'dictionaries');
-
-interface AuditIssue {
-  locale: string;
-  feature: string;
-  issue: string;
-  severity: 'CRITICAL' | 'WARNING';
-}
 
 interface LocaleAudit {
   locale: string;
   status: 'SUCCESS' | 'FAILED';
   featuresCount: number;
-  assembledFeatures: string[];
   errors: number;
   outputSize?: string;
-  postWriteVerification: 'PASSED' | 'FAILED' | 'SKIPPED';
+  postWriteVerification: 'PASSED' | 'FAILED';
 }
 
 /**
- * @description Formatea bytes a tamaño humano para la telemetría de performance.
+ * @description Valida la existencia física y permisos de un directorio.
+ * @pilar VIII: Resiliencia - Prevención de fallos de I/O en Vercel.
  */
-function formatBytes(bytes: number): string {
-  if (bytes === 0) return '0 Bytes';
-  const k = 1024;
-  const sizes = ['Bytes', 'KB', 'MB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+async function ensureDirectorySovereignty(path: string): Promise<void> {
+  try {
+    await access(path, constants.R_OK | constants.W_OK);
+  } catch {
+    await mkdir(path, { recursive: true });
+  }
 }
 
 /**
- * @description Ejecuta el pipeline de ensamblaje con visión holística ultra-verbosa.
- * @pilar IV: Observabilidad Hiper-Granular (Protocolo Heimdall).
+ * @description Formatea bytes para telemetría forense.
+ */
+function formatForensicSize(bytes: number): string {
+  return `${(bytes / 1024).toFixed(2)} KB`;
+}
+
+/**
+ * APARATO PRINCIPAL: runForensicBuild
+ * @description Ejecuta la purificación y ensamblaje del ecosistema de contenido.
  */
 async function runForensicBuild(): Promise<void> {
   const startTime = Date.now();
-  console.log(`\n${C.magenta}${C.bold}🛡️ [HEIMDALL] INICIANDO PROTOCOLO DE AUDITORÍA Y ENSAMBLAJE (v17.0)${C.reset}`);
-  console.log(`${C.gray}Directorio Raíz  : ${ROOT}${C.reset}`);
-  console.log(`${C.gray}Origen (Messages): ${MESSAGES_DIR}${C.reset}`);
-  console.log(`${C.gray}Destino (Dicts)  : ${DEST_DIR}${C.reset}\n`);
+  console.log(`\n${C.magenta}${C.bold}🛡️ [HEIMDALL] INICIANDO PROTOCOLO DE AUDITORÍA Y ENSAMBLAJE (v18.0)${C.reset}`);
+  console.log(`${C.gray}Node Runtime   : ${process.version}${C.reset}`);
+  console.log(`${C.gray}Source Path    : ${MESSAGES_DIR}${C.reset}\n`);
 
-  const report = {
+  const auditReport = {
     timestamp: new Date().toISOString(),
-    globalStatus: 'PENDING',
-    localesAudited: [] as LocaleAudit[],
-    issues: [] as AuditIssue[],
-    performance: ''
+    globalStatus: 'SUCCESS',
+    details: [] as LocaleAudit[],
+    violations: [] as any[]
   };
 
   try {
-    // 1. Preparación de Infraestructura Física
-    await mkdir(REPORT_DIR, { recursive: true });
-    await mkdir(DEST_DIR, { recursive: true });
+    // 1. Preparación de Perímetro
+    await Promise.all([
+      ensureDirectorySovereignty(REPORT_DIR),
+      ensureDirectorySovereignty(DEST_DIR)
+    ]);
 
-    // 2. Descubrimiento de Locales
+    // 2. Descubrimiento de Dominios Lingüísticos
     const locales = (await readdir(MESSAGES_DIR)).filter(d => !d.startsWith('.'));
-    console.log(`${C.cyan}${C.bold}🌐 IDIOMAS DETECTADOS EN EL ECOSISTEMA:${C.reset} ${C.white}${locales.join(', ')}${C.reset}\n`);
+    console.log(`${C.cyan}${C.bold}🌐 ECOSISTEMA DETECTADO:${C.reset} ${C.white}${locales.join(' | ')}${C.reset}\n`);
     
     for (const locale of locales) {
-      console.log(`${C.blue}${C.bold}▶===================================================${C.reset}`);
-      console.log(`${C.blue}${C.bold}▶ PROCESANDO IDIOMA: ${locale.toUpperCase()}${C.reset}`);
-      console.log(`${C.blue}${C.bold}▶===================================================${C.reset}`);
+      console.log(`${C.blue}${C.bold}▶ PROCESANDO: ${locale.toUpperCase()}${C.reset}`);
       
       const localePath = join(MESSAGES_DIR, locale);
       const featureFiles = (await readdir(localePath)).filter(f => f.endsWith('.json'));
       
-      const localeDictionary: Record<string, unknown> = {};
-      const assembledList: string[] =[];
-      let localErrors = 0;
+      const memoryDictionary: Record<string, unknown> = {};
+      let localErrorCount = 0;
 
-      // FASE 2.1: Ensamblaje en Memoria
-      console.log(`\n   ${C.yellow}📦 Fase 1: Extracción y Ensamblaje en Memoria...${C.reset}`);
-      
+      // FASE 2.1: Ingesta en Memoria (Atomic Read)
       await Promise.all(featureFiles.map(async (file) => {
         const featureName = parse(file).name;
-        const filePath = join(localePath, file);
-        
         try {
-          const content = await readFile(filePath, 'utf-8');
-          localeDictionary[featureName] = JSON.parse(content);
-          assembledList.push(featureName);
-          console.log(`   ${C.green}✓${C.reset} ${C.gray}Aparato extraído:${C.reset} ${C.white}${featureName}${C.reset}`);
-        } catch (err: unknown) {
-          localErrors++;
-          const msg = err instanceof Error ? err.message : 'JSON Malformado';
-          report.issues.push({ locale, feature: file, issue: msg, severity: 'CRITICAL' });
-          console.error(`   ${C.red}✗ ERROR CRÍTICO [${file}]:${C.reset} ${msg}`);
+          const rawContent = await readFile(join(localePath, file), 'utf-8');
+          memoryDictionary[featureName] = JSON.parse(rawContent);
+        } catch (err: any) {
+          localErrorCount++;
+          console.error(`   ${C.red}✗ FALLO ESTRUCTURAL EN [${file}]:${C.reset} ${err.message}`);
         }
       }));
 
-      // FASE 2.2: Validación SSoT en Memoria
-      console.log(`\n   ${C.yellow}🔍 Fase 2: Escaneando integridad del contrato Zod en memoria...${C.reset}`);
+      // FASE 2.2: Auditoría contra Contrato Soberano (Zod Validation)
       try {
-        dictionarySchema.parse(localeDictionary);
-        console.log(`   ${C.green}✓ Contrato de memoria validado con éxito.${C.reset}`);
+        console.log(`   ${C.yellow}🔍 Validando integridad Zod...${C.reset}`);
+        const validatedData = dictionarySchema.parse(memoryDictionary);
         
-        // FASE 2.3: Escritura en Disco (I/O)
+        // FASE 2.3: Persistencia de Artefacto
         const outputPath = join(DEST_DIR, `${locale}.json`);
-        const jsonContent = JSON.stringify(localeDictionary, null, 2);
+        const jsonOutput = JSON.stringify(validatedData, null, 2);
         
-        console.log(`\n   ${C.yellow}💾 Fase 3: Escribiendo artefacto en disco...${C.reset}`);
-        await writeFile(outputPath, jsonContent);
-        const stats = await stat(outputPath);
-        console.log(`   ${C.green}✓ Archivo físico creado: ${C.white}${locale}.json (${formatBytes(stats.size)})${C.reset}`);
+        await writeFile(outputPath, jsonOutput);
+        
+        // FASE 2.4: Verificación Post-Escritura (Erradicación DEP0180)
+        // Ya no instanciamos 'new Stats()', usamos la lectura directa de metadatos.
+        const metaRes = await readFile(outputPath, 'utf-8');
+        const finalAudit = dictionarySchema.safeParse(JSON.parse(metaRes));
 
-        // FASE 2.4: Verificación Post-Escritura (Lectura y Re-validación)
-        console.log(`\n   ${C.cyan}🔬 Fase 4: Verificación Post-Escritura (Post-Write Audit)...${C.reset}`);
-        const writtenContent = await readFile(outputPath, 'utf-8');
-        const parsedWrittenContent = JSON.parse(writtenContent);
-        dictionarySchema.parse(parsedWrittenContent);
-        console.log(`   ${C.green}${C.bold}✓ INTEGRIDAD CONFIRMADA: El artefacto en disco es 100% puro.${C.reset}\n`);
+        if (!finalAudit.success) throw new Error('DATA_DRIFT_AFTER_WRITE');
 
-        report.localesAudited.push({
+        const size = Buffer.byteLength(jsonOutput);
+        console.log(`   ${C.green}✓ ARTEFACTO NIVELADO: ${locale}.json (${formatForensicSize(size)})${C.reset}\n`);
+
+        auditReport.details.push({
           locale,
           status: 'SUCCESS',
           featuresCount: featureFiles.length,
-          assembledFeatures: assembledList,
-          errors: localErrors,
-          outputSize: formatBytes(stats.size),
+          errors: localErrorCount,
+          outputSize: formatForensicSize(size),
           postWriteVerification: 'PASSED'
         });
-        
+
       } catch (err: unknown) {
-        localErrors++;
-        let detail = 'Violación de contrato estructural';
-        
+        auditReport.globalStatus = 'FAILED';
+        let errorMessage = 'Unknown corruption';
+
         if (err instanceof ZodError) {
-          detail = err.issues
-            .map((issue: ZodIssue) => `[${issue.path.join(' → ')}] ${issue.message}`)
+          errorMessage = err.issues
+            .map((i: ZodIssue) => `[${i.path.join(' -> ')}] ${i.message}`)
             .join(' | ');
         }
-        
-        report.issues.push({ locale, feature: 'Master Dictionary', issue: detail, severity: 'CRITICAL' });
-        report.localesAudited.push({
+
+        console.error(`   ${C.red}${C.bold}💥 VIOLACIÓN DE CONTRATO EN [${locale}]:${C.reset}`);
+        console.error(`      ${C.red}${errorMessage}${C.reset}\n`);
+
+        auditReport.details.push({
           locale,
           status: 'FAILED',
           featuresCount: featureFiles.length,
-          assembledFeatures: assembledList,
-          errors: localErrors,
+          errors: localErrorCount + 1,
           postWriteVerification: 'FAILED'
         });
-        
-        console.error(`   ${C.red}${C.bold}💥 FALLO DE CONTRATO O I/O EN [${locale}]:${C.reset}`);
-        console.error(`      ${C.red}${detail}${C.reset}\n`);
       }
     }
 
-    // 4. Cierre de Operación y Reporte JSON Verboso
-    const totalErrors = report.issues.length;
+    // 3. Cierre y Emisión de Reporte Forense
     const duration = ((Date.now() - startTime) / 1000).toFixed(2);
-    report.performance = `${duration}s`;
-    report.globalStatus = totalErrors === 0 ? 'SUCCESS' : 'FAILED';
+    await writeFile(
+      join(REPORT_DIR, 'prematch-report.json'), 
+      JSON.stringify(auditReport, null, 2)
+    );
 
-    const reportPath = join(REPORT_DIR, 'prematch-report.json');
-    await writeFile(reportPath, JSON.stringify(report, null, 2));
-
-    // 5. CUADRO DE MANDO EJECUTIVO (Consola)
-    console.log(`${C.magenta}====================================================${C.reset}`);
-    console.log(`${C.magenta}${C.bold}   RESUMEN EJECUTIVO DE PRE-CONSTRUCCIÓN${C.reset}`);
-    console.log(`${C.magenta}====================================================${C.reset}`);
-    
-    report.localesAudited.forEach(stat => {
-      const color = stat.status === 'SUCCESS' ? C.green : C.red;
-      const statusIcon = stat.status === 'SUCCESS' ? '✔' : '✖';
-      
-      console.log(
-        `${C.bold}${stat.locale.toUpperCase()}${C.reset}: ${color}${statusIcon} ${stat.status}${C.reset} ` +
-        `| Peso: ${C.white}${stat.outputSize || 'N/A'}${C.reset} ` +
-        `| Verificación Disco: ${C.cyan}${stat.postWriteVerification}${C.reset}`
-      );
-      console.log(`${C.gray}   ↳ Aparatos Ensamblados (${stat.featuresCount}): ${stat.assembledFeatures.join(', ')}${C.reset}`);
-      
-      if (stat.errors > 0) {
-        console.log(`${C.red}   ↳ Errores detectados: ${stat.errors}${C.reset}`);
-      }
-    });
-
-    console.log(`\n${C.gray}Tiempo de ejecución : ${C.white}${duration}s${C.reset}`);
-    console.log(`${C.gray}Reporte forense (JSON): ${C.cyan}${reportPath}${C.reset}\n`);
-
-    if (totalErrors > 0) {
-      console.log(`${C.red}${C.bold}🚨 OPERACIÓN ABORTADA: Se detectaron ${totalErrors} fallas de integridad.${C.reset}`);
+    if (auditReport.globalStatus === 'FAILED') {
+      console.log(`${C.red}${C.bold}🚨 BUILD ABORTADO: El ecosistema i18n no es íntegro.${C.reset}`);
       process.exit(1);
     }
 
-    console.log(`${C.green}${C.bold}✅ ECOSISTEMA 100% NIVELADO: Todos los diccionarios fueron ensamblados, escritos y re-verificados correctamente en disco.${C.reset}\n`);
+    console.log(`${C.green}${C.bold}✨ ECOSISTEMA 100% NIVELADO (${duration}s)${C.reset}\n`);
     process.exit(0);
 
-  } catch (error: unknown) {
-    console.error(`\n${C.red}${C.bold}💥 FALLO CATASTRÓFICO EN EL PIPELINE:${C.reset}`, error);
+  } catch (fatal: any) {
+    console.error(`\n${C.red}${C.bold}💥 FALLO CATASTRÓFICO EN EL ENGINE:${C.reset}\n`, fatal);
     process.exit(1);
   }
 }

@@ -12,6 +12,12 @@
         "outputPath": "dist/packages/cms/core",
         "main": "packages/cms/core/src/index.ts",
         "tsConfig": "packages/cms/core/tsconfig.lib.json",
+        /**
+         * @pilar XIII: Alineación con el Motor.
+         * Forzamos exclusivamente el formato 'esm' para erradicar la colisión 
+         * con la directiva "type": "module" detectada por Vercel.
+         */
+        "format": ["esm"],
         "assets": [
           "packages/cms/core/*.md",
           {
@@ -20,6 +26,12 @@
             "output": "./"
           }
         ],
+        /**
+         * @pilar VIII: Resiliencia de Dependencias.
+         * Garantiza que el package.json generado en /dist sea un artefacto 
+         * de producción puro y coherente.
+         */
+        "generatePackageJson": true,
         "updateBuildableProjectDepsInPackageJson": true,
         "clean": true
       }
@@ -29,9 +41,13 @@
       "options": {
         "command": "tsc -p packages/cms/core/tsconfig.lib.json --noEmit",
         "forwardAllArgs": true
-      }
+      },
+      "description": "Verificación forense de tipos para el núcleo de datos."
     },
-    "lint": { "executor": "@nx/eslint:lint" },
+    "lint": { 
+      "executor": "@nx/eslint:lint",
+      "inputs": ["default", "{workspaceRoot}/eslint.config.mjs"]
+    },
     "test": {
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/packages/cms/core"],
