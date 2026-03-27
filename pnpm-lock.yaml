@@ -387,6 +387,9 @@ importers:
       '@metashark/protocol-33':
         specifier: workspace:*
         version: link:../../packages/protocol-33
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
       framer-motion:
         specifier: ^12.35.2
         version: 12.38.0(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -397,7 +400,7 @@ importers:
         specifier: 15.2.9
         version: 15.2.9(@babel/core@7.29.0)(@playwright/test@1.58.2)(babel-plugin-macros@3.1.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(sass@1.98.0)
       payload:
-        specifier: ^3.79.0
+        specifier: 3.80.0
         version: 3.80.0(graphql@16.13.2)(typescript@5.9.3)
       react:
         specifier: ^19.2.4
@@ -405,6 +408,15 @@ importers:
       react-dom:
         specifier: ^19.2.4
         version: 19.2.4(react@19.2.4)
+      sharp:
+        specifier: 0.34.5
+        version: 0.34.5
+      tailwind-merge:
+        specifier: ^3.0.1
+        version: 3.5.0
+      zustand:
+        specifier: ^5.0.8
+        version: 5.0.12(@types/react@19.2.14)(react@19.2.4)(use-sync-external-store@1.6.0(react@19.2.4))
 
   packages/auth-shield:
     dependencies:
@@ -5415,9 +5427,6 @@ packages:
 
   brace-expansion@2.0.2:
     resolution: {integrity: sha512-Jt0vHyM+jmUBqojB7E1NIYadt0vI0Qxjxd2TErW94wDz+E2LAm5vKMXXwg6ZZBTHPuUlDgQHKXvjGBdfcF1ZDQ==}
-
-  brace-expansion@2.0.3:
-    resolution: {integrity: sha512-MCV/fYJEbqx68aE58kv2cA/kiky1G8vux3OR6/jbS+jIMe/6fJWa0DTzJU7dqijOWYwHi1t29FlfYI9uytqlpA==}
 
   brace-expansion@5.0.5:
     resolution: {integrity: sha512-VZznLgtwhn+Mact9tfiwx64fA9erHH/MCXEUfB/0bX/6Fz6ny5EGTXYltMocqg4xFAQZtnO3DHWWXi8RiuN7cQ==}
@@ -18024,10 +18033,6 @@ snapshots:
     dependencies:
       balanced-match: 1.0.2
 
-  brace-expansion@2.0.3:
-    dependencies:
-      balanced-match: 1.0.2
-
   brace-expansion@5.0.5:
     dependencies:
       balanced-match: 4.0.4
@@ -21826,11 +21831,11 @@ snapshots:
 
   minimatch@5.1.9:
     dependencies:
-      brace-expansion: 2.0.3
+      brace-expansion: 2.0.2
 
   minimatch@7.4.6:
     dependencies:
-      brace-expansion: 2.0.3
+      brace-expansion: 2.0.2
 
   minimatch@7.4.9:
     dependencies:
