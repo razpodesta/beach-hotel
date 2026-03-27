@@ -3,7 +3,7 @@
  * @description Colección soberana para el motor editorial (The Concierge Journal).
  *              Implementa orquestación multitenant, cálculo automatizado de métricas
  *              de lectura y blindaje de autoridad SEO E-E-A-T.
- * @version 4.0 - Resolution Sync & Reading Metrics Hardening
+ * @version 4.1 - NodeNext Resolution & Hook Hygiene
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -18,10 +18,9 @@ import {
 
 /**
  * IMPORTACIONES DE PERÍMETRO (Saneadas)
- * @pilar V: Adherencia arquitectónica. Eliminación de extensión .js para 
- * garantizar resolución nativa en Next.js 15 y el pipeline de Vercel.
+ * @fix Resolución TS2835: extensiones .js obligatorias para ESM.
  */
-import { multiTenantReadAccess, multiTenantWriteAccess } from './Access';
+import { multiTenantReadAccess, multiTenantWriteAccess } from './Access.js';
 
 export const BlogPosts: CollectionConfig = {
   slug: 'blog-posts',
@@ -35,7 +34,6 @@ export const BlogPosts: CollectionConfig = {
   
   /**
    * REGLAS DE ACCESO PERIMETRAL
-   * @pilar III: Seguridad de Tipos Absoluta.
    */
   access: {
     read: multiTenantReadAccess,
@@ -46,7 +44,6 @@ export const BlogPosts: CollectionConfig = {
 
   /**
    * GUARDIANES DE INTEGRIDAD (Hooks)
-   * @pilar VIII: Resiliencia - Automatización de metadatos y saneamiento.
    */
   hooks: {
     beforeChange: [
@@ -57,12 +54,12 @@ export const BlogPosts: CollectionConfig = {
           if (!data.author) data.author = req.user.id;
         }
         
-        // 2. Slugificación Automática (Fail-Safe)
+        // 2. Slugificación Automática
         if (data.title && typeof data.title === 'string' && !data.slug) {
            data.slug = data.title
             .toLowerCase()
             .trim()
-            .replace(/[^\w\s-]/g, '') // Sanatización de caracteres
+            .replace(/[^\w\s-]/g, '')
             .replace(/\s+/g, '-');
         }
 
@@ -75,11 +72,9 @@ export const BlogPosts: CollectionConfig = {
         }
 
         // 4. Inteligencia Editorial: Cálculo de Tiempo de Lectura
-        // @pilar X: Performance - Estimación asíncrona basada en volumen Lexical.
         if (data.content && typeof data.content === 'object') {
             const contentString = JSON.stringify(data.content);
             const wordCount = contentString.split(/\s+/g).length;
-            // Estándar de la industria: 200 PPM
             data.readingTime = Math.max(1, Math.ceil(wordCount / 200));
         }
 
@@ -87,8 +82,9 @@ export const BlogPosts: CollectionConfig = {
       },
     ],
     afterChange: [
-      ({ doc, operation }) => {
-        if (operation === 'create' || operation === 'update') {
+      ({ doc, operation: _operation }) => {
+        // Corrección TS6133: Ignorar parámetros no usados con guion bajo
+        if (_operation === 'create' || _operation === 'update') {
           console.log(
             `[HEIMDALL][EDITORIAL] Sync: "${doc.title}" | Status: ${doc.status} | ETA: ${doc.readingTime} min.`
           );
@@ -98,10 +94,6 @@ export const BlogPosts: CollectionConfig = {
   },
 
   fields: [
-    /**
-     * @pilar I: Visión Holística - Soberanía UUID.
-     * Mantenemos el ID como texto para compatibilidad absoluta con Supabase.
-     */
     {
       name: 'id',
       type: 'text',

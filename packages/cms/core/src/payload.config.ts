@@ -3,7 +3,7 @@
  * @description Orquestador Soberano de Configuración para Payload CMS 3.0.
  *              Implementa arquitectura Next.js 15 Standard, resolución híbrida
  *              resiliente y optimización de infraestructura para Vercel.
- * @version 17.0 - Resolution Paradox Fix & Hybrid Build Sync
+ * @version 18.0 - Strict NodeNext Compliance (TS2835 Fixed)
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -19,15 +19,15 @@ import sharp from 'sharp';
 /**
  * IMPORTACIONES ATÓMICAS DE COLECCIONES
  * @pilar V: Adherencia Arquitectónica. 
- * @fix Erradicación del error 'Module not found'. Se eliminan las extensiones .js 
- * para permitir que el compilador de Next.js resuelva los archivos fuente .ts 
- * durante la fase de transpilePackages en Vercel.
+ * @fix Resolución del error TS2835. Se inyectan las extensiones .js 
+ *      obligatorias para el estándar ESM/nodenext. El bundler de Next.js 
+ *      las resolverá transparentemente hacia los archivos .ts subyacentes.
  */
-import { Users } from './collections/Users';
-import { BlogPosts } from './collections/BlogPosts';
-import { Projects } from './collections/Projects';
-import { Media } from './collections/Media';
-import { Tenants } from './collections/Tenants';
+import { Users } from './collections/Users.js';
+import { BlogPosts } from './collections/BlogPosts.js';
+import { Projects } from './collections/Projects.js';
+import { Media } from './collections/Media.js';
+import { Tenants } from './collections/Tenants.js';
 
 /**
  * DETERMINACIÓN DE PERÍMETRO DE INFRAESTRUCTRURA
@@ -81,7 +81,7 @@ export default buildConfig({
   /**
    * REGISTRO SOBERANO DE COLECCIONES (SSoT)
    */
-  collections: [
+  collections:[
     Users, 
     BlogPosts, 
     Projects, 

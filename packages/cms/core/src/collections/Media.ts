@@ -3,7 +3,7 @@
  * @description Colección soberana para la gestión de activos multimedia (Sovereign Media Library).
  *              Implementa orquestación multitenant, optimización automática de imágenes
  *              y blindaje de accesibilidad (A11Y). Sincronizado con UUIDs de Supabase.
- * @version 4.0 - Vercel Build Normalization & Forensic Logging
+ * @version 4.1 - ESM Resolution & Hook Hygiene
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -11,10 +11,9 @@ import { type CollectionConfig } from 'payload';
 
 /**
  * IMPORTACIONES DE PERÍMETRO (Saneadas)
- * @pilar V: Adherencia arquitectónica. Eliminación de extensión .js para 
- * garantizar resolución nativa en Next.js 15 y el pipeline de Vercel.
+ * @fix Resolución TS2835: Extensión .js obligatoria para resolución en ESM/nodenext.
  */
-import { multiTenantWriteAccess } from './Access';
+import { multiTenantWriteAccess } from './Access.js';
 
 export const Media: CollectionConfig = {
   slug: 'media',
@@ -28,7 +27,6 @@ export const Media: CollectionConfig = {
   /**
    * REGLAS DE ACCESO
    * @pilar VIII: Resiliencia en Seguridad.
-   * Lectura pública para el frontend; gestión (CUD) restringida por Tenant ID.
    */
   access: {
     read: () => true,
@@ -39,7 +37,6 @@ export const Media: CollectionConfig = {
 
   /**
    * CONFIGURACIÓN DE CARGA (Upload Engine)
-   * @pilar X: Performance - Generación de derivados optimizados para Core Web Vitals.
    */
   upload: {
     staticDir: 'media',
@@ -64,12 +61,11 @@ export const Media: CollectionConfig = {
       },
     ],
     adminThumbnail: 'thumbnail',
-    mimeTypes: ['image/*'], // Restricción estricta a imágenes para asegurar pureza de la galería.
+    mimeTypes: ['image/*'],
   },
 
   /**
    * GUARDIANES DE INTEGRIDAD (Hooks)
-   * @pilar IV: Observabilidad - Trazabilidad de activos mediante Protocolo Heimdall.
    */
   hooks: {
     beforeChange: [
@@ -82,8 +78,9 @@ export const Media: CollectionConfig = {
       },
     ],
     afterChange: [
-      ({ doc, operation }) => {
-        if (operation === 'create') {
+      ({ doc, operation: _operation }) => {
+        // Corrección TS6133: Parámetro ignorado con guion bajo
+        if (_operation === 'create') {
           console.log(
             `[HEIMDALL][MEDIA] Asset Ingested: ${doc.filename} | Mime: ${doc.mimeType} | Tenant: ${doc.tenantId}`
           );
@@ -93,11 +90,6 @@ export const Media: CollectionConfig = {
   },
 
   fields: [
-    /**
-     * @pilar I: Visión Holística - Soberanía UUID.
-     * Forzamos el ID como texto para permitir identificadores deterministas
-     * y evitar colisiones de tipos relacionales en Supabase.
-     */
     {
       name: 'id',
       type: 'text',
@@ -121,10 +113,6 @@ export const Media: CollectionConfig = {
         description: 'Crítico para SEO y lectores de pantalla. Describe la imagen con precisión.',
         placeholder: 'Ej: Vista panorámica de la suite master al amanecer'
       },
-      /**
-       * @pilar III: Seguridad de Tipos.
-       * Validación de longitud mínima para asegurar calidad de metadatos.
-       */
       validate: (val: string | null | undefined) => {
         if (val && val.length >= 6) return true;
         return 'El texto alternativo debe ser descriptivo (mín. 6 caracteres).';

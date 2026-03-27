@@ -3,7 +3,7 @@
  * @description Colección soberana de identidades y acceso (Access Control).
  *              Implementa arquitectura multitenant, soporte para UUID deterministas
  *              y blindaje contra errores de validación en entornos de CI/CD.
- * @version 5.0 - Resolution Sync & Auth Resilience
+ * @version 5.1 - ESM Resolution & Hook Hygiene
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -12,10 +12,9 @@ import { v4 as uuidv4 } from 'uuid';
 
 /**
  * IMPORTACIONES DE PERÍMETRO (Saneadas)
- * @pilar V: Adherencia arquitectónica. Eliminación de extensión .js para 
- * sincronización con el motor 'bundler' de Next.js 15.
+ * @fix Resolución TS2835: Extensión .js obligatoria para resolución en ESM/nodenext.
  */
-import { multiTenantReadAccess } from './Access';
+import { multiTenantReadAccess } from './Access.js';
 
 export const Users: CollectionConfig = {
   slug: 'users',
@@ -47,24 +46,22 @@ export const Users: CollectionConfig = {
 
   /**
    * REGLAS DE ACCESO PERIMETRAL
-   * @pilar III: Seguridad de Tipos Absoluta.
    */
   access: {
     read: multiTenantReadAccess,
-    create: () => true, // Permite creación inicial (Genesis); el Middleware protege el resto.
+    create: () => true,
     update: ({ req: { user } }) => user?.role === 'admin' || (!!user),
     delete: ({ req: { user } }) => user?.role === 'admin',
   },
 
   /**
    * GUARDIANES DE INTEGRIDAD (Hooks)
-   * @description Orquesta la generación de identidad y estados de validación.
    */
   hooks: {
     beforeChange: [
-      ({ data, operation }) => {
-        // 1. Garantía de Identidad Multi-Tenant
-        if (operation === 'create') {
+      ({ data, operation: _operation }) => {
+        // Corrección TS6133: Parámetro ignorado con guion bajo
+        if (_operation === 'create') {
           if (!data.tenantId) {
             data.tenantId = uuidv4();
           }
@@ -79,11 +76,6 @@ export const Users: CollectionConfig = {
   },
 
   fields: [
-    /**
-     * @pilar I: Visión Holística - Soberanía UUID.
-     * Forzamos ID como texto para compatibilidad absoluta con Supabase
-     * y evitar errores de transpilación de tipos 'serial' en despliegue.
-     */
     {
       name: 'id',
       type: 'text',

@@ -3,7 +3,7 @@
  * @description Colección soberana para la gestión de propiedades (Multi-Tenancy).
  *              Orquesta las fronteras de datos para el Hotel, Festival y Journal.
  *              Nivelado para resolución nativa en Next.js 15 y observabilidad forense.
- * @version 2.0 - UUID Sync & Automatic Slugification
+ * @version 2.2 - ESM Resolution & Linter Hardening
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -11,10 +11,9 @@ import type { CollectionConfig } from 'payload';
 
 /**
  * IMPORTACIONES DE PERÍMETRO (Saneadas)
- * @pilar V: Adherencia arquitectónica. Eliminación de extensión .js para 
- * garantizar resolución nativa de TypeScript en el empaquetado de Vercel.
+ * @fix Resolución TS2835: Extensión .js obligatoria para resolución en ESM/nodenext.
  */
-import { multiTenantReadAccess, multiTenantWriteAccess } from './Access';
+import { multiTenantReadAccess, multiTenantWriteAccess } from './Access.js';
 
 export const Tenants: CollectionConfig = {
   slug: 'tenants',
@@ -27,11 +26,9 @@ export const Tenants: CollectionConfig = {
 
   /**
    * REGLAS DE ACCESO PERIMETRAL
-   * @pilar III: Seguridad de Tipos Absoluta.
    */
   access: {
     read: multiTenantReadAccess,
-    // Solo el Administrador Maestro puede crear o eliminar propiedades raíz.
     create: ({ req: { user } }) => user?.role === 'admin',
     update: multiTenantWriteAccess,
     delete: ({ req: { user } }) => user?.role === 'admin',
@@ -39,25 +36,25 @@ export const Tenants: CollectionConfig = {
 
   /**
    * GUARDIANES DE INTEGRIDAD (Hooks)
-   * @pilar VIII: Resiliencia - Automatización de metadatos sanitizados.
    */
   hooks: {
     beforeChange: [
-      ({ data, operation }) => {
+      ({ data, operation: _operation }) => {
         // 1. Slugificación Automática (Fail-Safe)
         if (data.name && typeof data.name === 'string' && !data.slug) {
           data.slug = data.name
             .toLowerCase()
             .trim()
-            .replace(/[^\w\s-]/g, '') // Eliminar caracteres especiales
-            .replace(/\s+/g, '-');   // Reemplazar espacios por guiones
+            .replace(/[^\w\s-]/g, '')
+            .replace(/\s+/g, '-');
         }
         return data;
       },
     ],
     afterChange: [
-      ({ doc, operation }) => {
-        if (operation === 'create') {
+      ({ doc, operation: _operation }) => {
+        // Corrección TS6133: operación marcada con guion bajo
+        if (_operation === 'create') {
           console.log(`[HEIMDALL][INFRASTRUCTURE] New Property Created: ${doc.name} (ID: ${doc.id})`);
         }
       }
@@ -65,11 +62,6 @@ export const Tenants: CollectionConfig = {
   },
 
   fields: [
-    /**
-     * @pilar I: Visión Holística - Soberanía UUID.
-     * Mantenemos el ID como texto para permitir identificadores deterministas
-     * y evitar errores de casteo en PostgreSQL remoto.
-     */
     {
       name: 'id',
       type: 'text',

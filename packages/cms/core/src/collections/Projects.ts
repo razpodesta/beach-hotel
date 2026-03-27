@@ -3,7 +3,7 @@
  * @description Colección soberana para la gestión de activos digitales de ingeniería.
  *              Implementa arquitectura multitenant, normalización polimórfica para 
  *              el Genesis Engine y validación de branding estricta.
- * @version 8.0 - Vercel Build Normalization & Hook Resilience
+ * @version 8.1 - ESM Resolution & Hook Hygiene
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -11,10 +11,9 @@ import { type CollectionConfig } from 'payload';
 
 /**
  * IMPORTACIONES DE PERÍMETRO (Saneadas)
- * @pilar V: Adherencia Arquitectónica. Eliminación de extensión .js para 
- * garantizar resolución nativa en Next.js 15 y el pipeline de Vercel.
+ * @fix Resolución TS2835: extensión .js obligatoria para resolución en ESM/nodenext.
  */
-import { multiTenantReadAccess, multiTenantWriteAccess } from './Access';
+import { multiTenantReadAccess, multiTenantWriteAccess } from './Access.js';
 
 /**
  * @type ProjectLayoutStyleType
@@ -44,7 +43,6 @@ export const Projects: CollectionConfig = {
 
   /**
    * GUARDIANES DE INTEGRIDAD (Hooks)
-   * @description Orquesta la normalización de datos y la garantía multi-tenant.
    */
   hooks: {
     beforeChange: [
@@ -63,8 +61,7 @@ export const Projects: CollectionConfig = {
             .replace(/\s+/g, '-');
         }
 
-        // 3. Normalización "Mirror Sync" (Strings to Objects)
-        // @pilar VIII: Resiliencia - Asegura paridad entre Seeding y API.
+        // 3. Normalización "Mirror Sync"
         if (Array.isArray(data.tags) && typeof data.tags[0] === 'string') {
           data.tags = data.tags.map((tag: string) => ({ tag }));
         }
@@ -84,8 +81,9 @@ export const Projects: CollectionConfig = {
       },
     ],
     afterChange: [
-      ({ doc, operation }) => {
-        if (operation === 'create') {
+      ({ doc, operation: _operation }) => {
+        // Corrección TS6133: Parámetro ignorado con guion bajo
+        if (_operation === 'create') {
           console.log(`[HEIMDALL][INFRASTRUCTURE] Digital Asset Ingested: ${doc.title} (Weight: ${doc.reputationWeight} RZB)`);
         }
       }
@@ -93,10 +91,6 @@ export const Projects: CollectionConfig = {
   },
 
   fields: [
-    /**
-     * @pilar I: Visión Holística - Soberanía UUID.
-     * Mantenemos ID como texto para evitar colisiones relacionales en despliegue.
-     */
     {
       name: 'id',
       type: 'text',
@@ -192,10 +186,6 @@ export const Projects: CollectionConfig = {
                   name: 'primary_color', 
                   type: 'text', 
                   required: true,
-                  /**
-                   * @pilar III: Seguridad de Datos. 
-                   * Validación Regex para asegurar compatibilidad con Oxygen Engine (Tailwind v4).
-                   */
                   validate: (val: string | null | undefined) => {
                     return val && /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(val) 
                       ? true 
