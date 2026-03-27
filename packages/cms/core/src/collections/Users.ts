@@ -14,7 +14,7 @@ import { v4 as uuidv4 } from 'uuid';
  * IMPORTACIONES DE PERÍMETRO (Saneadas)
  * @fix Resolución TS2835: Extensión .js obligatoria para resolución en ESM/nodenext.
  */
-import { multiTenantReadAccess } from './Access.js';
+import { multiTenantReadAccess } from './Access';
 
 export const Users: CollectionConfig = {
   slug: 'users',

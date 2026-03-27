@@ -1,9 +1,9 @@
 /**
  * @file packages/cms/core/src/payload.config.ts
- * @description Orquestador Soberano de Configuración para Payload CMS 3.0.
- *              Implementa arquitectura Next.js 15 Standard, resolución híbrida
- *              resiliente y optimización de infraestructura para Vercel.
- * @version 18.0 - Strict NodeNext Compliance (TS2835 Fixed)
+ * @description Orquestador soberano de configuración para Payload CMS 3.0.
+ *              Nivelado: Eliminación de extensiones .js para garantizar que 
+ *              Next.js 15 resuelva correctamente los archivos .ts en el frontend.
+ * @version 18.1 - Bundler Resolution Compliance
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -18,16 +18,14 @@ import sharp from 'sharp';
 
 /**
  * IMPORTACIONES ATÓMICAS DE COLECCIONES
- * @pilar V: Adherencia Arquitectónica. 
- * @fix Resolución del error TS2835. Se inyectan las extensiones .js 
- *      obligatorias para el estándar ESM/nodenext. El bundler de Next.js 
- *      las resolverá transparentemente hacia los archivos .ts subyacentes.
+ * @fix Resolución 'Module not found': Se eliminan las extensiones .js.
+ * El bundler (Next.js) resuelve esto correctamente a través de los paths de tsconfig.base.json.
  */
-import { Users } from './collections/Users.js';
-import { BlogPosts } from './collections/BlogPosts.js';
-import { Projects } from './collections/Projects.js';
-import { Media } from './collections/Media.js';
-import { Tenants } from './collections/Tenants.js';
+import { Users } from './collections/Users';
+import { BlogPosts } from './collections/BlogPosts';
+import { Projects } from './collections/Projects';
+import { Media } from './collections/Media';
+import { Tenants } from './collections/Tenants';
 
 /**
  * DETERMINACIÓN DE PERÍMETRO DE INFRAESTRUCTRURA
@@ -37,51 +35,33 @@ const __dirname = path.dirname(__filename);
 const BASE_CONFIG_DIR = __dirname;
 
 /**
- * VALIDACIÓN PERIMETRAL DE SECRETOS (Pilar X)
+ * VALIDACIÓN PERIMETRAL DE SECRETOS
  */
 const PAYLOAD_SECRET = process.env.PAYLOAD_SECRET;
 const DATABASE_URL = process.env.DATABASE_URL;
 
-// Protocolo Heimdall: Trazabilidad forense de salud de entorno
 console.group('[HEIMDALL][CMS] Sovereign Boot Protocol');
-console.log(`Core_Path: ${BASE_CONFIG_DIR}`);
-console.log(`Runtime: ${process.env.NODE_ENV}`);
 if (!DATABASE_URL && process.env.NODE_ENV === 'production') {
-  console.error('[CRITICAL] Missing DATABASE_URL in Vercel.');
   throw new Error('SSoT Failure: Infrastructure secrets missing.');
 }
 console.groupEnd();
 
 export default buildConfig({
-  /**
-   * @pilar VI: Internacionalización de Infraestructura.
-   */
   email: nodemailerAdapter({
     defaultFromAddress: 'admin@beachhotelcanasvieiras.com',
     defaultFromName: 'Sanctuary Concierge Engine',
   }),
 
-  /**
-   * @pilar III: Seguridad de Tipos & IX: Escape de Emergencia.
-   * Sincronización con el motor Sharp para procesamiento de activos visuales.
-   */
   sharp: (sharp as unknown) as SharpDependency,
 
   admin: {
     user: Users.slug,
-    /**
-     * @description El importMap es crítico para la hidratación de componentes 
-     * en el panel administrativo dentro de Next.js 15.
-     */
     importMap: { 
       baseDir: BASE_CONFIG_DIR, 
     },
   },
 
-  /**
-   * REGISTRO SOBERANO DE COLECCIONES (SSoT)
-   */
-  collections:[
+  collections: [
     Users, 
     BlogPosts, 
     Projects, 
@@ -89,33 +69,20 @@ export default buildConfig({
     Tenants
   ],
   
-  /**
-   * MOTOR EDITORIAL (RSC Compatible)
-   */
   editor: lexicalEditor({}),
   
-  /**
-   * @pilar X: Configuración Segura.
-   */
   secret: PAYLOAD_SECRET || 'genesis-engine-dev-vault',
   
   typescript: {
-    /**
-     * @pilar III: Inferencia Obligatoria.
-     */
     outputFile: path.resolve(BASE_CONFIG_DIR, 'payload-types.ts'),
   },
   
-  /**
-   * @pilar VIII: Resiliencia de Persistencia.
-   * @pilar X: Optimización para latencias de pooler detectadas (>4s).
-   */
   db: postgresAdapter({
     pool: {
       connectionString: DATABASE_URL || '',
       max: 10,
       idleTimeoutMillis: 30000,
-      connectionTimeoutMillis: 20000, // Margen de seguridad incrementado
+      connectionTimeoutMillis: 20000,
       ssl: process.env.NODE_ENV === 'production' 
         ? { rejectUnauthorized: true } 
         : { rejectUnauthorized: false },

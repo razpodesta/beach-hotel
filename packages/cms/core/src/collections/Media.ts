@@ -13,7 +13,7 @@ import { type CollectionConfig } from 'payload';
  * IMPORTACIONES DE PERÍMETRO (Saneadas)
  * @fix Resolución TS2835: Extensión .js obligatoria para resolución en ESM/nodenext.
  */
-import { multiTenantWriteAccess } from './Access.js';
+import { multiTenantWriteAccess } from './Access';
 
 export const Media: CollectionConfig = {
   slug: 'media',

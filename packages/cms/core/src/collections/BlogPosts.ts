@@ -20,7 +20,7 @@ import {
  * IMPORTACIONES DE PERÍMETRO (Saneadas)
  * @fix Resolución TS2835: extensiones .js obligatorias para ESM.
  */
-import { multiTenantReadAccess, multiTenantWriteAccess } from './Access.js';
+import { multiTenantReadAccess, multiTenantWriteAccess } from './Access';
 
 export const BlogPosts: CollectionConfig = {
   slug: 'blog-posts',
