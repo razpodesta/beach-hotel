@@ -17,7 +17,10 @@
     },
     "build": {
       "executor": "@nx/next:build",
-      "outputs": ["{options.outputPath}"],
+      "outputs": [
+        "{options.outputPath}",
+        "{workspaceRoot}/dist/apps/portfolio-web/.next"
+      ],
       "defaultConfiguration": "production",
       "options": {
         "outputPath": "dist/apps/portfolio-web"
@@ -67,7 +70,13 @@
     },
     "lint": {
       "executor": "@nx/eslint:lint",
-      "inputs": ["default", "{workspaceRoot}/eslint.config.mjs"]
+      "inputs": [
+        "default", 
+        "{workspaceRoot}/eslint.config.mjs"
+      ],
+      "options": {
+        "lintFilePatterns": ["apps/portfolio-web/**/*.{ts,tsx,js,jsx}"]
+      }
     }
   }
 }
