@@ -1,15 +1,15 @@
 /**
  * @file BlogCard.tsx
- * @description Aparato editorial de alta fidelidad. 
- *              Orquesta la visualización de artículos con enfoque en Core Web Vitals y
- *              seguridad de tipos absoluta (Zero Any).
- * @version 11.0 - Type Hardening & LCP Optimized
+ * @description Aparato editorial de alta fidelidad con inteligencia atmosférica. 
+ *              Orquesta la visualización de artículos sincronizando el 'vibe' 
+ *              del contenido con la identidad visual (Día/Noche).
+ * @version 12.0 - Atmosphere & LCP Optimized (React 19)
  * @author Raz Podestá - MetaShark Tech
  */
 
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
@@ -17,10 +17,13 @@ import {
   ArrowUpRight, 
   Calendar, 
   User, 
-  Tag as TagIcon,
+  Clock,
   Sparkles 
 } from 'lucide-react';
 
+/**
+ * IMPORTACIONES DE INFRAESTRUCTRURA
+ */
 import { cn } from '../../lib/utils/cn';
 import type { BlogPost } from '../../lib/schemas/blog.schema';
 import { getLocalizedHref } from '../../lib/utils/link-helpers';
@@ -28,27 +31,27 @@ import type { Locale } from '../../config/i18n.config';
 
 /**
  * @interface BlogCardProps
- * @pilar III: Seguridad de Tipos Absoluta.
+ * @pilar III: Seguridad de Tipos Absoluta (SSoT).
  */
 interface BlogCardProps {
-  /** Metadatos del artículo validados por Zod */
+  /** Metadatos del artículo validados por Zod (Incluye vibe y readingTime) */
   post: BlogPost;
-  /** Identificador semántico para rumbos SEO */
+  /** Identificador semántico */
   slug: string;
-  /** Contexto de idioma tipado por la constitución i18n */
+  /** Contexto de idioma */
   lang: Locale;
   /** Etiqueta de acción inyectada vía diccionario */
   ctaText: string;
-  /** Sobrescritura de asset opcional para coherencia visual */
+  /** Sobrescritura de asset opcional */
   customImage?: string;
-  /** Optimización LCP: Carga prioritaria si el componente está sobre el pliegue */
+  /** Optimización LCP: Prioridad de carga si está sobre el pliegue */
   priority?: boolean;
   className?: string;
 }
 
 /**
  * APARATO: BlogCard
- * @description Representa la unidad fundamental del Hub Editorial MetaShark.
+ * @description Representa la unidad fundamental del Journal. Reacciona visualmente al 'vibe'.
  */
 export function BlogCard({ 
   post, 
@@ -61,15 +64,31 @@ export function BlogCard({
 }: BlogCardProps) {
   
   /**
-   * RESOLUCIÓN DE RUMBOS SOBERANOS
-   * @pilar III: Erradicación de 'as any'. Sincronizado con el tipo Locale.
+   * PROTOCOLO HEIMDALL: Telemetría de Renderizado
+   * @pilar IV: Observabilidad de impacto en LCP.
    */
+  useEffect(() => {
+    if (priority) {
+      console.log(`[HEIMDALL][PERF] LCP Candidate Card: ${slug} | Vibe: ${post.vibe}`);
+    }
+  }, [priority, slug, post.vibe]);
+
   const postUrl = getLocalizedHref(`/blog/${slug}`, lang);
 
   /**
-   * LOCALIZACIÓN DE FECHAS (Pilar VI)
-   * Utiliza la API nativa de internacionalización para paridad de diseño.
+   * LÓGICA DE ATMÓSFERA (Pilar VII & XII)
+   * Determina los tokens de color basados en el ADN del contenido.
    */
+  const isNight = post.vibe === 'night';
+  const themeTokens = useMemo(() => ({
+    accent: isNight ? 'text-accent' : 'text-primary',
+    bgBadge: isNight ? 'bg-accent/10' : 'bg-primary/10',
+    borderBadge: isNight ? 'border-accent/20' : 'border-primary/20',
+    borderHover: isNight ? 'group-hover:border-accent/40' : 'group-hover:border-primary/40',
+    shadowHover: isNight ? 'group-hover:shadow-accent/10' : 'group-hover:shadow-primary/10',
+    glow: isNight ? 'bg-accent/5' : 'bg-primary/5'
+  }), [isNight]);
+
   const formattedDate = useMemo(() => {
     try {
       return new Intl.DateTimeFormat(lang, {
@@ -82,13 +101,7 @@ export function BlogCard({
     }
   }, [post.published_date, lang]);
 
-  /**
-   * RESOLUCIÓN DE ASSETS (Pilar VIII - Resiliencia)
-   * Prioridad: Prop manual > Asset del CMS > Fallback local.
-   */
-  const finalImageUrl = useMemo(() => {
-    return customImage || post.ogImage || `/images/blog/${slug}.jpg`;
-  }, [customImage, post.ogImage, slug]);
+  const finalImageUrl = customImage || post.ogImage || `/images/blog/${slug}.jpg`;
 
   return (
     <motion.article
@@ -97,35 +110,41 @@ export function BlogCard({
       viewport={{ once: true, amount: 0.1 }}
       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
       className={cn(
-        "group relative flex flex-col h-full overflow-hidden rounded-[3rem] border border-white/5 bg-zinc-900/20 backdrop-blur-sm",
-        "transition-all duration-700 hover:border-primary/30 hover:shadow-3xl transform-gpu",
+        "group relative flex flex-col h-full overflow-hidden rounded-[3rem] border bg-surface/30 backdrop-blur-sm",
+        "transition-all duration-700 transform-gpu border-border",
+        themeTokens.borderHover,
+        themeTokens.shadowHover,
         className
       )}
     >
-      {/* 1. CAPA VISUAL (Media Sanctuary & Core Web Vitals) */}
-      <div className="relative aspect-video w-full overflow-hidden bg-zinc-950">
+      {/* 1. CAPA VISUAL (LCP Focused) */}
+      <div className="relative aspect-video w-full overflow-hidden bg-background">
         <Image
           src={finalImageUrl}
           alt={post.title}
           fill
           className="object-cover transition-transform duration-1000 ease-out group-hover:scale-105"
-          sizes="(max-width: 768px) 100vw, 400px"
+          sizes="(max-width: 768px) 100vw, 450px"
           priority={priority}
-          // Pilar X: Optimización Next.js 15
           {...(priority ? { fetchPriority: 'high' } : { loading: 'lazy' })}
         />
         
-        {/* Gradiente de profundidad de lujo */}
-        <div className="absolute inset-0 bg-linear-to-t from-zinc-950 via-zinc-950/20 to-transparent opacity-90" />
+        {/* Overlay de profundidad cinemática */}
+        <div className="absolute inset-0 bg-linear-to-t from-background via-background/20 to-transparent opacity-90" />
         
-        {/* TAXONOMÍA (Tags Flotantes) */}
+        {/* BADGE DE ATMÓSFERA (Taxonomía Reactiva) */}
         <div className="absolute top-6 left-6 z-20 flex flex-wrap gap-2">
            {post.tags.slice(0, 2).map((tag) => (
              <span 
                key={tag}
-               className="inline-flex items-center gap-2 rounded-full bg-black/40 backdrop-blur-xl border border-white/10 px-4 py-1.5 text-[8px] font-bold uppercase tracking-[0.2em] text-primary"
+               className={cn(
+                 "inline-flex items-center gap-2 rounded-full backdrop-blur-xl border px-4 py-1.5 text-[8px] font-bold uppercase tracking-[0.2em]",
+                 "bg-background/40",
+                 themeTokens.accent,
+                 themeTokens.borderBadge
+               )}
              >
-               <Sparkles size={10} className="animate-pulse" />
+               <Sparkles size={10} className={cn(isNight && "animate-pulse")} />
                {tag}
              </span>
            ))}
@@ -133,42 +152,54 @@ export function BlogCard({
       </div>
 
       {/* 2. CAPA NARRATIVA (DNA Editorial) */}
-      <div className="flex grow flex-col p-8 md:p-10">
-        <div className="mb-6 flex items-center gap-6 text-[9px] font-mono uppercase tracking-[0.3em] text-zinc-600">
+      <div className="flex grow flex-col p-8 md:p-10 relative z-10">
+        <div className="mb-6 flex items-center gap-6 text-[9px] font-mono uppercase tracking-[0.3em] text-muted-foreground">
           <div className="flex items-center gap-2">
-            <Calendar size={12} className="text-zinc-700" /> 
+            <Calendar size={12} className="opacity-50" /> 
             <time dateTime={post.published_date}>{formattedDate}</time>
           </div>
+          {post.readingTime && (
+            <div className="flex items-center gap-2">
+              <Clock size={12} className="opacity-50" /> {post.readingTime} min
+            </div>
+          )}
           <div className="flex items-center gap-2">
-            <User size={12} className="text-zinc-700" /> {post.author}
+            <User size={12} className="opacity-50" /> {post.author}
           </div>
         </div>
 
-        <h3 className="font-display text-2xl md:text-3xl font-bold leading-tight text-white mb-5 transition-colors group-hover:text-primary">
+        <h3 className="font-display text-2xl md:text-3xl font-bold leading-tight text-foreground mb-5 transition-colors group-hover:text-foreground/90">
           <Link href={postUrl} className="after:absolute after:inset-0 outline-none">
             {post.title}
           </Link>
         </h3>
 
-        <p className="line-clamp-3 text-sm md:text-base text-zinc-500 font-sans font-light leading-relaxed">
+        <p className="line-clamp-3 text-sm md:text-base text-muted-foreground font-sans font-light leading-relaxed">
           {post.description}
         </p>
       </div>
 
-      {/* 3. CAPA DE CONVERSIÓN (Sovereign Footer) */}
-      <footer className="relative z-30 border-t border-white/5 p-8 bg-white/2 flex items-center justify-between">
-        <div className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.4em] text-white transition-all group-hover:text-primary">
+      {/* 3. FOOTER DE CONVERSIÓN */}
+      <footer className="relative z-30 border-t border-border p-8 bg-surface/50 flex items-center justify-between">
+        <div className={cn(
+          "flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.4em] transition-all",
+          "text-foreground group-hover:translate-x-1",
+          isNight && "group-hover:text-accent"
+        )}>
           {ctaText} 
-          <ArrowUpRight size={14} className="transition-transform group-hover:-translate-y-1 group-hover:translate-x-1" />
+          <ArrowUpRight size={14} className="transition-transform group-hover:-translate-y-1" />
         </div>
-        <div className="flex gap-2 opacity-20 group-hover:opacity-100 transition-opacity duration-700">
-            <TagIcon size={14} className="text-zinc-600" />
-            <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-        </div>
+        <div className={cn(
+          "h-2 w-2 rounded-full animate-pulse transition-colors duration-700",
+          isNight ? "bg-accent shadow-[0_0_10px_var(--color-accent)]" : "bg-primary"
+        )} />
       </footer>
 
-      {/* Efecto de cristal perimetral (MEA/UX) */}
-      <div className="absolute inset-0 border border-white/0 group-hover:border-white/5 pointer-events-none transition-colors duration-1000" />
+      {/* Elemento MEA: Resplandor Interior según Vibe */}
+      <div className={cn(
+        "absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 pointer-events-none",
+        themeTokens.glow
+      )} />
     </motion.article>
   );
 }

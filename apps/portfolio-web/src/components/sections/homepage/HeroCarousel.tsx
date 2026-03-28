@@ -1,8 +1,9 @@
 /**
  * @file HeroCarousel.tsx
  * @description Orquestador Cinemático de la Recepción (Fase 1: Awareness).
- *              Refactorizado: 100% Data-Driven, Linter Compliant y Protección de LCP.
- * @version 14.0 - Linter Compliant & Full Asset Sync
+ *              Refactorizado: Sincronización Day-First, optimización de React 19,
+ *              trazabilidad Heimdall y UX de alta fidelidad.
+ * @version 15.0 - Atmosphere Master & LCP Optimized
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -20,12 +21,16 @@ import { Volume2, VolumeX, Sparkles, ArrowRight } from 'lucide-react';
 
 /**
  * IMPORTACIONES DE INFRAESTRUCTRURA
+ * @pilar V: Adherencia arquitectónica.
  */
 import { cn } from '../../../lib/utils/cn';
 import { getLocalizedHref } from '../../../lib/utils/link-helpers';
 import { i18n, type Locale } from '../../../config/i18n.config';
 import type { HeroDictionary } from '../../../lib/schemas/hero.schema';
 
+/**
+ * @interface HeroCarouselProps
+ */
 interface HeroCarouselProps {
   /** Diccionario validado por el contrato soberano v2.0 */
   dictionary: HeroDictionary;
@@ -33,25 +38,18 @@ interface HeroCarouselProps {
 
 /**
  * Hook de Hidratación de Élite (Pilar VIII)
- * @description Erradica el Hydration Mismatch mediante suscripción atómica.
+ * @description Garantiza que el cliente está totalmente sincronizado antes de pintar multimedia.
  */
 function useIsMounted(): boolean {
-  const subscribe = useCallback((_callback: () => void) => {
-    /**
-     * @pilar X: Higiene.
-     * Operación de limpieza estática. Al ser un estado de montaje terminal,
-     * no se requiere des-suscripción activa de eventos de ventana.
-     */
-    return () => {
-      // Intencionalmente vacío para satisfacer @typescript-eslint/no-empty-function
-    };
+  const subscribe = useCallback(() => {
+    return () => { /* No-op: Estado terminal */ };
   }, []);
   return useSyncExternalStore(subscribe, () => true, () => false);
 }
 
 /**
  * APARATO: HeroCarousel
- * @description El motor de mayor impacto visual y primer punto del embudo comercial.
+ * @description El motor sensorial del portal. Adapta su intensidad lumínica a la atmósfera global.
  */
 export function HeroCarousel({ dictionary }: HeroCarouselProps) {
   const isMounted = useIsMounted();
@@ -70,7 +68,6 @@ export function HeroCarousel({ dictionary }: HeroCarouselProps) {
 
   /**
    * MATRIZ NARRATIVA (Sincronizada con MACS Assets)
-   * @pilar I: Desacoplamiento total de URLs de assets del código fuente.
    */
   const slides = useMemo(() => [
     {
@@ -97,44 +94,52 @@ export function HeroCarousel({ dictionary }: HeroCarouselProps) {
   );
 
   /**
-   * MOTOR SENSORIAL: Audio Crossfade
-   * @pilar XII: MEA/UX - Transición suave de audio entre dimensiones.
+   * MOTOR SENSORIAL: Audio Crossfade (Pilar XII)
+   * Implementa una transición suave para no romper la atmósfera boutique.
    */
   useEffect(() => {
     if (!isMounted || !audioRef.current) return;
     
+    const traceId = `audio_sync_${Date.now()}`;
     const audio = audioRef.current;
     if (fadeIntervalRef.current) clearInterval(fadeIntervalRef.current);
 
+    console.group(`[HEIMDALL][SENSORY] Audio Management: ${traceId}`);
+
     if (!isMuted) {
+      console.log(`Status: Engaging Ambient Audio - Slide: ${slides[selectedIndex].id}`);
       audio.volume = 0;
       audio.play().catch(() => {
-        /** Fallback silencioso: El navegador bloqueó el autoplay sin interacción previa */
+        console.warn('Playback: Interaction required by browser policy.');
       });
       
       let vol = 0;
       fadeIntervalRef.current = setInterval(() => {
-        if (vol < 0.3) {
-          vol = Math.min(0.3, vol + 0.05);
+        if (vol < 0.25) {
+          vol = Math.min(0.25, vol + 0.05);
           audio.volume = vol;
         } else {
           if (fadeIntervalRef.current) clearInterval(fadeIntervalRef.current);
         }
-      }, 100);
+      }, 150);
     } else {
+      console.log('Status: Sensory Silence Engaged.');
       audio.pause();
     }
+
+    console.groupEnd();
 
     return () => {
       if (fadeIntervalRef.current) clearInterval(fadeIntervalRef.current);
     };
-  }, [isMuted, isMounted, selectedIndex]);
+  }, [isMuted, isMounted, selectedIndex, slides]);
 
   const onSelect = useCallback(() => {
     if (!emblaApi) return;
     const index = emblaApi.selectedScrollSnap();
     setSelectedIndex(index);
-    console.log(`[HEIMDALL][UX] Awareness_Sync: ${slides[index].id}`);
+    // Trazabilidad forense de Awareness
+    console.log(`[HEIMDALL][UX] Awareness_Sync: Slide[${index}] -> ${slides[index].id}`);
   }, [emblaApi, slides]);
 
   useEffect(() => {
@@ -147,7 +152,11 @@ export function HeroCarousel({ dictionary }: HeroCarouselProps) {
 
   return (
     <section 
-      className="relative h-[95vh] md:h-screen w-full bg-black overflow-hidden" 
+      /**
+       * @pilar VII: Theming Soberano
+       * Sustituimos bg-black por bg-background para paridad Day-First.
+       */
+      className="relative h-[95vh] md:h-screen w-full bg-background overflow-hidden transition-colors duration-1000" 
       role="region" 
       aria-label={dictionary.page_title}
     >
@@ -158,8 +167,8 @@ export function HeroCarousel({ dictionary }: HeroCarouselProps) {
           whileTap={{ scale: 0.95 }}
           onClick={() => setIsMuted(!isMuted)}
           className={cn(
-            "group flex items-center gap-4 rounded-full border border-white/10 bg-black/40 p-4 text-white backdrop-blur-2xl transition-all hover:bg-white/20 shadow-2xl",
-            !isMuted && "border-primary/50 shadow-primary/20"
+            "group flex items-center gap-4 rounded-full border border-border/40 bg-surface/60 p-4 text-foreground backdrop-blur-2xl transition-all hover:bg-surface/80 shadow-2xl",
+            !isMuted && "border-primary/50 shadow-primary/10"
           )}
           aria-label={isMuted ? dictionary.audio_active_label : dictionary.audio_muted_label}
         >
@@ -188,7 +197,7 @@ export function HeroCarousel({ dictionary }: HeroCarouselProps) {
             const isActive = index === selectedIndex;
             return (
               <div className="relative flex-[0_0_100%] h-full min-w-0" key={slide.id}>
-                {/* Capa Visual (CLS & LCP Optimized) */}
+                {/* Visual Stack (LCP Optimized) */}
                 <div className="absolute inset-0 z-0 overflow-hidden">
                   <Image
                     src={slide.assets.poster_url}
@@ -196,8 +205,9 @@ export function HeroCarousel({ dictionary }: HeroCarouselProps) {
                     fill
                     priority={index === 0}
                     className={cn(
-                      "object-cover brightness-[0.4] transition-opacity duration-1000",
-                      isActive ? "opacity-100" : "opacity-0"
+                      "object-cover transition-opacity duration-1000",
+                      isActive ? "opacity-100" : "opacity-0",
+                      "brightness-[0.4] [data-theme='dark']:brightness-[0.3]"
                     )}
                   />
                   <video
@@ -208,27 +218,30 @@ export function HeroCarousel({ dictionary }: HeroCarouselProps) {
                     muted
                     playsInline
                     className={cn(
-                      "h-full w-full object-cover brightness-[0.35] transition-transform duration-10000 ease-linear transform-gpu",
+                      "h-full w-full object-cover transition-transform duration-10000 ease-linear transform-gpu",
+                      "brightness-[0.4] [data-theme='dark']:brightness-[0.35]",
                       isActive ? "scale-110" : "scale-100"
                     )}
                   />
-                  <div className="absolute inset-0 bg-radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.8)_100%)" />
-                  <div className="absolute inset-0 bg-linear-to-t from-black via-black/10 to-transparent" />
+                  
+                  {/* Atmosphere Overlay Adaptativo (Pilar XII) */}
+                  <div className="absolute inset-0 bg-radial-gradient(circle_at_center,transparent_0%,var(--color-background)_100%) opacity-60" />
+                  <div className="absolute inset-0 bg-linear-to-t from-background via-background/20 to-transparent" />
                 </div>
 
-                {/* Narrative Layer (SSoT Driven) */}
+                {/* Narrative Layer (Atmosphere Aware) */}
                 <div className="relative z-10 container mx-auto h-full flex flex-col justify-center px-6 lg:px-12">
                   <AnimatePresence mode="wait">
                     {isActive && (
                       <motion.div
                         key={slide.id}
-                        initial={{ opacity: 0, y: 40, filter: 'blur(10px)' }}
+                        initial={{ opacity: 0, y: 40, filter: 'blur(12px)' }}
                         animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                        exit={{ opacity: 0, y: -20, filter: 'blur(10px)' }}
+                        exit={{ opacity: 0, y: -20, filter: 'blur(12px)' }}
                         transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
                         className="max-w-5xl"
                       >
-                        <div className="inline-flex items-center gap-4 px-6 py-2 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold text-zinc-300 tracking-[0.5em] uppercase mb-10 backdrop-blur-xl">
+                        <div className="inline-flex items-center gap-4 px-6 py-2 rounded-full bg-surface/20 border border-white/10 text-[10px] font-bold text-white tracking-[0.5em] uppercase mb-10 backdrop-blur-xl">
                            <Sparkles size={14} className="text-primary" />
                            {slide.features}
                         </div>
@@ -237,13 +250,16 @@ export function HeroCarousel({ dictionary }: HeroCarouselProps) {
                           {slide.title}
                         </h1>
                         
-                        <p className="font-sans text-xl md:text-3xl text-zinc-400 max-w-2xl mb-16 leading-relaxed font-light italic">
+                        <p className="font-sans text-xl md:text-3xl text-white/80 max-w-2xl mb-16 leading-relaxed font-light italic">
                           {slide.subtitle}
                         </p>
 
                         <Link 
                           href={getLocalizedHref(slide.cta, currentLang)}
-                          className="group relative inline-flex items-center gap-6 rounded-full bg-white px-12 py-6 text-[11px] font-bold text-black uppercase tracking-[0.4em] transition-all hover:bg-primary hover:text-white shadow-3xl active:scale-95"
+                          className={cn(
+                            "group relative inline-flex items-center gap-6 rounded-full px-12 py-6 text-[11px] font-bold uppercase tracking-[0.4em] transition-all duration-500 shadow-3xl active:scale-95",
+                            "bg-foreground text-background hover:bg-primary hover:text-white"
+                          )}
                         >
                           {dictionary.CTA_BUTTON}
                           <ArrowRight size={18} className="transition-transform group-hover:translate-x-3" />
@@ -258,18 +274,20 @@ export function HeroCarousel({ dictionary }: HeroCarouselProps) {
         </div>
       </div>
 
-      {/* 3. NAVEGACIÓN (THUMB-DRIVEN) */}
-      <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-50 flex items-center gap-4 bg-black/40 backdrop-blur-md px-6 py-3 rounded-full border border-white/5 shadow-2xl">
+      {/* 3. NAVEGACIÓN (Atmosphere Controlled) */}
+      <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-50 flex items-center gap-4 bg-surface/40 backdrop-blur-md px-6 py-3 rounded-full border border-border/20 shadow-2xl transition-colors duration-1000">
         {slides.map((_, i) => (
           <button
             key={i}
             onClick={() => emblaApi?.scrollTo(i)}
             className="group relative p-2 outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-full transition-all"
-            aria-label={`Go to slide ${i + 1}`}
+            aria-label={`Ir para slide ${i + 1}`}
           >
             <div className={cn(
               "h-1 transition-all duration-700 rounded-full",
-              i === selectedIndex ? "w-12 bg-white" : "w-4 bg-white/20 group-hover:bg-white/40"
+              i === selectedIndex 
+                ? "w-12 bg-foreground" 
+                : "w-4 bg-foreground/20 group-hover:bg-foreground/40"
             )} />
           </button>
         ))}

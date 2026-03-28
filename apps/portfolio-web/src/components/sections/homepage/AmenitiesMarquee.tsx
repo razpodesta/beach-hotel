@@ -1,32 +1,28 @@
 /**
  * @file AmenitiesMarquee.tsx
- * @description Aparato de visualización de amenidades con bucles infinitos de alto rendimiento.
- *              Refactorizado: Sincronización absoluta con esquemas v8.0, Cero Regresiones.
- * @version 8.0 - GSAP Optimized & Type-Safe
+ * @description Aparato de visualización de amenidades con resiliencia atmosférica.
+ *              Implementa bucles infinitos optimizados por GPU y sincronía Day/Night.
+ * @version 9.0 - Atmosphere Aware & Performance Hardened
  * @author Raz Podestá - MetaShark Tech
  */
 
 'use client';
 
-import React, { useRef, useMemo } from 'react';
+import React, { useRef, useMemo, memo } from 'react';
 import * as LucideIcons from 'lucide-react';
 import { Sparkles } from 'lucide-react';
 
 /**
  * IMPORTACIONES DE INFRAESTRUCTRURA
+ * @pilar V: Adherencia arquitectónica.
  */
 import { useInfiniteCarouselAnimation } from '../../../lib/hooks/use-infinite-carousel-animation';
 import { cn } from '../../../lib/utils/cn';
-
-/**
- * IMPORTACIONES DE CONTRATO SOBERANO
- */
 import type { Dictionary } from '../../../lib/schemas/dictionary.schema';
 import type { Amenity, AmenityIconType } from '../../../lib/schemas/value_proposition.schema';
 
 /**
- * MAPA DE ICONOS SOBERANO
- * @description Centraliza la resolución de glifos con tipado estricto.
+ * MAPA DE ICONOS SOBERANO (SSoT)
  */
 const ICON_MAP: Record<AmenityIconType, LucideIcons.LucideIcon> = {
   wifi: LucideIcons.Wifi,
@@ -49,40 +45,44 @@ const ICON_MAP: Record<AmenityIconType, LucideIcons.LucideIcon> = {
 
 /**
  * SUB-APARATO ATÓMICO: AmenityItem
- * @pilar IX: Componentización granular.
+ * @pilar X: Performance - Envuelto en memo para optimizar el track de animación.
  */
-const AmenityItem = ({ item, isNeon }: { item: Amenity; isNeon?: boolean }) => {
-  // Pilar III: Fallback seguro si el iconKey no existe en el mapa
+const AmenityItem = memo(({ item, isNeon }: { item: Amenity; isNeon?: boolean }) => {
   const Icon = ICON_MAP[item.iconKey as AmenityIconType] || Sparkles;
 
   return (
     <div className={cn(
-      "group flex shrink-0 items-center gap-5 rounded-full border border-white/5 bg-zinc-900/40 px-8 py-5 transition-all duration-700",
-      "hover:scale-105 hover:bg-zinc-800/80 hover:border-primary/20 backdrop-blur-2xl cursor-default"
+      "group flex shrink-0 items-center gap-5 rounded-full border border-border/40 bg-surface/50 px-8 py-5 transition-all duration-700",
+      "hover:scale-105 hover:bg-surface hover:border-primary/20 backdrop-blur-2xl cursor-default transform-gpu"
     )}>
       <Icon 
         size={20} 
         strokeWidth={1.5}
         className={cn(
           "transition-all duration-700 group-hover:scale-125 group-hover:rotate-12", 
-          isNeon ? 'text-pink-500' : 'text-primary'
+          isNeon ? 'text-accent' : 'text-primary'
         )} 
       />
-      <span className="text-sm font-bold tracking-[0.2em] text-zinc-300 transition-colors duration-500 group-hover:text-white uppercase font-sans">
+      <span className="text-sm font-bold tracking-[0.2em] text-muted-foreground transition-colors duration-500 group-hover:text-foreground uppercase font-sans">
         {item.name}
       </span>
     </div>
   );
-};
+});
 
+AmenityItem.displayName = 'AmenityItem';
+
+/**
+ * @interface AmenitiesMarqueeProps
+ */
 interface AmenitiesMarqueeProps {
-  /** Fragmento nivelado del diccionario aplanado */
+  /** Fragmento del diccionario validado */
   dictionary: Dictionary['value_proposition'];
 }
 
 /**
  * APARATO: AmenitiesMarquee
- * @description Orquesta los rieles cinemáticos de validación visual de servicios.
+ * @description Orquesta los rieles cinemáticos de validación visual adaptándose a la atmósfera.
  */
 export function AmenitiesMarquee({ dictionary }: AmenitiesMarqueeProps) {
   const trackHotelRef = useRef<HTMLDivElement>(null);
@@ -90,7 +90,6 @@ export function AmenitiesMarquee({ dictionary }: AmenitiesMarqueeProps) {
 
   /**
    * MOTOR DE ANIMACIÓN INFINITA (GSAP Engine)
-   * @pilar X: Performance - Animación optimizada mediante GPU Compositing.
    */
   useInfiniteCarouselAnimation([
     { ref: trackHotelRef, duration: 100, direction: 1 },
@@ -108,12 +107,15 @@ export function AmenitiesMarquee({ dictionary }: AmenitiesMarqueeProps) {
     <div 
       className="relative w-full overflow-hidden bg-transparent py-10 select-none" 
       role="region"
-      aria-label="Hotel and Festival Amenities"
+      aria-label={dictionary.amenities_title}
     >
       <div className="space-y-10 relative">
-        {/* MÁSCARAS DE DIFUMINADO (Edge Fading) - Pilar XII */}
-        <div className="absolute left-0 top-0 z-20 h-full w-32 md:w-80 bg-linear-to-r from-[#020202] to-transparent pointer-events-none" />
-        <div className="absolute right-0 top-0 z-20 h-full w-32 md:w-80 bg-linear-to-l from-[#020202] to-transparent pointer-events-none" />
+        {/* 
+            MÁSCARAS DE DIFUMINADO ADAPTATIVAS (Pilar VII) 
+            Sustitución de color sólido por variable 'background'
+        */}
+        <div className="absolute left-0 top-0 z-20 h-full w-32 md:w-80 bg-linear-to-r from-background to-transparent pointer-events-none transition-colors duration-1000" />
+        <div className="absolute right-0 top-0 z-20 h-full w-32 md:w-80 bg-linear-to-l from-background to-transparent pointer-events-none transition-colors duration-1000" />
 
         {/* Carrusel Hotel (Izquierda -> Derecha) */}
         <div ref={trackHotelRef} className="flex w-max gap-8 will-change-transform">

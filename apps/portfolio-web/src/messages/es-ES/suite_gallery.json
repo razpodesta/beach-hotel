@@ -4,5 +4,9 @@
   "cat_all": "Todas las Suites",
   "cat_master": "Santuario Master",
   "cat_deluxe": "Habitación Deluxe",
-  "cat_standard": "Confort Standard"
+  "cat_standard": "Confort Standard",
+  "label_from": "Desde",
+  "label_suite_suffix": "Suite Boutique",
+  "empty_state_title": "Sin resultados en el Santuario",
+  "empty_state_signal": "SEÑAL DE SUITE NO ENCONTRADA"
 }

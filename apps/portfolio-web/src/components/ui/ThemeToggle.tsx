@@ -1,39 +1,45 @@
 /**
- * @file apps/portfolio-web/src/components/ui/ThemeToggle.tsx
- * @description Control soberano de alternancia de tema (Claro/Oscuro). 
- *              Implementa detección de hidratación de alta fidelidad para evitar 
- *              parpadeos de layout (CLS) y animaciones físicas con Framer Motion.
- * @version 5.0
+ * @file ThemeToggle.tsx
+ * @description Aparato de control de atmósfera soberano. 
+ *              Implementa un ciclo triple (Luz/Noche/Sistema) con persistencia,
+ *              animaciones físicas de alta fidelidad y cumplimiento i18n total.
+ * @version 6.0 - Sovereign Triad Cycle Edition
  * @author Raz Podestá - MetaShark Tech
  */
 
 'use client';
 
-import React, { useSyncExternalStore, useCallback } from 'react';
+import React, { useSyncExternalStore, useCallback, useMemo } from 'react';
 import { useTheme } from 'next-themes';
-import { Sun, Moon } from 'lucide-react';
+import { Sun, Moon, Monitor } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 /**
- * IMPORTACIONES NIVELADAS (Rutas relativas para cumplimiento Nx)
+ * IMPORTACIONES DE INFRAESTRUCTRURA
  */
 import { cn } from '../../lib/utils/cn';
 
 /**
- * Hook de hidratación de élite.
- * Utiliza useSyncExternalStore para una sincronización atómica con el DOM,
- * garantizando que el componente sepa exactamente cuándo está montado en el cliente.
+ * @interface ThemeToggleProps
+ * @description Contrato de propiedades inyectado por el orquestador i18n.
+ */
+interface ThemeToggleProps {
+  dictionary: {
+    label_toggle: string;
+    mode_light: string;
+    mode_dark: string;
+    mode_system: string;
+  };
+  className?: string;
+}
+
+/**
+ * Hook de Hidratación de Élite: useIsMounted
+ * @description Garantiza sincronía atómica con el DOM para evitar Hydration Mismatches.
  */
 function useIsMounted(): boolean {
-  /**
-   * CORRECCIÓN ESLINT: Se define una función de limpieza explícita 
-   * para evitar el error de "función flecha vacía".
-   */
   const subscribe = useCallback(() => {
-    const unsubscribe = () => {
-      // No-op: Suscripción estática al ciclo de montaje
-    };
-    return unsubscribe;
+    return () => { /* No-op: Suscripción estática */ };
   }, []);
 
   return useSyncExternalStore(
@@ -44,52 +50,86 @@ function useIsMounted(): boolean {
 }
 
 /**
- * Aparato de UI: ThemeToggle
- * @returns {JSX.Element} Un botón interactivo con feedback visual inmersivo.
+ * APARATO: ThemeToggle
+ * @description Controlador táctico de la identidad lumínica del ecosistema.
  */
-export function ThemeToggle() {
+export function ThemeToggle({ dictionary, className }: ThemeToggleProps) {
   const isMounted = useIsMounted();
   const { theme, setTheme } = useTheme();
 
   /**
-   * Skeleton de seguridad: Durante la hidratación (SSR/Pre-mount), 
-   * renderizamos un placeholder del mismo tamaño para evitar saltos visuales.
+   * ACCIÓN SOBERANA: handleCycleTheme
+   * @description Orquesta el ciclo de atmósfera: Light -> Dark -> System.
+   * @pilar IV: Implementa trazabilidad Heimdall.
+   */
+  const handleCycleTheme = useCallback(() => {
+    let nextTheme: 'light' | 'dark' | 'system';
+
+    switch (theme) {
+      case 'light': nextTheme = 'dark'; break;
+      case 'dark': nextTheme = 'system'; break;
+      default: nextTheme = 'light';
+    }
+
+    console.group(`[HEIMDALL][UX] Atmosphere Transition`);
+    console.log(`From: ${theme} -> To: ${nextTheme}`);
+    console.log(`Timestamp: ${new Date().toISOString()}`);
+    console.groupEnd();
+
+    setTheme(nextTheme);
+  }, [theme, setTheme]);
+
+  /**
+   * RESOLUCIÓN VISUAL: activeState
+   * @description Determina el icono y la etiqueta según el estado activo.
+   */
+  const activeState = useMemo(() => {
+    if (theme === 'dark') return { Icon: Moon, label: dictionary.mode_dark, color: 'text-primary' };
+    if (theme === 'light') return { Icon: Sun, label: dictionary.mode_light, color: 'text-yellow-500' };
+    return { Icon: Monitor, label: dictionary.mode_system, color: 'text-zinc-400' };
+  }, [theme, dictionary]);
+
+  /**
+   * SKELETON DE SEGURIDAD (Pilar VIII)
    */
   if (!isMounted) {
     return (
-      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted/20 animate-pulse" />
+      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-surface/50 animate-pulse border border-border" />
     );
   }
 
-  const isDark = theme === 'dark';
-
   return (
     <button
-      onClick={() => setTheme(isDark ? 'light' : 'dark')}
+      onClick={handleCycleTheme}
       className={cn(
-        "relative flex h-10 w-10 items-center justify-center rounded-full transition-all duration-300",
-        "bg-muted/50 border border-border hover:bg-accent hover:border-primary/30",
-        "focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
+        "relative flex h-10 w-10 items-center justify-center rounded-full transition-all duration-500",
+        "bg-surface border border-border hover:border-primary/30 group",
+        "focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background",
+        className
       )}
-      aria-label={isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
-      title={isDark ? 'Activar Luz' : 'Activar Oscuridad'}
+      aria-label={`${dictionary.label_toggle}: ${activeState.label}`}
+      title={`${dictionary.label_toggle}: ${activeState.label}`}
     >
       <AnimatePresence mode="wait" initial={false}>
         <motion.div
-          key={isDark ? 'dark' : 'light'}
-          initial={{ opacity: 0, rotate: -90, scale: 0.5 }}
-          animate={{ opacity: 1, rotate: 0, scale: 1 }}
-          exit={{ opacity: 0, rotate: 90, scale: 0.5 }}
-          transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-          className="flex items-center justify-center"
+          key={theme}
+          initial={{ opacity: 0, scale: 0.5, rotate: -45, y: 10 }}
+          animate={{ opacity: 1, scale: 1, rotate: 0, y: 0 }}
+          exit={{ opacity: 0, scale: 0.5, rotate: 45, y: -10 }}
+          transition={{ 
+            type: "spring", 
+            stiffness: 300, 
+            damping: 20,
+            duration: 0.3 
+          }}
+          className={cn("flex items-center justify-center", activeState.color)}
         >
-          {isDark ? (
-            <Moon size={18} strokeWidth={1.5} className="text-primary" />
-          ) : (
-            <Sun size={18} strokeWidth={1.5} className="text-yellow-500" />
-          )}
+          <activeState.Icon size={18} strokeWidth={1.5} className="group-hover:scale-110 transition-transform" />
         </motion.div>
       </AnimatePresence>
+
+      {/* Efecto de resplandor ambiental sutil (MEA/UX) */}
+      <div className="absolute inset-0 rounded-full bg-primary/5 opacity-0 group-hover:opacity-100 blur-md transition-opacity pointer-events-none" />
     </button>
   );
 }

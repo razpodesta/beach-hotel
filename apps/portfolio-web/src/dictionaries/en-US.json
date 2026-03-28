@@ -25,13 +25,22 @@
     "newsletter_placeholder": "Your email address",
     "newsletter_button": "Subscribe",
     "newsletter_success_title": "Welcome to the Sanctuary",
-    "newsletter_success_subtitle": "Your identity has been linked to the digital core. Prepare for a unique takeover experience.",
+    "newsletter_success_subtitle": "Your identity has been linked to the digital core.",
     "newsletter_reward_label": "AWARDED",
+    "brand_description": "Your boutique refuge in the heart of Florianópolis. Luxury, diversity, and hospitality engineering.",
     "column_nav_title": "Navigation",
     "column_services_title": "Concierge",
     "column_legal_title": "Compliance",
-    "rights_reserved": "© 2026 Beach Hotel Canasvieiras. All rights reserved.",
-    "made_by": "Forged by Raz Podestá | MetaShark Tech"
+    "label_photos": "Photo Gallery",
+    "label_cancellation": "Cancellation Policies",
+    "label_rules": "Sanctuary Rules",
+    "label_blog": "Blog & Journal",
+    "label_lgpd": "LGPD & Privacy",
+    "label_dpo": "DPO: Raz Podestá",
+    "label_all_rights": "All Rights Reserved",
+    "label_author_prefix": "Author",
+    "rights_reserved": "© 2026 Beach Hotel Canasvieiras.",
+    "made_by": "Infrastructure by MetaShark Tech"
   },
   "system_status": {
     "items": [
@@ -88,6 +97,14 @@
   },
   "language_switcher": {
     "label": "Language",
+    "label_regions": "Select your region",
+    "label_search": "Search language...",
+    "label_implemented": "Current Sanctuary Support",
+    "label_future": "Global Expansion",
+    "label_toggle": "Change atmosphere",
+    "mode_light": "Day",
+    "mode_dark": "Night",
+    "mode_system": "System",
     "en-US": "English",
     "es-ES": "Español",
     "pt-BR": "Português"
@@ -262,7 +279,11 @@
     "cat_all": "All Suites",
     "cat_master": "Master Sanctuary",
     "cat_deluxe": "Deluxe Room",
-    "cat_standard": "Standard Comfort"
+    "cat_standard": "Standard Comfort",
+    "label_from": "Starting at",
+    "label_suite_suffix": "Boutique Suite",
+    "empty_state_title": "No results in the Sanctuary",
+    "empty_state_signal": "SUITE SIGNAL NOT FOUND"
   },
   "festival": {
     "hero": {
@@ -370,6 +391,7 @@
     "cta_button": "Book your Experience"
   },
   "history": {
+    "badge_label": "The Legacy",
     "title": "Forged in Code",
     "subtitle": "Discover the fusion of two decades of systems engineering with a creative vision obsessed with results. This is not just a portfolio; it is the legacy of an architecture built to last."
   },

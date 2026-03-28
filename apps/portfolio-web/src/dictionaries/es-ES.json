@@ -25,13 +25,22 @@
     "newsletter_placeholder": "Tu dirección de e-mail",
     "newsletter_button": "Suscribirse",
     "newsletter_success_title": "Bienvenido al Santuario",
-    "newsletter_success_subtitle": "Tu identidad ha sido vinculada al núcleo digital. Prepárate para una experiencia de toma única.",
-    "newsletter_reward_label": "OTORGADOS",
+    "newsletter_success_subtitle": "Tu identidad ha sido vinculada al núcleo digital.",
+    "newsletter_reward_label": "CONCEDIDOS",
+    "brand_description": "Tu refugio boutique en el corazón de Florianópolis. Lujo, diversidad e ingeniería de hospitalidad.",
     "column_nav_title": "Navegación",
     "column_services_title": "Concierge",
     "column_legal_title": "Cumplimiento",
-    "rights_reserved": "© 2026 Beach Hotel Canasvieiras. Todos los derechos reservados.",
-    "made_by": "Forjado por Raz Podestá | MetaShark Tech"
+    "label_photos": "Galería de Fotos",
+    "label_cancellation": "Políticas de Cancelación",
+    "label_rules": "Reglas del Santuario",
+    "label_blog": "Blog & Journal",
+    "label_lgpd": "LGPD & Privacidad",
+    "label_dpo": "DPO: Raz Podestá",
+    "label_all_rights": "Todos los derechos reservados",
+    "label_author_prefix": "Autor",
+    "rights_reserved": "© 2026 Beach Hotel Canasvieiras.",
+    "made_by": "Infraestructura por MetaShark Tech"
   },
   "system_status": {
     "items": [
@@ -88,6 +97,14 @@
   },
   "language_switcher": {
     "label": "Idioma",
+    "label_regions": "Selecciona tu región",
+    "label_search": "Buscar idioma...",
+    "label_implemented": "Soporte Actual del Santuario",
+    "label_future": "Expansión Global",
+    "label_toggle": "Cambiar atmósfera",
+    "mode_light": "Día",
+    "mode_dark": "Noche",
+    "mode_system": "Sistema",
     "en-US": "English",
     "es-ES": "Español",
     "pt-BR": "Português"
@@ -262,7 +279,11 @@
     "cat_all": "Todas las Suites",
     "cat_master": "Santuario Master",
     "cat_deluxe": "Habitación Deluxe",
-    "cat_standard": "Confort Standard"
+    "cat_standard": "Confort Standard",
+    "label_from": "Desde",
+    "label_suite_suffix": "Suite Boutique",
+    "empty_state_title": "Sin resultados en el Santuario",
+    "empty_state_signal": "SEÑAL DE SUITE NO ENCONTRADA"
   },
   "festival": {
     "hero": {
@@ -370,6 +391,7 @@
     "cta_button": "Reserve su Experiencia"
   },
   "history": {
+    "badge_label": "El Legado",
     "title": "Forjado en Código",
     "subtitle": "Descubre la fusión de dos décadas de ingeniería de sistemas con una visión creativa obsesionada por los resultados. Esto no es solo un portafolio; es el legado de una arquitectura construida para perdurar."
   },

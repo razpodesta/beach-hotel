@@ -1,0 +1,70 @@
+{
+  "fileHeader.author": "Raz Podestá - MetaShark Tech",
+  "fileHeader.lastModifiedBy": "MetaShark Sentinel",
+
+  // --- 1. RESOLUCIÓN DE TAILWIND V4 & CSS SOBERANO ---
+  // Silencia los errores del validador de CSS estándar para permitir @theme y @apply
+  "css.lint.unknownAtRules": "ignore",
+  "scss.lint.unknownAtRules": "ignore",
+  "less.lint.unknownAtRules": "ignore",
+
+  // Sincronización nativa con el motor de Tailwind v4
+  "tailwindCSS.includeLanguages": {
+    "css": "tailwindcss"
+  },
+  "tailwindCSS.experimental.classRegex": [
+    ["cn\\(([^)]*)\\)", "(?:'|\"|`)([^'\"`]*)(?:'|\"|`)"]
+  ],
+
+  // --- 2. GOBERNANZA DE CALIDAD (ESLINT & PRETTIER) ---
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.organizeImports": "explicit"
+  },
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact",
+    "json",
+    "jsonc"
+  ],
+
+  // --- 3. INFRAESTRUCTRURA DE LENGUAJE (JS/TS UNIFICADO) ---
+  // Refactorización de llaves en desuso (Fix: Severity 4 Diagnostics)
+  "js/ts.tsdk.path": "node_modules/typescript/lib",
+  "js/ts.tsdk.promptToUseWorkspaceVersion": true,
+  "js/ts.updateImportsOnFileMove.enabled": "always",
+
+  // --- 4. HIGIENE VISUAL DEL MONOREPO ---
+  "files.exclude": {
+    "**/.next": true,
+    "**/.nx": true,
+    "**/dist": true,
+    "**/node_modules": true,
+    "**/.DS_Store": true,
+    "**/tsconfig.tsbuildinfo": true
+  },
+
+  // --- 5. COMPORTAMIENTO DEL EDITOR (UX DE ÉLITE) ---
+  "editor.tabSize": 2,
+  "editor.fontSize": 14,
+  "editor.lineHeight": 1.6,
+  "editor.fontFamily": "'JetBrains Mono', 'Fira Code', monospace",
+  "editor.fontLigatures": true,
+  "editor.cursorBlinking": "smooth",
+  "editor.cursorSmoothCaretAnimation": "on",
+  "editor.bracketPairColorization.enabled": true,
+  "editor.guides.bracketPairs": "active",
+  "editor.stickyScroll.enabled": true,
+
+  // --- 6. GESTIÓN DE DICCIONARIOS (JSON SSoT) ---
+  "json.schemas": [
+    {
+      "fileMatch": ["apps/portfolio-web/src/messages/**/*.json"],
+      "url": "./apps/portfolio-web/src/lib/schemas/dictionary.schema.ts"
+    }
+  ]
+}

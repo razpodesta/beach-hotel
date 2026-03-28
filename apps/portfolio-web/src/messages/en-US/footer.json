@@ -3,11 +3,20 @@
   "newsletter_placeholder": "Your email address",
   "newsletter_button": "Subscribe",
   "newsletter_success_title": "Welcome to the Sanctuary",
-  "newsletter_success_subtitle": "Your identity has been linked to the digital core. Prepare for a unique takeover experience.",
+  "newsletter_success_subtitle": "Your identity has been linked to the digital core.",
   "newsletter_reward_label": "AWARDED",
+  "brand_description": "Your boutique refuge in the heart of Florianópolis. Luxury, diversity, and hospitality engineering.",
   "column_nav_title": "Navigation",
   "column_services_title": "Concierge",
   "column_legal_title": "Compliance",
-  "rights_reserved": "© 2026 Beach Hotel Canasvieiras. All rights reserved.",
-  "made_by": "Forged by Raz Podestá | MetaShark Tech"
+  "label_photos": "Photo Gallery",
+  "label_cancellation": "Cancellation Policies",
+  "label_rules": "Sanctuary Rules",
+  "label_blog": "Blog & Journal",
+  "label_lgpd": "LGPD & Privacy",
+  "label_dpo": "DPO: Raz Podestá",
+  "label_all_rights": "All Rights Reserved",
+  "label_author_prefix": "Author",
+  "rights_reserved": "© 2026 Beach Hotel Canasvieiras.",
+  "made_by": "Infrastructure by MetaShark Tech"
 }

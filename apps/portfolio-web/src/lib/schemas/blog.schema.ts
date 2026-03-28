@@ -1,47 +1,60 @@
 /**
  * @file apps/portfolio-web/src/lib/schemas/blog.schema.ts
- * @description Contrato Soberano para el Hub Editorial (The Concierge Journal).
- *              Define la validación inmutable para metadatos, taxonomía y 
- *              páginas. Sincronizado con el motor de renderizado Next.js 15.
- * @version 8.0 - Absolute Path Support & Chrono-Validation
+ * @description Constitución Soberana para el Hub Editorial (The Concierge Journal).
+ *              Define la validación inmutable para metadatos, atmósfera (Vibe) y 
+ *              taxonomía. Sincronizado con el orquestador de datos v29.0.
+ * @version 9.0 - Atmosphere & Reading Metrics Integration
  * @author Raz Podestá - MetaShark Tech
  */
 
 import { z } from 'zod';
 
 /**
+ * @description Enumeración de atmósferas permitidas para el renderizado dinámico.
+ * day: Estética clara, minimalista, luz solar.
+ * night: Estética oscura, neones, "Sanctuary Night".
+ */
+export const AtmosphereVibe = z.enum(['day', 'night']);
+export type AtmosphereVibeType = z.infer<typeof AtmosphereVibe>;
+
+/**
  * ESQUEMA: blogPostMetadataSchema
  * @pilar III: Seguridad de Tipos Absoluta.
- * @description Define el contrato de metadatos para un artículo.
+ * @description Contrato de metadatos para la unidad editorial.
  */
 export const blogPostMetadataSchema = z.object({
-  /** Título de impacto editorial */
-  title: z.string().min(1, 'El título es obligatorio'),
+  title: z.string().min(1, 'title_required'),
+  description: z.string().min(1, 'description_required'),
+  author: z.string().min(1, 'author_required'),
+  published_date: z.string().datetime({ message: 'invalid_iso_date' }),
   
-  /** Resumen para SEO y tarjetas (Meta Description) */
-  description: z.string().min(1, 'La descripción es obligatoria'),
+  /** 
+   * @property vibe
+   * @description Determina la identidad lumínica de la tarjeta y el detalle.
+   * @fix Erradica error TS2353 en actions.ts
+   */
+  vibe: AtmosphereVibe.default('day'),
+
+  /** 
+   * @property readingTime 
+   * @description Tiempo estimado de lectura en minutos (opcional).
+   */
+  readingTime: z.number().int().min(1).optional(),
   
-  /** Nombre del autor o entidad editorial */
-  author: z.string().min(1, 'El autor es obligatorio'),
-  
-  /** Fecha en formato ISO string (yyyy-mm-dd) */
-  published_date: z.string().datetime({ message: 'Debe ser una fecha ISO válida' }),
-  
-  /** Colección de etiquetas para el motor de taxonomía */
   tags: z.array(z.string().trim().min(1))
     .transform(tags => tags.map(t => t.toLowerCase())),
     
   /**
    * Imagen de portada (OpenGraph).
-   * @fix Soporta rutas locales (/images/...) y URLs absolutas (https://...).
+   * Soporta rutas locales (/images/...) y URLs de Supabase.
    */
-  ogImage: z.string().min(1).optional(),
+  ogImage: z.string().url().or(z.string().startsWith('/')).optional(),
 });
 
 /**
  * ESQUEMA: blogPageSchema
  * @pilar VI: Lógica i18n Soberana.
- * @description Define los tokens de traducción para la interfaz del blog.
+ * @description Tokens de traducción para la interfaz del Hub Editorial.
  */
 export const blogPageSchema = z.object({
   page_title: z.string().min(1),
@@ -57,20 +70,17 @@ export const blogPageSchema = z.object({
 
 /**
  * ESQUEMA: postWithSlugSchema
- * @description Estructura final de un artículo procesado por el Shaper Polimórfico.
+ * @description Estructura final de un artículo tras el paso por el Shaper Soberano.
  */
 export const postWithSlugSchema = z.object({
-  /** Identificador semántico único para rumbos SEO */
   slug: z.string().min(1),
-  /** Metadatos validados */
   metadata: blogPostMetadataSchema,
-  /** Contenido en Markdown o HTML procesado */
   content: z.string().optional().default(''),
 });
 
 /**
  * INFERENCIA SOBERANA DE TIPOS
- * @pilar III: Inferencia obligatoria desde contrato Zod.
+ * @pilar III: Inferencia obligatoria desde contrato Zod (SSoT).
  */
 export type BlogPost = z.infer<typeof blogPostMetadataSchema>;
 export type PostWithSlug = z.infer<typeof postWithSlugSchema>;

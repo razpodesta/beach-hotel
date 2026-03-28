@@ -1,5 +1,13 @@
 {
   "label": "Idioma",
+  "label_regions": "Selecciona tu región",
+  "label_search": "Buscar idioma...",
+  "label_implemented": "Soporte Actual del Santuario",
+  "label_future": "Expansión Global",
+  "label_toggle": "Cambiar atmósfera",
+  "mode_light": "Día",
+  "mode_dark": "Noche",
+  "mode_system": "Sistema",
   "en-US": "English",
   "es-ES": "Español",
   "pt-BR": "Português"

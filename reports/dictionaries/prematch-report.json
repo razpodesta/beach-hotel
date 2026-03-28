@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-03-27T23:06:44.163Z",
+  "timestamp": "2026-03-28T20:51:14.045Z",
   "globalStatus": "SUCCESS",
   "localesAudited": [
     {
@@ -7,7 +7,7 @@
       "status": "SUCCESS",
       "featuresCount": 28,
       "errors": 0,
-      "outputSize": "22.20 KB",
+      "outputSize": "23.08 KB",
       "postWriteVerification": "PASSED",
       "assembledFeatures": [
         "about",
@@ -45,7 +45,7 @@
       "status": "SUCCESS",
       "featuresCount": 28,
       "errors": 0,
-      "outputSize": "23.00 KB",
+      "outputSize": "23.89 KB",
       "postWriteVerification": "PASSED",
       "assembledFeatures": [
         "about",
@@ -83,7 +83,7 @@
       "status": "SUCCESS",
       "featuresCount": 28,
       "errors": 0,
-      "outputSize": "23.22 KB",
+      "outputSize": "24.11 KB",
       "postWriteVerification": "PASSED",
       "assembledFeatures": [
         "about",
@@ -118,5 +118,5 @@
     }
   ],
   "issues": [],
-  "performance": "0.23s"
+  "performance": "1.96s"
 }

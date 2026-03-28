@@ -1,9 +1,9 @@
 /**
- * @file apps/portfolio-web/src/components/layout/Header.tsx
+ * @file Header.tsx
  * @description Orquestador Soberano de la Cabecera (NavDesk). 
  *              Implementa conciencia de scroll, navegación localizada, 
- *              telemetría de usuario e integración con Tailwind v4.
- * @version 16.0 - Vercel Build Normalization & Type Hardening
+ *              telemetría perimetral y soporte dinámico Día/Noche.
+ * @version 17.0 - Atmosphere Ready & TS-Error Fix
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -17,8 +17,8 @@ import { Menu, Globe, ChevronDown, CalendarCheck } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 /**
- * IMPORTACIONES DE INFRAESTRUCTRURA (Rutas Saneadas)
- * @pilar V: Eliminación de extensiones .js para compatibilidad total con el build de Vercel.
+ * IMPORTACIONES DE INFRAESTRUCTRURA
+ * @pilar V: Adherencia arquitectónica.
  */
 import { cn } from '../../lib/utils/cn';
 import { useUIStore } from '../../lib/store/ui.store';
@@ -35,13 +35,22 @@ import type { Locale } from '../../config/i18n.config';
 import type { Dictionary } from '../../lib/schemas/dictionary.schema';
 
 /**
+ * @interface HeaderProps
+ */
+interface HeaderProps {
+  /** Diccionario maestro inyectado desde el RootLayout */
+  dictionary: Dictionary;
+  className?: string;
+}
+
+/**
  * SUB-APARATO: HeaderBrand
  * @description Identidad visual boutique. Sincronizado con tokens de Oxygen Engine.
  */
 const HeaderBrand = ({ currentLang }: { currentLang: Locale }) => (
   <motion.div
-    whileHover={{ scale: 1.01 }}
-    whileTap={{ scale: 0.99 }}
+    whileHover={{ scale: 1.02 }}
+    whileTap={{ scale: 0.98 }}
     transition={{ type: 'spring', stiffness: 400, damping: 25 }}
   >
     <Link 
@@ -62,15 +71,16 @@ const HeaderBrand = ({ currentLang }: { currentLang: Locale }) => (
 );
 
 /**
- * APARATO PRINCIPAL: Header
+ * APARATO: Header
+ * @description Orquestador de navegación táctica. Reacciona a la atmósfera global.
  */
-export function Header({ dictionary }: { dictionary: Dictionary }) {
+export function Header({ dictionary, className }: HeaderProps) {
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
   
   /**
    * DETECCIÓN DE SCROLL (Pilar X)
-   * Optimizado con passive: true para no bloquear el hilo de renderizado.
+   * Optimizado con passive: true para no bloquear el renderizado.
    */
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -85,10 +95,7 @@ export function Header({ dictionary }: { dictionary: Dictionary }) {
   }, [pathname]);
 
   // Selección quirúrgica de estado global
-  const isVisitorHudOpen = useUIStore((s) => s.isVisitorHudOpen);
-  const hasHydrated = useUIStore((s) => s.hasHydrated);
-  const toggleVisitorHud = useUIStore((s) => s.toggleVisitorHud);
-  const toggleMobileMenu = useUIStore((s) => s.toggleMobileMenu);
+  const { isVisitorHudOpen, hasHydrated, toggleVisitorHud, toggleMobileMenu } = useUIStore();
 
   /**
    * CONTRATO DE TRADUCCIÓN (Pilar VI)
@@ -100,22 +107,22 @@ export function Header({ dictionary }: { dictionary: Dictionary }) {
   }), [dictionary]);
 
   /**
-   * PROTOCOLO HEIMDALL: Telemetría Forense
+   * PROTOCOLO HEIMDALL: Telemetría de Interacción
    */
   const trackInteraction = useCallback((label: string) => {
     console.group(`[HEIMDALL][UX] Interaction: Header -> ${label}`);
-    console.log(`Scroll_State: ${isScrolled ? 'Sticky' : 'Static'}`);
-    console.log(`Timestamp: ${new Date().toISOString()}`);
+    console.log(`Atmosphere: Responsive | Scroll: ${isScrolled ? 'Sticky' : 'Static'}`);
     console.groupEnd();
   }, [isScrolled]);
 
   return (
     <header 
       className={cn(
-        "sticky top-0 z-50 w-full transition-all duration-700 border-b border-transparent",
+        "sticky top-0 z-50 w-full transition-all duration-700 border-b",
         isScrolled 
-          ? "h-16 bg-background/90 backdrop-blur-3xl border-border/50 shadow-xl" 
-          : "h-24 bg-background/80 backdrop-blur-2xl"
+          ? "h-16 bg-background/80 backdrop-blur-3xl border-border shadow-2xl" 
+          : "h-24 bg-background/60 backdrop-blur-xl border-transparent",
+        className
       )} 
       role="banner"
     >
@@ -126,18 +133,17 @@ export function Header({ dictionary }: { dictionary: Dictionary }) {
             <HeaderBrand currentLang={currentLang} />
 
             {/* NAVEGACIÓN DESKTOP (Lego System) */}
-            <nav className="hidden lg:flex items-center gap-1" aria-label="Navegação Principal">
+            <nav className="hidden lg:flex items-center gap-2" aria-label="Navegação Principal">
               {mainNavStructure.map((nav: NavItem) => {
                 const localizedHref = getLocalizedHref(nav.href ?? '/', currentLang);
                 const isActive = pathname === localizedHref;
                 const label = labels[nav.labelKey as keyof typeof labels] || nav.labelKey;
                 const Icon = nav.Icon as LucideIcon | undefined;
                 
-                // Rama de Navegación Anidada
                 if (nav.children?.length) {
                   return (
                     <DropdownMenu key={nav.labelKey} trigger={
-                      <button className="flex items-center gap-2 px-5 py-2.5 rounded-full text-[10px] font-bold uppercase tracking-widest text-foreground/70 hover:bg-muted hover:text-foreground transition-all outline-none group">
+                      <button className="flex items-center gap-2 px-5 py-2.5 rounded-full text-[10px] font-bold uppercase tracking-widest text-foreground/60 hover:bg-surface hover:text-primary transition-all outline-none group">
                         {Icon && <Icon size={14} className="opacity-70 group-hover:text-primary transition-colors" />}
                         {label}
                         <ChevronDown size={12} className="opacity-30 group-hover:translate-y-0.5 transition-transform" />
@@ -151,7 +157,6 @@ export function Header({ dictionary }: { dictionary: Dictionary }) {
                   );
                 }
 
-                // Rama de Navegación Simple
                 return (
                   <Link 
                     key={nav.labelKey} 
@@ -159,13 +164,13 @@ export function Header({ dictionary }: { dictionary: Dictionary }) {
                     onClick={() => trackInteraction(`Nav:${nav.labelKey}`)}
                     aria-current={isActive ? 'page' : undefined}
                     className={cn(
-                      "relative flex items-center gap-2 px-5 py-2.5 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all duration-300 outline-none",
+                      "relative flex items-center gap-2 px-5 py-2.5 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all duration-500 outline-none",
                       isActive 
-                        ? "text-primary bg-primary/10" 
-                        : "text-foreground/70 hover:bg-muted hover:text-foreground"
+                        ? "text-primary bg-primary/10 shadow-[0_0_20px_rgba(var(--color-primary),0.05)]" 
+                        : "text-foreground/60 hover:bg-surface hover:text-primary"
                     )}
                   >
-                    {Icon && <Icon size={14} className={cn("opacity-70", isActive && "opacity-100")} />}
+                    {Icon && <Icon size={14} className={cn("opacity-70 transition-colors", isActive && "opacity-100")} />}
                     {label}
                     {isActive && (
                       <motion.div 
@@ -194,10 +199,15 @@ export function Header({ dictionary }: { dictionary: Dictionary }) {
               {labels.talk}
             </Link>
 
-            <div className="flex items-center gap-1 border-l border-border pl-4">
+            <div className="flex items-center gap-2 border-l border-border pl-4">
               <div className="hidden md:flex items-center gap-1 pr-2 border-r border-border mr-2">
                 <LanguageSwitcher dictionary={dictionary.language_switcher} />
-                <ThemeToggle />
+                
+                {/* 
+                   @fix TS2741: Inyección de diccionario nivelado (v9.0).
+                   Ahora el ThemeToggle recibe los tokens de atmósfera localizados.
+                */}
+                <ThemeToggle dictionary={dictionary.language_switcher} />
               </div>
               
               {/* TELEMETRÍA: BOTÓN HUD (Heimdall) */}
@@ -207,8 +217,8 @@ export function Header({ dictionary }: { dictionary: Dictionary }) {
                 className={cn(
                   "p-2.5 rounded-full transition-all duration-500 outline-none", 
                   hasHydrated && isVisitorHudOpen 
-                    ? "text-primary bg-primary/10 shadow-[0_0_20px_rgba(168,85,247,0.25)] border border-primary/20" 
-                    : "text-muted-foreground hover:bg-muted border border-transparent"
+                    ? "text-primary bg-primary/10 shadow-[0_0_20px_rgba(168,85,247,0.15)] border border-primary/20" 
+                    : "text-muted-foreground hover:bg-surface border border-transparent"
                 )}
                 aria-label="Alternar Telemetría"
                 title="Sovereign Telemetry"
@@ -224,7 +234,7 @@ export function Header({ dictionary }: { dictionary: Dictionary }) {
             {/* CONTROL MÓVIL (Takeover) */}
             <button 
               onClick={toggleMobileMenu} 
-              className="lg:hidden p-3 rounded-full hover:bg-muted transition-all active:scale-90" 
+              className="lg:hidden p-3 rounded-full hover:bg-surface transition-all active:scale-90" 
               aria-label="Abrir navegación móvil"
             >
               <Menu size={24} />

@@ -1,8 +1,10 @@
 /**
  * @file global.css
- * @description Motor de Estilos Soberano v4 (Oxygen Engine Ready).
+ * @description Motor de Estilos Soberano v7 (Oxygen Engine).
  *              Orquesta la identidad visual mediante tokens semánticos OKLCH.
- * @version 6.0 - Tailwind v4 Standard Compliance
+ *              Refactorizado: Sincronización con data-theme, Tailwind v4 y 
+ *              eliminación de redundancias sintácticas.
+ * @version 7.0 - Tailwind v4 Standard & Data-Theme Sync
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -10,61 +12,70 @@
 
 /* --- 1. CONFIGURACIÓN DEL SISTEMA DE DISEÑO (SSoT) --- */
 @theme {
-  /* Tipografía: Vinculación directa con Next.js Font Variables */
+  /* Tipografía Soberana: Vinculación con Next.js Font Variables */
   --font-sans: var(--font-inter), ui-sans-serif, system-ui;
   --font-display: var(--font-clash), ui-sans-serif, system-ui;
   --font-signature: var(--font-signature), cursive;
 
-  /* Paleta Semántica OKLCH (Luxury Presets) */
-  --color-background: oklch(var(--bg-light));
-  --color-foreground: oklch(var(--fg-light));
+  /* Paleta Semántica Funcional (Consumida por componentes) */
+  --color-background: var(--bg-base);
+  --color-foreground: var(--fg-base);
+  --color-surface: var(--bg-surface);
+  --color-border: var(--border-base);
+  
+  /* Colores de Marca: Percepción Constante vía OKLCH */
   --color-primary: oklch(65% 0.25 270); /* Sanctuary Purple */
   --color-accent: oklch(70% 0.15 320);  /* Pride Pink */
-  --color-border: oklch(var(--border-light));
+  --color-success: oklch(70% 0.18 140); /* Green Horizon */
   
-  /* Animaciones con Aceleración por Hardware */
+  /* Animaciones de Próxima Generación con Aceleración por Hardware */
   @keyframes infinite-scroll {
     from { transform: translate3d(0, 0, 0); }
     to { transform: translate3d(-50%, 0, 0); }
   }
 
-  @keyframes float {
+  @keyframes float-luxury {
     0%, 100% { transform: translate3d(0, 0, 0); }
-    50% { transform: translate3d(0, -10px, 0); }
+    50% { transform: translate3d(0, -15px, 0); }
   }
 
-  --animate-infinite-scroll: infinite-scroll 120s linear infinite;
-  --animate-float: float 6s ease-in-out infinite;
+  --animate-infinite-scroll: infinite-scroll 140s linear infinite;
+  --animate-float: float-luxury 8s ease-in-out infinite;
 }
 
-/* --- 2. GESTIÓN DE ESTADOS Y VARIABLES DINÁMICAS --- */
+/* --- 2. GESTIÓN DE ATMÓSFERAS (Day-First Sovereign) --- */
 @layer base {
   :root {
-    /* Tokens base para Modo Claro */
-    --bg-light: 98.5% 0 0;
-    --fg-light: 20% 0.02 260;
-    --border-light: 90% 0.01 260;
+    /* MODO DÍA: Sophisticated Neutral */
+    --bg-base: oklch(98.5% 0.005 260);
+    --fg-base: oklch(20% 0.02 260);
+    --bg-surface: oklch(95% 0.01 260);
+    --border-base: oklch(90% 0.01 260);
     
-    /* Configuración de selección */
-    --select-bg: oklch(65% 0.25 270 / 20%);
-    --select-fg: oklch(65% 0.25 270);
+    /* Configuración de selección y acento */
+    --select-bg: oklch(65% 0.25 270 / 15%);
+    --select-fg: oklch(40% 0.2 270);
   }
 
-  .dark {
-    /* Tokens base para Modo Oscuro (Sanctuary Night) */
-    --bg-light: 8% 0.01 260;
-    --fg-light: 98% 0 0;
-    --border-light: 18% 0.02 260;
+  /* Sincronización con next-themes data-attribute */
+  [data-theme='dark'] {
+    /* MODO NOCHE: Sanctuary Night (Obsidiana) */
+    --bg-base: oklch(8% 0.01 260);
+    --fg-base: oklch(98% 0 0);
+    --bg-surface: oklch(12% 0.02 260);
+    --border-base: oklch(18% 0.02 260);
+    
+    --select-bg: oklch(65% 0.25 270 / 25%);
+    --select-fg: oklch(80% 0.1 270);
   }
 
   /* Reset y Comportamiento Global */
   * { 
     @apply border-border; 
-    /* Nota: @apply es válido en v4 dentro de @layer base */
   }
 
   body { 
-    @apply bg-background text-foreground font-sans antialiased;
+    @apply bg-background text-foreground font-sans antialiased transition-colors duration-700;
     font-feature-settings: "ss01", "cv01", "cv11";
     scroll-behavior: smooth;
   }
@@ -75,35 +86,40 @@
     color: var(--select-fg);
   }
 
-  /* UI: Motor de Scrollbar Minimalista */
+  /* UI: Motor de Scrollbar Minimalista (Pilar XII) */
   ::-webkit-scrollbar {
-    width: 5px;
+    width: 6px;
   }
   ::-webkit-scrollbar-track {
-    background: oklch(var(--bg-light));
+    background: var(--bg-base);
   }
   ::-webkit-scrollbar-thumb {
-    background: oklch(var(--border-light));
+    background: var(--border-base);
     border-radius: 10px;
+    transition: background 0.3s ease;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: var(--select-fg);
+    background: var(--color-primary);
   }
 }
 
-/* --- 3. UTILIDADES DE ÉLITE (Custom Logic) --- */
+/* --- 3. UTILIDADES DE ÉLITE (High Fidelity) --- */
 @layer utilities {
   .text-edge-outline {
-    -webkit-text-stroke: 1px oklch(var(--fg-light) / 10%);
+    -webkit-text-stroke: 1px oklch(var(--fg-base) / 10%);
     color: transparent;
   }
 
   .glass-morphism {
-    @apply backdrop-blur-xl bg-background/30 border border-white/5;
+    @apply backdrop-blur-2xl bg-surface/30 border border-white/5;
+  }
+
+  .perspective-2000 {
+    perspective: 2000px;
   }
 }
 
-/* --- 4. CUMPLIMIENTO DE IMPRESIÓN --- */
+/* --- 4. CUMPLIMIENTO DE IMPRESIÓN (Sovereign Print) --- */
 @media print {
   .print-hidden {
     display: none !important;

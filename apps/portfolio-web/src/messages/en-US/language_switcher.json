@@ -1,5 +1,13 @@
 {
   "label": "Language",
+  "label_regions": "Select your region",
+  "label_search": "Search language...",
+  "label_implemented": "Current Sanctuary Support",
+  "label_future": "Global Expansion",
+  "label_toggle": "Change atmosphere",
+  "mode_light": "Day",
+  "mode_dark": "Night",
+  "mode_system": "System",
   "en-US": "English",
   "es-ES": "Español",
   "pt-BR": "Português"

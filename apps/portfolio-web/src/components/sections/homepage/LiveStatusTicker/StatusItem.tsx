@@ -1,22 +1,33 @@
 /**
  * @file StatusItem.tsx
- * @description Unidad atómica de telemetría con micro-interacciones MEA/UX.
- * @version 2.0 - Pure Presentational Standard
+ * @description Unidad atómica de telemetría con micro-interacciones de alta fidelidad.
+ *              Implementa mapeo cromático determinista y optimización de renderizado (Memo).
+ * @version 4.0 - Elite Production Standard
+ * @author Raz Podestá - MetaShark Tech
  */
 
 'use client';
 
-import React from 'react';
+import React, { memo } from 'react';
 import { 
   Ticket, ThermometerSun, ShieldCheck, 
   Music, Users, Waves, Sparkles, Info,
   type LucideIcon 
 } from 'lucide-react';
-import { cn } from '../../../../lib/utils/cn';
-import type { SystemStatusItem, StatusIconType, StatusColorType } from '../../../../lib/schemas/system_status.schema';
 
 /**
- * MAPAS SOBERANOS DE ESTILO (Alineados con global.css)
+ * IMPORTACIONES DE INFRAESTRUCTRURA
+ */
+import { cn } from '../../../../lib/utils/cn';
+import type { 
+  SystemStatusItem, 
+  StatusIconType, 
+  StatusColorType 
+} from '../../../../lib/schemas/system_status.schema';
+
+/**
+ * MAPA MAESTRO DE ICONOGRAFÍA (SSoT)
+ * @description Centraliza la resolución de glifos con tipado estricto.
  */
 const ICON_MAP: Record<StatusIconType, LucideIcon> = {
   Ticket,
@@ -28,53 +39,89 @@ const ICON_MAP: Record<StatusIconType, LucideIcon> = {
   Sparkles,
 };
 
-const COLOR_MAP: Record<StatusColorType, string> = {
-  purple: "text-primary", // Sanctuary Purple
-  yellow: "text-yellow-400",
-  green: "text-green-400",
-  pink: "text-accent", // Pride Pink
-  blue: "text-blue-400",
-  cyan: "text-cyan-400",
+/**
+ * MATRIZ CROMÁTICA SOBERANA (Pilar VII)
+ * @description Define explícitamente las combinaciones de clases para evitar manipulación de strings.
+ *              Optimizado para Tailwind v4 y el motor de diseño MetaShark.
+ */
+const THEME_MAP: Record<StatusColorType, { text: string; bg: string; shadow: string }> = {
+  purple: { text: "text-primary", bg: "bg-primary", shadow: "shadow-primary/20" },
+  yellow: { text: "text-yellow-400", bg: "bg-yellow-400", shadow: "shadow-yellow-400/20" },
+  green: { text: "text-green-400", bg: "bg-green-400", shadow: "shadow-green-400/20" },
+  pink: { text: "text-accent", bg: "bg-accent", shadow: "shadow-accent/20" },
+  blue: { text: "text-blue-400", bg: "bg-blue-400", shadow: "shadow-blue-400/20" },
+  cyan: { text: "text-cyan-400", bg: "bg-cyan-400", shadow: "shadow-cyan-400/20" },
 };
 
+/**
+ * @interface StatusItemProps
+ * @property {SystemStatusItem} item - Entidad de estado validada por esquema Zod.
+ */
 interface StatusItemProps {
   item: SystemStatusItem;
 }
 
-export function StatusItem({ item }: StatusItemProps) {
+/**
+ * APARATO: StatusItem
+ * @description Renderiza una cápsula de telemetría con interacciones cinemáticas.
+ *              Envuelto en memo() para prevenir jank en el carrusel infinito (Pilar X).
+ */
+export const StatusItem = memo(({ item }: StatusItemProps) => {
   const Icon = ICON_MAP[item.iconKey] || Info;
-  const colorClass = COLOR_MAP[item.colorKey] || "text-zinc-400";
-  const bgPulseClass = colorClass.replace('text-', 'bg-');
+  const theme = THEME_MAP[item.colorKey] || THEME_MAP.purple;
 
   return (
-    <div className="flex items-center gap-10 px-16 group cursor-default">
+    <div 
+      className="flex items-center gap-10 px-16 group cursor-default transition-opacity duration-500 hover:opacity-100"
+      role="listitem"
+    >
       <div className="flex flex-col">
-        {/* Indicador Live */}
-        <div className="flex items-center gap-2 mb-1.5">
-          <div className={cn("h-1 w-1 rounded-full animate-pulse", bgPulseClass)} />
+        {/* INDICADOR LIVE: Pulso de Identidad (Pilar XII) */}
+        <div className="flex items-center gap-2 mb-2">
+          <div className="relative flex h-2 w-2">
+            <div className={cn(
+              "absolute inline-flex h-full w-full animate-ping rounded-full opacity-75",
+              theme.bg
+            )} />
+            <div className={cn(
+              "relative inline-flex h-2 w-2 rounded-full shadow-lg",
+              theme.bg,
+              theme.shadow
+            )} />
+          </div>
           <span className={cn(
-            "text-[9px] font-mono font-bold tracking-[0.4em] uppercase opacity-40 transition-opacity duration-700 group-hover:opacity-100", 
-            colorClass
+            "text-[10px] font-mono font-bold tracking-[0.5em] uppercase transition-all duration-700",
+            "opacity-30 group-hover:opacity-100 group-hover:tracking-[0.6em]", 
+            theme.text
           )}>
             {item.category}
           </span>
         </div>
         
-        {/* Mensaje de Telemetría */}
-        <div className="flex items-center gap-4">
-          <Icon 
-            size={18} 
-            strokeWidth={1.5}
-            className={cn("transition-transform duration-700 group-hover:scale-125 group-hover:rotate-12", colorClass)} 
-          />
-          <span className="text-sm font-bold text-zinc-200 uppercase tracking-widest whitespace-nowrap font-sans transition-colors group-hover:text-white">
+        {/* CONTENIDO: Telemetría y Glifo */}
+        <div className="flex items-center gap-5">
+          <div className={cn(
+            "p-2.5 rounded-xl bg-white/2 border border-white/5 transition-all duration-700",
+            "group-hover:bg-white/5 group-hover:border-white/10 group-hover:scale-110 transform-gpu",
+            theme.text
+          )}>
+            <Icon 
+              size={20} 
+              strokeWidth={1.5}
+              className="transition-transform duration-1000 cubic-bezier(0.16, 1, 0.3, 1) group-hover:rotate-360deg" 
+              aria-hidden="true"
+            />
+          </div>
+          <span className="text-sm font-display font-bold text-zinc-300 uppercase tracking-widest whitespace-nowrap transition-colors duration-500 group-hover:text-white">
             {item.message}
           </span>
         </div>
       </div>
       
-      {/* Separador de flujo */}
-      <div className="ml-8 h-8 w-px bg-white/5 group-hover:bg-primary/20 transition-colors duration-700" />
+      {/* SEPARADOR ESTRUCTURAL: Estética Glassmorphism (Pilar VII) */}
+      <div className="ml-8 h-10 w-px bg-linear-to-b from-transparent via-white/10 to-transparent transition-all duration-1000 group-hover:via-primary/30 group-hover:h-12" />
     </div>
   );
-}
+});
+
+StatusItem.displayName = 'StatusItem';

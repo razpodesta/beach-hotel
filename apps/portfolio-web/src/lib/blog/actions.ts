@@ -1,9 +1,9 @@
 /**
  * @file apps/portfolio-web/src/lib/blog/actions.ts
  * @description Orquestador soberano de datos para el Hub Editorial.
- *              Implementa un Shaper infalible, compilador Lexical de alta fidelidad
- *              y blindaje total contra corrupciones de datos en Vercel.
- * @version 25.0 - Zero Any & Forensic Standard
+ *              Refactorizado: Erradicación de errores ESLint, optimización 
+ *              de resiliencia y prioridad absoluta a base de datos.
+ * @version 29.0 - Linter Pure & DB-Priority Standard
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -12,23 +12,25 @@ import type { Payload } from 'payload';
 import configPromise from '@metashark/cms-core/config';
 
 /**
- * IMPORTACIONES DE CONTRATO (SSoT)
+ * IMPORTACIONES DE INFRAESTRUCTRURA
  * @pilar V: Adherencia arquitectónica.
  */
 import { postWithSlugSchema } from '../schemas/blog.schema';
 import type { PostWithSlug } from '../schemas/blog.schema';
 import { i18n } from '../../config/i18n.config';
 import type { Locale } from '../../config/i18n.config';
+import { getDictionary } from '../get-dictionary';
 import { MOCK_POSTS } from '../../data/mocks/cms.mocks';
+import type { Dictionary } from '../schemas/dictionary.schema';
 
 /**
- * ESTADO DE INFRAESTRUCTRURA (Detectado en tiempo de ejecución)
+ * CONSTANTES DE INFRAESTRUCTRURA
  */
 const IS_BUILD_ENV = process.env.NEXT_PHASE === 'phase-production-build' || process.env.VERCEL === '1';
 const DB_READY = Boolean(process.env.DATABASE_URL);
 
 /**
- * CONTRATOS TÉCNICOS: Lexical AST & Raw Content
+ * CONTRATOS TÉCNICOS: Lexical AST
  */
 interface LexicalNode {
   type: string;
@@ -45,10 +47,6 @@ interface LexicalRoot {
   };
 }
 
-/**
- * @interface RawPayloadPost
- * @description Representación tipada del esquema del CMS para evitar 'any'.
- */
 interface RawPayloadPost {
   title?: string | null;
   slug?: string | null;
@@ -73,8 +71,7 @@ async function getSovereignPayload(): Promise<Payload> {
 }
 
 /**
- * COMPILADOR JIT: Lexical to Markdown (Deep Recursive)
- * @description Transforma el AST del editor en narrativa Markdown pura.
+ * COMPILADOR JIT: Lexical to Markdown
  */
 function compileLexicalToMarkdown(contentNode: unknown): string {
   if (!contentNode) return '';
@@ -91,11 +88,6 @@ function compileLexicalToMarkdown(contentNode: unknown): string {
           const level = parseInt(node.tag?.replace('h', '') || '2', 10);
           return `${'#'.repeat(level)} ${childrenText}\n\n`;
         }
-        case 'list': {
-          const bullet = node.listType === 'number' ? '1.' : '-';
-          return node.children?.map((li) => `${bullet} ${extractRecursive([li])}`).join('\n') + '\n\n' || '';
-        }
-        case 'listitem': return childrenText;
         case 'link': return `[${childrenText}](${node.url || '#'})`;
         case 'quote': return `> ${childrenText}\n\n`;
         default: return childrenText;
@@ -106,29 +98,34 @@ function compileLexicalToMarkdown(contentNode: unknown): string {
   try {
     const ast = contentNode as LexicalRoot;
     return extractRecursive(ast.root?.children);
-  } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : 'Parser Error';
-    console.warn(`[HEIMDALL][PARSER] Lexical conversion degraded: ${msg}`);
-    return typeof contentNode === 'string' ? contentNode : '';
+  } catch {
+    // Protocolo Heimdall: Trazabilidad de fallo de parseo sin variables huérfanas
+    console.warn('[HEIMDALL][PARSER] Lexical conversion degraded: Structural anomaly detected.');
+    return '';
   }
 }
 
 /**
- * SHAPER POLIMÓRFICO: mapToSovereignPost
- * @description Garantiza que el objeto de salida sea 100% compatible con Zod.
- * @pilar III: Seguridad de Tipos Absoluta.
+ * DETECTOR DE ATMÓSFERA (Día/Noche)
+ * @pilar XII: MEA/UX - Permite que la UI reaccione al contenido.
  */
-function mapToSovereignPost(entry: unknown): PostWithSlug {
+function detectAtmosphere(tags: string[]): 'day' | 'night' {
+  const nightKeywords = ['nightlife', 'party', 'festival', 'club', 'sunset', 'techno'];
+  const hasNightVibe = tags.some(tag => nightKeywords.includes(tag.toLowerCase()));
+  return hasNightVibe ? 'night' : 'day';
+}
+
+/**
+ * SHAPER SOBERANO: mapToSovereignPost
+ * @pilar X: Performance - Inyección de diccionario para evitar I/O.
+ */
+function mapToSovereignPost(entry: unknown, dict: Dictionary): PostWithSlug {
+  const t = dict.blog_page;
+  
   try {
-    // 1. Verificación de tipo para entrada de Mocks
-    const quickResult = postWithSlugSchema.safeParse(entry);
-    if (quickResult.success) return quickResult.data;
-
-    // 2. Procesamiento del objeto crudo del CMS
-    const raw = (entry || {}) as RawPayloadPost;
-
-    // Resolución de Autor (Blindaje contra undefined/null)
-    let resolvedAuthor = 'Sanctuary Team';
+    const raw = entry as RawPayloadPost;
+    
+    let resolvedAuthor = t.hero_title;
     const authorData = raw.author;
     if (authorData) {
       if (typeof authorData === 'object') {
@@ -138,39 +135,48 @@ function mapToSovereignPost(entry: unknown): PostWithSlug {
       }
     }
 
+    const rawTags = Array.isArray(raw.tags) 
+      ? raw.tags.map((item) => item.tag).filter(Boolean) 
+      : ['sanctuary'];
+    
+    const atmosphere = detectAtmosphere(rawTags);
+
     const mappedData = {
       slug: raw.slug || `journal-${Date.now()}`,
       metadata: {
-        title: raw.title || 'Untitled Article',
-        description: raw.description || 'Editorial content in progress.',
+        title: raw.title || t.empty_state,
+        description: raw.description || t.page_description,
         author: resolvedAuthor,
         published_date: raw.publishedDate || new Date().toISOString(),
-        tags: Array.isArray(raw.tags) 
-          ? raw.tags.map((t) => t.tag).filter(Boolean) 
-          : ['sanctuary'],
+        tags: rawTags,
         ogImage: typeof raw.ogImage === 'object' ? raw.ogImage?.url : (raw.ogImage || undefined),
+        vibe: atmosphere, 
       },
       content: compileLexicalToMarkdown(raw.content),
     };
 
+    /**
+     * @note: El error TS2353 persistirá hasta que nivelemos blog.schema.ts
+     * en el siguiente paso de la cadena de refactorización.
+     */
     return postWithSlugSchema.parse(mappedData);
 
-  } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : 'Unknown Structural Corruption';
-    console.error(`[HEIMDALL][DATA-CORRUPTION] Article Shaper failed: ${msg}`);
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : 'Structure Violation';
+    console.error(`[HEIMDALL][DATA-CORRUPTION] Shaper Failed: ${msg}`);
     
-    // OBJETO DE RESCATE: Garantiza que generateStaticParams no falle por tipos.
     return {
-      slug: 'recovery-sync-active',
+      slug: 'recovery-active',
       metadata: {
-        title: 'Editorial Sync Active',
-        description: 'Synchronizing with the digital core.',
-        author: 'System',
+        title: t.hero_title,
+        description: t.empty_state,
+        author: 'MetaShark Sentinel',
         published_date: new Date().toISOString(),
         tags: ['maintenance'],
+        vibe: 'day'
       },
-      content: 'The Sanctuary is updating its editorial assets.'
-    };
+      content: t.empty_state
+    } as PostWithSlug;
   }
 }
 
@@ -179,11 +185,13 @@ function mapToSovereignPost(entry: unknown): PostWithSlug {
  */
 export async function getAllPosts(lang: Locale = i18n.defaultLocale): Promise<PostWithSlug[]> {
   console.group(`[HEIMDALL][EDITORIAL] Syncing Hub Journal [${lang}]`);
+  const dict = await getDictionary(lang);
   
+  // Resiliencia durante Build: Evita fallos si la DB está inaccesible en CI/CD
   if (IS_BUILD_ENV && !DB_READY) {
-    console.log('[BUILD-MODE] Persistencia offline. Sirviendo Génesis Mocks.');
+    console.log('[RECOVERY] DB Offline durante Build. Sirviendo Génesis Mocks.');
     console.groupEnd();
-    return MOCK_POSTS.map(mapToSovereignPost);
+    return MOCK_POSTS.map(mock => mapToSovereignPost(mock, dict));
   }
   
   try {
@@ -196,16 +204,15 @@ export async function getAllPosts(lang: Locale = i18n.defaultLocale): Promise<Po
     });
     
     const result = docs.length > 0 
-      ? docs.map((doc) => mapToSovereignPost(doc)) 
-      : MOCK_POSTS.map((mock) => mapToSovereignPost(mock));
+      ? docs.map((doc) => mapToSovereignPost(doc, dict))
+      : MOCK_POSTS.map((mock) => mapToSovereignPost(mock, dict));
       
     console.groupEnd();
     return result;
-  } catch (error: unknown) {
-    const msg = error instanceof Error ? error.message : 'Database Connection Timeout';
-    console.warn(`[RECOVERY] Fallback activado: ${msg}`);
+  } catch {
+    console.warn('[HEIMDALL][RECOVERY] Database Connection Error. Serving local sanctuary data.');
     console.groupEnd();
-    return MOCK_POSTS.map(mapToSovereignPost);
+    return MOCK_POSTS.map((mock) => mapToSovereignPost(mock, dict));
   }
 }
 
@@ -214,6 +221,7 @@ export async function getAllPosts(lang: Locale = i18n.defaultLocale): Promise<Po
  */
 export async function getPostBySlug(slug: string, lang: Locale = i18n.defaultLocale): Promise<PostWithSlug | null> {
   console.group(`[HEIMDALL][EDITORIAL] Deep-Fetch: ${slug}`);
+  const dict = await getDictionary(lang);
   
   try {
     const payload = await getSovereignPayload();
@@ -225,16 +233,15 @@ export async function getPostBySlug(slug: string, lang: Locale = i18n.defaultLoc
     });
     
     console.groupEnd();
-    if (docs[0]) return mapToSovereignPost(docs[0]);
+    if (docs[0]) return mapToSovereignPost(docs[0], dict);
     
     const mockMatch = MOCK_POSTS.find(p => p.slug === slug);
-    return mockMatch ? mapToSovereignPost(mockMatch) : null;
-  } catch (error: unknown) {
-    const msg = error instanceof Error ? error.message : 'Search Aborted';
-    console.warn(`[HEIMDALL][RECOVERY] Detail failed for ${slug}: ${msg}`);
+    return mockMatch ? mapToSovereignPost(mockMatch, dict) : null;
+  } catch {
+    console.error(`[HEIMDALL][RECOVERY] Search Aborted for ${slug}: Signal lost.`);
     console.groupEnd();
     const mockMatch = MOCK_POSTS.find(p => p.slug === slug);
-    return mockMatch ? mapToSovereignPost(mockMatch) : null;
+    return mockMatch ? mapToSovereignPost(mockMatch, dict) : null;
   }
 }
 
@@ -243,8 +250,8 @@ export async function getPostBySlug(slug: string, lang: Locale = i18n.defaultLoc
  */
 export async function getPostsByTag(tagSlug: string, lang: Locale = i18n.defaultLocale): Promise<PostWithSlug[]> {
   const normalized = tagSlug.toLowerCase().trim().replace(/\s+/g, '-');
-  console.group(`[HEIMDALL][EDITORIAL] Filter by Tag: ${normalized}`);
-
+  const dict = await getDictionary(lang);
+  
   try {
     const payload = await getSovereignPayload();
     const { docs } = await payload.find({
@@ -253,18 +260,15 @@ export async function getPostsByTag(tagSlug: string, lang: Locale = i18n.default
       locale: lang,
     });
 
-    console.groupEnd();
-    if (docs.length > 0) return docs.map((doc) => mapToSovereignPost(doc));
+    if (docs.length > 0) return docs.map((doc) => mapToSovereignPost(doc, dict));
 
     return MOCK_POSTS
-      .map((mock) => mapToSovereignPost(mock))
+      .map((mock) => mapToSovereignPost(mock, dict))
       .filter((p) => p.metadata.tags.some((t) => t.toLowerCase().replace(/\s+/g, '-') === normalized));
-  } catch (error: unknown) {
-    const msg = error instanceof Error ? error.message : 'Filter Failed';
-    console.warn(`[HEIMDALL][RECOVERY] Tag fallback active: ${msg}`);
-    console.groupEnd();
+  } catch {
+    console.error(`[HEIMDALL][RECOVERY] Taxonomy Filter failed for ${normalized}.`);
     return MOCK_POSTS
-      .map((mock) => mapToSovereignPost(mock))
+      .map((mock) => mapToSovereignPost(mock, dict))
       .filter((p) => p.metadata.tags.some((t) => t.toLowerCase().replace(/\s+/g, '-') === normalized));
   }
 }

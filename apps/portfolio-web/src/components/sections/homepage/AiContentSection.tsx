@@ -1,9 +1,9 @@
 /**
  * @file AiContentSection.tsx
  * @description Orquestador inmersivo para la exhibición de activos generados por IA (Visual Synth).
- *              Fase 4 del Embudo: Diferenciación y validación tecnológica.
- *              Refactorizado: 100% Data-Driven, WebGL 2.0 Integrated, Zero Hardcoding.
- * @version 10.0 - Elite Production Standard
+ *              Refactorizado: Sincronización total con el Manifiesto Day-First, 
+ *              uso de tokens semánticos Oxygen y optimización de atmósfera WebGL.
+ * @version 11.0 - Atmosphere Responsive & Canonical Standards
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -11,10 +11,11 @@
 
 import React, { useMemo, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, BrainCircuit } from 'lucide-react';
+import { Sparkles, BrainCircuit, Cpu } from 'lucide-react';
 
 /**
  * IMPORTACIONES DE INFRAESTRUCTRURA
+ * @pilar V: Adherencia arquitectónica.
  */
 import { BlurText } from '../../razBits/BlurText';
 import { OrbitalGallery, type OrbitalGalleryItem } from '../../razBits/OrbitalGallery';
@@ -25,44 +26,41 @@ import type { Dictionary } from '../../../lib/schemas/dictionary.schema';
 
 /**
  * @interface AiContentSectionProps
- * @description Contrato de propiedades basado en el esquema SSoT.
  */
 interface AiContentSectionProps {
-  /** Fragmento nivelado del diccionario aplanado */
+  /** Fragmento nivelado del diccionario validado por MACS */
   dictionary: Dictionary['ai_gallery_section'];
 }
 
 /**
  * APARATO: AiContentSection
- * @description Realiza la síntesis entre el motor gráfico de bajo nivel y la narrativa i18n.
+ * @description Punto de diferenciación tecnológica. Reacciona dinámicamente a la atmósfera global.
  */
 export function AiContentSection({ dictionary }: AiContentSectionProps) {
   
   /**
    * PROTOCOLO HEIMDALL: Telemetría Forense
-   * @pilar IV: Registra el enganche visual del usuario con el motor gráfico.
+   * @pilar IV: Agrupación lógica de la carga del motor gráfico.
    */
   useEffect(() => {
-    console.log('[HEIMDALL][GPU] Visual Synth Engine Ready. Awaiting interaction.');
+    const traceId = `webgl_init_${Date.now()}`;
+    console.group(`[HEIMDALL][GPU] Visual Synth Cluster: ${traceId}`);
+    console.log('Status: Syncing with Sovereign Atmosphere...');
+    console.groupEnd();
   }, []);
 
   /**
    * MAPEO SOBERANO DE ACTIVOS
-   * @pilar VI: i18n Nativa y Resiliencia.
-   * Cruza el inventario técnico con las traducciones del CMS.
+   * @description Cruza el inventario técnico con las traducciones del CMS.
    */
   const galleryItems: OrbitalGalleryItem[] = useMemo(() => {
-    if (!dictionary?.items) {
-      console.error('[HEIMDALL][DATA] Missing items in ai_gallery_section dictionary.');
-      return [];
-    }
+    if (!dictionary?.items) return [];
 
     return aiGalleryData.map((asset: AiGalleryAsset) => {
       const translation = dictionary.items[asset.id];
       
-      // Pilar VIII: Fallback inteligente si falta traducción específica
       if (!translation) {
-        console.warn(`[HEIMDALL][I18N] Translation missing for asset: ${asset.id}`);
+        console.warn(`[HEIMDALL][I18N] Asset metadata missing for ID: ${asset.id}`);
       }
 
       return {
@@ -73,27 +71,27 @@ export function AiContentSection({ dictionary }: AiContentSectionProps) {
     });
   }, [dictionary]);
 
-  /**
-   * CONFIGURACIÓN DE ETIQUETAS DEL MOTOR (ENGINE LABELS)
-   */
   const engineLabels = useMemo(() => ({
     drag_label: dictionary?.drag_label || 'DRAG TO ORBIT',
     item_prefix: dictionary?.item_prefix || 'ASSET',
     error_fallback: dictionary?.error_fallback || 'GRAPHICS ENGINE UNAVAILABLE'
   }), [dictionary]);
 
-  // Guardia de seguridad para el Build (SSR Prevention)
   if (!dictionary) return null;
 
   return (
     <section
       id="ai-visual-synth"
-      className="relative w-full overflow-hidden bg-[#050505] py-24 sm:py-40 selection:bg-primary/30"
+      /**
+       * @pilar VII: Theming Soberano
+       * Sustituimos el fondo fijo por 'bg-background' para habilitar el modo Día.
+       */
+      className="relative w-full overflow-hidden bg-background py-24 sm:py-40 transition-colors duration-1000 selection:bg-primary/30"
       aria-label={dictionary.title}
     >
-      {/* CAPA ATMOSFÉRICA DE PROFUNDIDAD (Glows) */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(168,85,247,0.06),transparent_70%)] pointer-events-none" />
-      <div className="absolute top-0 left-1/4 w-px h-full bg-linear-to-b from-transparent via-white/5 to-transparent pointer-events-none" />
+      {/* CAPA ATMOSFÉRICA DE PROFUNDIDAD (Glows Adaptativos) */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(var(--color-primary-rgb),0.06),transparent_70%)] pointer-events-none opacity-50" />
+      <div className="absolute top-0 left-1/4 w-px h-full bg-linear-to-b from-transparent via-border/20 to-transparent pointer-events-none" />
 
       <div className="container relative z-10 mx-auto px-6">
         
@@ -103,7 +101,7 @@ export function AiContentSection({ dictionary }: AiContentSectionProps) {
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="mb-10 inline-flex items-center gap-3 rounded-full border border-primary/20 bg-primary/5 px-8 py-2.5 text-[10px] font-bold uppercase tracking-[0.5em] text-primary backdrop-blur-3xl shadow-[0_0_30px_rgba(168,85,247,0.15)]"
+            className="mb-10 inline-flex items-center gap-3 rounded-full border border-primary/20 bg-primary/5 px-8 py-2.5 text-[10px] font-bold uppercase tracking-[0.5em] text-primary backdrop-blur-3xl shadow-xl transition-all"
           >
             <BrainCircuit size={16} className="animate-pulse" />
             <span>{dictionary.badge}</span>
@@ -111,7 +109,7 @@ export function AiContentSection({ dictionary }: AiContentSectionProps) {
 
           <BlurText
             text={dictionary.title.toUpperCase()}
-            className="font-display text-5xl md:text-8xl lg:text-9xl font-bold tracking-tighter text-white justify-center mb-12 drop-shadow-2xl"
+            className="font-display text-5xl md:text-8xl lg:text-9xl font-bold tracking-tighter text-foreground justify-center mb-12 drop-shadow-2xl transition-colors duration-1000"
             delay={40}
             animateBy="letters"
           />
@@ -121,7 +119,7 @@ export function AiContentSection({ dictionary }: AiContentSectionProps) {
             whileInView={{ opacity: 1 }}
             transition={{ delay: 0.3, duration: 1 }}
             viewport={{ once: true }}
-            className="max-w-2xl text-lg md:text-2xl text-zinc-500 font-sans leading-relaxed font-light italic"
+            className="max-w-2xl text-lg md:text-2xl text-muted-foreground font-sans leading-relaxed font-light italic transition-colors duration-1000"
           >
             {dictionary.subtitle}
           </motion.p>
@@ -135,51 +133,51 @@ export function AiContentSection({ dictionary }: AiContentSectionProps) {
           viewport={{ once: true, amount: 0.2 }}
           className="relative mx-auto w-full max-w-6xl"
         >
-           {/* Efecto de resplandor perimetral */}
-           <div className="absolute -inset-16 rounded-[6rem] bg-primary/5 blur-[140px] pointer-events-none opacity-50" />
+           {/* Resplandor adaptativo según atmósfera (Pilar XII) */}
+           <div className="absolute -inset-16 rounded-6xl bg-primary/5 blur-[140px] pointer-events-none opacity-40 transition-opacity" />
            
            <div className={cn(
-             "relative h-[500px] md:h-[750px] overflow-hidden rounded-[4rem] border border-white/5 bg-zinc-950/60 shadow-3xl backdrop-blur-sm transform-gpu",
-             "transition-all duration-1000 hover:border-primary/20 hover:bg-zinc-950/80"
+             "relative h-[500px] md:h-[750px] overflow-hidden rounded-5xl border border-border/50 bg-surface/40 shadow-3xl backdrop-blur-sm transform-gpu",
+             "transition-all duration-1000 hover:border-primary/20 hover:bg-surface/60"
            )}>
              {/* Integración del motor orbital soberano */}
              <OrbitalGallery items={galleryItems} dictionary={engineLabels} />
              
-             {/* TELEMETRÍA DE INTERFAZ (Overlay) */}
-             <div className="absolute top-10 left-10 flex items-center gap-4 rounded-full bg-black/80 border border-white/10 px-6 py-3 text-[10px] font-mono font-bold tracking-[0.2em] text-zinc-300 backdrop-blur-2xl pointer-events-none z-20">
+             {/* TELEMETRÍA DE INTERFAZ (Overlay Adaptativo) */}
+             <div className="absolute top-10 left-10 flex items-center gap-4 rounded-full bg-surface/80 border border-border/40 px-6 py-3 text-[10px] font-mono font-bold tracking-[0.2em] text-foreground backdrop-blur-2xl pointer-events-none z-20 shadow-xl transition-all">
                 <div className="relative h-2 w-2">
-                  <div className="absolute inset-0 rounded-full bg-green-500 animate-ping opacity-75" />
-                  <div className="relative h-2 w-2 rounded-full bg-green-500 shadow-[0_0_12px_#22c55e]" />
+                  <div className="absolute inset-0 rounded-full bg-success animate-ping opacity-75" />
+                  <div className="relative h-2 w-2 rounded-full bg-success shadow-[0_0_12px_var(--color-success)]" />
                 </div>
                 {dictionary.overlay_indicator}
              </div>
            </div>
         </motion.div>
 
-        {/* --- FOOTER: ESPECIFICACIONES TÉCNICAS --- */}
+        {/* --- FOOTER: ESPECIFICACIONES TÉCNICAS (Higiene Atmosférica) --- */}
         <footer className="mt-28 flex flex-col items-center justify-center gap-12 text-center sm:flex-row">
            <motion.div 
-             whileHover={{ y: -2 }}
-             className="flex items-center gap-4 text-[10px] font-bold uppercase tracking-[0.4em] text-zinc-600 transition-colors hover:text-zinc-400"
+             whileHover={{ y: -2, color: 'var(--color-foreground)' }}
+             className="flex items-center gap-4 text-[10px] font-bold uppercase tracking-[0.4em] text-muted-foreground transition-all"
            >
               <Sparkles size={16} className="text-primary" />
               <span>{dictionary.footer_prompt}</span>
            </motion.div>
            
-           <div className="hidden h-1 w-1 rounded-full bg-zinc-800 sm:block" />
+           <div className="hidden h-1 w-1 rounded-full bg-border sm:block" />
            
            <motion.div 
-             whileHover={{ y: -2 }}
-             className="flex items-center gap-4 text-[10px] font-bold uppercase tracking-[0.4em] text-zinc-600 transition-colors hover:text-zinc-400"
+             whileHover={{ y: -2, color: 'var(--color-foreground)' }}
+             className="flex items-center gap-4 text-[10px] font-bold uppercase tracking-[0.4em] text-muted-foreground transition-all"
            >
-              <Sparkles size={16} className="text-pink-500" />
+              <Cpu size={16} className="text-accent" />
               <span>{dictionary.footer_upscaling}</span>
            </motion.div>
         </footer>
       </div>
       
-      {/* SELLO DE MARCA (Hospitality Bar) */}
-      <ColorWaveBar position="bottom" variant="hotel" className="h-0.5 opacity-30" />
+      {/* SELLO DE MARCA (Atmosphere-Aware Bar) */}
+      <ColorWaveBar position="bottom" variant="hotel" className="h-0.5 opacity-20" />
     </section>
   );
 }

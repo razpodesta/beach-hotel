@@ -1,15 +1,15 @@
 /**
  * @file AboutSection.tsx
  * @description Presentación narrativa del Santuario (Fase 3: Trust).
- *              Refactorizado: Limpieza de tipos 'any', clases de Tailwind canónicas
- *              y optimización nativa de Next.js 15 para Core Web Vitals.
- * @version 12.0 - Clean Linter & Canonical CSS
+ *              Refactorizado: Sincronización total con el Manifiesto Day-First, 
+ *              clases canónicas Tailwind v4 y observabilidad Heimdall.
+ * @version 13.0 - Atmosphere Master Edition
  * @author Raz Podestá - MetaShark Tech
  */
 
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -26,8 +26,11 @@ import { i18n, type Locale } from '../../../config/i18n.config';
 import type { AboutDictionary } from '../../../lib/schemas/about_section.schema';
 import { cn } from '../../../lib/utils/cn';
 
+/**
+ * @interface AboutSectionProps
+ */
 interface AboutSectionProps {
-  /** Fragmento aplanado del diccionario validado por MACS */
+  /** Fragmento del diccionario validado por MACS */
   dictionary: AboutDictionary;
 }
 
@@ -39,32 +42,37 @@ const textContainerVariants: Variants = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.25,
+      staggerChildren: 0.2,
       delayChildren: 0.3
     }
   }
 };
 
 const paragraphVariants: Variants = {
-  hidden: { opacity: 0, x: -15, filter: 'blur(4px)' },
+  hidden: { opacity: 0, x: -15, filter: 'blur(8px)' },
   visible: { 
     opacity: 1, 
     x: 0,
     filter: 'blur(0px)',
-    transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] }
+    transition: { duration: 1, ease: [0.16, 1, 0.3, 1] }
   }
 };
 
 /**
  * APARATO: AboutSection
- * @description Orquesta la conexión emocional con el huésped.
+ * @description Orquesta la conexión emocional con el huésped adaptándose a la atmósfera global.
  */
 export function AboutSection({ dictionary }: AboutSectionProps) {
   const pathname = usePathname();
 
   /**
-   * RESOLUCIÓN DE CONTEXTO SOBERANA
+   * PROTOCOLO HEIMDALL: Telemetría de Montaje
+   * @pilar IV: Registra la visibilidad de la sección para auditoría de engagement.
    */
+  useEffect(() => {
+    console.log('[HEIMDALL][UX] AboutSection synchronized with current atmosphere.');
+  }, []);
+
   const currentLang = useMemo(() => {
     const segments = pathname?.split('/') ?? [];
     const candidate = segments[1] as Locale;
@@ -76,51 +84,53 @@ export function AboutSection({ dictionary }: AboutSectionProps) {
     [currentLang]
   );
 
-  // Guardián de Resiliencia (Pilar VIII)
-  if (!dictionary?.paragraphs || dictionary.paragraphs.length === 0) {
-    return null;
-  }
+  // Guardia de Resiliencia (Pilar VIII)
+  if (!dictionary?.paragraphs || dictionary.paragraphs.length === 0) return null;
 
   return (
     <section 
       id="about-sanctuary" 
-      className="relative w-full overflow-hidden py-24 sm:py-40 bg-black selection:bg-primary/30"
+      /**
+       * @pilar VII: Theming Soberano
+       * Sustituimos 'bg-black' por 'bg-background' para habilitar el modo Día.
+       */
+      className="relative w-full overflow-hidden py-24 sm:py-40 bg-background transition-colors duration-1000 selection:bg-primary/30"
       aria-labelledby="about-title"
       role="region"
     >
       <div className="relative z-10 container mx-auto px-6">
         <div className="grid grid-cols-1 items-stretch gap-16 lg:grid-cols-5 lg:gap-32">
           
-          {/* --- BLOQUE VISUAL: EL PATRIMONIO --- */}
+          {/* --- BLOQUE VISUAL: EL PATRIMONIO (Perspectiva Glassmorphism) --- */}
           <div className="lg:col-span-2">
             <FadeIn delay={0.2} yOffset={40}>
-              <div className="group relative h-full min-h-[500px] rounded-[4rem] border border-white/5 bg-zinc-950/30 p-4 backdrop-blur-md transition-colors hover:border-primary/20">
-                <div className="relative h-full w-full overflow-hidden rounded-[3.2rem] shadow-3xl">
+              <div className="group relative h-full min-h-[500px] rounded-5xl border border-border/50 bg-surface/30 p-4 backdrop-blur-md transition-all duration-700 hover:border-primary/20 transform-gpu">
+                <div className="relative h-full w-full overflow-hidden rounded-4xl shadow-3xl">
                   <Image
                     src="/images/hotel/about-building-front.jpg"
                     alt={dictionary.title}
                     fill
-                    className="object-cover transition-transform duration-2000 ease-out group-hover:scale-110 transform-gpu"
+                    className="object-cover transition-transform duration-2000 ease-out group-hover:scale-105"
                     sizes="(max-width: 1024px) 100vw, 35vw"
                     priority={true}
                   />
                   
-                  {/* Overlay de profundidad cinemática */}
-                  <div className="absolute inset-0 bg-linear-to-t from-black via-transparent to-transparent opacity-70" />
+                  {/* Overlay de profundidad adaptativo */}
+                  <div className="absolute inset-0 bg-linear-to-t from-background/80 via-transparent to-transparent opacity-70 transition-colors duration-1000" />
                   
                   {/* BADGE DE IDENTIDAD SOBERANA */}
                   <div className="absolute bottom-10 left-10 flex items-center gap-5">
                     <motion.div 
                       whileHover={{ rotate: 10, scale: 1.1 }}
-                      className="h-16 w-16 flex items-center justify-center rounded-2xl bg-white/5 backdrop-blur-3xl border border-white/20 text-primary shadow-2xl"
+                      className="h-16 w-16 flex items-center justify-center rounded-2xl bg-surface/50 backdrop-blur-3xl border border-border/40 text-primary shadow-2xl"
                     >
                       <Landmark size={32} strokeWidth={1.2} />
                     </motion.div>
                     <div className="flex flex-col">
-                      <span className="text-[9px] font-mono font-bold tracking-[0.5em] text-zinc-500 uppercase">
-                        Sovereign HQ
+                      <span className="text-[9px] font-mono font-bold tracking-[0.5em] text-muted-foreground uppercase">
+                        Sovereign Hub
                       </span>
-                      <span className="text-[12px] font-bold text-white uppercase tracking-widest mt-1">
+                      <span className="text-[12px] font-bold text-foreground uppercase tracking-widest mt-1">
                         {dictionary.badge_label}
                       </span>
                     </div>
@@ -143,7 +153,7 @@ export function AboutSection({ dictionary }: AboutSectionProps) {
                 <FadeIn delay={0.4}>
                   <h2 
                     id="about-title"
-                    className="font-display text-5xl md:text-7xl lg:text-9xl font-bold tracking-tighter text-white leading-[0.85] drop-shadow-sm"
+                    className="font-display text-5xl md:text-7xl lg:text-9xl font-bold tracking-tighter text-foreground leading-[0.85] drop-shadow-sm transition-colors duration-1000"
                   >
                     {dictionary.title}
                   </h2>
@@ -162,12 +172,12 @@ export function AboutSection({ dictionary }: AboutSectionProps) {
                   <motion.p 
                     key={`p-narrative-${i}`}
                     variants={paragraphVariants}
-                    className="text-lg md:text-2xl text-zinc-400 font-sans font-light leading-relaxed max-w-3xl"
+                    className="text-lg md:text-2xl text-muted-foreground font-sans font-light leading-relaxed max-w-3xl transition-colors duration-1000"
                   >
                     {p.text} 
                     {p.highlight && (
                       <span className="relative inline-block ml-3">
-                        <strong className="font-bold text-white italic">{p.highlight}</strong>
+                        <strong className="font-bold text-foreground italic">{p.highlight}</strong>
                         <motion.span 
                           initial={{ scaleX: 0 }}
                           whileInView={{ scaleX: 1 }}
@@ -181,14 +191,14 @@ export function AboutSection({ dictionary }: AboutSectionProps) {
                 ))}
               </motion.div>
 
-              {/* CALL TO ACTION SOBERANO */}
-              <FadeIn delay={0.9} yOffset={20}>
+              {/* CALL TO ACTION SOBERANO (Color-Mix Inversion) */}
+              <FadeIn delay={0.8} yOffset={20}>
                 <div className="pt-6">
                   <Link
                     href={storyHref}
                     className={cn(
-                      "group relative inline-flex items-center gap-8 rounded-full bg-white px-12 py-6 text-[11px] font-bold text-black uppercase tracking-[0.4em]",
-                      "transition-all duration-500 hover:bg-primary hover:text-white hover:shadow-primary/20 hover:shadow-4xl active:scale-95 shadow-2xl"
+                      "group relative inline-flex items-center gap-8 rounded-full px-12 py-6 text-[11px] font-bold uppercase tracking-[0.4em] transition-all duration-500 shadow-2xl active:scale-95",
+                      "bg-foreground text-background hover:bg-primary hover:text-white hover:shadow-primary/20"
                     )}
                   >
                     {dictionary.cta_button} 
@@ -202,9 +212,9 @@ export function AboutSection({ dictionary }: AboutSectionProps) {
         </div>
       </div>
       
-      {/* CAPAS DE ATMÓSFERA SENSORIAL */}
-      <div className="absolute top-1/4 -right-32 w-[600px] h-[600px] bg-primary/5 blur-[160px] rounded-full pointer-events-none" />
-      <div className="absolute -bottom-32 -left-32 w-[600px] h-[600px] bg-accent/5 blur-[160px] rounded-full pointer-events-none" />
+      {/* CAPAS DE ATMÓSFERA SENSORIAL (Adaptativas) */}
+      <div className="absolute top-1/4 -right-32 w-[600px] h-[600px] bg-primary/5 blur-[160px] rounded-full pointer-events-none transition-colors" />
+      <div className="absolute -bottom-32 -left-32 w-[600px] h-[600px] bg-accent/5 blur-[160px] rounded-full pointer-events-none transition-colors" />
     </section>
   );
 }

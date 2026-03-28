@@ -1,9 +1,9 @@
 /**
  * @file Providers.tsx
- * @description Orquestador Soberano de Proveedores Globales. 
- *              Implementa resiliencia de hidratación mediante suscripción atómica
- *              al DOM, garantizando paridad de temas y estado en React 19.
- * @version 4.1 - Linter Hygiene & React 19 Standard
+ * @description Orquestador Soberano de Infraestructura de UI. 
+ *              Implementa el Protocolo "Day-First" con persistencia de atmósfera,
+ *              inyección vía data-attributes y blindaje de hidratación React 19.
+ * @version 5.0 - Sovereign Day-First Edition
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -15,7 +15,7 @@ import { ThemeProvider } from 'next-themes';
 
 /**
  * @interface ProvidersProps
- * @description Contrato de propiedades para el inyector de contextos.
+ * @description Contrato de propiedades para el orquestador de contextos.
  */
 interface ProvidersProps {
   children: ReactNode;
@@ -23,42 +23,38 @@ interface ProvidersProps {
 
 /**
  * Hook de Hidratación de Élite: useIsMounted
- * @description Utiliza useSyncExternalStore para detectar el montaje en el cliente 
- *              de forma determinista. Este patrón es la solución de grado Staff 
- *              para erradicar Hydration Mismatches y errores de contexto nulo.
+ * @description Utiliza la suscripción atómica al DOM para garantizar que el
+ *              cliente está totalmente sincronizado antes de renderizar lógica de tema.
  */
 function useIsMounted(): boolean {
   /**
    * @pilar X: Higiene de Código.
-   * Definición de limpieza estática para cumplir con @typescript-eslint/no-empty-function.
+   * La función de suscripción es terminal y estática en el cliente.
    */
   const subscribe = useCallback(() => {
-    const noop = () => {
-      /* No-op: El estado de montaje es terminal y no requiere des-suscripción activa */
+    return () => {
+      /* No-op: El ciclo de vida de montaje no requiere des-suscripción activa */
     };
-    return noop;
   }, []);
 
   return useSyncExternalStore(
     subscribe,
-    () => true,  // Estado en Cliente (Browser)
-    () => false  // Estado en Servidor (SSR)
+    () => true,  // Browser State
+    () => false  // SSR Fallback
   );
 }
 
 /**
  * APARATO: Providers
- * @description Envuelve la aplicación en los contextos necesarios para la 
- *              experiencia de usuario (Theming, UI State).
+ * @description Inyecta la inteligencia de atmósfera y estado global en el ecosistema.
  */
 export function Providers({ children }: ProvidersProps) {
   const isMounted = useIsMounted();
 
   /**
    * @pilar VIII: Resiliencia de Hidratación.
-   * Durante el renderizado en servidor o la fase de pre-hidratación, 
-   * devolvemos un fragmento puro para evitar que el 'ThemeProvider' 
-   * intente acceder al 'document' antes de tiempo.
+   * Devolvemos un fragmento puro durante SSR para prevenir el error de
+   * discrepancia entre el servidor y el cliente (Hydration Mismatch).
    */
   if (!isMounted) {
     return <>{children}</>;
@@ -66,10 +62,18 @@ export function Providers({ children }: ProvidersProps) {
 
   return (
     <ThemeProvider
-      attribute="class"
-      defaultTheme="system"
+      /**
+       * @pilar VII: Theming Soberano
+       * 1. Usamos 'data-theme' para permitir selectores CSS más potentes y escalables.
+       * 2. 'defaultTheme="light"' asegura que el hotel reciba al huésped con luz.
+       * 3. 'enableSystem={true}' permite al usuario volver a sincronizar con su SO.
+       * 4. 'storageKey' personalizado para asegurar la persistencia en el dominio.
+       */
+      attribute="data-theme"
+      defaultTheme="light"
       enableSystem={true}
       disableTransitionOnChange={true}
+      storageKey="beach-hotel-atmosphere"
     >
       {children}
     </ThemeProvider>
