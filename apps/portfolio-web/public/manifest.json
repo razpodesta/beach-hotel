@@ -1,0 +1,40 @@
+{
+  "name": "Beach Hotel Canasvieiras",
+  "short_name": "Beach Hotel",
+  "description": "Boutique Sanctuary & Pride Escape 2026 Headquarters. Tu experiencia de lujo en Florianópolis.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#050505",
+  "theme_color": "#050505",
+  "orientation": "portrait",
+  "scope": "/",
+  "categories": ["travel", "hospitality", "entertainment"],
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "/icons/icon-192x192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/images/hotel/screenshot-mobile.jpg",
+      "sizes": "1170x2532",
+      "type": "image/jpg",
+      "form_factor": "narrow",
+      "label": "La Recepción del Santuario"
+    }
+  ]
+}

@@ -1,9 +1,9 @@
 /**
  * @file apps/portfolio-web/src/app/[lang]/layout.tsx
  * @description Orquestador Soberano del Shell Principal (The Master Shell).
- *              Implementa arquitectura Dual-Mode, cumplimiento MACS v1.0, 
- *              y conexión con aparatos atómicos (VisitorHud).
- * @version 34.0 - Atomic Component Sync & CLS Protection
+ *              Refactorizado: Activación de Protocolo PWA (Manifest Sync), 
+ *              metadatos Apple-Native y blindaje de hidratación.
+ * @version 35.0 - PWA Ready & Metadata Hardening
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -32,7 +32,6 @@ import { NavigationTracker } from '../../components/layout/NavigationTracker';
 
 /**
  * @pilar IV: Consumo Atómico.
- * Importación sincronizada con el directorio VisitorHud/index.ts.
  */
 import { VisitorHud } from '../../components/ui/VisitorHud';
 
@@ -57,7 +56,7 @@ export async function generateStaticParams() {
 
 /**
  * ORQUESTADOR DE METADATOS SOBERANO
- * @pilar I: Visión Holística - SEO E-E-A-T.
+ * @pilar I: Visión Holística - SEO E-E-A-T & PWA Identity.
  */
 export async function generateMetadata(props: { 
   params: Promise<{ lang: Locale }> 
@@ -65,7 +64,7 @@ export async function generateMetadata(props: {
   const { lang } = await props.params;
   const dict = await getDictionary(lang);
   
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://beachhotelcanasvieiras.com';
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://beach-hotel.vercel.app';
   const siteName = dict.header.personal_portfolio;
 
   return {
@@ -75,6 +74,21 @@ export async function generateMetadata(props: {
       default: `${siteName} | ${dict.header.tagline}` 
     },
     description: dict.hero.page_description,
+    
+    /**
+     * @protocolo PWA: Sincronización de Artefacto de Instalabilidad.
+     */
+    manifest: '/manifest.json',
+    
+    /**
+     * IDENTIDAD APPLE (iOS Optimization)
+     */
+    appleWebApp: {
+      capable: true,
+      title: siteName,
+      statusBarStyle: 'black-translucent',
+    },
+
     alternates: { 
       canonical: `/${lang}`,
       languages: {
@@ -83,6 +97,7 @@ export async function generateMetadata(props: {
         'en-US': '/en-US',
       }
     },
+
     openGraph: {
       title: siteName,
       description: dict.hero.page_description,
@@ -96,6 +111,13 @@ export async function generateMetadata(props: {
         height: 630,
         alt: siteName
       }]
+    },
+
+    twitter: {
+      card: 'summary_large_image',
+      title: siteName,
+      description: dict.hero.page_description,
+      images: ['/images/hotel/og-main.jpg'],
     }
   };
 }
@@ -135,6 +157,8 @@ export default async function RootLayout({ children, params }: RootLayoutProps) 
     <html lang={lang} suppressHydrationWarning className="scroll-smooth">
       <head>
         <link rel="preconnect" href="https://flagcdn.com" />
+        {/* Apple Touch Icon - Requerido para PWA de alta fidelidad */}
+        <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
       </head>
       <body className={cn(
         fontVariables, 
