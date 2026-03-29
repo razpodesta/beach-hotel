@@ -1,9 +1,9 @@
 /**
  * @file apps/portfolio-web/src/lib/blog/actions.ts
- * @description Orquestador soberano de datos para el Hub Editorial.
- *              Refactorizado: Erradicación de errores ESLint, optimización 
- *              de resiliencia y prioridad absoluta a base de datos.
- * @version 29.0 - Linter Pure & DB-Priority Standard
+ * @description Orquestador soberano de datos para el Concierge Journal.
+ *              Implementa compilación JIT de Lexical a MDX, detección de atmósfera
+ *              por IA y protocolo de resiliencia DB-First con observabilidad forense.
+ * @version 31.0 - Linter Pure & Forensic Telemetry Standard
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -13,7 +13,7 @@ import configPromise from '@metashark/cms-core/config';
 
 /**
  * IMPORTACIONES DE INFRAESTRUCTRURA
- * @pilar V: Adherencia arquitectónica.
+ * @pilar V: Adherencia arquitectónica a fronteras Nx.
  */
 import { postWithSlugSchema } from '../schemas/blog.schema';
 import type { PostWithSlug } from '../schemas/blog.schema';
@@ -30,7 +30,7 @@ const IS_BUILD_ENV = process.env.NEXT_PHASE === 'phase-production-build' || proc
 const DB_READY = Boolean(process.env.DATABASE_URL);
 
 /**
- * CONTRATOS TÉCNICOS: Lexical AST
+ * CONTRATOS TÉCNICOS: Lexical AST (Sovereign CMS)
  */
 interface LexicalNode {
   type: string;
@@ -58,10 +58,11 @@ interface RawPayloadPost {
   ogImage?: string | { url: string } | null;
 }
 
+// Cache Singleton para el motor Payload (Pilar X)
 let cachedPayload: Payload | null = null;
 
 /**
- * @description Inicialización Singleton del motor de Payload.
+ * @description Inicialización resiliente del motor de datos.
  */
 async function getSovereignPayload(): Promise<Payload> {
   if (cachedPayload) return cachedPayload;
@@ -72,6 +73,7 @@ async function getSovereignPayload(): Promise<Payload> {
 
 /**
  * COMPILADOR JIT: Lexical to Markdown
+ * @pilar X: Performance - Transformación eficiente de nodos AST a contenido MDX.
  */
 function compileLexicalToMarkdown(contentNode: unknown): string {
   if (!contentNode) return '';
@@ -98,26 +100,27 @@ function compileLexicalToMarkdown(contentNode: unknown): string {
   try {
     const ast = contentNode as LexicalRoot;
     return extractRecursive(ast.root?.children);
-  } catch {
-    // Protocolo Heimdall: Trazabilidad de fallo de parseo sin variables huérfanas
-    console.warn('[HEIMDALL][PARSER] Lexical conversion degraded: Structural anomaly detected.');
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : 'Unknown AST anomaly';
+    console.warn(`[HEIMDALL][PARSER] Lexical conversion degraded: ${msg}`);
     return '';
   }
 }
 
 /**
  * DETECTOR DE ATMÓSFERA (Día/Noche)
- * @pilar XII: MEA/UX - Permite que la UI reaccione al contenido.
+ * @pilar XII: MEA/UX - Sincroniza el "Vibe" del contenido con los shaders de la UI.
  */
 function detectAtmosphere(tags: string[]): 'day' | 'night' {
-  const nightKeywords = ['nightlife', 'party', 'festival', 'club', 'sunset', 'techno'];
+  const nightKeywords = ['nightlife', 'party', 'festival', 'club', 'sunset', 'techno', 'night', 'pride', 'noite', 'fiesta'];
   const hasNightVibe = tags.some(tag => nightKeywords.includes(tag.toLowerCase()));
   return hasNightVibe ? 'night' : 'day';
 }
 
 /**
  * SHAPER SOBERANO: mapToSovereignPost
- * @pilar X: Performance - Inyección de diccionario para evitar I/O.
+ * @description Transforma la data cruda del CMS en una entidad validada por el Contrato.
+ * @pilar III: Seguridad de Tipos Absoluta.
  */
 function mapToSovereignPost(entry: unknown, dict: Dictionary): PostWithSlug {
   const t = dict.blog_page;
@@ -125,6 +128,7 @@ function mapToSovereignPost(entry: unknown, dict: Dictionary): PostWithSlug {
   try {
     const raw = entry as RawPayloadPost;
     
+    // 1. Resolución de Atribución (Author fallback)
     let resolvedAuthor = t.hero_title;
     const authorData = raw.author;
     if (authorData) {
@@ -135,11 +139,17 @@ function mapToSovereignPost(entry: unknown, dict: Dictionary): PostWithSlug {
       }
     }
 
+    // 2. Procesamiento de Taxonomía
     const rawTags = Array.isArray(raw.tags) 
       ? raw.tags.map((item) => item.tag).filter(Boolean) 
       : ['sanctuary'];
     
     const atmosphere = detectAtmosphere(rawTags);
+    const mdxContent = compileLexicalToMarkdown(raw.content);
+
+    // 3. Cálculo dinámico de métricas (Pilar X)
+    const wordCount = mdxContent.split(/\s+/).length;
+    const readingTime = Math.max(1, Math.ceil(wordCount / 225));
 
     const mappedData = {
       slug: raw.slug || `journal-${Date.now()}`,
@@ -150,46 +160,45 @@ function mapToSovereignPost(entry: unknown, dict: Dictionary): PostWithSlug {
         published_date: raw.publishedDate || new Date().toISOString(),
         tags: rawTags,
         ogImage: typeof raw.ogImage === 'object' ? raw.ogImage?.url : (raw.ogImage || undefined),
-        vibe: atmosphere, 
+        vibe: atmosphere,
+        readingTime,
       },
-      content: compileLexicalToMarkdown(raw.content),
+      content: mdxContent,
     };
 
-    /**
-     * @note: El error TS2353 persistirá hasta que nivelemos blog.schema.ts
-     * en el siguiente paso de la cadena de refactorización.
-     */
     return postWithSlugSchema.parse(mappedData);
 
   } catch (error: unknown) {
-    const msg = error instanceof Error ? error.message : 'Structure Violation';
-    console.error(`[HEIMDALL][DATA-CORRUPTION] Shaper Failed: ${msg}`);
+    const msg = error instanceof Error ? error.message : 'Validation Drift';
+    console.error(`[HEIMDALL][DATA-CORRUPTION] Post Shaper critical failure: ${msg}`);
     
+    // Fallback de Resiliencia Nivel 0 (Pilar VIII)
     return {
-      slug: 'recovery-active',
+      slug: 'emergency-recovery',
       metadata: {
-        title: t.hero_title,
-        description: t.empty_state,
+        title: 'Editorial Sanctuary: Recovery Mode',
+        description: 'System integrity preserved through forensic fallback.',
         author: 'MetaShark Sentinel',
         published_date: new Date().toISOString(),
         tags: ['maintenance'],
         vibe: 'day'
       },
-      content: t.empty_state
+      content: 'Contenido temporalmente no disponible por tareas de mantenimiento de datos.'
     } as PostWithSlug;
   }
 }
 
 /**
  * ACCIÓN PÚBLICA: getAllPosts
+ * @description Recupera el catálogo completo. Prioriza DB > Mocks.
+ * @fix Erradica error ESLint 'error' is defined but never used.
  */
 export async function getAllPosts(lang: Locale = i18n.defaultLocale): Promise<PostWithSlug[]> {
-  console.group(`[HEIMDALL][EDITORIAL] Syncing Hub Journal [${lang}]`);
+  console.group(`[HEIMDALL][EDITORIAL] Syncing Journal Cluster [${lang}]`);
   const dict = await getDictionary(lang);
   
-  // Resiliencia durante Build: Evita fallos si la DB está inaccesible en CI/CD
   if (IS_BUILD_ENV && !DB_READY) {
-    console.log('[RECOVERY] DB Offline durante Build. Sirviendo Génesis Mocks.');
+    console.log('[RECOVERY] DB Unreachable during Build phase. serving Genesis Mocks.');
     console.groupEnd();
     return MOCK_POSTS.map(mock => mapToSovereignPost(mock, dict));
   }
@@ -209,8 +218,9 @@ export async function getAllPosts(lang: Locale = i18n.defaultLocale): Promise<Po
       
     console.groupEnd();
     return result;
-  } catch {
-    console.warn('[HEIMDALL][RECOVERY] Database Connection Error. Serving local sanctuary data.');
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : 'Signal Lost';
+    console.warn(`[HEIMDALL][RECOVERY] Editorial sync aborted: ${msg}. Serving local sanctuary.`);
     console.groupEnd();
     return MOCK_POSTS.map((mock) => mapToSovereignPost(mock, dict));
   }
@@ -218,9 +228,10 @@ export async function getAllPosts(lang: Locale = i18n.defaultLocale): Promise<Po
 
 /**
  * ACCIÓN PÚBLICA: getPostBySlug
+ * @description Localización quirúrgica de un artículo por su identificador semántico.
  */
 export async function getPostBySlug(slug: string, lang: Locale = i18n.defaultLocale): Promise<PostWithSlug | null> {
-  console.group(`[HEIMDALL][EDITORIAL] Deep-Fetch: ${slug}`);
+  console.group(`[HEIMDALL][EDITORIAL] Single-Fetch Request: ${slug}`);
   const dict = await getDictionary(lang);
   
   try {
@@ -237,8 +248,9 @@ export async function getPostBySlug(slug: string, lang: Locale = i18n.defaultLoc
     
     const mockMatch = MOCK_POSTS.find(p => p.slug === slug);
     return mockMatch ? mapToSovereignPost(mockMatch, dict) : null;
-  } catch {
-    console.error(`[HEIMDALL][RECOVERY] Search Aborted for ${slug}: Signal lost.`);
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : 'Search Interrupted';
+    console.error(`[HEIMDALL][RECOVERY] Search failed for ${slug}: ${msg}. Attempting Mock Sync.`);
     console.groupEnd();
     const mockMatch = MOCK_POSTS.find(p => p.slug === slug);
     return mockMatch ? mapToSovereignPost(mockMatch, dict) : null;
@@ -247,6 +259,7 @@ export async function getPostBySlug(slug: string, lang: Locale = i18n.defaultLoc
 
 /**
  * ACCIÓN PÚBLICA: getPostsByTag
+ * @description Filtrado por taxonomía localizado con normalización de rumbos.
  */
 export async function getPostsByTag(tagSlug: string, lang: Locale = i18n.defaultLocale): Promise<PostWithSlug[]> {
   const normalized = tagSlug.toLowerCase().trim().replace(/\s+/g, '-');
@@ -265,8 +278,9 @@ export async function getPostsByTag(tagSlug: string, lang: Locale = i18n.default
     return MOCK_POSTS
       .map((mock) => mapToSovereignPost(mock, dict))
       .filter((p) => p.metadata.tags.some((t) => t.toLowerCase().replace(/\s+/g, '-') === normalized));
-  } catch {
-    console.error(`[HEIMDALL][RECOVERY] Taxonomy Filter failed for ${normalized}.`);
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : 'Taxonomy Drift';
+    console.error(`[HEIMDALL][RECOVERY] Tag filter failed for ${normalized}: ${msg}.`);
     return MOCK_POSTS
       .map((mock) => mapToSovereignPost(mock, dict))
       .filter((p) => p.metadata.tags.some((t) => t.toLowerCase().replace(/\s+/g, '-') === normalized));

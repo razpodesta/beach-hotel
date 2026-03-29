@@ -1,9 +1,9 @@
 /**
  * @file apps/portfolio-web/src/lib/schemas/blog.schema.ts
- * @description Constitución Soberana para el Hub Editorial (The Concierge Journal).
- *              Define la validación inmutable para metadatos, atmósfera (Vibe) y 
- *              taxonomía. Sincronizado con el orquestador de datos v29.0.
- * @version 9.0 - Atmosphere & Reading Metrics Integration
+ * @description Constitución Soberana de Datos Editoriales (The Journal Contract).
+ *              Define la validación inmutable para el Hub Editorial, integrando
+ *              inteligencia de atmósfera, métricas de lectura y resiliencia de activos.
+ * @version 10.0 - Strict Build Resilience & Forensic TSDoc
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -11,50 +11,70 @@ import { z } from 'zod';
 
 /**
  * @description Enumeración de atmósferas permitidas para el renderizado dinámico.
- * day: Estética clara, minimalista, luz solar.
- * night: Estética oscura, neones, "Sanctuary Night".
+ * day: Estética clara, luz solar, minimalismo sofisticado.
+ * night: Estética Sanctuary Night, neones, inmersión festival.
  */
 export const AtmosphereVibe = z.enum(['day', 'night']);
+
+/**
+ * @type AtmosphereVibeType
+ * @description Inferencia del contrato de atmósfera para lógica de componentes.
+ */
 export type AtmosphereVibeType = z.infer<typeof AtmosphereVibe>;
 
 /**
  * ESQUEMA: blogPostMetadataSchema
  * @pilar III: Seguridad de Tipos Absoluta.
- * @description Contrato de metadatos para la unidad editorial.
+ * @description Contrato de metadatos para la unidad editorial. Valida la integridad
+ *              de los datos antes de su entrada al motor de renderizado.
  */
 export const blogPostMetadataSchema = z.object({
-  title: z.string().min(1, 'title_required'),
-  description: z.string().min(1, 'description_required'),
-  author: z.string().min(1, 'author_required'),
-  published_date: z.string().datetime({ message: 'invalid_iso_date' }),
+  title: z.string().min(1, 'EDITORIAL_ERR: Title is mandatory for SEO'),
+  description: z.string().min(1, 'EDITORIAL_ERR: Description required for E-E-A-T'),
+  author: z.string().min(1, 'EDITORIAL_ERR: Author attribution required'),
+  
+  /** 
+   * @property published_date 
+   * @description Fecha en formato ISO 8601. Soporta la precisión de Supabase/PostgreSQL.
+   */
+  published_date: z.string().datetime({ message: 'DATA_ERR: Invalid ISO timestamp' }),
   
   /** 
    * @property vibe
-   * @description Determina la identidad lumínica de la tarjeta y el detalle.
-   * @fix Erradica error TS2353 en actions.ts
+   * @pilar XII: MEA/UX - Inyecta la identidad visual en la UI.
+   * @fix Erradica fallos de resolución en actions.ts y components.
    */
   vibe: AtmosphereVibe.default('day'),
 
   /** 
    * @property readingTime 
-   * @description Tiempo estimado de lectura en minutos (opcional).
+   * @description Tiempo estimado (minutos). Calculado por el motor de ingesta.
    */
-  readingTime: z.number().int().min(1).optional(),
+  readingTime: z.number().int().positive().optional(),
   
+  /**
+   * @property tags
+   * @description Taxonomía de búsqueda. Normalización proactiva a minúsculas.
+   */
   tags: z.array(z.string().trim().min(1))
+    .min(1, 'TAXONOMY_ERR: At least one tag required')
     .transform(tags => tags.map(t => t.toLowerCase())),
     
   /**
-   * Imagen de portada (OpenGraph).
-   * Soporta rutas locales (/images/...) y URLs de Supabase.
+   * @property ogImage
+   * @description Imagen de alta fidelidad para OpenGraph y Hero.
+   * Resiliencia: Soporta rutas internas y URLs externas firmadas.
    */
-  ogImage: z.string().url().or(z.string().startsWith('/')).optional(),
+  ogImage: z.string()
+    .url('ASSET_ERR: Invalid remote URL')
+    .or(z.string().startsWith('/', 'ASSET_ERR: Invalid local path'))
+    .optional(),
 });
 
 /**
  * ESQUEMA: blogPageSchema
- * @pilar VI: Lógica i18n Soberana.
- * @description Tokens de traducción para la interfaz del Hub Editorial.
+ * @pilar VI: i18n Nativa - Erradicación de Hardcoding.
+ * @description Contrato de traducción para el Shell del Hub Editorial.
  */
 export const blogPageSchema = z.object({
   page_title: z.string().min(1),
@@ -70,17 +90,19 @@ export const blogPageSchema = z.object({
 
 /**
  * ESQUEMA: postWithSlugSchema
- * @description Estructura final de un artículo tras el paso por el Shaper Soberano.
+ * @description Entidad final nivelada (Shaped Entity). 
+ *              Garantiza que el contenido Markdown/MDX sea inyectado de forma segura.
  */
 export const postWithSlugSchema = z.object({
-  slug: z.string().min(1),
+  slug: z.string().min(1, 'ROUTING_ERR: Semantic slug required'),
   metadata: blogPostMetadataSchema,
   content: z.string().optional().default(''),
 });
 
 /**
- * INFERENCIA SOBERANA DE TIPOS
- * @pilar III: Inferencia obligatoria desde contrato Zod (SSoT).
+ * INFERENCIA SOBERANA DE TIPOS (SSoT)
+ * @pilar III: Inferencia obligatoria desde el Contrato Soberano.
+ * Nunca definir interfaces manuales que dupliquen la lógica de Zod.
  */
 export type BlogPost = z.infer<typeof blogPostMetadataSchema>;
 export type PostWithSlug = z.infer<typeof postWithSlugSchema>;

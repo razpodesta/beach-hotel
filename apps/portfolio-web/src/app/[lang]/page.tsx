@@ -1,9 +1,10 @@
 /**
- * @file page.tsx
+ * @file apps/portfolio-web/src/app/[lang]/page.tsx
  * @description Orquestador Soberano de la Landing Page (Recepción).
- *              Refactorizado: Erradicación de errores TS2305/TS2552, limpieza de 
- *              importaciones ESLint y sellado del Protocolo Day-First.
- * @version 24.0 - Atmosphere Master & Linter Pure
+ *              Ensambla el embudo de conversión: Awareness -> Trust -> Action.
+ *              Refactorizado: Sincronización total con el clúster de telemetría v5.0,
+ *              blindaje de tipos Next.js 15 y optimización de hidratación.
+ * @version 25.0 - Build Ready & Type Safe
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -12,12 +13,13 @@ import type { Metadata } from 'next';
 
 /**
  * IMPORTACIONES DE INFRAESTRUCTRURA
- * @pilar V: Adherencia arquitectónica.
+ * @pilar V: Adherencia arquitectónica a fronteras Nx.
  */
 import { getDictionary } from '../../lib/get-dictionary';
 import { getAllPosts } from '../../lib/blog-api';
 import type { Locale } from '../../config/i18n.config';
 import { JsonLdScript } from '../../components/ui/JsonLdScript';
+import type { Dictionary } from '../../lib/schemas/dictionary.schema';
 
 /**
  * APARATOS DE SECCIÓN (Lego System)
@@ -35,7 +37,7 @@ import { ContactSection } from '../../components/sections/homepage/ContactSectio
 
 /**
  * @interface PageProps
- * @description Parámetros asíncronos nativos de Next.js 15.
+ * @description Contrato de parámetros asíncronos nativos de Next.js 15.
  */
 type PageProps = { 
   params: Promise<{ lang: Locale }>;
@@ -43,11 +45,11 @@ type PageProps = {
 
 /**
  * GENERACIÓN DE METADATOS SOBERANOS
- * @pilar I: Visión Holística - SEO E-E-A-T.
+ * @pilar I: Visión Holística - SEO E-E-A-T & i18n.
  */
 export async function generateMetadata(props: PageProps): Promise<Metadata> {
   const { lang } = await props.params;
-  const dict = await getDictionary(lang);
+  const dict: Dictionary = await getDictionary(lang);
   const siteName = dict.header.personal_portfolio;
 
   return {
@@ -60,23 +62,26 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
       url: `/${lang}`,
       siteName: siteName,
       type: 'website',
+      images: [{ url: '/images/hotel/og-main.jpg', width: 1200, height: 630 }]
     }
   };
 }
 
 /**
  * APARATO PRINCIPAL: HotelHomePage
- * @description Ensambla el embudo de conversión adaptándose a la atmósfera global.
+ * @description Orquesta el ciclo de vida de la landing page. 
+ *              Implementa el Protocolo Day-First y sincronía sensorial.
  */
 export default async function HotelHomePage(props: PageProps) {
   const { lang } = await props.params;
 
   /**
    * PROTOCOLO HEIMDALL: Telemetría de Orquestación
-   * @pilar IV: Trazabilidad de carga masiva paralela.
+   * @pilar IV: Trazabilidad de carga masiva paralela (Parallel Fetching).
    */
   console.log(`[HEIMDALL][ORCHESTRATOR] Assembling Sovereign Reception: [${lang}]`);
 
+  // Ejecución paralela para minimizar el TTFB (Pilar X)
   const [dict, posts] = await Promise.all([
     getDictionary(lang),
     getAllPosts(lang).catch((error) => {
@@ -87,13 +92,20 @@ export default async function HotelHomePage(props: PageProps) {
 
   /**
    * DATOS ESTRUCTURADOS (Schema.org)
+   * @pilar I: SEO Técnico de Autoridad.
    */
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "Hotel",
     "name": dict.header.personal_portfolio,
     "description": dict.hero.page_description,
-    "url": process.env.NEXT_PUBLIC_BASE_URL
+    "url": process.env.NEXT_PUBLIC_BASE_URL || 'https://beachhotelcanasvieiras.com',
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Florianópolis",
+      "addressRegion": "SC",
+      "addressCountry": "BR"
+    }
   };
 
   return (
@@ -107,10 +119,12 @@ export default async function HotelHomePage(props: PageProps) {
       </header>
 
       {/* --- FASE 2: VALIDACIÓN SOCIAL (TRUST) --- 
-          @pilar X: Altura reservada adaptativa para evitar CLS.
+          @pilar X: Altura reservada adaptativa para evitar CLS (Cumulative Layout Shift).
       */}
       <aside id="pulse" className="relative z-20">
-        <Suspense fallback={<div className="h-[82px] w-full bg-background border-y border-border animate-pulse" />}>
+        <Suspense fallback={
+          <div className="h-[82px] w-full bg-background border-y border-border animate-pulse" />
+        }>
           <LiveStatusTicker dictionary={dict.system_status} />
         </Suspense>
       </aside>
@@ -128,11 +142,13 @@ export default async function HotelHomePage(props: PageProps) {
       {/* --- FASE 5: TAKEOVER (EXCLUSIVITY) --- */}
       <section id="festival-preview" className="relative w-full bg-surface/30 border-t border-border">
         <div className="container mx-auto px-6 pt-24 text-center md:text-left">
-            <span className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-5 py-2 text-[10px] font-bold uppercase tracking-[0.4em] text-primary">
+            <span className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-5 py-2 text-[10px] font-bold uppercase tracking-[0.4em] text-primary transition-all hover:bg-primary/20">
                 {dict.festival.hero.title}
             </span>
         </div>
-        <Suspense fallback={<div className="h-[600px] w-full flex items-center justify-center bg-surface/20" />}>
+        <Suspense fallback={
+          <div className="h-[600px] w-full flex items-center justify-center bg-surface/20 animate-pulse" />
+        }>
             <ExperienceShowcase3D dictionary={dict.festival} />
         </Suspense>
       </section>
@@ -152,9 +168,11 @@ export default async function HotelHomePage(props: PageProps) {
       </section>
 
       {/* --- FASE 8: LEGADO (HERITAGE) --- 
-          @fix TS2552: Referencia correcta a 'dict.history' tras nivelación MACS.
+          @fix TS2552: Referencia saneada al fragmento 'history' (MACS Protocol).
       */}
-      <HistorySection dictionary={dict.history} />
+      <section id="history">
+        <HistorySection dictionary={dict.history} />
+      </section>
 
       {/* --- FASE 9: CONVERSIÓN FINAL (ACTION) --- */}
       <footer id="reservas" className="relative w-full border-t border-border z-10">

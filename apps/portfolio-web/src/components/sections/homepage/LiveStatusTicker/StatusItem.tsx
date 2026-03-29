@@ -1,8 +1,9 @@
 /**
  * @file StatusItem.tsx
- * @description Unidad atómica de telemetría con micro-interacciones de alta fidelidad.
- *              Implementa mapeo cromático determinista y optimización de renderizado (Memo).
- * @version 4.0 - Elite Production Standard
+ * @description Unidad atómica de telemetría sensorial (Heimdall Pulse).
+ *              Refactorizado: Optimización de micro-interacciones con aceleración GPU,
+ *              mapeo cromático determinista via OKLCH y blindaje de tipos SSoT.
+ * @version 5.0 - Next-Gen Performance & Tailwind v4 Standard
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -10,13 +11,20 @@
 
 import React, { memo } from 'react';
 import { 
-  Ticket, ThermometerSun, ShieldCheck, 
-  Music, Users, Waves, Sparkles, Info,
+  Ticket, 
+  ThermometerSun, 
+  ShieldCheck, 
+  Music, 
+  Users, 
+  Waves, 
+  Sparkles, 
+  Info,
   type LucideIcon 
 } from 'lucide-react';
 
 /**
  * IMPORTACIONES DE INFRAESTRUCTRURA
+ * @pilar V: Adherencia arquitectónica a fronteras Nx.
  */
 import { cn } from '../../../../lib/utils/cn';
 import type { 
@@ -41,85 +49,87 @@ const ICON_MAP: Record<StatusIconType, LucideIcon> = {
 
 /**
  * MATRIZ CROMÁTICA SOBERANA (Pilar VII)
- * @description Define explícitamente las combinaciones de clases para evitar manipulación de strings.
- *              Optimizado para Tailwind v4 y el motor de diseño MetaShark.
+ * @description Tokens semánticos sincronizados con el Oxygen Engine (Tailwind v4).
  */
-const THEME_MAP: Record<StatusColorType, { text: string; bg: string; shadow: string }> = {
-  purple: { text: "text-primary", bg: "bg-primary", shadow: "shadow-primary/20" },
-  yellow: { text: "text-yellow-400", bg: "bg-yellow-400", shadow: "shadow-yellow-400/20" },
-  green: { text: "text-green-400", bg: "bg-green-400", shadow: "shadow-green-400/20" },
-  pink: { text: "text-accent", bg: "bg-accent", shadow: "shadow-accent/20" },
-  blue: { text: "text-blue-400", bg: "bg-blue-400", shadow: "shadow-blue-400/20" },
-  cyan: { text: "text-cyan-400", bg: "bg-cyan-400", shadow: "shadow-cyan-400/20" },
+const THEME_MAP: Record<StatusColorType, { text: string; bg: string; glow: string }> = {
+  purple: { text: "text-primary", bg: "bg-primary", glow: "shadow-primary/20" },
+  yellow: { text: "text-yellow-400", bg: "bg-yellow-400", glow: "shadow-yellow-400/20" },
+  green: { text: "text-green-500", bg: "bg-green-500", glow: "shadow-green-500/20" },
+  pink: { text: "text-accent", bg: "bg-accent", glow: "shadow-accent/20" },
+  blue: { text: "text-blue-400", bg: "bg-blue-400", glow: "shadow-blue-400/20" },
+  cyan: { text: "text-cyan-400", bg: "bg-cyan-400", glow: "shadow-cyan-400/20" },
 };
 
 /**
  * @interface StatusItemProps
- * @property {SystemStatusItem} item - Entidad de estado validada por esquema Zod.
+ * @pilar III: Seguridad de Tipos Absoluta.
  */
 interface StatusItemProps {
+  /** Entidad de estado validada por contrato de Zod */
   item: SystemStatusItem;
 }
 
 /**
  * APARATO: StatusItem
- * @description Renderiza una cápsula de telemetría con interacciones cinemáticas.
- *              Envuelto en memo() para prevenir jank en el carrusel infinito (Pilar X).
+ * @description Renderiza una cápsula de información en tiempo real.
+ * @pilar X: Performance de Élite - Envuelto en memo() para mitigar re-renders 
+ *         innecesarios dentro de carruseles de alta frecuencia.
  */
 export const StatusItem = memo(({ item }: StatusItemProps) => {
+  // Resolución de activos y atmósfera
   const Icon = ICON_MAP[item.iconKey] || Info;
   const theme = THEME_MAP[item.colorKey] || THEME_MAP.purple;
 
   return (
     <div 
-      className="flex items-center gap-10 px-16 group cursor-default transition-opacity duration-500 hover:opacity-100"
+      className="flex items-center gap-12 px-20 group cursor-default transition-opacity duration-700 hover:opacity-100 will-change-transform"
       role="listitem"
     >
       <div className="flex flex-col">
-        {/* INDICADOR LIVE: Pulso de Identidad (Pilar XII) */}
-        <div className="flex items-center gap-2 mb-2">
+        {/* --- INDICADOR LIVE (Protocolo de Latido) --- */}
+        <div className="flex items-center gap-3 mb-2.5">
           <div className="relative flex h-2 w-2">
             <div className={cn(
-              "absolute inline-flex h-full w-full animate-ping rounded-full opacity-75",
+              "absolute inline-flex h-full w-full animate-ping rounded-full opacity-75 transform-gpu",
               theme.bg
             )} />
             <div className={cn(
-              "relative inline-flex h-2 w-2 rounded-full shadow-lg",
+              "relative inline-flex h-2 w-2 rounded-full",
               theme.bg,
-              theme.shadow
+              theme.glow
             )} />
           </div>
           <span className={cn(
-            "text-[10px] font-mono font-bold tracking-[0.5em] uppercase transition-all duration-700",
-            "opacity-30 group-hover:opacity-100 group-hover:tracking-[0.6em]", 
+            "text-[9px] font-mono font-bold tracking-[0.5em] uppercase transition-all duration-700",
+            "opacity-40 group-hover:opacity-100 group-hover:tracking-[0.6em]", 
             theme.text
           )}>
             {item.category}
           </span>
         </div>
         
-        {/* CONTENIDO: Telemetría y Glifo */}
-        <div className="flex items-center gap-5">
+        {/* --- CONTENIDO SENSORIAL --- */}
+        <div className="flex items-center gap-6">
           <div className={cn(
-            "p-2.5 rounded-xl bg-white/2 border border-white/5 transition-all duration-700",
-            "group-hover:bg-white/5 group-hover:border-white/10 group-hover:scale-110 transform-gpu",
+            "p-3 rounded-2xl bg-surface/30 border border-white/5 backdrop-blur-md transition-all duration-700",
+            "group-hover:bg-white/10 group-hover:border-white/10 group-hover:scale-110 group-hover:rotate-6 transform-gpu",
             theme.text
           )}>
             <Icon 
-              size={20} 
+              size={22} 
               strokeWidth={1.5}
-              className="transition-transform duration-1000 cubic-bezier(0.16, 1, 0.3, 1) group-hover:rotate-360deg" 
+              className="transition-transform duration-1000 cubic-bezier(0.16, 1, 0.3, 1) group-hover:rotate-360" 
               aria-hidden="true"
             />
           </div>
-          <span className="text-sm font-display font-bold text-zinc-300 uppercase tracking-widest whitespace-nowrap transition-colors duration-500 group-hover:text-white">
+          <span className="text-sm font-display font-bold text-foreground/80 uppercase tracking-[0.15em] whitespace-nowrap transition-colors duration-500 group-hover:text-foreground">
             {item.message}
           </span>
         </div>
       </div>
       
-      {/* SEPARADOR ESTRUCTURAL: Estética Glassmorphism (Pilar VII) */}
-      <div className="ml-8 h-10 w-px bg-linear-to-b from-transparent via-white/10 to-transparent transition-all duration-1000 group-hover:via-primary/30 group-hover:h-12" />
+      {/* --- SEPARADOR DE FLUJO (Estética Boutique) --- */}
+      <div className="ml-10 h-12 w-px bg-linear-to-b from-transparent via-border/40 to-transparent transition-all duration-1000 group-hover:via-primary/40 group-hover:h-16 transform-gpu" />
     </div>
   );
 });

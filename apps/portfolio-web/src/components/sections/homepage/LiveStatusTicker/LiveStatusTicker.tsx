@@ -1,127 +1,96 @@
 /**
- * @file StatusItem.tsx
- * @description Unidad atómica de telemetría con micro-interacciones de alta fidelidad.
- *              Implementa mapeo cromático determinista y optimización de renderizado (Memo).
- * @version 4.0 - Elite Production Standard
+ * @file LiveStatusTicker.tsx
+ * @description Orquestador del carrusel de telemetría infinita (Heimdall Core).
+ *              Implementa animación CSS de alto rendimiento, duplicación de nodos 
+ *              para loops sin costuras y reactividad atmosférica.
+ * @version 5.0 - GPU Accelerated Loop & Build Fix
  * @author Raz Podestá - MetaShark Tech
  */
 
 'use client';
 
-import React, { memo } from 'react';
-import { 
-  Ticket, ThermometerSun, ShieldCheck, 
-  Music, Users, Waves, Sparkles, Info,
-  type LucideIcon 
-} from 'lucide-react';
-
-/**
- * IMPORTACIONES DE INFRAESTRUCTRURA
- */
+import React, { useMemo } from 'react';
 import { cn } from '../../../../lib/utils/cn';
-import type { 
-  SystemStatusItem, 
-  StatusIconType, 
-  StatusColorType 
-} from '../../../../lib/schemas/system_status.schema';
+import { StatusItem } from './StatusItem';
 
 /**
- * MAPA MAESTRO DE ICONOGRAFÍA (SSoT)
- * @description Centraliza la resolución de glifos con tipado estricto.
+ * IMPORTACIONES DE CONTRATO (SSoT)
  */
-const ICON_MAP: Record<StatusIconType, LucideIcon> = {
-  Ticket,
-  ThermometerSun,
-  ShieldCheck,
-  Music,
-  Users,
-  Waves,
-  Sparkles,
-};
+import type { SystemStatusDictionary } from '../../../../lib/schemas/system_status.schema';
 
 /**
- * MATRIZ CROMÁTICA SOBERANA (Pilar VII)
- * @description Define explícitamente las combinaciones de clases para evitar manipulación de strings.
- *              Optimizado para Tailwind v4 y el motor de diseño MetaShark.
+ * @interface LiveStatusTickerProps
+ * @pilar III: Seguridad de Tipos Absoluta.
  */
-const THEME_MAP: Record<StatusColorType, { text: string; bg: string; shadow: string }> = {
-  purple: { text: "text-primary", bg: "bg-primary", shadow: "shadow-primary/20" },
-  yellow: { text: "text-yellow-400", bg: "bg-yellow-400", shadow: "shadow-yellow-400/20" },
-  green: { text: "text-green-400", bg: "bg-green-400", shadow: "shadow-green-400/20" },
-  pink: { text: "text-accent", bg: "bg-accent", shadow: "shadow-accent/20" },
-  blue: { text: "text-blue-400", bg: "bg-blue-400", shadow: "shadow-blue-400/20" },
-  cyan: { text: "text-cyan-400", bg: "bg-cyan-400", shadow: "shadow-cyan-400/20" },
-};
-
-/**
- * @interface StatusItemProps
- * @property {SystemStatusItem} item - Entidad de estado validada por esquema Zod.
- */
-interface StatusItemProps {
-  item: SystemStatusItem;
+interface LiveStatusTickerProps {
+  /** Fragmento del diccionario validado por esquema Zod */
+  dictionary: SystemStatusDictionary;
+  className?: string;
 }
 
 /**
- * APARATO: StatusItem
- * @description Renderiza una cápsula de telemetría con interacciones cinemáticas.
- *              Envuelto en memo() para prevenir jank en el carrusel infinito (Pilar X).
+ * APARATO: LiveStatusTicker
+ * @description Contenedor soberano que gestiona el flujo de información en tiempo real.
+ * @fix Resuelve el error de importación en page.tsx al exportar el miembro correcto.
  */
-export const StatusItem = memo(({ item }: StatusItemProps) => {
-  const Icon = ICON_MAP[item.iconKey] || Info;
-  const theme = THEME_MAP[item.colorKey] || THEME_MAP.purple;
+export function LiveStatusTicker({ dictionary, className }: LiveStatusTickerProps) {
+  
+  /**
+   * ESTRATEGIA DE BUCLE INFINITO (Pilar X)
+   * @description Duplicamos los ítems quirúrgicamente para llenar el viewport 
+   *              y permitir un retorno al origen invisible para el ojo humano.
+   */
+  const itemsToRender = useMemo(() => {
+    if (!dictionary?.items) return [];
+    // Triplicamos la data para asegurar cobertura en monitores Ultra-Wide
+    return [...dictionary.items, ...dictionary.items, ...dictionary.items];
+  }, [dictionary.items]);
+
+  // Guardia de Resiliencia (Pilar VIII)
+  if (!dictionary?.items || dictionary.items.length === 0) return null;
 
   return (
-    <div 
-      className="flex items-center gap-10 px-16 group cursor-default transition-opacity duration-500 hover:opacity-100"
-      role="listitem"
+    <section 
+      className={cn(
+        "relative w-full overflow-hidden border-y border-border bg-background py-5 transition-colors duration-1000",
+        className
+      )}
+      role="region"
+      aria-label={dictionary.aria_label}
     >
-      <div className="flex flex-col">
-        {/* INDICADOR LIVE: Pulso de Identidad (Pilar XII) */}
-        <div className="flex items-center gap-2 mb-2">
-          <div className="relative flex h-2 w-2">
-            <div className={cn(
-              "absolute inline-flex h-full w-full animate-ping rounded-full opacity-75",
-              theme.bg
-            )} />
-            <div className={cn(
-              "relative inline-flex h-2 w-2 rounded-full shadow-lg",
-              theme.bg,
-              theme.shadow
-            )} />
-          </div>
-          <span className={cn(
-            "text-[10px] font-mono font-bold tracking-[0.5em] uppercase transition-all duration-700",
-            "opacity-30 group-hover:opacity-100 group-hover:tracking-[0.6em]", 
-            theme.text
-          )}>
-            {item.category}
-          </span>
-        </div>
-        
-        {/* CONTENIDO: Telemetría y Glifo */}
-        <div className="flex items-center gap-5">
-          <div className={cn(
-            "p-2.5 rounded-xl bg-white/2 border border-white/5 transition-all duration-700",
-            "group-hover:bg-white/5 group-hover:border-white/10 group-hover:scale-110 transform-gpu",
-            theme.text
-          )}>
-            <Icon 
-              size={20} 
-              strokeWidth={1.5}
-              className="transition-transform duration-1000 cubic-bezier(0.16, 1, 0.3, 1) group-hover:rotate-360deg" 
-              aria-hidden="true"
-            />
-          </div>
-          <span className="text-sm font-display font-bold text-zinc-300 uppercase tracking-widest whitespace-nowrap transition-colors duration-500 group-hover:text-white">
-            {item.message}
-          </span>
-        </div>
-      </div>
-      
-      {/* SEPARADOR ESTRUCTURAL: Estética Glassmorphism (Pilar VII) */}
-      <div className="ml-8 h-10 w-px bg-linear-to-b from-transparent via-white/10 to-transparent transition-all duration-1000 group-hover:via-primary/30 group-hover:h-12" />
-    </div>
-  );
-});
+      {/* 
+          CAPAS DE DIFUMINADO (Masking Layer) 
+          @pilar XII: UX - Suaviza la entrada y salida de los datos para una estética boutique.
+      */}
+      <div className="absolute left-0 top-0 z-20 h-full w-24 md:w-64 bg-linear-to-r from-background to-transparent pointer-events-none" />
+      <div className="absolute right-0 top-0 z-20 h-full w-24 md:w-64 bg-linear-to-l from-background to-transparent pointer-events-none" />
 
-StatusItem.displayName = 'StatusItem';
+      {/* 
+          RIEL DE ANIMACIÓN (The Oxygen Track)
+          Utiliza la animación 'infinite-scroll' definida en el motor global.css.
+          Aceleración por hardware mediante will-change-transform.
+      */}
+      <div 
+        className="flex w-max items-center animate-infinite-scroll hover:[animation-play-state:paused] will-change-transform transform-gpu"
+        style={{ animationDuration: '140s' }} // Velocidad de lectura confortable
+      >
+        {itemsToRender.map((item, index) => (
+          <StatusItem 
+            key={`${item.category}-${index}`} 
+            item={item} 
+          />
+        ))}
+      </div>
+
+      {/* 
+          INDICADOR DE ESTADO (Telemetría de Red)
+          Sincronizado con el lenguaje de diseño de infraestructura.
+      */}
+      <div className="absolute bottom-1 right-8 z-30 opacity-10 pointer-events-none">
+         <span className="text-[7px] font-mono font-bold tracking-[0.4em] text-foreground uppercase">
+           Sovereign Telemetry Active
+         </span>
+      </div>
+    </section>
+  );
+}

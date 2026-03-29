@@ -20,7 +20,7 @@ import {
  * IMPORTACIONES DE INFRAESTRUCTRURA
  * @pilar V: Adherencia arquitectónica.
  */
-import { cn } from '../../../lib/utils/cn';
+
 import type { VisitorData } from '../../../lib/hooks/use-visitor-data';
 import type { VisitorHudDictionary } from '../../../lib/schemas/visitor_hud.schema';
 

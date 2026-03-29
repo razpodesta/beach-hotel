@@ -1,9 +1,9 @@
 /**
  * @file BlogCard.tsx
- * @description Aparato editorial de alta fidelidad con inteligencia atmosférica. 
- *              Orquesta la visualización de artículos sincronizando el 'vibe' 
- *              del contenido con la identidad visual (Día/Noche).
- * @version 12.0 - Atmosphere & LCP Optimized (React 19)
+ * @description Unidad editorial de alta fidelidad con inteligencia atmosférica.
+ *              Refactorizado: Limpieza de importaciones huérfanas, normalización
+ *              de clases canónicas de Tailwind v4 y optimización de rendimiento LCP.
+ * @version 14.0 - Linter Pure & Tailwind Canonical Standard
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -18,11 +18,13 @@ import {
   Calendar, 
   User, 
   Clock,
-  Sparkles 
+  Sparkles,
+  BookOpen
 } from 'lucide-react';
 
 /**
  * IMPORTACIONES DE INFRAESTRUCTRURA
+ * @pilar V: Adherencia arquitectónica a las fronteras del Monorepo.
  */
 import { cn } from '../../lib/utils/cn';
 import type { BlogPost } from '../../lib/schemas/blog.schema';
@@ -31,27 +33,28 @@ import type { Locale } from '../../config/i18n.config';
 
 /**
  * @interface BlogCardProps
- * @pilar III: Seguridad de Tipos Absoluta (SSoT).
+ * @pilar III: Seguridad de Tipos Absoluta.
  */
 interface BlogCardProps {
-  /** Metadatos del artículo validados por Zod (Incluye vibe y readingTime) */
+  /** Metadatos del artículo validados por Constitución Editorial */
   post: BlogPost;
-  /** Identificador semántico */
+  /** Identificador semántico único */
   slug: string;
-  /** Contexto de idioma */
+  /** Contexto de idioma para resolución de rumbos */
   lang: Locale;
   /** Etiqueta de acción inyectada vía diccionario */
   ctaText: string;
-  /** Sobrescritura de asset opcional */
+  /** Sobrescritura de activo visual opcional */
   customImage?: string;
-  /** Optimización LCP: Prioridad de carga si está sobre el pliegue */
+  /** Optimización LCP: Prioridad máxima para elementos sobre el pliegue */
   priority?: boolean;
   className?: string;
 }
 
 /**
  * APARATO: BlogCard
- * @description Representa la unidad fundamental del Journal. Reacciona visualmente al 'vibe'.
+ * @description Unidad fundamental de la narrativa Journal.
+ *              Implementa Pilar XII (MEA/UX) mediante transiciones cromáticas orgánicas.
  */
 export function BlogCard({ 
   post, 
@@ -64,31 +67,43 @@ export function BlogCard({
 }: BlogCardProps) {
   
   /**
-   * PROTOCOLO HEIMDALL: Telemetría de Renderizado
-   * @pilar IV: Observabilidad de impacto en LCP.
+   * PROTOCOLO HEIMDALL: Telemetría de Impresión
+   * @pilar IV: Registra el rendimiento y la visibilidad del activo.
    */
   useEffect(() => {
     if (priority) {
-      console.log(`[HEIMDALL][PERF] LCP Candidate Card: ${slug} | Vibe: ${post.vibe}`);
+      console.log(`[HEIMDALL][PERF] LCP Priority Engaged: JournalCard[${slug}]`);
     }
-  }, [priority, slug, post.vibe]);
-
-  const postUrl = getLocalizedHref(`/blog/${slug}`, lang);
+  }, [priority, slug]);
 
   /**
-   * LÓGICA DE ATMÓSFERA (Pilar VII & XII)
-   * Determina los tokens de color basados en el ADN del contenido.
+   * RESOLUCIÓN DE RUMBOS (Pilar X)
+   */
+  const postUrl = useMemo(() => 
+    getLocalizedHref(`/blog/${slug}`, lang), 
+  [slug, lang]);
+
+  /**
+   * MOTOR DE ATMÓSFERA SOBERANA (Pilar VII & XII)
+   * @description Define la coreografía de colores basada en el ADN del contenido.
    */
   const isNight = post.vibe === 'night';
-  const themeTokens = useMemo(() => ({
+  
+  const atmosphere = useMemo(() => ({
     accent: isNight ? 'text-accent' : 'text-primary',
     bgBadge: isNight ? 'bg-accent/10' : 'bg-primary/10',
     borderBadge: isNight ? 'border-accent/20' : 'border-primary/20',
     borderHover: isNight ? 'group-hover:border-accent/40' : 'group-hover:border-primary/40',
     shadowHover: isNight ? 'group-hover:shadow-accent/10' : 'group-hover:shadow-primary/10',
-    glow: isNight ? 'bg-accent/5' : 'bg-primary/5'
+    innerGlow: isNight ? 'bg-accent/5' : 'bg-primary/5',
+    indicator: isNight 
+      ? 'bg-accent shadow-[0_0_12px_var(--color-accent)]' 
+      : 'bg-primary shadow-[0_0_12px_var(--color-primary)]'
   }), [isNight]);
 
+  /**
+   * FORMATEO CRONOLÓGICO (Pilar X)
+   */
   const formattedDate = useMemo(() => {
     try {
       return new Intl.DateTimeFormat(lang, {
@@ -97,7 +112,7 @@ export function BlogCard({
         year: 'numeric'
       }).format(new Date(post.published_date));
     } catch {
-      return post.published_date;
+      return 'Editorial Sync...';
     }
   }, [post.published_date, lang]);
 
@@ -105,100 +120,104 @@ export function BlogCard({
 
   return (
     <motion.article
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.1 }}
+      viewport={{ once: true, amount: 0.2 }}
       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
       className={cn(
-        "group relative flex flex-col h-full overflow-hidden rounded-[3rem] border bg-surface/30 backdrop-blur-sm",
+        "group relative flex flex-col h-full overflow-hidden rounded-[3.5rem] border bg-surface/30 backdrop-blur-xl",
         "transition-all duration-700 transform-gpu border-border",
-        themeTokens.borderHover,
-        themeTokens.shadowHover,
+        atmosphere.borderHover,
+        atmosphere.shadowHover,
         className
       )}
+      role="listitem"
     >
-      {/* 1. CAPA VISUAL (LCP Focused) */}
-      <div className="relative aspect-video w-full overflow-hidden bg-background">
+      {/* --- 1. CAPA VISUAL (LCP Elite Protocol) --- */}
+      <div className="relative aspect-16/10 w-full overflow-hidden bg-background">
         <Image
           src={finalImageUrl}
           alt={post.title}
           fill
-          className="object-cover transition-transform duration-1000 ease-out group-hover:scale-105"
-          sizes="(max-width: 768px) 100vw, 450px"
+          className="object-cover transition-transform duration-2000 cubic-bezier(0.16, 1, 0.3, 1) group-hover:scale-110 brightness-[0.9] group-hover:brightness-100"
+          sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 450px"
           priority={priority}
           {...(priority ? { fetchPriority: 'high' } : { loading: 'lazy' })}
         />
         
-        {/* Overlay de profundidad cinemática */}
-        <div className="absolute inset-0 bg-linear-to-t from-background via-background/20 to-transparent opacity-90" />
+        {/* Overlay de profundidad inmersiva */}
+        <div className="absolute inset-0 bg-linear-to-t from-background via-background/10 to-transparent opacity-80 transition-opacity duration-1000 group-hover:opacity-60" />
         
-        {/* BADGE DE ATMÓSFERA (Taxonomía Reactiva) */}
-        <div className="absolute top-6 left-6 z-20 flex flex-wrap gap-2">
+        {/* TAXONOMÍA DE ATMÓSFERA */}
+        <div className="absolute top-8 left-8 z-20 flex flex-wrap gap-2.5">
            {post.tags.slice(0, 2).map((tag) => (
              <span 
                key={tag}
                className={cn(
-                 "inline-flex items-center gap-2 rounded-full backdrop-blur-xl border px-4 py-1.5 text-[8px] font-bold uppercase tracking-[0.2em]",
-                 "bg-background/40",
-                 themeTokens.accent,
-                 themeTokens.borderBadge
+                 "inline-flex items-center gap-2 rounded-full backdrop-blur-3xl border px-5 py-2 text-[9px] font-bold uppercase tracking-[0.25em]",
+                 "bg-background/60",
+                 atmosphere.accent,
+                 atmosphere.borderBadge
                )}
              >
-               <Sparkles size={10} className={cn(isNight && "animate-pulse")} />
+               <Sparkles size={12} className={cn(isNight && "animate-pulse")} />
                {tag}
              </span>
            ))}
         </div>
       </div>
 
-      {/* 2. CAPA NARRATIVA (DNA Editorial) */}
-      <div className="flex grow flex-col p-8 md:p-10 relative z-10">
-        <div className="mb-6 flex items-center gap-6 text-[9px] font-mono uppercase tracking-[0.3em] text-muted-foreground">
-          <div className="flex items-center gap-2">
-            <Calendar size={12} className="opacity-50" /> 
+      {/* --- 2. CAPA NARRATIVA (Editorial DNA) --- */}
+      <div className="flex grow flex-col p-10 md:p-12 relative z-10">
+        <div className="mb-8 flex items-center gap-8 text-[10px] font-mono uppercase tracking-[0.3em] text-muted-foreground transition-colors group-hover:text-foreground/60">
+          <div className="flex items-center gap-2.5">
+            <Calendar size={14} className="opacity-40" /> 
             <time dateTime={post.published_date}>{formattedDate}</time>
           </div>
           {post.readingTime && (
-            <div className="flex items-center gap-2">
-              <Clock size={12} className="opacity-50" /> {post.readingTime} min
+            <div className="flex items-center gap-2.5 text-primary/80">
+              <Clock size={14} className="opacity-40" /> {post.readingTime} min
             </div>
           )}
-          <div className="flex items-center gap-2">
-            <User size={12} className="opacity-50" /> {post.author}
+          <div className="hidden sm:flex items-center gap-2.5">
+            <User size={14} className="opacity-40" /> {post.author}
           </div>
         </div>
 
-        <h3 className="font-display text-2xl md:text-3xl font-bold leading-tight text-foreground mb-5 transition-colors group-hover:text-foreground/90">
-          <Link href={postUrl} className="after:absolute after:inset-0 outline-none">
+        <h3 className="font-display text-3xl md:text-4xl font-bold leading-[1.1] text-foreground mb-6 tracking-tighter transition-all duration-500 group-hover:text-foreground">
+          <Link href={postUrl} className="after:absolute after:inset-0 outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-xl">
             {post.title}
           </Link>
         </h3>
 
-        <p className="line-clamp-3 text-sm md:text-base text-muted-foreground font-sans font-light leading-relaxed">
+        <p className="line-clamp-3 text-base md:text-lg text-muted-foreground font-sans font-light leading-relaxed italic">
           {post.description}
         </p>
       </div>
 
-      {/* 3. FOOTER DE CONVERSIÓN */}
-      <footer className="relative z-30 border-t border-border p-8 bg-surface/50 flex items-center justify-between">
+      {/* --- 3. FOOTER DE CONVERSIÓN (Action Bar) --- */}
+      <footer className="relative z-30 border-t border-border/50 p-10 bg-surface/50 flex items-center justify-between">
         <div className={cn(
-          "flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.4em] transition-all",
-          "text-foreground group-hover:translate-x-1",
+          "flex items-center gap-4 text-[11px] font-bold uppercase tracking-[0.4em] transition-all duration-500",
+          "text-foreground group-hover:translate-x-2",
           isNight && "group-hover:text-accent"
         )}>
+          <BookOpen size={16} className="opacity-40" />
           {ctaText} 
-          <ArrowUpRight size={14} className="transition-transform group-hover:-translate-y-1" />
+          <ArrowUpRight size={16} className="transition-transform group-hover:-translate-y-1.5" />
         </div>
+        
+        {/* Indicador de Latido Sensorial */}
         <div className={cn(
-          "h-2 w-2 rounded-full animate-pulse transition-colors duration-700",
-          isNight ? "bg-accent shadow-[0_0_10px_var(--color-accent)]" : "bg-primary"
+          "h-2.5 w-2.5 rounded-full animate-pulse transition-all duration-700",
+          atmosphere.indicator
         )} />
       </footer>
 
-      {/* Elemento MEA: Resplandor Interior según Vibe */}
+      {/* Elemento MEA: Resplandor Interior Adaptativo */}
       <div className={cn(
         "absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 pointer-events-none",
-        themeTokens.glow
+        atmosphere.innerGlow
       )} />
     </motion.article>
   );
