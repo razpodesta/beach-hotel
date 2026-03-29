@@ -1,29 +1,22 @@
 /**
  * @file footer.schema.ts
- * @description Contrato Soberano para el Pie de Página y Cumplimiento Legal.
- * @version 4.0 - Global Trust Expansion
+ * @description Contrato soberano para el Shell de Cierre (Layout Footer).
+ *              Refactorizado: Purga de campos de captación (delegados a newsletter_form).
+ * @version 5.0 - Structural Purity
  */
 
 import { z } from 'zod';
 
 export const footerSchema = z.object({
-  // --- CAPTACIÓN ---
-  newsletter_title: z.string().min(1),
-  newsletter_placeholder: z.string().min(1),
-  newsletter_button: z.string().min(1),
-  newsletter_success_title: z.string().min(1),
-  newsletter_success_subtitle: z.string().min(1),
-  newsletter_reward_label: z.string().min(1),
-
-  // --- BRANDING ---
+  // Branding institucional
   brand_description: z.string().min(1),
 
-  // --- TÍTULOS DE COLUMNA ---
+  // Títulos de columnas de navegación
   column_nav_title: z.string().min(1),
   column_services_title: z.string().min(1),
   column_legal_title: z.string().min(1),
 
-  // --- ETIQUETAS DINÁMICAS (Nuevas) ---
+  // Etiquetas de links y acciones
   label_photos: z.string().min(1),
   label_cancellation: z.string().min(1),
   label_rules: z.string().min(1),
@@ -33,7 +26,7 @@ export const footerSchema = z.object({
   label_all_rights: z.string().min(1),
   label_author_prefix: z.string().min(1),
 
-  // --- INFRAESTRUCTRURA ---
+  // Identidad de Infraestructura
   rights_reserved: z.string().min(1),
   made_by: z.string().min(1),
 });

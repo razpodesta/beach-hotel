@@ -1,9 +1,9 @@
 /**
  * @file layout.tsx
  * @description Orquestador Soberano del Shell Principal (The Master Shell).
- *              Refactorizado: Sincronización total con el Manifiesto Day-First,
- *              erradicación de bloqueos cromáticos y optimización de PWA.
- * @version 36.0 - Atmosphere Master Sync (Next.js 15)
+ *              Refactorizado: Resolución de error TS2741 mediante inyección de 
+ *              contratos segregados (Footer + Newsletter) y optimización de PWA.
+ * @version 38.0 - Data Congruence & Strict Type Compliance
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -22,12 +22,14 @@ import { cn } from '../../lib/utils/cn';
 
 /**
  * IMPORTACIONES DE COMPONENTES DEL SHELL (Lego System)
+ * @pilar IX: Componentización de responsabilidad única.
  */
 import { Providers } from '../../components/layout/Providers';
 import { Header } from '../../components/layout/Header';
 import { Footer } from '../../components/layout/Footer';
 import { SystemStatusTicker } from '../../components/ui/SystemStatusTicker';
 import { NewsletterModal } from '../../components/ui/NewsletterModal';
+import { AuthPortal } from '../../components/ui/AuthPortal';
 import { NavigationTracker } from '../../components/layout/NavigationTracker';
 import { VisitorHud } from '../../components/ui/VisitorHud';
 
@@ -35,8 +37,6 @@ import '../global.css';
 
 /**
  * CONFIGURACIÓN DE VIEWPORT (Next.js 15 Standard)
- * @description Se define un color neutral para el tema del navegador que 
- *              armoniza con la identidad de marca (Sovereign Neutral).
  */
 export const viewport: Viewport = {
   themeColor: [
@@ -75,11 +75,8 @@ export async function generateMetadata(props: {
       default: `${siteName} | ${dict.header.tagline}` 
     },
     description: dict.hero.page_description,
-    
-    /** @protocolo PWA: Sincronización de Artefacto de Instalabilidad */
     manifest: '/manifest.json',
     
-    /** IDENTIDAD APPLE (iOS Optimization) */
     appleWebApp: {
       capable: true,
       title: siteName,
@@ -107,13 +104,6 @@ export async function generateMetadata(props: {
         width: 1200, height: 630,
         alt: siteName
       }]
-    },
-
-    twitter: {
-      card: 'summary_large_image',
-      title: siteName,
-      description: dict.hero.page_description,
-      images: ['/images/hotel/og-main.jpg'],
     }
   };
 }
@@ -156,11 +146,6 @@ export default async function RootLayout({ children, params }: RootLayoutProps) 
       </head>
       <body className={cn(
         fontVariables, 
-        /**
-         * @pilar VII: Theming Soberano
-         * Sustituimos 'bg-[#050505]' por 'bg-background'.
-         * La transición de color asegura que el cambio de atmósfera sea fluido (Pilar XII).
-         */
         "font-sans antialiased min-h-screen flex flex-col bg-background text-foreground selection:bg-primary/30 transition-colors duration-1000"
       )}>
         <Providers>
@@ -169,33 +154,40 @@ export default async function RootLayout({ children, params }: RootLayoutProps) 
             <NavigationTracker />
           </Suspense>
 
-          {/* CABECERA SOBERANA */}
+          {/* CABECERA SOBERANA (NavDesk) */}
           <Header dictionary={dictionary} />
           
-          {/* TELEMETRÍA GLOBAL (Ticker) 
-              @pilar X: Skeleton adaptativo para evitar Layout Shift (CLS).
-          */}
+          {/* TELEMETRÍA GLOBAL (Ticker) */}
           <Suspense fallback={
             <div className="h-[41px] w-full bg-background border-b border-border animate-pulse" aria-hidden="true" />
           }>
             <SystemStatusTicker dictionary={dictionary.system_status} />
           </Suspense>
 
-          {/* VIEWPORT PRINCIPAL (ID para anclajes ARIA) */}
+          {/* VIEWPORT PRINCIPAL */}
           <main className="grow relative z-0 flex flex-col" id="main-content">
             {children}
           </main>
 
-          {/* PIE DE PÁGINA (Compliance & Trust) */}
+          {/* PIE DE PÁGINA (Compliance & Trust) 
+              @fix TS2741: Inyección del nuevo contrato segregado 'newsletter_form'.
+          */}
           <Footer
             content={dictionary.footer}
+            newsletterContent={dictionary.newsletter_form}
             navLabels={dictionary['nav-links'].nav_links}
             tagline={dictionary.header.tagline}
           />
 
-          {/* CAPA DE PORTALES (Overlay Layer) */}
+          {/* --- CAPA DE PORTALES (Overlay Layer) --- 
+              @pilar XII: MEA/UX - Gestión de modales y HUDs.
+          */}
           <Suspense fallback={null}>
-            <NewsletterModal dictionary={dictionary.footer} />
+            <AuthPortal dictionary={dictionary.auth_portal} />
+            {/* 
+               @nivelación: NewsletterModal ahora consume su propio esquema congruente. 
+            */}
+            <NewsletterModal dictionary={dictionary.newsletter_form} />
             <VisitorHud dictionary={dictionary} />
           </Suspense>
         </Providers>

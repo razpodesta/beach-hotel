@@ -1,0 +1,23 @@
+{
+  "welcome_developer": "Sovereign Engineering Console",
+  "welcome_admin": "Hospitality Management Panel",
+  "welcome_operator": "B2B Operations Portal",
+  "welcome_guest": "Welcome to your Sanctuary",
+  "nav_overview": "Overview",
+  "nav_reservations": "Reservations",
+  "nav_inventory": "Suites & Assets",
+  "nav_telemetry": "Telemetry L0",
+  "nav_b2b_rates": "Net Rates",
+  "label_server_health": "Infrastructure Health",
+  "label_active_connections": "Active Sockets",
+  "label_loyalty_points": "Sanctuary XP",
+  "label_upcoming_stays": "Your Next Stays",
+  "label_metric_nominal": "NOMINAL",
+  "label_metric_warning": "DEGRADED",
+  "label_metric_critical": "ANOMALY",
+  "status_active_session": "Identity Linked",
+  "last_sync_label": "Last sync",
+  "empty_data_label": "No data detected in perimeter",
+  "cta_logout": "End Session",
+  "cta_settings": "Settings"
+}

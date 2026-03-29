@@ -1,20 +1,28 @@
 /**
  * @file Header.tsx
  * @description Orquestador Soberano de la Cabecera (NavDesk). 
- *              Implementa conciencia de scroll, navegación localizada, 
- *              telemetría perimetral y soporte dinámico Día/Noche.
- * @version 17.0 - Atmosphere Ready & TS-Error Fix
+ *              Implementa las Cápsulas de Identidad Boutique, conciencia de scroll
+ *              y gatillos para el sistema de navegación móvil.
+ * @version 19.0 - Responsive Identity & Visibility Orchestration
  * @author Raz Podestá - MetaShark Tech
  */
 
 'use client';
 
-import React, { useMemo, useCallback, useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, Globe, ChevronDown, CalendarCheck } from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
+import { 
+  Menu, 
+  Globe, 
+  ChevronDown, 
+  //UserPlus, 
+  //LogIn, 
+  User,
+  X
+} from 'lucide-react';
+//import type { LucideIcon } from 'lucide-react';
 
 /**
  * IMPORTACIONES DE INFRAESTRUCTRURA
@@ -38,14 +46,14 @@ import type { Dictionary } from '../../lib/schemas/dictionary.schema';
  * @interface HeaderProps
  */
 interface HeaderProps {
-  /** Diccionario maestro inyectado desde el RootLayout */
+  /** Diccionario maestro nivelado */
   dictionary: Dictionary;
   className?: string;
 }
 
 /**
  * SUB-APARATO: HeaderBrand
- * @description Identidad visual boutique. Sincronizado con tokens de Oxygen Engine.
+ * @description Identidad visual boutique con inercia elástica.
  */
 const HeaderBrand = ({ currentLang }: { currentLang: Locale }) => (
   <motion.div
@@ -55,11 +63,11 @@ const HeaderBrand = ({ currentLang }: { currentLang: Locale }) => (
   >
     <Link 
       href={`/${currentLang}`} 
-      className="group block select-none outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-xl transition-all" 
-      aria-label="Volver al inicio"
+      className="group block select-none outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-xl" 
+      aria-label="Inicio"
     >
       <div className="flex flex-col">
-        <h2 className="font-display text-2xl sm:text-3xl leading-none text-foreground transition-all duration-700 group-hover:text-primary">
+        <h2 className="font-display text-2xl md:text-3xl leading-none text-foreground transition-all duration-700 group-hover:text-primary">
           Beach Hotel
         </h2>
         <span className="text-[9px] font-mono tracking-[0.4em] uppercase text-muted-foreground transition-colors group-hover:text-foreground block mt-1">
@@ -71,17 +79,23 @@ const HeaderBrand = ({ currentLang }: { currentLang: Locale }) => (
 );
 
 /**
- * APARATO: Header
- * @description Orquestador de navegación táctica. Reacciona a la atmósfera global.
+ * APARATO PRINCIPAL: Header
  */
 export function Header({ dictionary, className }: HeaderProps) {
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
   
-  /**
-   * DETECCIÓN DE SCROLL (Pilar X)
-   * Optimizado con passive: true para no bloquear el renderizado.
-   */
+  const { 
+    isVisitorHudOpen, 
+    isMobileMenuOpen,
+    hasHydrated, 
+    session, 
+    toggleVisitorHud, 
+    toggleMobileMenu,
+    toggleAuthModal 
+  } = useUIStore();
+
+  // Control de scroll optimizado (Pilar X)
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -90,30 +104,13 @@ export function Header({ dictionary, className }: HeaderProps) {
 
   const currentLang = useMemo(() => {
     const segments = pathname?.split('/') ?? [];
-    const candidate = segments[1];
-    return isValidLocale(candidate) ? (candidate as Locale) : i18n.defaultLocale;
+    return isValidLocale(segments[1]) ? (segments[1] as Locale) : i18n.defaultLocale;
   }, [pathname]);
 
-  // Selección quirúrgica de estado global
-  const { isVisitorHudOpen, hasHydrated, toggleVisitorHud, toggleMobileMenu } = useUIStore();
-
-  /**
-   * CONTRATO DE TRADUCCIÓN (Pilar VI)
-   * Centraliza los tokens del Shell en una referencia estable.
-   */
   const labels = useMemo(() => ({ 
     ...dictionary.header, 
     ...dictionary['nav-links'].nav_links 
   }), [dictionary]);
-
-  /**
-   * PROTOCOLO HEIMDALL: Telemetría de Interacción
-   */
-  const trackInteraction = useCallback((label: string) => {
-    console.group(`[HEIMDALL][UX] Interaction: Header -> ${label}`);
-    console.log(`Atmosphere: Responsive | Scroll: ${isScrolled ? 'Sticky' : 'Static'}`);
-    console.groupEnd();
-  }, [isScrolled]);
 
   return (
     <header 
@@ -124,35 +121,29 @@ export function Header({ dictionary, className }: HeaderProps) {
           : "h-24 bg-background/60 backdrop-blur-xl border-transparent",
         className
       )} 
-      role="banner"
     >
       <div className="container mx-auto h-full px-6">
         <div className="flex h-full items-center justify-between gap-8">
           
-          <div className="flex items-center gap-12">
+          <div className="flex items-center gap-10">
             <HeaderBrand currentLang={currentLang} />
 
-            {/* NAVEGACIÓN DESKTOP (Lego System) */}
-            <nav className="hidden lg:flex items-center gap-2" aria-label="Navegação Principal">
+            {/* NAVEGACIÓN DESKTOP (Hidden on Mobile/Tablet) */}
+            <nav className="hidden lg:flex items-center gap-1" aria-label="Desktop Nav">
               {mainNavStructure.map((nav: NavItem) => {
                 const localizedHref = getLocalizedHref(nav.href ?? '/', currentLang);
                 const isActive = pathname === localizedHref;
                 const label = labels[nav.labelKey as keyof typeof labels] || nav.labelKey;
-                const Icon = nav.Icon as LucideIcon | undefined;
                 
                 if (nav.children?.length) {
                   return (
                     <DropdownMenu key={nav.labelKey} trigger={
-                      <button className="flex items-center gap-2 px-5 py-2.5 rounded-full text-[10px] font-bold uppercase tracking-widest text-foreground/60 hover:bg-surface hover:text-primary transition-all outline-none group">
-                        {Icon && <Icon size={14} className="opacity-70 group-hover:text-primary transition-colors" />}
+                      <button className="flex items-center gap-2 px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest text-foreground/60 hover:bg-surface hover:text-primary transition-all group">
                         {label}
                         <ChevronDown size={12} className="opacity-30 group-hover:translate-y-0.5 transition-transform" />
                       </button>
                     }>
-                      <NestedDropdownContent 
-                        links={nav.children} 
-                        dictionary={labels} 
-                      />
+                      <NestedDropdownContent links={nav.children} dictionary={labels} />
                     </DropdownMenu>
                   );
                 }
@@ -161,24 +152,12 @@ export function Header({ dictionary, className }: HeaderProps) {
                   <Link 
                     key={nav.labelKey} 
                     href={localizedHref} 
-                    onClick={() => trackInteraction(`Nav:${nav.labelKey}`)}
-                    aria-current={isActive ? 'page' : undefined}
                     className={cn(
-                      "relative flex items-center gap-2 px-5 py-2.5 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all duration-500 outline-none",
-                      isActive 
-                        ? "text-primary bg-primary/10 shadow-[0_0_20px_rgba(var(--color-primary),0.05)]" 
-                        : "text-foreground/60 hover:bg-surface hover:text-primary"
+                      "relative flex items-center gap-2 px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all duration-500",
+                      isActive ? "text-primary bg-primary/10" : "text-foreground/60 hover:bg-surface hover:text-primary"
                     )}
                   >
-                    {Icon && <Icon size={14} className={cn("opacity-70 transition-colors", isActive && "opacity-100")} />}
                     {label}
-                    {isActive && (
-                      <motion.div 
-                        layoutId="nav-pill-desktop" 
-                        className="absolute inset-0 border border-primary/20 rounded-full" 
-                        transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                      />
-                    )}
                   </Link>
                 );
               })}
@@ -186,72 +165,83 @@ export function Header({ dictionary, className }: HeaderProps) {
           </div>
 
           <div className="flex items-center gap-4">
-            {/* CONVERSIÓN: ACCIÓN DE RESERVA (MEA/UX) */}
-            <Link 
-              href={getLocalizedHref('/#reservas', currentLang)}
-              onClick={() => trackInteraction('Booking_Intent_Header')}
-              className={cn(
-                "hidden sm:flex items-center gap-3 rounded-full bg-foreground px-8 py-3 text-[10px] font-bold uppercase tracking-[0.25em] text-background transition-all hover:bg-primary hover:text-white active:scale-95 shadow-2xl",
-                isScrolled && "py-2.5"
-              )}
-            >
-              <CalendarCheck size={16} strokeWidth={2.5} />
-              {labels.talk}
-            </Link>
+            
+            {/* CÁPSULAS DE IDENTIDAD BOUTIQUE (Hidden on Small Screens) */}
+            <div className="hidden md:flex items-center bg-surface/50 border border-border/50 rounded-full p-1 gap-1">
+              <AnimatePresence mode="wait">
+                {hasHydrated && session ? (
+                  <motion.button
+                    key="auth-portal"
+                    initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }}
+                    className="flex items-center gap-3 px-6 py-2 rounded-full bg-primary text-white text-[10px] font-bold uppercase tracking-widest shadow-lg"
+                  >
+                    <User size={14} />
+                    {labels.portal}
+                  </motion.button>
+                ) : (
+                  <motion.div key="auth-guest" className="flex items-center gap-1" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                    <button 
+                      onClick={toggleAuthModal}
+                      className="px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-foreground transition-all"
+                    >
+                      {labels.login}
+                    </button>
+                    <button 
+                      onClick={toggleAuthModal}
+                      className="px-6 py-2 rounded-full bg-foreground text-background text-[10px] font-bold uppercase tracking-widest hover:bg-primary hover:text-white transition-all shadow-xl"
+                    >
+                      {labels.join}
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
 
             <div className="flex items-center gap-2 border-l border-border pl-4">
-              <div className="hidden md:flex items-center gap-1 pr-2 border-r border-border mr-2">
+              <div className="hidden sm:flex items-center gap-1 mr-2">
                 <LanguageSwitcher dictionary={dictionary.language_switcher} />
-                
-                {/* 
-                   @fix TS2741: Inyección de diccionario nivelado (v9.0).
-                   Ahora el ThemeToggle recibe los tokens de atmósfera localizados.
-                */}
                 <ThemeToggle dictionary={dictionary.language_switcher} />
               </div>
               
-              {/* TELEMETRÍA: BOTÓN HUD (Heimdall) */}
               <button
                 onClick={toggleVisitorHud}
                 disabled={!hasHydrated}
                 className={cn(
-                  "p-2.5 rounded-full transition-all duration-500 outline-none", 
+                  "p-2.5 rounded-full transition-all duration-500", 
                   hasHydrated && isVisitorHudOpen 
-                    ? "text-primary bg-primary/10 shadow-[0_0_20px_rgba(168,85,247,0.15)] border border-primary/20" 
+                    ? "text-primary bg-primary/10 shadow-lg border border-primary/20" 
                     : "text-muted-foreground hover:bg-surface border border-transparent"
                 )}
-                aria-label="Alternar Telemetría"
-                title="Sovereign Telemetry"
               >
-                <Globe 
-                  size={20} 
-                  strokeWidth={1.5} 
-                  className={cn(hasHydrated && isVisitorHudOpen && "animate-spin-slow")} 
-                />
+                <Globe size={20} className={cn(hasHydrated && isVisitorHudOpen && "animate-spin-slow")} />
               </button>
             </div>
 
-            {/* CONTROL MÓVIL (Takeover) */}
+            {/* TRIGGER MÓVIL (Takeover) */}
             <button 
               onClick={toggleMobileMenu} 
-              className="lg:hidden p-3 rounded-full hover:bg-surface transition-all active:scale-90" 
-              aria-label="Abrir navegación móvil"
+              className="lg:hidden p-3 rounded-full hover:bg-surface transition-all active:scale-90 relative z-60"
+              aria-label={isMobileMenuOpen ? "Cerrar" : "Menú"}
             >
-              <Menu size={24} />
+              <AnimatePresence mode="wait">
+                {isMobileMenuOpen ? (
+                  <motion.div key="close" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }}>
+                    <X size={24} />
+                  </motion.div>
+                ) : (
+                  <motion.div key="menu" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }}>
+                    <Menu size={24} />
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </button>
           </div>
         </div>
       </div>
       
-      {/* SELLO DE MARCA (Branding Bar) */}
       <AnimatePresence>
         {!isScrolled && (
-          <motion.div
-            initial={{ opacity: 0, y: -2 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.5 }}
-          >
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <ColorWaveBar position="bottom" variant="hotel" className="h-0.5 opacity-20" />
           </motion.div>
         )}

@@ -1,0 +1,23 @@
+{
+  "welcome_developer": "Console de Engenharia Soberana",
+  "welcome_admin": "Painel de Gestão de Hospitalidade",
+  "welcome_operator": "Portal de Operações B2B",
+  "welcome_guest": "Bem-vindo ao seu Santuário",
+  "nav_overview": "Visão Geral",
+  "nav_reservations": "Reservas",
+  "nav_inventory": "Suítes e Ativos",
+  "nav_telemetry": "Telemetria L0",
+  "nav_b2b_rates": "Tarifas Net",
+  "label_server_health": "Saúde da Infraestrutura",
+  "label_active_connections": "Sockets Ativos",
+  "label_loyalty_points": "XP do Santuário",
+  "label_upcoming_stays": "Suas Próximas Estadias",
+  "label_metric_nominal": "NOMINAL",
+  "label_metric_warning": "DEGRADADO",
+  "label_metric_critical": "ANOMALIA",
+  "status_active_session": "Identidade Vinculada",
+  "last_sync_label": "Última sincronia",
+  "empty_data_label": "Nenhum dado detectado no perímetro",
+  "cta_logout": "Encerrar Sessão",
+  "cta_settings": "Configurações"
+}

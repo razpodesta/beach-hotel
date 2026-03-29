@@ -1,9 +1,9 @@
 /**
  * @file ui.store.ts
  * @description Orquestador Soberano del Estado Global de la Interfaz.
- *              Refactorizado: Resolución de errores de inferencia de tipos y 
- *              limpieza de métodos vacíos para cumplimiento de linter.
- * @version 8.0 - Absolute Type Integrity & Lint Clean
+ *              Gestiona la reactividad de componentes, persistencia de atmósfera
+ *              y la identidad de sesión para la divulgación progresiva del Portal.
+ * @version 9.0 - Sovereign Session Integration & UI Transmutation
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -13,75 +13,106 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import type { StateStorage } from 'zustand/middleware';
 
 /**
+ * IMPORTACIONES DE CONTRATO
+ * @pilar V: Alineación con el Centinela de Borde.
+ */
+import type { SovereignRole } from '../route-guard';
+
+/**
+ * @interface SovereignSession
+ * @description Contrato de identidad inyectado tras la validación criptográfica.
+ */
+export interface SovereignSession {
+  userId: string;
+  email: string;
+  role: SovereignRole;
+  tenantId: string | null;
+  lastLogin: string;
+}
+
+/**
  * @interface UIState
- * @description Contrato inmutable para los datos de la interfaz.
+ * @description Contrato inmutable para los datos de la interfaz MetaShark.
  */
 interface UIState {
+  // --- ESTADOS DE VISIBILIDAD ---
   isVisitorHudOpen: boolean;
   isMobileMenuOpen: boolean;
   isNewsletterModalOpen: boolean;
   isAuthModalOpen: boolean;
+  
+  // --- INFRAESTRUCTRURA ---
   hasHydrated: boolean;
   tenantId: string | null;
+
+  // --- SESIÓN Y RBAC ---
+  /** Sesión activa del usuario (null si es Guest/Anónimo) */
+  session: SovereignSession | null;
 }
 
 /**
  * @interface UIActions
- * @description Contrato para las mutaciones del estado.
+ * @description Mutaciones permitidas sobre la bóveda de estado.
  */
 interface UIActions {
+  // Controles de HUD
   toggleVisitorHud: () => void;
   closeVisitorHud: () => void;
   openVisitorHud: () => void;
+  
+  // Controles de Navegación
   toggleMobileMenu: () => void;
   closeMobileMenu: () => void;
+  
+  // Controles de Portales
   openNewsletterModal: () => void;
   closeNewsletterModal: () => void;
   toggleAuthModal: () => void;
   closeAuthModal: () => void;
+  
+  // Acciones de Identidad
   setHasHydrated: (state: boolean) => void;
   setTenant: (tenantId: string | null) => void;
+  setSession: (session: SovereignSession | null) => void;
+  clearSession: () => void;
 }
 
 /**
- * Union Type Soberano para el Store.
+ * Union Type Soberano para el Store de Zustand.
  */
 type UIStore = UIState & UIActions;
 
 /**
- * SOVEREIGN STORAGE ENGINE (Emergency Fallback)
- * @description Motor de respaldo para entornos sin persistencia física (Node.js/SSR).
+ * SOVEREIGN STORAGE ENGINE (Resilience Fallback)
+ * @description Motor de respaldo para entornos SSR o almacenamiento bloqueado.
+ * @pilar VIII: Resiliencia de Infraestructura.
  */
 const forensicMockStorage: StateStorage = {
   getItem: (): string | null => null,
-  setItem: (): void => {
-    /* No-op: Persistencia deshabilitada durante la fase de servidor/build */
-  },
-  removeItem: (): void => {
-    /* No-op: Limpieza de storage omitida en entorno no-browser */
-  },
+  setItem: (): void => {},
+  removeItem: (): void => {},
 };
 
 /**
- * RESOLVER DE ALMACENAMIENTO SOBERANO
- * @pilar VIII: Resiliencia - Manejo de fallos en I/O de LocalStorage.
+ * RESOLVER DE ALMACENAMIENTO
+ * @description Valida el acceso físico a LocalStorage para evitar fallos de hidratación.
  */
 const resolveStorageEngine = (): StateStorage => {
   if (typeof window === 'undefined') return forensicMockStorage;
   try {
-    const testKey = '__metashark_vault_ping__';
+    const testKey = '__metashark_ping__';
     window.localStorage.setItem(testKey, testKey);
     window.localStorage.removeItem(testKey);
     return window.localStorage;
   } catch {
-    console.warn('[HEIMDALL][STORE] LocalStorage inaccesible. Operando en modo volátil.');
+    console.warn('[HEIMDALL][STORE] LocalStorage inaccesible. Modo volátil activado.');
     return forensicMockStorage;
   }
 };
 
 /**
  * CREADOR DE ESTADO: stateCreator
- * @pilar III: Seguridad de Tipos. Definición explícita para asegurar la inferencia en 'persist'.
+ * @description Define la lógica pura de mutación y el estado inicial.
  */
 const stateCreator: StateCreator<UIStore, [["zustand/persist", unknown]]> = (set) => ({
   // --- ESTADO INICIAL ---
@@ -91,21 +122,27 @@ const stateCreator: StateCreator<UIStore, [["zustand/persist", unknown]]> = (set
   isAuthModalOpen: false,
   hasHydrated: false,
   tenantId: null,
+  session: null,
 
   // --- ACCIONES: INFRAESTRUCTRURA ---
   setHasHydrated: (state: boolean) => set({ hasHydrated: state }),
   setTenant: (tenantId: string | null) => set({ tenantId }),
 
-  // --- ACCIONES: HEIMDALL HUD ---
+  // --- ACCIONES: IDENTIDAD ---
+  setSession: (session: SovereignSession | null) => {
+    console.log(`[HEIMDALL][SESSION] Identity Synced: ${session?.role || 'anonymous'}`);
+    set({ session });
+  },
+  clearSession: () => set({ session: null, isAuthModalOpen: false }),
+
+  // --- ACCIONES: VISUALES ---
   toggleVisitorHud: () => set((s) => ({ isVisitorHudOpen: !s.isVisitorHudOpen })),
   closeVisitorHud: () => set({ isVisitorHudOpen: false }),
   openVisitorHud: () => set({ isVisitorHudOpen: true }),
 
-  // --- ACCIONES: NAVEGACIÓN ---
   toggleMobileMenu: () => set((s) => ({ isMobileMenuOpen: !s.isMobileMenuOpen })),
   closeMobileMenu: () => set({ isMobileMenuOpen: false }),
 
-  // --- ACCIONES: PORTALES ---
   openNewsletterModal: () => set({ isNewsletterModalOpen: true }),
   closeNewsletterModal: () => set({ isNewsletterModalOpen: false }),
   
@@ -115,38 +152,39 @@ const stateCreator: StateCreator<UIStore, [["zustand/persist", unknown]]> = (set
 
 /**
  * APARATO: useUIStore
- * @description Fuente única de verdad (SSoT) para el estado visual MetaShark.
+ * @description Fuente Única de Verdad (SSoT) para el estado visual y de sesión.
  */
 export const useUIStore = create<UIStore>()(
   persist(
     stateCreator,
     {
-      name: 'metashark-ui-vault',
+      name: 'metashark-vault-ui',
       storage: createJSONStorage(resolveStorageEngine),
       
       /**
        * @pilar X: Higiene de Persistencia.
+       * Solo persistimos la visibilidad del HUD y la metadata de sesión
+       * para permitir que la UI cargue con el rol correcto sin parpadeos.
        */
       partialize: (state: UIStore) => ({
         isVisitorHudOpen: state.isVisitorHudOpen,
         tenantId: state.tenantId,
+        session: state.session, // Habilita persistencia del rol en el Dashboard
       }),
 
       /**
-       * PROTOCOLO DE HIDRATACIÓN (Pilar VIII)
-       * @description Sincroniza el estado y libera el renderizado del cliente.
+       * PROTOCOLO DE HIDRATACIÓN
        */
       onRehydrateStorage: () => {
         return (state, error) => {
           if (error) {
-            console.error('[HEIMDALL][STORE] Fallo en la recuperación de estado:', error);
+            console.error('[HEIMDALL][STORE] Error en rehidratación de bóveda:', error);
           }
-          // El estado aquí ya está correctamente tipado como UIStore | undefined
           state?.setHasHydrated(true);
         };
       },
       
-      version: 5,
+      version: 6, // Incremental para forzar purga de esquemas antiguos
     }
   )
 );

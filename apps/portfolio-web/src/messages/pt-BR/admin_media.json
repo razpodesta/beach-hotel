@@ -1,0 +1,14 @@
+{
+  "title": "Gestão de Ativos Multimedia",
+  "dropzone_prompt": "Vincular novo ativo",
+  "dropzone_subtext": "Dimensionado para LCP: WebP, AVIF, PNG. Max 5MB.",
+  "label_alt_text": "Metadados SEO",
+  "placeholder_alt_text": "Descreva a imagem para acessibilidade...",
+  "btn_upload": "Ingerir na Bóveda",
+  "status_uploading": "SINCRONIZANDO...",
+  "status_success": "Ativo em Nuvem (S3 OK)",
+  "status_error": "Falha de Sincronia no Cluster",
+  "label_dimensions": "Alvo de Resolução",
+  "label_file_size": "Tamanho do Payload",
+  "label_sync_cloud": "Protocolo S3 Ativo"
+}

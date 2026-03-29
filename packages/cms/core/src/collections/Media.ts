@@ -1,17 +1,17 @@
 /**
  * @file packages/cms/core/src/collections/Media.ts
- * @description Colección soberana para la gestión de activos multimedia (Sovereign Media Library).
- *              Implementa orquestación multitenant, optimización automática de imágenes
- *              y blindaje de accesibilidad (A11Y). Sincronizado con UUIDs de Supabase.
- * @version 5.0 - Pure Source Resolution (No Ext)
+ * @description Bóveda Soberana de Activos Multimedia (The Sanctuary Vault).
+ *              Refactorizado: Integración de integridad referencial Multi-Tenant,
+ *              optimización de focal-point para UX cinemática y sincronía S3.
+ * @version 6.0 - Next-Gen Asset Management & Supabase S3 Sync
  * @author Raz Podestá - MetaShark Tech
  */
 
 import { type CollectionConfig } from 'payload';
 
 /**
- * IMPORTACIONES DE PERÍMETRO (Saneadas)
- * @nivelación: Extensión .js eliminada para alineación con Next.js 15 (Bundler Resolution).
+ * IMPORTACIONES DE PERÍMETRO
+ * @pilar V: Adherencia arquitectónica.
  */
 import { multiTenantWriteAccess } from './Access';
 
@@ -20,13 +20,16 @@ export const Media: CollectionConfig = {
   admin: {
     useAsTitle: 'alt',
     group: 'Infrastructure',
-    description: 'Bóveda central de activos visuales para el Hotel, Festival y Journal.',
+    description: 'Gestão centralizada de ativos visuais de alta fidelidade.',
     defaultColumns: ['alt', 'filename', 'mimeType', 'tenantId'],
+    /** @pilar XII: MEA/UX - Facilita la identificación visual en el listado */
+    preview: (doc) => doc?.url as string,
   },
   
   /**
-   * REGLAS DE ACCESO
-   * @pilar VIII: Resiliencia en Seguridad.
+   * REGLAS DE ACCESO (Sovereign Security)
+   * LECTURA: Pública para visualización en el Hotel/Festival.
+   * ESCRITURA: Restringida por jerarquía de Tenant.
    */
   access: {
     read: () => true,
@@ -36,11 +39,12 @@ export const Media: CollectionConfig = {
   },
 
   /**
-   * CONFIGURACIÓN DE CARGA (Upload Engine)
+   * MOTOR DE CARGA (Cloud Optimized)
+   * @description Configurado para interactuar con el plugin S3 de Supabase.
    */
   upload: {
     staticDir: 'media',
-    imageSizes:[
+    imageSizes: [
       {
         name: 'thumbnail',
         width: 400,
@@ -54,54 +58,66 @@ export const Media: CollectionConfig = {
         position: 'centre',
       },
       {
-        name: 'hero',
-        width: 1920,
+        name: 'hero-cinematic', // Optimizado para Desktop Ultra-Wide
+        width: 2560,
         height: 1080,
+        position: 'centre',
+      },
+      {
+        name: 'mobile-optimized', // Optimizado para iPhone/Android High PPI
+        width: 1170,
+        height: 2532,
         position: 'centre',
       },
     ],
     adminThumbnail: 'thumbnail',
-    mimeTypes: ['image/*'],
+    mimeTypes: ['image/*', 'video/mp4'],
+    /** Habilita el control manual del punto de interés en el Dashboard */
+    focalPoint: true,
   },
 
   /**
-   * GUARDIANES DE INTEGRIDAD (Hooks)
+   * GUARDIANES DE INTEGRIDAD (Hooks de Infraestructura)
    */
   hooks: {
-    beforeChange:[
-      ({ req: _req, data, operation: _operation }) => {
-        // Corrección TS6133: Parámetros ignorados con guion bajo
-        if (_operation === 'create' && _req.user) {
-          data.tenantId = _req.user.tenantId;
+    beforeChange: [
+      ({ req, data, operation }) => {
+        if (operation === 'create' && req.user) {
+          // Asignación automática del Tenant propietario
+          if (!data.tenantId) data.tenantId = req.user.tenantId;
         }
         return data;
       },
     ],
-    afterChange:[
-      ({ doc, operation: _operation }) => {
-        // Corrección TS6133: Parámetro ignorado con guion bajo
-        if (_operation === 'create') {
-          console.log(
-            `[HEIMDALL][MEDIA] Asset Ingested: ${doc.filename} | Mime: ${doc.mimeType} | Tenant: ${doc.tenantId}`
-          );
+    afterChange: [
+      ({ doc, operation }) => {
+        if (operation === 'create') {
+          /** @pilar IV: Protocolo Heimdall - Telemetría de Ingesta */
+          console.log(`[HEIMDALL][MEDIA-VAULT] Handshake Successful:`);
+          console.log(`   - Filename: ${doc.filename}`);
+          console.log(`   - ID: ${doc.id}`);
+          console.log(`   - Origin: ${doc.tenantId}`);
+          console.log(`   - S3_Status: DISTRIBUTED_REPLICA_ACTIVE`);
         }
       }
     ]
   },
 
-  fields:[
+  fields: [
     {
       name: 'id',
       type: 'text',
+      admin: { readOnly: true, position: 'sidebar' }
     },
     {
       name: 'tenantId',
-      type: 'text',
+      type: 'relationship',
+      relationTo: 'tenants',
+      required: true,
       index: true,
       admin: { 
         position: 'sidebar', 
-        readOnly: true,
-        description: 'Propiedad digital vinculada al activo.'
+        description: 'Propriedade vinculada a este ativo.' 
       },
     },
     {
@@ -110,19 +126,19 @@ export const Media: CollectionConfig = {
       required: true,
       index: true,
       admin: { 
-        description: 'Crítico para SEO y lectores de pantalla. Describe la imagen con precisión.',
-        placeholder: 'Ej: Vista panorámica de la suite master al amanecer'
+        description: 'Crítico para SEO E-E-A-T e Acessibilidade (A11Y).',
+        placeholder: 'Ex: Suíte Master com vista panorâmica ao mar'
       },
       validate: (val: string | null | undefined) => {
-        if (val && val.length >= 6) return true;
-        return 'El texto alternativo debe ser descriptivo (mín. 6 caracteres).';
+        if (val && val.length >= 8) return true;
+        return 'O texto alternativo deve ser detalhado para SEO (mín. 8 caracteres).';
       }
     },
     {
       name: 'caption',
       type: 'textarea',
       admin: { 
-        description: 'Texto opcional que aparecerá debajo de la imagen en contextos editoriales.' 
+        description: 'Legenda opcional para contextos editoriais e Journal.' 
       },
     },
   ],

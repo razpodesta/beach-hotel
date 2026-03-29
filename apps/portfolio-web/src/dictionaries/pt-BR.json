@@ -5,7 +5,10 @@
     "personal_portfolio": "BEACH HOTEL CANASVIEIRAS",
     "job_title": "Hotel Boutique & Sede do Pride Escape 2026",
     "mobile_title": "Beach Hotel",
-    "mobile_subtitle": "Canasvieiras"
+    "mobile_subtitle": "Canasvieiras",
+    "login": "Entrar",
+    "join": "Hospedar-se",
+    "portal": "Meu Santuário"
   },
   "nav-links": {
     "nav_links": {
@@ -21,26 +24,33 @@
     }
   },
   "footer": {
-    "newsletter_title": "Junte-se ao Ecossistema",
-    "newsletter_placeholder": "Seu endereço de e-mail",
-    "newsletter_button": "Inscrever-se",
-    "newsletter_success_title": "Bem-vindo ao Santuário",
-    "newsletter_success_subtitle": "Sua identidade foi vinculada ao núcleo digital.",
-    "newsletter_reward_label": "CONCEDIDOS",
     "brand_description": "O seu refúgio boutique no coração de Florianópolis. Luxo, diversidade e engenharia de hospitalidade.",
     "column_nav_title": "Navegação",
     "column_services_title": "Concierge",
     "column_legal_title": "Conformidade",
-    "label_photos": "Galeria de Fotos",
-    "label_cancellation": "Políticas de Cancelamento",
+    "label_photos": "Galeria de Ativos",
+    "label_cancellation": "Políticas de Estorno",
     "label_rules": "Regras do Santuário",
-    "label_blog": "Blog & Journal",
+    "label_blog": "Journal Editorial",
     "label_lgpd": "LGPD & Privacidade",
     "label_dpo": "DPO: Raz Podestá",
     "label_all_rights": "Todos os direitos reservados",
-    "label_author_prefix": "Autor",
+    "label_author_prefix": "Arquiteto",
     "rights_reserved": "© 2026 Beach Hotel Canasvieiras.",
     "made_by": "Infraestrutura por MetaShark Tech"
+  },
+  "newsletter_form": {
+    "title": "Acesso Soberano",
+    "description": "Junte-se à elite do Beach Hotel e receba atualizações exclusivas do Santuário e do Festival.",
+    "placeholder": "Seu e-mail profissional",
+    "button": "Solicitar Ingresso",
+    "loading": "Processando Identidade...",
+    "success_title": "Identidade Vinculada",
+    "success_subtitle": "Seu acesso foi validado. Você agora faz parte do núcleo digital do Beach Hotel.",
+    "reward_label": "CONCEDIDOS",
+    "legal_notice": "Infraestrutura Privada • Criptografia de Ponta a Ponta",
+    "validation_email_required": "O e-mail é obrigatório para o handshake",
+    "validation_email_invalid": "Formato de e-mail não reconhecido pelo protocolo"
   },
   "system_status": {
     "items": [
@@ -108,6 +118,56 @@
     "en-US": "English",
     "es-ES": "Español",
     "pt-BR": "Português"
+  },
+  "auth_portal": {
+    "title_join": "Torne-se um Hóspede Soberano",
+    "title_login": "Retorne ao Santuário",
+    "subtitle": "Acesse experiências exclusivas e inicie seu legado digital.",
+    "apple_label": "Continuar con Apple",
+    "google_label": "Continuar com Google",
+    "facebook_label": "Continuar com Facebook",
+    "email_divider": "ou use seu e-mail",
+    "email_placeholder": "nome@exemplo.com",
+    "email_cta": "Acessar com E-mail",
+    "footer_trust": "Infraestrutura Privada • Zero Rastreadores",
+    "privacy_notice": "Ao entrar, você aceita nossas Regras do Santuário."
+  },
+  "portal": {
+    "welcome_developer": "Console de Engenharia Soberana",
+    "welcome_admin": "Painel de Gestão de Hospitalidade",
+    "welcome_operator": "Portal de Operações B2B",
+    "welcome_guest": "Bem-vindo ao seu Santuário",
+    "nav_overview": "Visão Geral",
+    "nav_reservations": "Reservas",
+    "nav_inventory": "Suítes e Ativos",
+    "nav_telemetry": "Telemetria L0",
+    "nav_b2b_rates": "Tarifas Net",
+    "label_server_health": "Saúde da Infraestrutura",
+    "label_active_connections": "Sockets Ativos",
+    "label_loyalty_points": "XP do Santuário",
+    "label_upcoming_stays": "Suas Próximas Estadias",
+    "label_metric_nominal": "NOMINAL",
+    "label_metric_warning": "DEGRADADO",
+    "label_metric_critical": "ANOMALIA",
+    "status_active_session": "Identidade Vinculada",
+    "last_sync_label": "Última sincronia",
+    "empty_data_label": "Nenhum dado detectado no perímetro",
+    "cta_logout": "Encerrar Sessão",
+    "cta_settings": "Configurações"
+  },
+  "admin_media": {
+    "title": "Gestão de Ativos Multimedia",
+    "dropzone_prompt": "Vincular novo ativo",
+    "dropzone_subtext": "Dimensionado para LCP: WebP, AVIF, PNG. Max 5MB.",
+    "label_alt_text": "Metadados SEO",
+    "placeholder_alt_text": "Descreva a imagem para acessibilidade...",
+    "btn_upload": "Ingerir na Bóveda",
+    "status_uploading": "SINCRONIZANDO...",
+    "status_success": "Ativo em Nuvem (S3 OK)",
+    "status_error": "Falha de Sincronia no Cluster",
+    "label_dimensions": "Alvo de Resolução",
+    "label_file_size": "Tamanho do Payload",
+    "label_sync_cloud": "Protocolo S3 Ativo"
   },
   "hero": {
     "page_title": "Beach Hotel Canasvieiras | Florianópolis",

@@ -1,0 +1,13 @@
+{
+  "title": "Acesso Soberano",
+  "description": "Junte-se à elite do Beach Hotel e receba atualizações exclusivas do Santuário e do Festival.",
+  "placeholder": "Seu e-mail profissional",
+  "button": "Solicitar Ingresso",
+  "loading": "Processando Identidade...",
+  "success_title": "Identidade Vinculada",
+  "success_subtitle": "Seu acesso foi validado. Você agora faz parte do núcleo digital do Beach Hotel.",
+  "reward_label": "CONCEDIDOS",
+  "legal_notice": "Infraestrutura Privada • Criptografia de Ponta a Ponta",
+  "validation_email_required": "O e-mail é obrigatório para o handshake",
+  "validation_email_invalid": "Formato de e-mail não reconhecido pelo protocolo"
+}

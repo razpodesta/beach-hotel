@@ -1,59 +1,68 @@
 /**
- * @file apps/portfolio-web/src/components/ui/SystemStatusTicker.tsx
- * @description Ticker global de estado del sistema ubicado en el shell principal (Layout).
- *              Implementa animación CSS de alto rendimiento y tipado estricto.
- * @version 3.0 - Object Schema Compatible
+ * @file SystemStatusTicker.tsx
+ * @description Ticker global de telemetría ubicado en el Shell Maestro.
+ *              Refactorizado: Sincronización con Oxygen Engine (OKLCH),
+ *              eliminación de hardcoding cromático y corrección crítica de Reglas de Hooks.
+ * @version 4.2 - Rules of Hooks Compliance
  * @author Raz Podestá - MetaShark Tech
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
+import { cn } from '../../lib/utils/cn';
 import type { Dictionary } from '../../lib/schemas/dictionary.schema';
 import type { SystemStatusItem } from '../../lib/schemas/system_status.schema';
 
-type SystemStatusTickerProps = {
-  /** Fragmento del diccionario validado por Zod */
+interface SystemStatusTickerProps {
+  /** Fragmento del diccionario validado por MACS */
   dictionary: Dictionary['system_status'];
-};
+}
 
 /**
- * Aparato de UI: SystemStatusTicker
- * Provee información en tiempo real con un desplazamiento infinito suave.
+ * APARATO: SystemStatusTicker
+ * @description Provee el "latido" del sistema en el perímetro del layout.
  */
 export function SystemStatusTicker({ dictionary }: SystemStatusTickerProps) {
-  // @pilar VIII: Resiliencia. Si no hay datos, evitamos el renderizado de un contenedor vacío.
-  if (!dictionary?.items || dictionary.items.length === 0) return null;
-
   /**
-   * ESTRATEGIA DE BUCLE (Loop Optimization)
-   * Duplicamos los elementos para garantizar que el ticker nunca muestre un vacío 
-   * en pantallas con resoluciones Ultra-Wide.
+   * OPTIMIZACIÓN DE BUCLE (Pilar X)
+   * Movemos el hook al nivel superior del componente para cumplir las Reglas de Hooks.
+   * Si dictionary o items no existen, el array vacío resultará en un renderizado nulo seguro.
    */
-  const items = dictionary.items;
-  const loopedItems = [...items, ...items, ...items, ...items];
+  const loopedItems = useMemo(() => {
+    if (!dictionary?.items || dictionary.items.length === 0) return [];
+    const base = dictionary.items;
+    return [...base, ...base, ...base];
+  }, [dictionary?.items]);
+
+  // Guardia de Resiliencia (Pilar VIII)
+  if (loopedItems.length === 0) return null;
 
   return (
     <div
-      className="relative z-40 w-full overflow-hidden border-b border-white/10 bg-[#050505] py-2.5 text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400 font-sans"
+      className={cn(
+        "relative z-40 w-full overflow-hidden border-b border-border bg-background py-2.5",
+        "text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground font-sans transition-colors duration-1000"
+      )}
       role="marquee"
       aria-label={dictionary.aria_label}
     >
-      {/* CAPA DE DIFUMINADO (Masking): Suaviza la entrada y salida de texto */}
-      <div className="absolute left-0 top-0 z-10 h-full w-24 bg-linear-to-r from-[#050505] to-transparent pointer-events-none" />
-      <div className="absolute right-0 top-0 z-10 h-full w-24 bg-linear-to-l from-[#050505] to-transparent pointer-events-none" />
+      {/* CAPAS DE DIFUMINADO ADAPTATIVO */}
+      <div className="absolute left-0 top-0 z-10 h-full w-24 bg-linear-to-r from-background to-transparent pointer-events-none" />
+      <div className="absolute right-0 top-0 z-10 h-full w-24 bg-linear-to-l from-background to-transparent pointer-events-none" />
 
-      {/* CONTENEDOR ANIMADO: Utiliza la animación 'infinite-scroll' definida en global.css */}
+      {/* MOTOR DE ANIMACIÓN CSS (Oxygen Track) */}
       <div
-        className="flex w-max animate-infinite-scroll hover:[animation-play-state:paused] will-change-transform"
-        style={{ animationDuration: '120s' }}
+        className="flex w-max animate-infinite-scroll hover:[animation-play-state:paused] will-change-transform transform-gpu"
+        style={{ animationDuration: '140s' }}
       >
         {loopedItems.map((item: SystemStatusItem, index) => (
           <div key={`${item.category}-${index}`} className="flex items-center mx-12 group cursor-default">
-            {/* Indicador de pulso boutique */}
-            <span className="mr-4 text-[8px] text-purple-600 animate-pulse">●</span>
+            {/* Indicador de Pulso Semántico */}
+            <span className="mr-4 text-[8px] text-primary animate-pulse">●</span>
             
             <div className="flex items-center gap-2 whitespace-nowrap">
-              <span className="text-zinc-600 font-mono tracking-widest">{item.category}:</span>
-              <span className="text-zinc-200 transition-colors group-hover:text-purple-400">
+              <span className="text-muted-foreground/60 font-mono tracking-widest">{item.category}:</span>
+              
+              <span className="text-foreground transition-colors group-hover:text-primary">
                 {item.message}
               </span>
             </div>

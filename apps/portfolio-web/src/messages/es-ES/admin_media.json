@@ -1,0 +1,14 @@
+{
+  "title": "Gestión de Activos Multimedia",
+  "dropzone_prompt": "Vincular nuevo activo",
+  "dropzone_subtext": "Optimizado para LCP: WebP, AVIF, PNG. Max 5MB.",
+  "label_alt_text": "Metadatos SEO",
+  "placeholder_alt_text": "Describe la imagen para accesibilidad...",
+  "btn_upload": "Ingerir en Bóveda",
+  "status_uploading": "SINCRONIZANDO...",
+  "status_success": "Nube Activa (S3 OK)",
+  "status_error": "Fallo de Sincronía en Cluster",
+  "label_dimensions": "Objetivo de Resolución",
+  "label_file_size": "Tamaño del Payload",
+  "label_sync_cloud": "Protocolo S3 Activo"
+}

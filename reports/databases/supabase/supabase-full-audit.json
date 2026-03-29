@@ -1,110 +1,93 @@
 {
-  "timestamp": "2026-03-27T18:45:57.074Z",
+  "timestamp": "2026-03-29T20:35:25.628Z",
   "summary": {
     "totalTables": 16,
     "totalPolicies": 0,
-    "tablesWithRlsDisabled": [
-      "blog_posts",
-      "blog_posts_tags",
-      "media",
-      "projects",
-      "projects_tech_stack",
-      "projects_backend_architecture_features",
-      "tenants",
-      "projects_tags",
-      "payload_kv",
-      "users",
-      "payload_preferences",
-      "payload_preferences_rels",
-      "payload_migrations",
-      "users_sessions",
-      "payload_locked_documents",
-      "payload_locked_documents_rels"
-    ],
-    "isSecurityCompliant": false
+    "tablesWithRlsDisabled": [],
+    "isSecurityCompliant": true
   },
   "tables": [
-    "users",
-    "blog_posts_tags",
-    "blog_posts",
-    "projects_tags",
-    "projects_tech_stack",
-    "projects_backend_architecture_features",
-    "projects",
-    "media",
-    "tenants",
-    "payload_kv",
     "payload_locked_documents",
     "payload_locked_documents_rels",
+    "media",
+    "projects",
+    "projects_tech_stack",
+    "projects_backend_architecture_features",
+    "tenants",
+    "projects_tags",
+    "payload_kv",
+    "users",
     "payload_preferences",
     "payload_preferences_rels",
     "payload_migrations",
-    "users_sessions"
+    "users_sessions",
+    "blog_posts_tags",
+    "blog_posts"
   ],
   "rlsStatus": [
     {
-      "tablename": "blog_posts",
-      "rowsecurity": false
-    },
-    {
-      "tablename": "blog_posts_tags",
-      "rowsecurity": false
-    },
-    {
-      "tablename": "media",
-      "rowsecurity": false
-    },
-    {
-      "tablename": "projects",
-      "rowsecurity": false
-    },
-    {
-      "tablename": "projects_tech_stack",
-      "rowsecurity": false
-    },
-    {
-      "tablename": "projects_backend_architecture_features",
-      "rowsecurity": false
-    },
-    {
-      "tablename": "tenants",
-      "rowsecurity": false
-    },
-    {
-      "tablename": "projects_tags",
-      "rowsecurity": false
-    },
-    {
-      "tablename": "payload_kv",
-      "rowsecurity": false
-    },
-    {
-      "tablename": "users",
-      "rowsecurity": false
-    },
-    {
-      "tablename": "payload_preferences",
-      "rowsecurity": false
-    },
-    {
-      "tablename": "payload_preferences_rels",
-      "rowsecurity": false
-    },
-    {
-      "tablename": "payload_migrations",
-      "rowsecurity": false
-    },
-    {
-      "tablename": "users_sessions",
-      "rowsecurity": false
-    },
-    {
       "tablename": "payload_locked_documents",
-      "rowsecurity": false
+      "rowsecurity": true
     },
     {
       "tablename": "payload_locked_documents_rels",
-      "rowsecurity": false
+      "rowsecurity": true
+    },
+    {
+      "tablename": "users",
+      "rowsecurity": true
+    },
+    {
+      "tablename": "tenants",
+      "rowsecurity": true
+    },
+    {
+      "tablename": "media",
+      "rowsecurity": true
+    },
+    {
+      "tablename": "projects",
+      "rowsecurity": true
+    },
+    {
+      "tablename": "projects_tech_stack",
+      "rowsecurity": true
+    },
+    {
+      "tablename": "projects_backend_architecture_features",
+      "rowsecurity": true
+    },
+    {
+      "tablename": "projects_tags",
+      "rowsecurity": true
+    },
+    {
+      "tablename": "payload_kv",
+      "rowsecurity": true
+    },
+    {
+      "tablename": "payload_preferences",
+      "rowsecurity": true
+    },
+    {
+      "tablename": "payload_preferences_rels",
+      "rowsecurity": true
+    },
+    {
+      "tablename": "payload_migrations",
+      "rowsecurity": true
+    },
+    {
+      "tablename": "users_sessions",
+      "rowsecurity": true
+    },
+    {
+      "tablename": "blog_posts",
+      "rowsecurity": true
+    },
+    {
+      "tablename": "blog_posts_tags",
+      "rowsecurity": true
     }
   ],
   "policies": [],

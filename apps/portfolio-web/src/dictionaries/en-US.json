@@ -5,7 +5,10 @@
     "personal_portfolio": "BEACH HOTEL CANASVIEIRAS",
     "job_title": "Boutique Hotel & Pride Escape 2026 Headquarters",
     "mobile_title": "Beach Hotel",
-    "mobile_subtitle": "Canasvieiras"
+    "mobile_subtitle": "Canasvieiras",
+    "login": "Sign In",
+    "join": "Join Now",
+    "portal": "My Sanctuary"
   },
   "nav-links": {
     "nav_links": {
@@ -21,26 +24,33 @@
     }
   },
   "footer": {
-    "newsletter_title": "Join the Ecosystem",
-    "newsletter_placeholder": "Your email address",
-    "newsletter_button": "Subscribe",
-    "newsletter_success_title": "Welcome to the Sanctuary",
-    "newsletter_success_subtitle": "Your identity has been linked to the digital core.",
-    "newsletter_reward_label": "AWARDED",
     "brand_description": "Your boutique refuge in the heart of Florianópolis. Luxury, diversity, and hospitality engineering.",
     "column_nav_title": "Navigation",
     "column_services_title": "Concierge",
     "column_legal_title": "Compliance",
-    "label_photos": "Photo Gallery",
-    "label_cancellation": "Cancellation Policies",
+    "label_photos": "Asset Gallery",
+    "label_cancellation": "Refund Policies",
     "label_rules": "Sanctuary Rules",
-    "label_blog": "Blog & Journal",
+    "label_blog": "Editorial Journal",
     "label_lgpd": "LGPD & Privacy",
     "label_dpo": "DPO: Raz Podestá",
-    "label_all_rights": "All Rights Reserved",
-    "label_author_prefix": "Author",
+    "label_all_rights": "All rights reserved",
+    "label_author_prefix": "Architect",
     "rights_reserved": "© 2026 Beach Hotel Canasvieiras.",
     "made_by": "Infrastructure by MetaShark Tech"
+  },
+  "newsletter_form": {
+    "title": "Acesso Soberano",
+    "description": "Junte-se à elite do Beach Hotel e receba atualizações exclusivas do Santuário e do Festival.",
+    "placeholder": "Seu e-mail profissional",
+    "button": "Solicitar Ingresso",
+    "loading": "Processando Identidade...",
+    "success_title": "Identidade Vinculada",
+    "success_subtitle": "Seu acesso foi validado. Você agora faz parte do núcleo digital do Beach Hotel.",
+    "reward_label": "CONCEDIDOS",
+    "legal_notice": "Infraestrutura Privada • Criptografia de Ponta a Ponta",
+    "validation_email_required": "O e-mail é obrigatório para o handshake",
+    "validation_email_invalid": "Formato de e-mail não reconhecido pelo protocolo"
   },
   "system_status": {
     "items": [
@@ -108,6 +118,56 @@
     "en-US": "English",
     "es-ES": "Español",
     "pt-BR": "Português"
+  },
+  "auth_portal": {
+    "title_join": "Become a Sovereign Guest",
+    "title_login": "Return to the Sanctuary",
+    "subtitle": "Access exclusive experiences and start your digital legacy.",
+    "apple_label": "Continue with Apple",
+    "google_label": "Continue with Google",
+    "facebook_label": "Continue with Facebook",
+    "email_divider": "or use your email",
+    "email_placeholder": "name@example.com",
+    "email_cta": "Access with Email",
+    "footer_trust": "Private Infrastructure • Zero Trackers",
+    "privacy_notice": "By entering, you accept our Sanctuary Rules."
+  },
+  "portal": {
+    "welcome_developer": "Sovereign Engineering Console",
+    "welcome_admin": "Hospitality Management Panel",
+    "welcome_operator": "B2B Operations Portal",
+    "welcome_guest": "Welcome to your Sanctuary",
+    "nav_overview": "Overview",
+    "nav_reservations": "Reservations",
+    "nav_inventory": "Suites & Assets",
+    "nav_telemetry": "Telemetry L0",
+    "nav_b2b_rates": "Net Rates",
+    "label_server_health": "Infrastructure Health",
+    "label_active_connections": "Active Sockets",
+    "label_loyalty_points": "Sanctuary XP",
+    "label_upcoming_stays": "Your Next Stays",
+    "label_metric_nominal": "NOMINAL",
+    "label_metric_warning": "DEGRADED",
+    "label_metric_critical": "ANOMALY",
+    "status_active_session": "Identity Linked",
+    "last_sync_label": "Last sync",
+    "empty_data_label": "No data detected in perimeter",
+    "cta_logout": "End Session",
+    "cta_settings": "Settings"
+  },
+  "admin_media": {
+    "title": "Multimedia Asset Management",
+    "dropzone_prompt": "Link new asset",
+    "dropzone_subtext": "Optimized for LCP: WebP, AVIF, PNG. Max 5MB.",
+    "label_alt_text": "SEO Metadata",
+    "placeholder_alt_text": "Describe the image for accessibility...",
+    "btn_upload": "Ingest into Vault",
+    "status_uploading": "SYNCHRONIZING...",
+    "status_success": "Cloud Active (S3 OK)",
+    "status_error": "Cluster Sync Failed",
+    "label_dimensions": "Resolution Target",
+    "label_file_size": "Payload Size",
+    "label_sync_cloud": "S3 Protocol Active"
   },
   "hero": {
     "page_title": "Beach Hotel Canasvieiras | Florianópolis",

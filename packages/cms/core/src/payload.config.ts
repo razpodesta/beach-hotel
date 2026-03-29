@@ -1,29 +1,24 @@
 /**
  * @file packages/cms/core/src/payload.config.ts
  * @description Orquestador soberano de configuración para Payload CMS 3.0.
- *              Refactorizado: Implementa el Protocolo de Infraestructura Nivel 0
- *              blindado para erradicar fallos de TLS en entornos Vercel.
- * @version 25.0 - Hardened SSL Protocol (Fix: SELF_SIGNED_CERT_IN_CHAIN)
+ *              Refactorizado: Arquitectura S3 (Supabase Storage) integrada,
+ *              telemetría forense hiper-verbosa y estabilización del pooler SSL.
+ * @version 26.5 - Build Fixed & Production Ready
  * @author Raz Podestá - MetaShark Tech
  */
 
 /**
  * 1. PROTOCOLO DE INFRAESTRUCTRURA NIVEL 0 (Early Initialization)
  * @pilar VIII: Resiliencia de Persistencia.
- * @description Inyectamos la configuración de red en el proceso global de Node.js
- * antes de que cualquier importación de módulo (como 'pg') instancie el pool.
  */
 (function initializeSovereignNetwork() {
   const isVercel = process.env.VERCEL === '1';
   const isBuild = process.env.NEXT_PHASE === 'phase-production-build';
   
   if (isVercel || isBuild) {
-    // Protocolo de emergencia para certificados auto-firmados en Poolers
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
     process.env.PGSSLMODE = 'no-verify';
-    
-    // Telemetría inmediata de bajo nivel
-    console.log('[HEIMDALL][L0] SSL Infrastructure Bypass: ENGAGED');
+    console.log('[HEIMDALL][L0] SSL Infrastructure Bypass: ENGAGED (Vercel/Build Context)');
   }
 })();
 
@@ -32,6 +27,7 @@ import type { SharpDependency } from 'payload';
 import { postgresAdapter } from '@payloadcms/db-postgres';
 import { lexicalEditor } from '@payloadcms/richtext-lexical';
 import { nodemailerAdapter } from '@payloadcms/email-nodemailer';
+import { s3Storage } from '@payloadcms/storage-s3';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
@@ -52,17 +48,22 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const BASE_CONFIG_DIR = __dirname;
 
-const PAYLOAD_SECRET = process.env.PAYLOAD_SECRET;
+const PAYLOAD_SECRET = process.env.PAYLOAD_SECRET || 'genesis-engine-production-vault-2026';
 let DATABASE_URL = process.env.DATABASE_URL || '';
 
+// Credenciales de Nube (Supabase S3)
+const S3_ENDPOINT = process.env.S3_ENDPOINT || '';
+const S3_ACCESS_KEY_ID = process.env.S3_ACCESS_KEY_ID || '';
+const S3_SECRET_ACCESS_KEY = process.env.S3_SECRET_ACCESS_KEY || '';
+const S3_BUCKET = process.env.S3_BUCKET || 'sanctuary-vault';
+const S3_REGION = process.env.S3_REGION || 'sa-east-1';
+
 /**
- * SANEAMIENTO DE CADENA DE CONEXIÓN (Industrial Grade)
- * @description Garantiza que los parámetros de bypass viajen en la URI.
+ * SANEAMIENTO DE CADENA DE CONEXIÓN
  */
 if (DATABASE_URL) {
   try {
     const url = new URL(DATABASE_URL);
-    // Forzamos compatibilidad con el pooler transaccional de Supabase
     url.searchParams.set('uselibpqcompat', 'true');
     url.searchParams.set('sslmode', 'no-verify'); 
     DATABASE_URL = url.toString();
@@ -72,30 +73,32 @@ if (DATABASE_URL) {
   }
 }
 
+const IS_CLOUD_STORAGE_READY = Boolean(S3_ENDPOINT && S3_ACCESS_KEY_ID && S3_SECRET_ACCESS_KEY);
+
 /**
- * TELEMETRÍA DE ARRANQUE (Pilar IV)
+ * TELEMETRÍA DE ARRANQUE VERBOSA (Heimdall)
  */
 console.group('[HEIMDALL][INFRA] Sovereign Engine Bootstrap');
-console.log(`[CORE] Payload 3.0 Lifecycle`);
-console.log(`[CORE] DB Status: ${DATABASE_URL ? 'URI_RESOLVED' : 'MISSING'}`);
+console.log(`[CORE] Payload Version: 3.0 Lifecycle`);
+console.log(`[CORE] Database Status: ${DATABASE_URL ? 'URI_RESOLVED' : 'MISSING_URI'}`);
+console.log(`[CORE] Media Storage: ${IS_CLOUD_STORAGE_READY ? 'S3_CLOUD_ACTIVE (Supabase)' : 'LOCAL_EPHEMERAL (Vercel Warning)'}`);
 console.groupEnd();
 
 if (!DATABASE_URL && process.env.NODE_ENV === 'production') {
   throw new Error('[CRITICAL] SSoT Failure: DATABASE_URL is mandatory for production.');
 }
 
+/**
+ * CONSTRUCCIÓN DEL MOTOR CMS
+ */
 export default buildConfig({
-  /**
-   * @pilar VI: Internacionalización de Infraestructura.
-   */
+  serverURL: process.env.NEXT_PUBLIC_BASE_URL || '',
+
   email: nodemailerAdapter({
     defaultFromAddress: 'admin@beachhotelcanasvieiras.com',
     defaultFromName: 'Sanctuary Concierge Engine',
   }),
 
-  /**
-   * @pilar III: Seguridad de Tipos & IX: Escape de Emergencia.
-   */
   sharp: (sharp as unknown) as SharpDependency,
 
   admin: {
@@ -103,9 +106,11 @@ export default buildConfig({
     importMap: { 
       baseDir: BASE_CONFIG_DIR, 
     },
+    meta: {
+      titleSuffix: '- MetaShark Sovereign CMS',
+    }
   },
 
-  // Registro Soberano de Colecciones (SSoT)
   collections: [
     Users, 
     BlogPosts, 
@@ -115,28 +120,47 @@ export default buildConfig({
   ],
   
   editor: lexicalEditor({}),
-  
-  secret: PAYLOAD_SECRET || 'genesis-engine-production-vault-2026',
+  secret: PAYLOAD_SECRET,
   
   typescript: {
     outputFile: path.resolve(BASE_CONFIG_DIR, 'payload-types.ts'),
   },
-  
+
   /**
-   * CAPA DE PERSISTENCIA (Supabase Transaction Pooler Support)
+   * CAPA DE PERSISTENCIA (Supabase Transaction Pooler)
    * @pilar VIII: Resiliencia de Persistencia.
-   * @description Configuramos el pooler con el objeto SSL explícito para Next.js 15.
    */
   db: postgresAdapter({
     pool: {
       connectionString: DATABASE_URL,
-      /** 
-       * @description Blindaje total contra certificados auto-firmados.
-       * Esta configuración es innegociable para builds exitosos en Vercel.
-       */
       ssl: {
         rejectUnauthorized: false,
       },
     },
   }),
+
+  /**
+   * SISTEMA DE PLUGINS: S3 Storage (Supabase)
+   */
+  plugins: [
+    ...(IS_CLOUD_STORAGE_READY
+      ? [
+          s3Storage({
+            collections: {
+              media: true,
+            },
+            bucket: S3_BUCKET,
+            config: {
+              endpoint: S3_ENDPOINT,
+              region: S3_REGION,
+              credentials: {
+                accessKeyId: S3_ACCESS_KEY_ID,
+                secretAccessKey: S3_SECRET_ACCESS_KEY,
+              },
+              forcePathStyle: true,
+            },
+          }),
+        ]
+      : []),
+  ],
 });
