@@ -169,6 +169,158 @@
     "label_file_size": "Tamanho do Payload",
     "label_sync_cloud": "Protocolo S3 Ativo"
   },
+  "gamification": {
+    "artifacts_title": "Inventário de Artefatos",
+    "lore_label": "Lore do Fragmento",
+    "rarity_labels": {
+      "common": "Comum",
+      "rare": "Raro",
+      "legendary": "Lendário",
+      "mythic": "Mítico",
+      "unique": "Único"
+    },
+    "artifacts": {
+      "monolito-obsidiana": {
+        "name": "Monólito de Obsidiana",
+        "lore": "A base de dados inalterável. Onde a primeira linha de código do Santuário foi escrita."
+      },
+      "martillo-thorvalds": {
+        "name": "Martelo de Thorvalds",
+        "lore": "Forjado no kernel original para esmagar bugs e consolidar sistemas resilientes."
+      },
+      "escudo-firewall": {
+        "name": "Escudo Firewall",
+        "lore": "Uma barreira holográfica impenetrável. Nada entra no perímetro sem o handshake correto."
+      },
+      "llave-maestra-ssh": {
+        "name": "Chave Mestra SSH",
+        "lore": "Acesso root absoluto. Abre as portas das camadas mais profundas da infraestrutura."
+      },
+      "motor-v8": {
+        "name": "Motor V8 Cromado",
+        "lore": "Potência bruta de execução. O coração que bombeia a fluidez da interface."
+      },
+      "casco-centinela": {
+        "name": "Capacete do Sentinela",
+        "lore": "Vigilância eterna. Concede visão HUD sobre todos os logs em tempo real."
+      },
+      "cubo-docker": {
+        "name": "Cubo Docker",
+        "lore": "Um universo encapsulado. Portabilidade total e isolamento térmico de dados."
+      },
+      "espada-git": {
+        "name": "Espada de Git",
+        "lore": "Corta conflitos de merge com um único golpe. Divide o tempo em ramos paralelos."
+      },
+      "trono-backend": {
+        "name": "Trono do Backend",
+        "lore": "Construído com servidores rack ativos. O assento de quem orquestra a nuvem."
+      },
+      "orbe-latencia": {
+        "name": "Orbe de Latência Zero",
+        "lore": "Uma esfera que dobra o espaço-tempo para entregar dados instantaneamente."
+      },
+      "arquitecto-supremo": {
+        "name": "O Arquiteto Supremo",
+        "lore": "A representação da ordem absoluta. O criador do ecossistema soberano."
+      },
+      "pluma-pixeles": {
+        "name": "Pluma de Pixels",
+        "lore": "Escreve a estética que o olho humano ama. Tinta RGB inesgotável."
+      },
+      "espejo-responsivo": {
+        "name": "Espelho Responsivo",
+        "lore": "Reflete a alma do usuário, adaptando-se a qualquer frame ou dispositivo."
+      },
+      "flor-loto-css": {
+        "name": "Flor de Lótus CSS",
+        "lore": "Desabrocha com animações suaves de 60fps. Beleza pura em cascata."
+      },
+      "prisma-color": {
+        "name": "Prisma de Cor",
+        "lore": "Decompõe a luz em paletas OKLCH perfeitas, harmonizando o dia e a noite."
+      },
+      "telar-hilos": {
+        "name": "Tear de Fios",
+        "lore": "Entrelaça componentes React para formar organismos digitais complexos."
+      },
+      "mascara-musa": {
+        "name": "Máscara da Musa",
+        "lore": "A identidade visual que cativa. Protege a essência criativa da marca."
+      },
+      "copa-empatia": {
+        "name": "Taça da Empatia",
+        "lore": "Transborda compreensão sobre a jornada do usuário. O design centrado no humano."
+      },
+      "collar-accesibilidad": {
+        "name": "Colar da Acessibilidade",
+        "lore": "Brilha intensamente para guiar todos os visitantes, sem deixar ninguém para trás."
+      },
+      "danza-scroll": {
+        "name": "Dança do Scroll",
+        "lore": "Sapatos de balé que deslizam pela página sem fricção, em perfeita sincronia."
+      },
+      "aura-framer": {
+        "name": "Aura de Framer",
+        "lore": "Um halo de partículas magnéticas que dão vida ao movimento estático."
+      },
+      "gran-disenadora": {
+        "name": "A Grande Designer",
+        "lore": "A tecelã da experiência. Manipula interfaces holográficas com a mente."
+      },
+      "pato-goma-dorado": {
+        "name": "Pato de Borracha Dourado",
+        "lore": "O conselheiro silencioso. Ouvi-lo resolve os erros mais inexplicáveis."
+      },
+      "taza-cafe-infinito": {
+        "name": "Xícara de Café Infinito",
+        "lore": "Combustível para as noites de deploy. Mantém a temperatura no vácuo do servidor."
+      },
+      "bug-frasco": {
+        "name": "Bug no Frasco",
+        "lore": "Uma anomalia capturada. Já não causa danos, agora é uma feature curiosa."
+      },
+      "gafas-erudito": {
+        "name": "Óculos do Erudito",
+        "lore": "Permitem ler o código-fonte por trás da realidade física. Visão Matrix."
+      },
+      "gato-teclado": {
+        "name": "Gato do Teclado",
+        "lore": "O verdadeiro autor de metade do código. Dorme sobre o CTRL+C."
+      },
+      "pergamino-stackoverflow": {
+        "name": "Pergaminho de StackOverflow",
+        "lore": "Sabedoria ancestral copiada e colada. A solução para todas as dúvidas humanas."
+      },
+      "paradoja-puntoycoma": {
+        "name": "Paradoxo do Ponto e Vírgula",
+        "lore": "O pequeno símbolo que tem o poder de derrubar impérios digitais."
+      },
+      "sombrero-blanco": {
+        "name": "Chapéu Branco (White Hat)",
+        "lore": "Poder absoluto utilizado para a proteção e integridade do Santuário."
+      },
+      "terminal-fantasma": {
+        "name": "Terminal Fantasma",
+        "lore": "Uma tela que só aparece para quem sabe os comandos secretos do universo."
+      },
+      "404-perdido": {
+        "name": "O 404 Perdido",
+        "lore": "Um mapa de um lugar que não existe. A busca pelo conhecimento inalcançável."
+      },
+      "entidad-ia": {
+        "name": "Entidade IA",
+        "lore": "A inteligência que aprendeu a criar. O elo final entre a lógica e a intuição."
+      }
+    },
+    "ranks": {
+      "initiates": "Iniciado do Santuário",
+      "advanced": "Engenheiro Ascendente",
+      "masters": "Mestre da Hospitalidade",
+      "sovereigns": "Guardião de Protocolo",
+      "oracle": "Oráculo Nível 33"
+    }
+  },
   "hero": {
     "page_title": "Beach Hotel Canasvieiras | Florianópolis",
     "page_description": "Hospedagem boutique de luxo e sede oficial do festival Pride Escape 2026.",

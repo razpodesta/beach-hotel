@@ -1,10 +1,10 @@
 /**
  * @file apps/portfolio-web/src/app/[lang]/portal/page.tsx
  * @description Orquestador Soberano del Dashboard Unificado.
- *              Refactorizado: Integración del flujo completo de Inventario (CRUD),
- *              orquestación de micro-vistas administrativas y optimización
- *              de carga paralela de activos S3 reales con aserciones tipadas.
- * @version 5.1 - S3 Live Sync & TS2345 Compliant
+ *              Refactorizado: Nivelación tras la atomización de ArtifactShowcase,
+ *              normalização de sesión para el motor de reputación P33 y 
+ *              optimización de carga paralela de activos.
+ * @version 8.0 - P33 Sync & Session Hardening
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -25,11 +25,12 @@ import {
   Activity,
   ShieldCheck,
   LayoutGrid,
-  type LucideIcon
+  type LucideIcon,
+  Sparkles
 } from 'lucide-react';
 
 /**
- * IMPORTACIONES DE INFRAESTRUCTRURA (Nx Relative Path Compliance)
+ * IMPORTACIONES DE INFRAESTRUCTRURA
  * @pilar V: Adherencia arquitectónica.
  */
 import { getDictionary } from '../../../lib/get-dictionary';
@@ -40,10 +41,11 @@ import { cn } from '../../../lib/utils/cn';
 import { getPortalData } from '../../../lib/portal-api';
 
 /**
- * MICRO-VISTAS DE INVENTARIO (Aparatos Atómicos)
+ * APARATOS DE VISTA (Sovereign Components)
  */
 import { AdminMediaPanel } from '../../../components/sections/portal/AdminMediaPanel';
 import { InventoryExplorer } from '../../../components/sections/portal/media/InventoryExplorer';
+import { ArtifactShowcase } from '../../../components/sections/portal/ArtifactShowcase';
 
 /**
  * IMPORTACIONES DE CONTRATO (SSoT)
@@ -53,10 +55,6 @@ import type { PortalDictionary } from '../../../lib/schemas/portal.schema';
 import { shapeMediaEntity, type SovereignMedia } from '../../../lib/portal';
 import type { PayloadMediaDoc } from '@metashark/cms-core';
 
-/**
- * @interface RoleBrandingConfig
- * @description Define la atmósfera visual por rango.
- */
 interface RoleBrandingConfig {
   color: string;
   glow: string;
@@ -65,20 +63,60 @@ interface RoleBrandingConfig {
 }
 
 /**
- * RESOLVER DE SESIÓN SOBERANA
- * @description Handshake con el sistema de persistencia de identidades.
+ * @interface SovereignSessionData
+ * @description Contrato extendido de sesión para soporte de Gamificación.
  */
-async function getActiveSession() {
+interface SovereignSessionData {
+  userId: string;
+  role: SovereignRole;
+  email: string;
+  tenantId: string | null;
+  xp: number;
+  artifacts: string[];
+}
+
+/**
+ * RESOLVER DE SESIÓN SOBERANA
+ * @description Handshake con el sistema de persistencia o protocolo de bypass.
+ * @pilar VIII: Resiliencia - Garantiza que el objeto de sesión siempre tenga xp y artifacts.
+ */
+async function getActiveSession(): Promise<SovereignSessionData | null> {
+  // 1. Prioridad: Bypass de Desarrollo (Ghost Admin)
+  if (process.env.NEXT_PUBLIC_AUTH_BYPASS === 'true') {
+    return { 
+      userId: 'GHOST_ADMIN_S0', 
+      role: 'developer', 
+      email: 'dev-mode@metashark.tech', 
+      tenantId: '00000000-0000-0000-0000-000000000001',
+      xp: 3300,
+      artifacts: ['monolito-obsidiana', 'martillo-thorvalds', 'terminal-fantasma', 'entidad-ia']
+    };
+  }
+
   const cookieStore = await cookies();
   const payloadToken = cookieStore.get('payload-token');
   const sbToken = cookieStore.get('sb-access-token');
   
   if (payloadToken) {
-    return { userId: 'DEV-MASTER', role: 'developer' as SovereignRole, email: 'admin@metashark.tech', tenantId: '00000000-0000-0000-0000-000000000001' };
+    return { 
+      userId: 'DEV-MASTER', 
+      role: 'developer', 
+      email: 'admin@metashark.tech', 
+      tenantId: '00000000-0000-0000-0000-000000000001',
+      xp: 2500,
+      artifacts: ['monolito-obsidiana']
+    };
   }
   
   if (sbToken) {
-    return { userId: 'GUEST-ID', role: 'guest' as SovereignRole, email: 'guest@beachhotel.com', tenantId: null };
+    return { 
+      userId: 'GUEST-ID', 
+      role: 'guest', 
+      email: 'guest@beachhotel.com', 
+      tenantId: null,
+      xp: 150,
+      artifacts: []
+    };
   }
 
   return null;
@@ -97,8 +135,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 
 /**
  * APARATO PRINCIPAL: PortalPage
- * @description Orquesta el ciclo de vida del Dashboard.
- *              Fase Funnel: Social Proof & Management.
+ * @description Orquesta la experiencia de usuario autenticado o bypass.
  */
 export default async function PortalPage(props: PageProps) {
   const { lang } = await props.params;
@@ -111,20 +148,18 @@ export default async function PortalPage(props: PageProps) {
 
   /**
    * ORQUESTACIÓN PARALELA DE RECURSOS (Pilar X)
-   * @description Recupera diccionarios, estado del portal e inventario S3
-   *              de forma concurrente para minimizar latencia en Vercel.
    */
   const [dict, data, mediaDocs] = await Promise.all([
     getDictionary(lang),
     getPortalData(session.role, session.userId),
-    // Ingesta condicional: Solo traemos activos S3 si el usuario tiene permisos y está en la vista.
     (async () => {
-      if (activeView === 'inventory' && (session.role === 'admin' || session.role === 'developer')) {
+      const isStaff = session.role === 'admin' || session.role === 'developer';
+      if (activeView === 'inventory' && isStaff) {
         const payload = await getPayload({ config: await configPromise });
         const result = await payload.find({
           collection: 'media',
           where: session.tenantId ? { tenantId: { equals: session.tenantId } } : {},
-          limit: 100, // Límite de seguridad
+          limit: 100,
           sort: '-createdAt'
         });
         return result.docs;
@@ -136,9 +171,6 @@ export default async function PortalPage(props: PageProps) {
   const t: PortalDictionary = dict.portal;
   const role: SovereignRole = session.role;
 
-  /**
-   * MATRIZ DE BRANDING SOBERANA
-   */
   const BRANDING_MAP: Record<SovereignRole, RoleBrandingConfig> = {
     developer: { color: 'text-purple-400', glow: 'bg-purple-500', icon: Terminal, title: t.welcome_developer },
     admin: { color: 'text-blue-400', glow: 'bg-blue-500', icon: Hotel, title: t.welcome_admin },
@@ -151,11 +183,6 @@ export default async function PortalPage(props: PageProps) {
   const branding = BRANDING_MAP[role];
   const Icon = branding.icon;
 
-  /**
-   * PURIFICACIÓN DE ACTIVOS (Shaping)
-   * @pilar IX: Justificación de 'as'. Payload.find devuelve JsonObject genérico.
-   * Casteamos as unknown as PayloadMediaDoc con la certeza de que provienen de la colección media.
-   */
   const mediaItems: SovereignMedia[] = mediaDocs.map(doc => shapeMediaEntity(doc as unknown as PayloadMediaDoc));
 
   return (
@@ -171,7 +198,8 @@ export default async function PortalPage(props: PageProps) {
                   <div className={cn("absolute inline-flex h-full w-full animate-ping rounded-full opacity-75", branding.glow)} />
                   <div className={cn("relative inline-flex h-2 w-2 rounded-full", branding.glow)} />
                 </div>
-                {t.status_active_session} • {role}
+                {t.status_active_session} • {role.toUpperCase()} 
+                {process.env.NEXT_PUBLIC_AUTH_BYPASS === 'true' && " [GHOST_MODE]"}
               </div>
             </FadeIn>
             
@@ -187,19 +215,18 @@ export default async function PortalPage(props: PageProps) {
           </div>
 
           <div className="flex gap-4">
-            <button className="flex items-center gap-3 px-6 py-3 rounded-2xl bg-surface border border-border hover:border-primary/40 transition-all text-[10px] font-bold uppercase tracking-widest">
+            <button className="flex items-center gap-3 px-6 py-3 rounded-2xl bg-surface border border-border hover:border-primary/40 transition-all text-[10px] font-bold uppercase tracking-widest outline-none">
               <Settings size={14} /> {t.cta_settings}
             </button>
-            <button className="flex items-center gap-3 px-6 py-3 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-500 hover:bg-red-500 hover:text-white transition-all text-[10px] font-bold uppercase tracking-widest">
+            <button className="flex items-center gap-3 px-6 py-3 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-500 hover:bg-red-500 hover:text-white transition-all text-[10px] font-bold uppercase tracking-widest outline-none">
               <LogOut size={14} /> {t.cta_logout}
             </button>
           </div>
         </header>
 
-        {/* --- 2. GRID DE CAPACIDADES --- */}
         <section className="grid grid-cols-1 md:grid-cols-12 gap-12 items-start">
           
-          {/* NAVEGACIÓN LATERAL (Tab System) */}
+          {/* --- 2. NAVEGACIÓN --- */}
           <aside className="md:col-span-3 space-y-2">
             {[
               { id: 'overview', label: t.nav_overview, icon: Activity, roles: null },
@@ -209,7 +236,7 @@ export default async function PortalPage(props: PageProps) {
               { id: 'telemetry', label: t.nav_telemetry, icon: Terminal, roles: ['developer'] },
             ].map((nav) => {
               if (nav.roles && !nav.roles.includes(role)) return null;
-              const isActive = activeView === nav.id;
+              const isActive = activeView === 'overview' ? nav.id === 'overview' : activeView === nav.id;
 
               return (
                 <Link 
@@ -228,29 +255,47 @@ export default async function PortalPage(props: PageProps) {
             })}
           </aside>
 
-          {/* --- 3. ZONA DE TRABAJO (Viewport Polimórfico) --- */}
-          <div className="md:col-span-9 space-y-12">
+          {/* --- 3. VIEWPORT --- */}
+          <div className="md:col-span-9 space-y-16">
             
-            {/* VISTA: INVENTARIO (Admin & Developer) */}
+            {/* VISTA A: OVERVIEW (Protocolo 33) */}
+            {activeView === 'overview' && (
+              <FadeIn delay={0.2} className="space-y-12">
+                 <header className="px-4">
+                    <div className="flex items-center gap-3 text-primary mb-4">
+                       <Sparkles size={18} className="animate-pulse" />
+                       <span className="text-[10px] font-bold uppercase tracking-[0.4em]">Protocol 33 Status</span>
+                    </div>
+                    <h3 className="font-display text-4xl font-bold text-foreground tracking-tighter uppercase">
+                       {dict.gamification.artifacts_title}
+                    </h3>
+                 </header>
+                 
+                 <ArtifactShowcase 
+                    userXp={session.xp} 
+                    ownedIds={session.artifacts} 
+                    dictionary={dict.gamification} 
+                 />
+              </FadeIn>
+            )}
+
+            {/* VISTA B: INVENTARIO */}
             {activeView === 'inventory' && (role === 'admin' || role === 'developer') && (
               <FadeIn delay={0.2} className="space-y-16">
-                 {/* Módulo A: Ingesta (Create) */}
                  <AdminMediaPanel mediaLabels={dict.admin_media} />
                  
-                 {/* Módulo B: Exploración y Gestión (Read/Delete) */}
                  <div className="pt-12 border-t border-border/50">
                    <div className="mb-10 px-4">
                       <h3 className="font-display text-2xl font-bold text-foreground uppercase tracking-tight">Bóveda Cloud S3</h3>
-                      <p className="text-muted-foreground text-sm font-sans italic opacity-60">Gestionar activos distribuidos en el cluster de Supabase.</p>
+                      <p className="text-muted-foreground text-sm font-sans italic opacity-60">Gestão atômica de ativos vinculada ao tenant master.</p>
                    </div>
-                   {/* Inyección de los datos reales ya purificados */}
                    <InventoryExplorer items={mediaItems} dictionary={dict.admin_media} />
                  </div>
               </FadeIn>
             )}
 
-            {/* VISTA: DEFAULT / OVERVIEW */}
-            {(activeView === 'overview' || (activeView === 'inventory' && role === 'guest')) && (
+            {/* VISTA C: FALLBACK */}
+            {(activeView === 'reservations' || (activeView === 'inventory' && role === 'guest')) && (
               <FadeIn key="default-view" delay={0.2}>
                 <div className="min-h-[500px] rounded-[3.5rem] border border-border bg-surface/30 backdrop-blur-md p-12 flex flex-col items-center justify-center text-center">
                    <div className="relative mb-8">
@@ -262,9 +307,7 @@ export default async function PortalPage(props: PageProps) {
                       {data.notifications[0]?.message || t.empty_data_label}
                    </h3>
                    <p className="text-muted-foreground max-w-xs mx-auto text-sm leading-relaxed font-sans italic opacity-40">
-                      {activeView === 'overview' 
-                        ? "Sincronizando com os clusters de dados de MetaShark..."
-                        : "Acesso em fase de implantação estratégica."}
+                      Módulo em fase de implementação estratégica. Sincronizando com os clusters MetaShark.
                    </p>
                 </div>
               </FadeIn>

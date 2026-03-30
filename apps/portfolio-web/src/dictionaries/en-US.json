@@ -169,6 +169,158 @@
     "label_file_size": "Payload Size",
     "label_sync_cloud": "S3 Protocol Active"
   },
+  "gamification": {
+    "artifacts_title": "Artifact Inventory",
+    "lore_label": "Fragment Lore",
+    "rarity_labels": {
+      "common": "Common",
+      "rare": "Rare",
+      "legendary": "Legendary",
+      "mythic": "Mythic",
+      "unique": "Unique"
+    },
+    "artifacts": {
+      "monolito-obsidiana": {
+        "name": "Obsidian Monolith",
+        "lore": "The unalterable database. Where the first line of the Sanctuary code was written."
+      },
+      "martillo-thorvalds": {
+        "name": "Thorvalds Hammer",
+        "lore": "Forged in the original kernel to crush bugs and consolidate resilient systems."
+      },
+      "escudo-firewall": {
+        "name": "Firewall Shield",
+        "lore": "An impenetrable holographic barrier. Nothing enters the perimeter without the correct handshake."
+      },
+      "llave-maestra-ssh": {
+        "name": "SSH Master Key",
+        "lore": "Absolute root access. Opens the doors to the deepest layers of infrastructure."
+      },
+      "motor-v8": {
+        "name": "Chrome V8 Engine",
+        "lore": "Raw execution power. The heart that pumps the fluidity of the interface."
+      },
+      "casco-centinela": {
+        "name": "Sentinel Helmet",
+        "lore": "Eternal vigilance. Grants HUD vision over all logs in real-time."
+      },
+      "cubo-docker": {
+        "name": "Docker Cube",
+        "lore": "An encapsulated universe. Total portability and thermal isolation of data."
+      },
+      "espada-git": {
+        "name": "Sword of Git",
+        "lore": "Cuts through merge conflicts with a single stroke. Divides time into parallel branches."
+      },
+      "trono-backend": {
+        "name": "Backend Throne",
+        "lore": "Built with active rack servers. The seat of the one who orchestrates the cloud."
+      },
+      "orbe-latencia": {
+        "name": "Zero Latency Orb",
+        "lore": "A sphere that bends space-time to deliver data instantaneously."
+      },
+      "arquitecto-supremo": {
+        "name": "The Supreme Architect",
+        "lore": "The representation of absolute order. The creator of the sovereign ecosystem."
+      },
+      "pluma-pixeles": {
+        "name": "Pixel Pen",
+        "lore": "Writes the aesthetics that the human eye loves. Inexhaustible RGB ink."
+      },
+      "espejo-responsivo": {
+        "name": "Responsive Mirror",
+        "lore": "Reflects the user's soul, adapting to any frame or device."
+      },
+      "flor-loto-css": {
+        "name": "CSS Lotus Flower",
+        "lore": "Blooms with smooth 60fps animations. Pure cascading beauty."
+      },
+      "prisma-color": {
+        "name": "Color Prism",
+        "lore": "Decomposes light into perfect OKLCH palettes, harmonizing day and night."
+      },
+      "telar-hilos": {
+        "name": "Loom of Threads",
+        "lore": "Interweaves React components to form complex digital organisms."
+      },
+      "mascara-musa": {
+        "name": "Muse Mask",
+        "lore": "The captivating visual identity. Protects the creative essence of the brand."
+      },
+      "copa-empatia": {
+        "name": "Empathy Cup",
+        "lore": "Overflows with understanding of the user's journey. Human-centered design."
+      },
+      "collar-accesibilidad": {
+        "name": "Accessibility Collar",
+        "lore": "Shines brightly to guide all visitors, leaving no one behind."
+      },
+      "danza-scroll": {
+        "name": "Scroll Dance",
+        "lore": "Ballet shoes that glide through the page without friction, in perfect sync."
+      },
+      "aura-framer": {
+        "name": "Framer Aura",
+        "lore": "A halo of magnetic particles that give life to static movement."
+      },
+      "gran-disenadora": {
+        "name": "The Grand Designer",
+        "lore": "The experience weaver. Manipulates holographic interfaces with the mind."
+      },
+      "pato-goma-dorado": {
+        "name": "Golden Rubber Duck",
+        "lore": "The silent counselor. Listening to it resolves the most inexplicable errors."
+      },
+      "taza-cafe-infinito": {
+        "name": "Infinite Coffee Cup",
+        "lore": "Fuel for deployment nights. Maintains temperature in the server vacuum."
+      },
+      "bug-frasco": {
+        "name": "Bug in a Jar",
+        "lore": "A captured anomaly. It no longer causes damage, it's now a curious feature."
+      },
+      "gafas-erudito": {
+        "name": "Scholar Glasses",
+        "lore": "Allow reading the source code behind physical reality. Matrix vision."
+      },
+      "gato-teclado": {
+        "name": "Keyboard Cat",
+        "lore": "The true author of half the code. Sleeps over the CTRL+C."
+      },
+      "pergamino-stackoverflow": {
+        "name": "StackOverflow Scroll",
+        "lore": "Ancient wisdom copied and pasted. The solution to all human doubts."
+      },
+      "paradoja-puntoycoma": {
+        "name": "Semicolon Paradox",
+        "lore": "The small symbol that has the power to bring down digital empires."
+      },
+      "sombrero-blanco": {
+        "name": "White Hat",
+        "lore": "Absolute power used for the protection and integrity of the Sanctuary."
+      },
+      "terminal-fantasma": {
+        "name": "Ghost Terminal",
+        "lore": "A screen that only appears to those who know the universe's secret commands."
+      },
+      "404-perdido": {
+        "name": "The Lost 404",
+        "lore": "A map of a place that doesn't exist. The quest for unreachable knowledge."
+      },
+      "entidad-ia": {
+        "name": "AI Entity",
+        "lore": "Intelligence that learned to create. The final link between logic and intuition."
+      }
+    },
+    "ranks": {
+      "initiates": "Sanctuary Initiate",
+      "advanced": "Ascending Engineer",
+      "masters": "Hospitality Master",
+      "sovereigns": "Protocol Guardian",
+      "oracle": "Oracle Level 33"
+    }
+  },
   "hero": {
     "page_title": "Beach Hotel Canasvieiras | Florianópolis",
     "page_description": "Luxury boutique accommodation and official headquarters of the Pride Escape 2026 festival.",

@@ -1,13 +1,13 @@
 {
-  "timestamp": "2026-03-29T20:13:15.047Z",
+  "timestamp": "2026-03-30T18:58:15.720Z",
   "globalStatus": "SUCCESS",
   "localesAudited": [
     {
       "locale": "en-US",
       "status": "SUCCESS",
-      "featuresCount": 32,
+      "featuresCount": 33,
       "errors": 0,
-      "outputSize": "25.61 KB",
+      "outputSize": "31.27 KB",
       "postWriteVerification": "PASSED",
       "assembledFeatures": [
         "about",
@@ -21,6 +21,7 @@
         "design_system_page",
         "festival",
         "footer",
+        "gamification",
         "header",
         "hero",
         "history",
@@ -47,9 +48,9 @@
     {
       "locale": "es-ES",
       "status": "SUCCESS",
-      "featuresCount": 32,
+      "featuresCount": 33,
       "errors": 0,
-      "outputSize": "26.56 KB",
+      "outputSize": "32.58 KB",
       "postWriteVerification": "PASSED",
       "assembledFeatures": [
         "about",
@@ -63,6 +64,7 @@
         "design_system_page",
         "festival",
         "footer",
+        "gamification",
         "header",
         "hero",
         "history",
@@ -89,9 +91,9 @@
     {
       "locale": "pt-BR",
       "status": "SUCCESS",
-      "featuresCount": 32,
+      "featuresCount": 33,
       "errors": 0,
-      "outputSize": "26.75 KB",
+      "outputSize": "32.67 KB",
       "postWriteVerification": "PASSED",
       "assembledFeatures": [
         "about",
@@ -105,6 +107,7 @@
         "design_system_page",
         "festival",
         "footer",
+        "gamification",
         "header",
         "hero",
         "history",
@@ -130,5 +133,5 @@
     }
   ],
   "issues": [],
-  "performance": "0.16s"
+  "performance": "4.47s"
 }

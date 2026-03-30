@@ -1,24 +1,52 @@
 /**
- * @file media.actions.ts
+ * @file apps/portfolio-web/src/lib/portal/actions/media.actions.ts
  * @description Motor de Ingesta y Purga Multimedia (Server Actions).
  *              Orquesta la carga y eliminación de binarios hacia el Clúster S3 de Supabase.
- *              Refactorizado: Resolución de TS2345 mediante aserción estructural
- *              justificada para la API local de Payload.
- * @version 2.1 - S3 Cloud CRUD & Type Assertion Compliant
+ *              Refactorizado: Blindaje perimetral mediante esquemas Zod (Pilar III.IV),
+ *              observabilidad forense Heimdall y resiliencia Multi-Tenant.
+ * @version 3.0 - Shielded Actions & Zod Validation
  * @author Raz Podestá - MetaShark Tech
  */
 
 'use server';
 
+import { z } from 'zod';
 import { getPayload } from 'payload';
 import configPromise from '@metashark/cms-core/config';
 import { revalidatePath } from 'next/cache';
 
 /**
  * IMPORTACIONES DE INFRAESTRUCTRURA Y CONTRATOS
+ * @pilar V: Adherencia arquitectónica.
  */
 import { shapeMediaEntity, type SovereignMedia } from '../shapers/media.shaper';
 import type { PayloadMediaDoc } from '@metashark/cms-core';
+
+/**
+ * CONTRATOS DE VALIDACIÓN (SSoT)
+ * @description Define la integridad requerida para interactuar con la Bóveda S3.
+ */
+const uploadMediaSchema = z.object({
+  alt: z.string().min(8, 'EDITORIAL_ERR: Alt text must be descriptive for SEO (min 8 chars)'),
+  tenantId: z.string().uuid('SECURITY_ERR: Invalid Tenant Identifier'),
+  // El archivo se valida por su presencia y tipo básico
+  file: z.instanceof(File, { message: 'INFRA_ERR: Payload must be a valid binary File' }),
+});
+
+const deleteMediaSchema = z.object({
+  id: z.string().min(1, 'INFRA_ERR: Target ID required'),
+  tenantId: z.string().uuid('SECURITY_ERR: Invalid Tenant Identifier'),
+});
+
+/**
+ * TIPO RESULTADO SOBERANO
+ */
+type ActionResponse<T> = {
+  success: boolean;
+  data?: T;
+  error?: string;
+  issues?: string[];
+};
 
 /**
  * ACCIÓN SOBERANA: uploadMediaAction
@@ -26,33 +54,38 @@ import type { PayloadMediaDoc } from '@metashark/cms-core';
  * @pilar IV: Observabilidad Heimdall.
  * @pilar VIII: Resiliencia de Operación.
  */
-export async function uploadMediaAction(formData: FormData): Promise<{ 
-  success: boolean; 
-  data?: SovereignMedia; 
-  error?: string 
-}> {
+export async function uploadMediaAction(formData: FormData): Promise<ActionResponse<SovereignMedia>> {
   const traceId = `media_ingest_${Date.now()}`;
   console.group(`[HEIMDALL][ACTION] Media Ingestion: ${traceId}`);
 
   try {
-    const payload = await getPayload({ config: await configPromise });
-    
-    // 1. Extracción de Payload
-    const file = formData.get('file') as File;
-    const alt = formData.get('alt') as string;
-    const tenantId = formData.get('tenantId') as string;
+    // 1. EXTRACCIÓN Y VALIDACIÓN PERIMETRAL (Pilar III)
+    const rawData = {
+      file: formData.get('file'),
+      alt: formData.get('alt'),
+      tenantId: formData.get('tenantId'),
+    };
 
-    if (!file || !alt || !tenantId) {
-      throw new Error('MISSING_REQUIRED_FIELDS');
+    const validation = uploadMediaSchema.safeParse(rawData);
+
+    if (!validation.success) {
+      const issues = validation.error.issues.map(i => i.message);
+      console.warn(`[VALIDATION_FAIL] Ingestion rejected: ${issues.join(', ')}`);
+      return { success: false, error: 'VALIDATION_FAILED', issues };
     }
 
-    // 2. Transmutación a Buffer para el motor de Payload
+    const { file, alt, tenantId } = validation.data;
+
+    // 2. PREPARACIÓN DE MOTOR CMS
+    const payload = await getPayload({ config: await configPromise });
+    
+    // 3. TRANSMUTACIÓN BINARIA (Pilar X: Performance)
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    console.log(`[STATUS] Transmitting binary to S3: ${file.name} (${file.size} bytes)`);
+    console.log(`[STATUS] Transmitting binary to Cloud Cluster: ${file.name}`);
 
-    // 3. Persistencia atómica en Supabase S3
+    // 4. PERSISTENCIA ATÓMICA EN SUPABASE S3
     const result = await payload.create({
       collection: 'media',
       data: {
@@ -69,14 +102,13 @@ export async function uploadMediaAction(formData: FormData): Promise<{
 
     console.log(`[SUCCESS] Asset indexed in Cloud Vault: ${result.id}`);
     
-    // 4. Invalidación de caché para reflejar cambios en galerías
+    // 5. SINCRONIZACIÓN DE CACHÉ
     revalidatePath('/portal');
 
     /**
      * @pilar IX: Justificación de 'as'.
-     * Payload.create devuelve un genérico (JsonObject). Realizamos un cast seguro
-     * porque garantizamos en el objeto 'data' superior que los campos obligatorios
-     * del contrato PayloadMediaDoc (como 'alt') están presentes.
+     * Validado por el esquema superior 'uploadMediaSchema', garantizando 
+     * compatibilidad con el Shaper.
      */
     return { 
       success: true, 
@@ -96,24 +128,24 @@ export async function uploadMediaAction(formData: FormData): Promise<{
  * ACCIÓN SOBERANA: deleteMediaAction
  * @description Purga un activo de la bóveda S3 verificando estrictamente 
  *              el perímetro de propiedad (Tenant ID).
- * @pilar IV: Observabilidad Heimdall.
  * @pilar VIII: Aislamiento Multi-Tenant (Seguridad).
  */
-export async function deleteMediaAction(id: string, tenantId: string): Promise<{
-  success: boolean;
-  error?: string;
-}> {
+export async function deleteMediaAction(id: string, tenantId: string): Promise<ActionResponse<void>> {
   const traceId = `media_purge_${Date.now()}`;
   console.group(`[HEIMDALL][ACTION] Media Purge: ${traceId}`);
 
   try {
-    if (!id || !tenantId) {
-      throw new Error('INVALID_PURGE_PARAMETERS');
+    // 1. VALIDACIÓN DE IDENTIDAD TÉCNICA
+    const validation = deleteMediaSchema.safeParse({ id, tenantId });
+
+    if (!validation.success) {
+      console.warn('[SECURITY] Purge rejected: Illegal parameters detected.');
+      return { success: false, error: 'INVALID_SECURITY_PARAMETERS' };
     }
 
     const payload = await getPayload({ config: await configPromise });
 
-    // 1. Verificación de Propiedad (Tenant Boundary Shield)
+    // 2. ESCUDO DE PROPIEDAD (Tenant Boundary Shield)
     const asset = await payload.findByID({
       collection: 'media',
       id: id,
@@ -123,22 +155,23 @@ export async function deleteMediaAction(id: string, tenantId: string): Promise<{
       throw new Error('ASSET_NOT_FOUND');
     }
 
+    // Verificación de integridad referencial del Tenant
     if (asset.tenantId !== tenantId) {
-      console.error(`[SECURITY] Tenant mismatch. Expected: ${tenantId}, Found: ${asset.tenantId}`);
-      throw new Error('UNAUTHORIZED_TENANT_ACCESS');
+      console.error(`[SECURITY_ALERT] Breach Attempt: Tenant ${tenantId} tried to purge asset ${id} owned by ${asset.tenantId}`);
+      throw new Error('UNAUTHORIZED_PERIMETER_ACCESS');
     }
 
-    console.log(`[STATUS] Asset ownership verified for Tenant: ${tenantId}`);
+    console.log(`[STATUS] Ownership verified. Eradicating asset...`);
 
-    // 2. Destrucción Atómica en S3 y DB
+    // 3. DESTRUCCIÓN ATÓMICA
     await payload.delete({
       collection: 'media',
       id: id,
     });
 
-    console.log(`[SUCCESS] Asset physically eradicated from Cloud Vault: ${id}`);
+    console.log(`[SUCCESS] Asset purged from Cloud Vault and DB.`);
 
-    // 3. Sincronización de Interfaz
+    // 4. SINCRONIZACIÓN DE INTERFAZ
     revalidatePath('/portal');
 
     return { success: true };

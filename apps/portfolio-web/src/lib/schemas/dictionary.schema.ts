@@ -1,9 +1,10 @@
 /**
- * @file dictionary.schema.ts
+ * @file apps/portfolio-web/src/lib/schemas/dictionary.schema.ts
  * @description Constitución Soberana de Datos (Master SSoT). 
  *              Orquesta la validación integral de todos los activos i18n.
- *              Nivelado: Integración del dominio admin_media para el Dashboard.
- * @version 17.0 - Media Management Integration
+ *              Nivelado: Desacoplamiento del dominio Gamification y sincronía
+ *              con la arquitectura de 33 artefactos del Protocolo 33.
+ * @version 19.0 - Protocol 33 Granular Integration
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -11,6 +12,7 @@ import { z } from 'zod';
 
 /**
  * IMPORTACIONES DE ESQUEMAS ATÓMICOS
+ * @pilar V: Adherencia arquitectónica (Pure Source-First).
  */
 import { headerSchema } from './header.schema.js';
 import { navLinksSchema } from './nav-links.schema.js';
@@ -36,8 +38,19 @@ import { quienesSomosSchema } from './quienes_somos.schema.js';
 import { libraryPageSchema } from './library_page.schema.js';
 import { authPortalSchema } from './auth_portal.schema.js';
 import { portalSchema } from './portal.schema.js';
-import { adminMediaSchema } from './admin_media.schema.js'; // <-- NUEVA INYECCIÓN
+import { adminMediaSchema } from './admin_media.schema.js';
 
+/** 
+ * INYECCIÓN DE GAMIFICACIÓN 
+ * @pilar II: Gamificación Inmersiva (SSoT).
+ */
+import { gamificationSchema } from './gamification.schema.js';
+
+/**
+ * APARATO PRINCIPAL: dictionarySchema
+ * @description Único Punto de Verdad para la validación de diccionarios JSON.
+ *              Garantiza que el build de Next.js sea 100% Type-Safe.
+ */
 export const dictionarySchema = z.object({
   // --- INFRAESTRUCTRURA DEL SHELL ---
   header: headerSchema,
@@ -49,7 +62,10 @@ export const dictionarySchema = z.object({
   language_switcher: languageSwitcherSchema,
   auth_portal: authPortalSchema,
   portal: portalSchema,
-  admin_media: adminMediaSchema, // <-- REGISTRO SOBERANO
+  admin_media: adminMediaSchema,
+  
+  // --- NUCLEO DE REPUTACIÓN (PROTOCOL 33) ---
+  gamification: gamificationSchema, 
   
   // --- APARATOS DE NARRATIVA ---
   hero: heroSchema,
