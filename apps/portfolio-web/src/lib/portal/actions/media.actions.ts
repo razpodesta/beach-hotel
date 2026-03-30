@@ -2,7 +2,9 @@
  * @file media.actions.ts
  * @description Motor de Ingesta y Purga Multimedia (Server Actions).
  *              Orquesta la carga y eliminación de binarios hacia el Clúster S3 de Supabase.
- * @version 2.0 - S3 Cloud CRUD & Tenant Shield
+ *              Refactorizado: Resolución de TS2345 mediante aserción estructural
+ *              justificada para la API local de Payload.
+ * @version 2.1 - S3 Cloud CRUD & Type Assertion Compliant
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -13,9 +15,10 @@ import configPromise from '@metashark/cms-core/config';
 import { revalidatePath } from 'next/cache';
 
 /**
- * IMPORTACIONES DE INFRAESTRUCTRURA
+ * IMPORTACIONES DE INFRAESTRUCTRURA Y CONTRATOS
  */
 import { shapeMediaEntity, type SovereignMedia } from '../shapers/media.shaper';
+import type { PayloadMediaDoc } from '@metashark/cms-core';
 
 /**
  * ACCIÓN SOBERANA: uploadMediaAction
@@ -69,9 +72,15 @@ export async function uploadMediaAction(formData: FormData): Promise<{
     // 4. Invalidación de caché para reflejar cambios en galerías
     revalidatePath('/portal');
 
+    /**
+     * @pilar IX: Justificación de 'as'.
+     * Payload.create devuelve un genérico (JsonObject). Realizamos un cast seguro
+     * porque garantizamos en el objeto 'data' superior que los campos obligatorios
+     * del contrato PayloadMediaDoc (como 'alt') están presentes.
+     */
     return { 
       success: true, 
-      data: shapeMediaEntity(result) 
+      data: shapeMediaEntity(result as unknown as PayloadMediaDoc) 
     };
 
   } catch (error: unknown) {

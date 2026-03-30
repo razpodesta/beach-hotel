@@ -1,9 +1,9 @@
 /**
  * @file ui.store.ts
  * @description Orquestador Soberano del Estado Global de la Interfaz.
- *              Gestiona la reactividad de componentes, persistencia de atmósfera
- *              y la identidad de sesión para la divulgación progresiva del Portal.
- * @version 9.0 - Sovereign Session Integration & UI Transmutation
+ *              Refactorizado: Erradicación de empty-functions (Linter Compliance)
+ *              e inyección de telemetría forense en el motor de persistencia.
+ * @version 9.1 - Forensic Observability Edition
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -77,25 +77,25 @@ interface UIActions {
   clearSession: () => void;
 }
 
-/**
- * Union Type Soberano para el Store de Zustand.
- */
 type UIStore = UIState & UIActions;
 
 /**
  * SOVEREIGN STORAGE ENGINE (Resilience Fallback)
  * @description Motor de respaldo para entornos SSR o almacenamiento bloqueado.
- * @pilar VIII: Resiliencia de Infraestructura.
+ * @pilar IV & VIII: Observabilidad forense sobre la persistencia.
  */
 const forensicMockStorage: StateStorage = {
   getItem: (): string | null => null,
-  setItem: (): void => {},
-  removeItem: (): void => {},
+  setItem: (key: string) => {
+    console.warn(`[HEIMDALL][STORE] Volatile storage set ignored: ${key}`);
+  },
+  removeItem: (key: string) => {
+    console.warn(`[HEIMDALL][STORE] Volatile storage remove ignored: ${key}`);
+  },
 };
 
 /**
  * RESOLVER DE ALMACENAMIENTO
- * @description Valida el acceso físico a LocalStorage para evitar fallos de hidratación.
  */
 const resolveStorageEngine = (): StateStorage => {
   if (typeof window === 'undefined') return forensicMockStorage;
@@ -111,8 +111,7 @@ const resolveStorageEngine = (): StateStorage => {
 };
 
 /**
- * CREADOR DE ESTADO: stateCreator
- * @description Define la lógica pura de mutación y el estado inicial.
+ * CREADOR DE ESTADO
  */
 const stateCreator: StateCreator<UIStore, [["zustand/persist", unknown]]> = (set) => ({
   // --- ESTADO INICIAL ---
@@ -124,18 +123,16 @@ const stateCreator: StateCreator<UIStore, [["zustand/persist", unknown]]> = (set
   tenantId: null,
   session: null,
 
-  // --- ACCIONES: INFRAESTRUCTRURA ---
+  // --- ACCIONES ---
   setHasHydrated: (state: boolean) => set({ hasHydrated: state }),
   setTenant: (tenantId: string | null) => set({ tenantId }),
 
-  // --- ACCIONES: IDENTIDAD ---
   setSession: (session: SovereignSession | null) => {
     console.log(`[HEIMDALL][SESSION] Identity Synced: ${session?.role || 'anonymous'}`);
     set({ session });
   },
   clearSession: () => set({ session: null, isAuthModalOpen: false }),
 
-  // --- ACCIONES: VISUALES ---
   toggleVisitorHud: () => set((s) => ({ isVisitorHudOpen: !s.isVisitorHudOpen })),
   closeVisitorHud: () => set({ isVisitorHudOpen: false }),
   openVisitorHud: () => set({ isVisitorHudOpen: true }),
@@ -150,41 +147,22 @@ const stateCreator: StateCreator<UIStore, [["zustand/persist", unknown]]> = (set
   closeAuthModal: () => set({ isAuthModalOpen: false }),
 });
 
-/**
- * APARATO: useUIStore
- * @description Fuente Única de Verdad (SSoT) para el estado visual y de sesión.
- */
 export const useUIStore = create<UIStore>()(
   persist(
     stateCreator,
     {
       name: 'metashark-vault-ui',
       storage: createJSONStorage(resolveStorageEngine),
-      
-      /**
-       * @pilar X: Higiene de Persistencia.
-       * Solo persistimos la visibilidad del HUD y la metadata de sesión
-       * para permitir que la UI cargue con el rol correcto sin parpadeos.
-       */
       partialize: (state: UIStore) => ({
         isVisitorHudOpen: state.isVisitorHudOpen,
         tenantId: state.tenantId,
-        session: state.session, // Habilita persistencia del rol en el Dashboard
+        session: state.session,
       }),
-
-      /**
-       * PROTOCOLO DE HIDRATACIÓN
-       */
-      onRehydrateStorage: () => {
-        return (state, error) => {
-          if (error) {
-            console.error('[HEIMDALL][STORE] Error en rehidratación de bóveda:', error);
-          }
-          state?.setHasHydrated(true);
-        };
+      onRehydrateStorage: () => (state, error) => {
+        if (error) console.error('[HEIMDALL][STORE] Error en rehidratación:', error);
+        state?.setHasHydrated(true);
       },
-      
-      version: 6, // Incremental para forzar purga de esquemas antiguos
+      version: 6,
     }
   )
 );

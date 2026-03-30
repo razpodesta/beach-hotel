@@ -22,7 +22,7 @@ import {
   BookOpen, 
   ShieldAlert,
   Fingerprint
-} from 'lucide-center';
+} from 'lucide-react';
 
 /**
  * IMPORTACIONES DE INFRAESTRUCTRURA

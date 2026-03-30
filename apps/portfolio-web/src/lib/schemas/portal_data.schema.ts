@@ -1,8 +1,9 @@
 /**
  * @file portal_data.schema.ts
  * @description Constitución de datos para el Dashboard Unificado.
- *              Define los contratos de telemetría, reservas y tarifas netas.
- * @version 1.0 - Multi-Role Data Contracts
+ *              Exportación de contratos para tipado estricto en la UI.
+ * @version 1.1 - Tipo Reservation Exportado
+ * @author Raz Podestá - MetaShark Tech
  */
 
 import { z } from 'zod';
@@ -15,6 +16,9 @@ export const reservationSchema = z.object({
   checkOut: z.string().datetime(),
   status: z.enum(['confirmed', 'pending', 'cancelled']),
 });
+
+// @fix TS2305: Exportación explícita del tipo para que GuestReservationCard pueda importarlo
+export type Reservation = z.infer<typeof reservationSchema>;
 
 export const telemetryMetricSchema = z.object({
   label: z.string(),
@@ -49,4 +53,5 @@ export const portalDataSchema = z.object({
   }).optional(),
 });
 
+/** TIPO SOBERANO INFERIDO */
 export type PortalData = z.infer<typeof portalDataSchema>;

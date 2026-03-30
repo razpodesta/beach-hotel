@@ -1,9 +1,9 @@
 /**
  * @file AuthPortal.tsx
  * @description Orquestador de Autenticación de Élite. 
- *              Implementa la jerarquía OAuth (Apple/Google/FB) con 
- *              estética de lujo y resiliencia Supabase.
- * @version 1.0 - Sovereign Identity Takeover
+ *              Refactorizado: Normalización de clases canónicas Tailwind v4,
+ *              limpieza de importaciones huérfanas y cumplimiento de higiene Linter.
+ * @version 1.1 - Linter Pure & Canonical Standards
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -17,7 +17,6 @@ import { X, Mail, ShieldCheck, Sparkles, Chrome, Apple, Facebook } from 'lucide-
  * IMPORTACIONES DE INFRAESTRUCTRURA
  */
 import { useUIStore } from '../../lib/store/ui.store';
-import { cn } from '../../lib/utils/cn';
 import { supabase } from '../../lib/supabase/client';
 import type { Dictionary } from '../../lib/schemas/dictionary.schema';
 
@@ -50,7 +49,7 @@ export function AuthPortal({ dictionary }: AuthPortalProps) {
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
+      <div className="fixed inset-0 z-110 flex items-center justify-center p-4">
         {/* BACKDROP: Sanctuary Blur */}
         <motion.div
           initial={{ opacity: 0 }}
@@ -95,11 +94,11 @@ export function AuthPortal({ dictionary }: AuthPortalProps) {
             {/* Apple: Botón de Lujo */}
             <button
               onClick={() => handleOAuthLogin('apple')}
-              className="w-full flex items-center justify-between px-8 py-5 rounded-2xl bg-[#000] text-white hover:bg-zinc-900 transition-all group shadow-xl active:scale-[0.98]"
+              className="w-full flex items-center justify-between px-8 py-5 rounded-2xl bg-black text-white hover:bg-zinc-900 transition-all group shadow-xl active:scale-[0.98]"
             >
               <Apple size={20} fill="currentColor" />
               <span className="text-[11px] font-bold uppercase tracking-[0.2em]">{dictionary.apple_label}</span>
-              <div className="w-5" /> {/* Spacer para centrado óptico */}
+              <div className="w-5" />
             </button>
 
             {/* Google: Limpieza Industrial */}
@@ -130,7 +129,7 @@ export function AuthPortal({ dictionary }: AuthPortalProps) {
               </div>
             </div>
 
-            {/* Entrada de Email: Desmotivada visualmente para incentivar OAuth */}
+            {/* Entrada de Email */}
             <div className="space-y-4">
               <input 
                 type="email" 
@@ -155,7 +154,6 @@ export function AuthPortal({ dictionary }: AuthPortalProps) {
              </p>
           </footer>
 
-          {/* Glow de Ambiente (Pilar XII) */}
           <div className="absolute -bottom-16 -right-16 h-48 w-48 rounded-full bg-primary/5 blur-3xl pointer-events-none" />
         </motion.div>
       </div>

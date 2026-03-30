@@ -1,10 +1,9 @@
 /**
  * @file apps/portfolio-web/src/app/api/payload/[[...slug]]/route.ts
  * @description Gateway Soberano de la API de Payload CMS 3.0.
- *              Orquesta el tráfico entre el Dashboard, el motor de persistencia
- *              y el clúster de almacenamiento S3. Implementa telemetría forense
- *              Heimdall para trazabilidad de operaciones administrativas.
- * @version 8.0 - Sovereign Gateway & Forensic Telemetry
+ *              Refactorizado: Resolución de TS2345 mediante firma estricta
+ *              de handlers Next.js 15 (params as Promise).
+ * @version 8.2 - Next.js 15 Handler Compliance
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -20,18 +19,27 @@ import configPromise from '@metashark/cms-core/config';
 
 /**
  * RESOLUCIÓN DE CONFIGURACIÓN
- * @pilar III: Seguridad de Tipos. Asegura que el contrato del CMS esté
- * disponible antes de instanciar los handlers.
  */
 const config = await configPromise;
 
 /**
- * PROTOCOLO HEIMDALL: Interceptor de Telemetría
- * @pilar IV: Observabilidad. Esta utilidad envuelve los handlers nativos
- * para registrar rumbos y tiempos de respuesta en el perímetro.
+ * TIPO DE HANDLER SOBERANO (Next.js 15 Standard)
+ * @description Firma que incluye explícitamente los parámetros de ruta asíncronos.
  */
-const withTelemetry = (handler: Function, method: string) => {
-  return async (request: Request, ...args: unknown[]) => {
+type PayloadHandler = (
+  request: Request, 
+  args: { params: Promise<{ slug?: string[] }> }
+) => Promise<Response>;
+
+/**
+ * PROTOCOLO HEIMDALL: Interceptor de Telemetría
+ * @description Envuelve los handlers nativos preservando la firma de Next.js 15.
+ */
+const withTelemetry = (handler: PayloadHandler, method: string) => {
+  return async (
+    request: Request, 
+    args: { params: Promise<{ slug?: string[] }> }
+  ): Promise<Response> => {
     const url = new URL(request.url);
     const traceId = `api_${method}_${Date.now()}`;
     
@@ -39,7 +47,7 @@ const withTelemetry = (handler: Function, method: string) => {
     
     const startTime = performance.now();
     try {
-      const response = await handler(request, ...args);
+      const response = await handler(request, args);
       const endTime = performance.now();
       
       console.log(`[STATUS] Success | Latency: ${(endTime - startTime).toFixed(2)}ms`);
@@ -56,7 +64,6 @@ const withTelemetry = (handler: Function, method: string) => {
 
 /**
  * EXPORTACIÓN DE HANDLERS SOBERANOS
- * @description Punto de entrada para el Media Uploader y el Dashboard RBAC.
  */
 export const GET = withTelemetry(REST_GET(config), 'GET');
 export const POST = withTelemetry(REST_POST(config), 'POST');

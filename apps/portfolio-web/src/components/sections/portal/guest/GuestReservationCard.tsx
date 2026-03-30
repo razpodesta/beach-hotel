@@ -3,7 +3,7 @@
  * @description Aparato de gestión de estancias para el Huésped Soberano.
  *              Refactorizado: Saneamiento de rutas (Nx Frontiers), 
  *              erradicación de importaciones huérfanas y tipado estricto.
- * @version 2.1 - Architecture Boundary Compliance
+ * @version 2.2 - Architecture Boundary Compliance (Path Correction)
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -22,20 +22,30 @@ import {
 } from 'lucide-react';
 
 /**
- * IMPORTACIONES DE INFRAESTRUCTRURA (Nx Relative Path Compliance)
+ * IMPORTACIONES DE INFRAESTRUCTURA (Nx Relative Path Compliance)
+ * @pilar V: Adherencia arquitectónica ajustada a 5 niveles de subida (../../../../..).
  */
-import { cn } from '../../../lib/utils/cn';
-import { type Locale } from '../../../config/i18n.config';
-import type { Reservation } from '../../../lib/schemas/portal_data.schema';
-import type { PortalDictionary } from '../../../lib/schemas/portal.schema';
+import { cn } from '../../../../lib/utils/cn';
+import { type Locale } from '../../../../config/i18n.config';
+import type { Reservation } from '../../../../lib/schemas/portal_data.schema';
+import type { PortalDictionary } from '../../../../lib/schemas/portal.schema';
 
+/**
+ * @interface GuestReservationCardProps
+ */
 interface GuestReservationCardProps {
+  /** Datos de la reserva validados por SSoT */
   reservation: Reservation;
+  /** Diccionario del portal nivelado v2.0 */
   t: PortalDictionary;
+  /** Contexto de idioma para formateo cronológico */
   lang: Locale;
   className?: string;
 }
 
+/**
+ * APARATO: GuestReservationCard
+ */
 export function GuestReservationCard({ reservation, t, lang, className }: GuestReservationCardProps) {
   
   const atmosphere = useMemo(() => {

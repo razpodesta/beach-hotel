@@ -1,15 +1,15 @@
 /**
  * @file MobileMenu.tsx
  * @description Centro de Navegación Móvil de Élite (The Takeover).
- *              Implementa arquitectura de acordeones tácticos, cápsulas de
- *              identidad Join-First y sincronía atmosférica Day/Night.
- * @version 8.0 - Mobile-First Accordions & Identity Clusters
+ *              Refactorizado: Normalización de clases canónicas Tailwind v4,
+ *              mantenimiento de higiene de linter y tipado soberano.
+ * @version 8.2 - Tailwind Canonical Sync
  * @author Raz Podestá - MetaShark Tech
  */
 
 'use client';
 
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence, type Variants } from 'framer-motion';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -39,9 +39,6 @@ import { LanguageSwitcher } from '../ui/LanguageSwitcher';
 import { ThemeToggle } from '../ui/ThemeToggle';
 import type { Dictionary } from '../../lib/schemas/dictionary.schema';
 
-/**
- * COREOGRAFÍA MEA/UX (Pilar XII)
- */
 const panelVariants: Variants = {
   hidden: { x: '100%', transition: { type: 'spring', damping: 30, stiffness: 300 } },
   visible: { 
@@ -63,7 +60,6 @@ const itemVariants: Variants = {
 
 /**
  * SUB-APARATO: MobileAccordionItem
- * @description Implementa la lógica de expansión táctica para navegación anidada.
  */
 const MobileAccordionItem = ({ 
   item, 
@@ -72,7 +68,7 @@ const MobileAccordionItem = ({
   onClose 
 }: { 
   item: NavItem; 
-  labels: any; 
+  labels: Record<string, string>; 
   currentLang: Locale; 
   onClose: () => void 
 }) => {
@@ -122,7 +118,7 @@ const MobileAccordionItem = ({
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="overflow-hidden bg-foreground/[0.02]"
+            className="overflow-hidden bg-foreground/2" // @fix: clase canónica
           >
             <div className="pl-16 pr-4 pb-6 flex flex-col gap-4">
               {item.children?.map((child: NavLinkType) => {
@@ -150,9 +146,6 @@ const MobileAccordionItem = ({
   );
 };
 
-/**
- * APARATO PRINCIPAL: MobileMenu
- */
 export function MobileMenu({ dictionary }: { dictionary: Dictionary }) {
   const { isMobileMenuOpen, closeMobileMenu, session, hasHydrated, toggleAuthModal } = useUIStore();
   const pathname = usePathname();
@@ -166,16 +159,14 @@ export function MobileMenu({ dictionary }: { dictionary: Dictionary }) {
     ...dictionary['nav-links'].nav_links 
   }), [dictionary]);
 
-  // Protocolo de bloqueo de scroll (Heimdall Control)
   useEffect(() => {
     if (isMobileMenuOpen) {
       document.body.style.overflow = 'hidden';
-      console.log(`[HEIMDALL][UX] Mobile Takeover Engaged. Atmosphere: ${currentLang}`);
     } else {
       document.body.style.overflow = 'unset';
     }
     return () => { document.body.style.overflow = 'unset'; };
-  }, [isMobileMenuOpen, currentLang]);
+  }, [isMobileMenuOpen]);
 
   if (!hasHydrated) return null;
 
@@ -183,22 +174,19 @@ export function MobileMenu({ dictionary }: { dictionary: Dictionary }) {
     <AnimatePresence>
       {isMobileMenuOpen && (
         <FocusTrap active={isMobileMenuOpen}>
-          <div className="fixed inset-0 z-[100] overflow-hidden" role="dialog" aria-modal="true">
+          <div className="fixed inset-0 z-100 overflow-hidden" role="dialog" aria-modal="true">
             
-            {/* 1. BACKDROP ATMOSFÉRICO */}
             <motion.div
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={closeMobileMenu}
               className="absolute inset-0 bg-background/60 backdrop-blur-xl"
             />
 
-            {/* 2. PANEL SOBERANO */}
             <motion.div
               variants={panelVariants} initial="hidden" animate="visible" exit="hidden"
               className="absolute inset-y-0 right-0 w-full max-w-sm bg-surface shadow-3xl flex flex-col border-l border-border transition-colors duration-700"
             >
-              {/* HEADER DEL PANEL: Identidad Progresiva */}
-              <header className="p-8 space-y-8">
+              <header className="p-8 space-y-6">
                 <div className="flex items-center justify-between">
                   <div className="flex flex-col">
                     <span className="font-display text-2xl font-bold text-foreground flex items-center gap-2">
@@ -209,12 +197,15 @@ export function MobileMenu({ dictionary }: { dictionary: Dictionary }) {
                        {labels.mobile_subtitle}
                     </span>
                   </div>
-                  <button onClick={closeMobileMenu} className="p-3 rounded-full bg-background/50 text-foreground active:scale-90">
-                    <X size={24} />
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <LanguageSwitcher dictionary={dictionary.language_switcher} />
+                    <ThemeToggle dictionary={dictionary.language_switcher} />
+                    <button onClick={closeMobileMenu} className="p-3 rounded-full bg-background/50 text-foreground active:scale-90 ml-2">
+                        <X size={24} />
+                    </button>
+                  </div>
                 </div>
 
-                {/* --- CÁPSULAS DE ACCESO (Móvil Optimized) --- */}
                 <div className="p-1 bg-background/40 border border-border/50 rounded-3xl">
                   <AnimatePresence mode="wait">
                     {session ? (
@@ -230,7 +221,6 @@ export function MobileMenu({ dictionary }: { dictionary: Dictionary }) {
                           <p className="text-[10px] font-bold uppercase tracking-widest opacity-70">{labels.portal}</p>
                           <p className="text-sm font-bold truncate max-w-[150px]">{session.email}</p>
                         </div>
-                        <ChevronDown size={16} className="ml-auto opacity-50" />
                       </motion.button>
                     ) : (
                       <motion.div key="guest-actions" className="grid grid-cols-2 gap-1" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
@@ -252,7 +242,6 @@ export function MobileMenu({ dictionary }: { dictionary: Dictionary }) {
                 </div>
               </header>
 
-              {/* BODY: Navegación de Acordeones */}
               <nav className="flex-1 overflow-y-auto px-4 custom-scrollbar">
                 {mainNavStructure.map((nav) => (
                   <MobileAccordionItem 
@@ -265,7 +254,6 @@ export function MobileMenu({ dictionary }: { dictionary: Dictionary }) {
                 ))}
               </nav>
 
-              {/* FOOTER: Global Settings */}
               <footer className="p-8 border-t border-border/50 bg-background/20">
                 <div className="flex items-center justify-between">
                   <div className="flex gap-4">

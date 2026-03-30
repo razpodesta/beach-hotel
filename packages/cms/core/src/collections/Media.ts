@@ -2,8 +2,9 @@
  * @file packages/cms/core/src/collections/Media.ts
  * @description Bóveda Soberana de Activos Multimedia (The Sanctuary Vault).
  *              Refactorizado: Integración de integridad referencial Multi-Tenant,
- *              optimización de focal-point para UX cinemática y sincronía S3.
- * @version 6.0 - Next-Gen Asset Management & Supabase S3 Sync
+ *              optimización de focal-point para UX cinemática, sincronía S3 y
+ *              contratos estáticos para resiliencia de Build.
+ * @version 7.1 - Zero Any Compliance & Static Type Contracts
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -14,6 +15,31 @@ import { type CollectionConfig } from 'payload';
  * @pilar V: Adherencia arquitectónica.
  */
 import { multiTenantWriteAccess } from './Access';
+
+/**
+ * @interface PayloadMediaDoc
+ * @description Contrato estático estructural para los documentos multimedia.
+ *              Desacopla a los consumidores (Frontend Shapers) de los tipos
+ *              autogenerados de Payload, erradicando el problema del "Huevo y la Gallina"
+ *              en entornos de CI/CD como Vercel o GitHub Actions.
+ * @pilar III: Seguridad de Tipos Absoluta (Cero 'any').
+ */
+export interface PayloadMediaDoc {
+  id: string;
+  url?: string | null;
+  alt: string;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  filename?: string | null;
+  /** 
+   * Tipado flexible para la relación (string = ID, Record = objeto poblado) 
+   * blindado contra la regla no-explicit-any.
+   */
+  tenantId?: string | Record<string, unknown> | null; 
+  caption?: string | null;
+}
 
 export const Media: CollectionConfig = {
   slug: 'media',

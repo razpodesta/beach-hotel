@@ -3,8 +3,8 @@
  * @description Orquestador Soberano del Dashboard Unificado.
  *              Refactorizado: Integración del flujo completo de Inventario (CRUD),
  *              orquestación de micro-vistas administrativas y optimización
- *              de carga paralela de activos S3 reales.
- * @version 5.0 - S3 Live Sync & Parallel Orchestration
+ *              de carga paralela de activos S3 reales con aserciones tipadas.
+ * @version 5.1 - S3 Live Sync & TS2345 Compliant
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -50,8 +50,8 @@ import { InventoryExplorer } from '../../../components/sections/portal/media/Inv
  */
 import type { SovereignRole } from '../../../lib/route-guard';
 import type { PortalDictionary } from '../../../lib/schemas/portal.schema';
-//import type { PortalData } from '../../../lib/schemas/portal_data.schema';
 import { shapeMediaEntity, type SovereignMedia } from '../../../lib/portal';
+import type { PayloadMediaDoc } from '@metashark/cms-core';
 
 /**
  * @interface RoleBrandingConfig
@@ -153,9 +153,10 @@ export default async function PortalPage(props: PageProps) {
 
   /**
    * PURIFICACIÓN DE ACTIVOS (Shaping)
-   * Transformamos los documentos del CMS al contrato esperado por la UI.
+   * @pilar IX: Justificación de 'as'. Payload.find devuelve JsonObject genérico.
+   * Casteamos as unknown as PayloadMediaDoc con la certeza de que provienen de la colección media.
    */
-  const mediaItems: SovereignMedia[] = mediaDocs.map(doc => shapeMediaEntity(doc));
+  const mediaItems: SovereignMedia[] = mediaDocs.map(doc => shapeMediaEntity(doc as unknown as PayloadMediaDoc));
 
   return (
     <main className="min-h-screen bg-background text-foreground pt-32 pb-24 selection:bg-primary/30 transition-colors duration-1000">
