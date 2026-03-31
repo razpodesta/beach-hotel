@@ -1,38 +1,34 @@
 /**
  * @file packages/cms/core/src/collections/Users.ts
- * @description Orquestador soberano del Clúster de Identidad. 
- *              Refactorizado: Unificación del campo 'tenant' como relación real
- *              para erradicar el Schema Drift y blindar el aislamiento Multi-Tenant.
- * @version 8.0 - Sovereign Tenant Sync & Identity Cluster Hardening
- * @author Raz Podestá - MetaShark Tech
+ * @description Enterprise Identity Cluster (Core Infrastructure).
+ *              Orquesta el control de acceso perimetral y la gestión de perfiles.
+ *              Implementa RBAC de 5 capas, integración relacional con la 
+ *              Red de Alianzas B2B e integridad Multi-Tenant de grado industrial.
+ * @version 9.0 - Enterprise Level 4.0 | Relational Integrity Sync
+ * @author Staff Engineer - MetaShark Tech
  */
 
 import { type CollectionConfig } from 'payload';
 import { v4 as uuidv4 } from 'uuid';
 
 /**
- * IMPORTACIONES DE INFRAESTRUCTRURA Y MODULARIZACIÓN
+ * IMPORTACIONES DE INFRAESTRUCTRURA (SSoT)
  * @pilar V: Adherencia arquitectónica.
  */
 import { multiTenantReadAccess } from './Access';
 import { ROLES_CONFIG } from './users/roles/config';
 
-/**
- * APARATO: Users (Master Identity Collection)
- * @description Centraliza el acceso perimetral y orquesta el RBAC de 5 capas.
- */
 export const Users: CollectionConfig = {
   slug: 'users',
   
   /**
-   * CONFIGURACIÓN DE AUTENTICACIÓN
-   * @pilar VIII: Resiliencia de Infraestructura.
+   * PROTOCOLO DE AUTENTICACIÓN (Infrastructure Security)
    */
   auth: {
-    tokenExpiration: 7200,
+    tokenExpiration: 7200, // 2 Horas de sesión activa
     verify: process.env.IS_SEEDING_MODE !== 'true',
     maxLoginAttempts: 5,
-    lockTime: 600000,
+    lockTime: 600000, // 10 Minutos de bloqueo por fuerza bruta
     useAPIKey: true,
     cookies: {
       secure: process.env.NODE_ENV === 'production',
@@ -43,40 +39,38 @@ export const Users: CollectionConfig = {
   admin: {
     useAsTitle: 'email',
     defaultColumns: ['email', 'role', 'tenant', 'level'],
-    group: 'Infrastructure',
-    description: 'Gestión de Identidades Soberanas y Control de Acceso Perimetral.',
+    group: 'Identity & Access', // Nivelación Léxica
+    description: 'Gestión centralizada de identidades corporativas y privilegios de acceso.',
   },
 
   /**
-   * REGLAS DE ACCESO (Sovereign RBAC)
+   * REGLAS DE ACCESO (Enterprise RBAC)
    */
   access: {
     read: multiTenantReadAccess,
-    // La creación es abierta para el registro inicial, pero protegida por el Middleware.
-    create: () => true,
+    create: () => true, // El registro inicial es abierto, el Middleware gestiona el Gating
     update: ({ req: { user } }) => {
       if (!user) return false;
       if (user.role === 'developer' || user.role === 'admin') return true;
-      return { id: { equals: user.id } }; // Dueño de su propio perfil
+      return { id: { equals: user.id } }; // Restricción de auto-edición
     },
-    delete: ({ req: { user } }) => user?.role === 'developer', // Solo Devs eliminan identidades
+    delete: ({ req: { user } }) => user?.role === 'developer', // Privilegio exclusivo de Infraestructura
   },
 
   /**
-   * GUARDIANES DE INTEGRIDAD (Hooks de Clúster)
+   * GUARDIANES DE INTEGRIDAD (Cluster Hooks)
    */
   hooks: {
     beforeChange: [
       ({ data, operation }) => {
         if (operation === 'create') {
-          /**
-           * @fix: Garantía de Identidad Multi-Tenant.
-           * Renombrado de tenantId a tenant para sincronía relacional.
-           */
+          // 1. Garantía de Identidad Multi-Tenant
           if (!data.tenant) data.tenant = uuidv4();
           
-          // Protocolo de Rescate para Seeding
-          if (process.env.IS_SEEDING_MODE === 'true') data._verified = true;
+          // 2. Protocolo de Rescate para Genesis Engine (Seeding)
+          if (process.env.IS_SEEDING_MODE === 'true') {
+            data._verified = true;
+          }
         }
         return data;
       },
@@ -93,7 +87,7 @@ export const Users: CollectionConfig = {
       type: 'tabs',
       tabs: [
         {
-          label: 'Identidad',
+          label: 'Core Identity',
           fields: [
             {
               type: 'row',
@@ -119,8 +113,7 @@ export const Users: CollectionConfig = {
             {
               /**
                * @property tenant
-               * @fix: Cambio de 'text' a 'relationship' para integridad referencial.
-               * Renombrado para evitar la redundancia 'tenant_id_id' en Postgres.
+               * @description Relación inmutable con la propiedad propietaria.
                */
               name: 'tenant',
               type: 'relationship',
@@ -130,46 +123,61 @@ export const Users: CollectionConfig = {
               index: true,
               admin: { 
                 readOnly: true, 
-                description: 'Propriedade física/digital à qual esta identidade pertence.' 
+                description: 'Perímetro físico/digital al que pertenece esta identidad.' 
               },
             },
           ],
         },
-        /**
-         * @description Atributos de Rol (Configuraciones Granulares).
-         */
         {
-          label: 'Atributos de Rol',
+          label: 'Authorization Metadata',
           fields: [
             {
               name: 'operatorMetadata',
               type: 'group',
-              label: 'Configuração Mayorista (B2B)',
+              label: 'Configuración B2B (Agente)',
               admin: {
                 condition: (data) => data.role === 'operator',
               },
               fields: [
-                { name: 'agencyName', type: 'text' },
-                { name: 'taxId', type: 'text' },
-                { name: 'netRatePercentage', type: 'number', defaultValue: 10 },
+                { 
+                  /**
+                   * @property agency
+                   * @fix: Sustituidos campos de texto por Relación Estricta.
+                   * Asegura que el usuario operador pertenezca a una agencia válida.
+                   */
+                  name: 'agency', 
+                  type: 'relationship', 
+                  relationTo: 'agencies',
+                  required: true,
+                  admin: { description: 'Vínculo corporativo con la Red de Alianzas.' }
+                },
+                { 
+                  name: 'accessLevel', 
+                  type: 'select', 
+                  defaultValue: 'consultant',
+                  options: [
+                    { label: 'Agency Manager', value: 'manager' },
+                    { label: 'Booking Consultant', value: 'consultant' }
+                  ]
+                },
               ]
             },
             {
               name: 'guestMetadata',
               type: 'group',
-              label: 'Preferencia de Huésped',
+              label: 'Preferencias de Operación',
               admin: {
-                condition: (data) => data.role === 'guest',
+                condition: (data) => data.role === 'guest' || data.role === 'sponsor',
               },
               fields: [
                 { name: 'loyaltyPoints', type: 'number', defaultValue: 0 },
-                { name: 'preferredLanguage', type: 'text' },
+                { name: 'preferredLanguage', type: 'text', admin: { placeholder: 'pt-BR' } },
               ]
             }
           ]
         },
         {
-          label: 'Protocolo 33',
+          label: 'Protocolo 33 Metrics',
           fields: [
             {
               type: 'row',

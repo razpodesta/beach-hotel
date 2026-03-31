@@ -1,10 +1,11 @@
 /**
- * @file ProjectCard.tsx
- * @description Aparato visual de alta fidelidad para activos digitales.
- *              Refactorizado: Sincronización total con el Manifiesto Day-First,
- *              clases canónicas Tailwind v4 y trazabilidad forense Heimdall.
- * @version 5.0 - Atmosphere Master & Zero Hardcode
- * @author Raz Podestá - MetaShark Tech
+ * @file apps/portfolio-web/src/components/ui/ProjectCard.tsx
+ * @description Enterprise Asset Manager (Module UI).
+ *              Orquesta la exhibición de activos de alta ingeniería, implementando
+ *              sincronización atmosférica Day-First, telemetría de inspección
+ *              y un motor de branding dinámico basado en OKLCH.
+ * @version 6.0 - Enterprise Level 4.0 Standard
+ * @author Staff Engineer - MetaShark Tech
  */
 
 'use client';
@@ -13,10 +14,10 @@ import React, { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ExternalLink, Github, Cpu, Star, ArrowUpRight } from 'lucide-react';
+import { ExternalLink, Github, Cpu, Star, ArrowUpRight, ShieldCheck } from 'lucide-react';
 
 /**
- * IMPORTACIONES DE INFRAESTRUCTRURA
+ * IMPORTACIONES DE INFRAESTRUCTRURA (SSoT)
  * @pilar V: Adherencia arquitectónica.
  */
 import { cn } from '../../lib/utils/cn';
@@ -27,57 +28,62 @@ import type {
 import { ProjectTechModal } from '../projects/ProjectTechModal';
 
 /**
- * @interface ProjectCardProps
+ * @interface EnterpriseAssetCardProps
+ * @description Contrato de propiedades para la unidad de gestión de activos.
  */
-interface ProjectCardProps {
-  /** Entidad del proyecto validada por SSoT */
+interface EnterpriseAssetCardProps {
+  /** Entidad del activo validada por el Core Engine */
   project: ProjectEntity;
-  /** Diccionario de etiquetas técnicas */
+  /** Diccionario de etiquetas técnicas corporativas */
   dictionary: ProjectDetailsDictionary;
   className?: string;
 }
 
 /**
- * APARATO: ProjectCard
- * @description Renderiza una tarjeta de activo digital adaptativa a la atmósfera global.
+ * MODULE: ProjectCard
+ * @description Punto de entrada para la visualización de activos digitales.
+ *              Fase de Embudo: Authority & Technical Trust.
  */
-export function ProjectCard({ project, dictionary, className }: ProjectCardProps) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+export function ProjectCard({ project, dictionary, className }: EnterpriseAssetCardProps) {
+  const [isTechnicalConsoleOpen, setIsTechnicalConsoleOpen] = useState(false);
 
   /**
-   * PROTOCOLO HEIMDALL: Telemetría de Inspección
-   * @pilar IV: Registra el interés técnico del usuario en el activo.
+   * PROTOCOLO HEIMDALL: Telemetría de Inspección (Trace Audit)
+   * @pilar IV: Registra el enganche con las especificaciones técnicas.
    */
-  const handleOpenSpecs = useCallback(() => {
-    const traceId = `inspect_${project.slug}_${Date.now()}`;
-    console.group(`[HEIMDALL][UX] Asset Inspection: ${traceId}`);
-    console.log(`Target: ${project.title}`);
-    console.log(`Reputation_Weight: ${project.reputationWeight} RZB`);
+  const openAssetTechnicalConsole = useCallback(() => {
+    const traceId = `inspect_asset_${project.slug}_${Date.now()}`;
+    console.group(`[ENTERPRISE][UX] Asset Technical Inspection: ${traceId}`);
+    console.log(`Asset_ID: ${project.id}`);
+    console.log(`Reputation_Reward: ${project.reputationWeight} RZB`);
     console.groupEnd();
-    setIsModalOpen(true);
-  }, [project.slug, project.title, project.reputationWeight]);
+    setIsTechnicalConsoleOpen(true);
+  }, [project.slug, project.id, project.reputationWeight]);
 
-  const handleCloseSpecs = useCallback(() => setIsModalOpen(false), []);
+  const closeAssetTechnicalConsole = useCallback(() => {
+    setIsTechnicalConsoleOpen(false);
+  }, []);
 
   return (
     <>
       <motion.article
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.2 }}
+        viewport={{ once: true, amount: 0.1 }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
         /**
-         * @pilar VII: Theming Soberano
-         * Cambiamos zinc por 'bg-surface/40' y 'border-border'.
+         * @pilar VII: Semantic Theming (Oxygen Engine)
+         * Se utilizan variables de color-mix para asegurar legibilidad en Modo Día.
          */
         className={cn(
-          "group relative flex h-full flex-col overflow-hidden rounded-4xl border border-border/50 bg-surface/40 backdrop-blur-md transition-all duration-1000",
-          "hover:border-primary/30 hover:shadow-primary/5 shadow-2xl transform-gpu",
+          "group relative flex h-full flex-col overflow-hidden rounded-[2.5rem] border border-border/50",
+          "bg-surface/40 backdrop-blur-xl transition-all duration-1000",
+          "hover:border-primary/40 hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)] transform-gpu",
           className
         )}
       >
-        {/* 1. MEDIA LAYER (Atmosphere Aware) */}
-        <div className="relative h-64 w-full overflow-hidden bg-background transition-colors duration-1000">
+        {/* --- 1. VISUAL REPOSITORY LAYER --- */}
+        <div className="relative h-64 w-full overflow-hidden bg-background">
           <Image
             src={project.imageUrl}
             alt={project.title}
@@ -87,27 +93,27 @@ export function ProjectCard({ project, dictionary, className }: ProjectCardProps
             priority={false}
           />
           
-          {/* Atmosphere Overlay Adaptativo */}
+          {/* Atmosphere Overlay (Alpha Channel Sync) */}
           <div className="absolute inset-0 bg-linear-to-t from-background via-transparent to-transparent opacity-90 transition-colors duration-1000" />
           
-          {/* BADGES SUPERIORES */}
-          <div className="absolute top-6 left-6 flex items-center gap-2 rounded-full bg-background/60 backdrop-blur-xl border border-border/40 px-4 py-1.5 text-[9px] font-bold text-yellow-500 uppercase tracking-widest shadow-xl">
+          {/* BADGES DE STATUS & REPUTACIÓN (Silo D) */}
+          <div className="absolute top-6 left-6 flex items-center gap-2 rounded-full bg-background/60 backdrop-blur-2xl border border-border/40 px-4 py-1.5 text-[9px] font-bold text-yellow-500 uppercase tracking-widest shadow-xl">
             <Star size={12} className="fill-yellow-500" />
             {project.reputationWeight} RZB
           </div>
 
           <button 
-            onClick={handleOpenSpecs}
-            className="absolute top-6 right-6 p-3 rounded-full bg-surface/80 backdrop-blur-xl border border-border/60 text-foreground hover:bg-primary hover:text-white transition-all active:scale-90 shadow-lg outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            onClick={openAssetTechnicalConsole}
+            className="absolute top-6 right-6 p-3 rounded-full bg-surface/80 backdrop-blur-2xl border border-border/60 text-foreground hover:bg-primary hover:text-white transition-all active:scale-90 shadow-lg outline-none focus-visible:ring-2 focus-visible:ring-primary"
             aria-label={dictionary.label_tech_stack}
           >
             <Cpu size={18} />
           </button>
         </div>
 
-        {/* 2. NARRATIVE LAYER (Contrast Optimized) */}
+        {/* --- 2. INFORMATION ARCHITECTURE LAYER --- */}
         <div className="flex grow flex-col p-8 md:p-10 relative z-10">
-          <div className="flex items-center justify-between mb-5">
+          <header className="flex items-center justify-between mb-5">
             <h3 className="font-display text-2xl md:text-3xl font-bold text-foreground tracking-tighter leading-none group-hover:text-primary transition-colors duration-500">
               {project.title}
             </h3>
@@ -118,23 +124,23 @@ export function ProjectCard({ project, dictionary, className }: ProjectCardProps
                 rel="noopener noreferrer"
                 className="text-muted-foreground hover:text-foreground transition-colors p-1"
                 aria-label={dictionary.label_source_code}
-                onClick={() => console.log(`[HEIMDALL][UX] Source Code Access: ${project.slug}`)}
+                onClick={() => console.log(`[AUDIT][DEV-ACCESS] Code Repository Opened: ${project.slug}`)}
               >
                 <Github size={20} />
               </Link>
             )}
-          </div>
+          </header>
 
-          <p className="grow text-sm md:text-base text-muted-foreground font-sans font-light leading-relaxed line-clamp-3 mb-10 transition-colors duration-1000">
+          <p className="grow text-sm md:text-base text-muted-foreground font-sans font-light leading-relaxed line-clamp-3 mb-10 transition-colors duration-1000 italic">
             {project.description}
           </p>
 
-          {/* TECH STACK (Pilar VII) */}
-          <div className="flex flex-wrap gap-2 mb-4">
+          {/* ASSET METADATA (Technology Stack) */}
+          <div className="flex flex-wrap gap-2.5 mb-2">
             {project.tech_stack.slice(0, 3).map((tech) => (
               <span 
                 key={tech} 
-                className="rounded-xl bg-foreground/5 border border-border/40 px-4 py-2 text-[10px] font-mono text-muted-foreground uppercase tracking-widest transition-all group-hover:border-primary/20 group-hover:text-foreground"
+                className="rounded-xl bg-foreground/5 border border-border/40 px-4 py-2 text-[10px] font-mono font-bold text-muted-foreground uppercase tracking-widest transition-all group-hover:border-primary/20 group-hover:text-foreground"
               >
                 {tech}
               </span>
@@ -142,12 +148,13 @@ export function ProjectCard({ project, dictionary, className }: ProjectCardProps
           </div>
         </div>
 
-        {/* 3. ACTION LAYER (Sovereign Buttons) */}
+        {/* --- 3. ENTERPRISE ACTION BAR --- */}
         <div className="mt-auto border-t border-border/40 p-8 bg-background/20 backdrop-blur-sm flex items-center justify-between">
            <button 
-             onClick={handleOpenSpecs}
-             className="text-[10px] font-bold uppercase tracking-[0.3em] text-muted-foreground hover:text-primary transition-all flex items-center gap-2 group/btn"
+             onClick={openAssetTechnicalConsole}
+             className="text-[10px] font-bold uppercase tracking-[0.3em] text-muted-foreground hover:text-primary transition-all flex items-center gap-3 group/btn"
            >
+              <ShieldCheck size={14} className="text-primary opacity-40 group-hover/btn:opacity-100 transition-opacity" />
               {dictionary.label_objective} 
               <ArrowUpRight size={14} className="transition-transform group-hover/btn:-translate-y-1 group-hover/btn:translate-x-1" />
            </button>
@@ -158,8 +165,8 @@ export function ProjectCard({ project, dictionary, className }: ProjectCardProps
               target="_blank"
               rel="noopener noreferrer"
               /**
-               * @pilar VII: Sovereign Flip
-               * El botón invierte colores según el tema para máximo contraste.
+               * @pilar VII: Sovereign Flip (Tailwind v4 Standard)
+               * Invierte la paleta cromática según la atmósfera activa.
                */
               className="flex items-center gap-3 rounded-full bg-foreground px-8 py-3 text-[10px] font-bold text-background uppercase tracking-[0.2em] transition-all hover:bg-primary hover:text-white shadow-2xl active:scale-95"
              >
@@ -169,18 +176,19 @@ export function ProjectCard({ project, dictionary, className }: ProjectCardProps
            )}
         </div>
 
-        {/* Sello de Identidad Cromática del Proyecto */}
+        {/* INDICADOR DE IDENTIDAD VISUAL (Dynamic Accent) */}
         <div 
           className="absolute bottom-0 left-0 h-1 w-full transition-all duration-700 opacity-20 group-hover:opacity-100"
           style={{ backgroundColor: project.branding.primary_color }} 
         />
       </motion.article>
 
+      {/* --- 4. ASSET TECHNICAL CONSOLE (Modal Instance) --- */}
       <AnimatePresence>
-        {isModalOpen && (
+        {isTechnicalConsoleOpen && (
           <ProjectTechModal 
             data={project} 
-            onClose={handleCloseSpecs} 
+            onClose={closeAssetTechnicalConsole} 
             dictionary={dictionary} 
           />
         )}

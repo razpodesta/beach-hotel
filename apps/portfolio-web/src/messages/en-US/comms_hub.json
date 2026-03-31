@@ -1,0 +1,17 @@
+{
+  "title": "Operational Comms Hub",
+  "subtitle": "Real-Time Intelligence & Notification Dispatch",
+  "tab_notifications": "Activity Stream",
+  "tab_direct_messages": "Node Communication",
+  "tab_system_logs": "Infrastructure Events",
+  "label_priority_low": "NORMAL",
+  "label_priority_high": "ELEVATED",
+  "label_priority_critical": "CRITICAL",
+  "label_sender_node": "Origin Node",
+  "label_dispatch_time": "Dispatch Time",
+  "label_trace_id": "Trace Identifier",
+  "btn_mark_read": "Acknowledge All",
+  "btn_broadcast": "Initialize Broadcast",
+  "status_online": "COMM_LINK_ACTIVE",
+  "empty_inbox": "No pending transmissions in the current perimeter."
+}

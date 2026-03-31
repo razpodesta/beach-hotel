@@ -1,0 +1,17 @@
+{
+  "page_title": "Paquetes y Programas de Viaje | Beach Hotel Canasvieiras",
+  "page_description": "Explore nuestras ofertas exclusivas de hospedaje y programas de viaje seleccionados en Florianópolis.",
+  "hero_title": "Ofertas del Santuario",
+  "hero_subtitle": "Experiencias diseñadas para transformar su estancia en recuerdos inolvidables.",
+  "filter_all": "Todos",
+  "filter_packages": "Paquetes",
+  "filter_programs": "Programas",
+  "filter_promos": "Promociones",
+  "cta_book": "Reservar Ahora",
+  "cta_details": "Ver Detalles",
+  "label_nights": "Noches",
+  "label_from": "Desde",
+  "label_inclusions": "Inclusiones",
+  "empty_state": "No hay ofertas disponibles para este filtro actualmente.",
+  "loading_state": "Sincronizando con el motor de reservas..."
+}

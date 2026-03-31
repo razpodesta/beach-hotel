@@ -14,7 +14,7 @@
     "nav_links": {
       "hotel": "The Hotel",
       "habitaciones": "Luxury Suites",
-      "festival": "Pride Escape 2026",
+      "paquetes": "Packages & Programs",
       "historia": "Our Story",
       "ubicacion": "Location",
       "contacto": "Contact",
@@ -38,19 +38,6 @@
     "label_author_prefix": "Architect",
     "rights_reserved": "© 2026 Beach Hotel Canasvieiras.",
     "made_by": "Infrastructure by MetaShark Tech"
-  },
-  "newsletter_form": {
-    "title": "Acesso Soberano",
-    "description": "Junte-se à elite do Beach Hotel e receba atualizações exclusivas do Santuário e do Festival.",
-    "placeholder": "Seu e-mail profissional",
-    "button": "Solicitar Ingresso",
-    "loading": "Processando Identidade...",
-    "success_title": "Identidade Vinculada",
-    "success_subtitle": "Seu acesso foi validado. Você agora faz parte do núcleo digital do Beach Hotel.",
-    "reward_label": "CONCEDIDOS",
-    "legal_notice": "Infraestrutura Privada • Criptografia de Ponta a Ponta",
-    "validation_email_required": "O e-mail é obrigatório para o handshake",
-    "validation_email_invalid": "Formato de e-mail não reconhecido pelo protocolo"
   },
   "system_status": {
     "items": [
@@ -321,6 +308,100 @@
       "oracle": "Oracle Level 33"
     }
   },
+  "newsletter_form": {
+    "title": "Acesso Soberano",
+    "description": "Junte-se à elite do Beach Hotel e receba atualizações exclusivas do Santuário e do Festival.",
+    "placeholder": "Seu e-mail profissional",
+    "button": "Solicitar Ingresso",
+    "loading": "Processando Identidade...",
+    "success_title": "Identidade Vinculada",
+    "success_subtitle": "Seu acesso foi validado. Você agora faz parte do núcleo digital do Beach Hotel.",
+    "reward_label": "CONCEDIDOS",
+    "legal_notice": "Infraestrutura Privada • Criptografia de Ponta a Ponta",
+    "validation_email_required": "O e-mail é obrigatório para o handshake",
+    "validation_email_invalid": "Formato de e-mail não reconhecido pelo protocolo"
+  },
+  "offers_flash": {
+    "title": "Flash Offers",
+    "subtitle": "Limited Inventory | High Priority Access",
+    "cta_label": "Secure Booking Now",
+    "label_stock_available": "Units Remaining",
+    "label_stock_total": "Total Capacity",
+    "label_expires_in": "Offer Expiring In",
+    "status_active": "ACTIVE PIPELINE",
+    "status_sold_out": "INVENTORY DEPLETED",
+    "status_expired": "OFFER CONCLUDED",
+    "badge_limited": "EXCLUSIVE OPPORTUNITY"
+  },
+  "partner_network": {
+    "title": "B2B Partner Network",
+    "subtitle": "High-Fidelity Wholesale Operations",
+    "label_trust_score": "Trust Credibility Index",
+    "label_iata": "IATA / Regulatory Code",
+    "btn_onboarding": "Initialize Onboarding",
+    "metrics": {
+      "label_bookings": "Total Confirmed Bookings",
+      "label_conversion": "Conversion Yield",
+      "label_commissions": "Pending Accruals"
+    },
+    "agent_management": {
+      "title": "Agent Directory",
+      "add_agent": "Authorize New Consultant",
+      "history": "Transaction Ledger"
+    }
+  },
+  "ingestion_vault": {
+    "title": "Universal Ingestion Vault",
+    "subtitle": "Intelligent data capture via Excel, Voice, WhatsApp, and Email.",
+    "channel_web": "Admin Portal",
+    "channel_whatsapp": "WhatsApp Sync",
+    "channel_email": "Email Ingestion",
+    "status_pending": "Awaiting Processing",
+    "status_processing": "Analyzing Structure...",
+    "status_success": "Data Indexed Successfully",
+    "status_error": "Protocol Validation Failed",
+    "status_ai_analysis": "AI Analysis in Progress",
+    "btn_upload_data": "Ingest New Assets",
+    "btn_cancel_ingest": "Abort Sync",
+    "label_voice_note": "Voice Transcription",
+    "label_excel_db": "Structured Database",
+    "label_chat_log": "Conversation Log",
+    "placeholder_dropzone": "Drop Excel sheets, photos, or audio notes here for automated processing.",
+    "success_msg": "Data handshake complete. The intelligence cluster is now processing the input."
+  },
+  "marketing_cloud": {
+    "title": "Enterprise Marketing Cloud",
+    "subtitle": "High-Volume Transactional & Mass Communication",
+    "tab_audience": "Audience Inventory",
+    "tab_campaigns": "Active Campaigns",
+    "tab_templates": "Fidelity Templates",
+    "label_recipients": "Target Nodes",
+    "label_subject": "Protocol Subject",
+    "label_status_sent": "DISPATCHED",
+    "label_open_rate": "Engagement Yield",
+    "btn_new_campaign": "Initialize Campaign",
+    "btn_send_now": "Execute Dispatch",
+    "btn_import_vault": "Sync from Ingestion Pipeline",
+    "success_dispatch": "Communication successfully broadcasted to the network.",
+    "error_quota": "Infrastructure alert: SMTP quota limit reached."
+  },
+  "comms_hub": {
+    "title": "Operational Comms Hub",
+    "subtitle": "Real-Time Intelligence & Notification Dispatch",
+    "tab_notifications": "Activity Stream",
+    "tab_direct_messages": "Node Communication",
+    "tab_system_logs": "Infrastructure Events",
+    "label_priority_low": "NORMAL",
+    "label_priority_high": "ELEVATED",
+    "label_priority_critical": "CRITICAL",
+    "label_sender_node": "Origin Node",
+    "label_dispatch_time": "Dispatch Time",
+    "label_trace_id": "Trace Identifier",
+    "btn_mark_read": "Acknowledge All",
+    "btn_broadcast": "Initialize Broadcast",
+    "status_online": "COMM_LINK_ACTIVE",
+    "empty_inbox": "No pending transmissions in the current perimeter."
+  },
   "hero": {
     "page_title": "Beach Hotel Canasvieiras | Florianópolis",
     "page_description": "Luxury boutique accommodation and official headquarters of the Pride Escape 2026 festival.",
@@ -346,144 +427,16 @@
       }
     }
   },
-  "about": {
-    "title": "A Sanctuary of Elite Hospitality.",
-    "badge_label": "Boutique Sanctuary",
-    "paragraphs": [
-      {
-        "text": "Located in the heart of Canasvieiras, our hotel offers a unique blend of sophisticated luxury and the vibrant energy of Florianópolis.",
-        "highlight": "Exclusivity in every detail."
-      },
-      {
-        "text": "Our commitment is to transform every stay into a curated experience. With smart technology and a personalized concierge service, we ensure that every guest finds their perfect refuge.",
-        "highlight": "Your perfect refuge."
-      }
-    ],
-    "cta_button": "Discover our Story"
-  },
-  "value_proposition": {
-    "badge_label": "Hospitality Standards",
-    "amenities_title": "Premium Amenities",
-    "amenities_cta": "Exclusive access for Beach Hotel guests",
-    "amenities_hotel": [
-      {
-        "name": "WiFi 6",
-        "iconKey": "wifi"
-      },
-      {
-        "name": "Ocean View",
-        "iconKey": "waves"
-      },
-      {
-        "name": "Gourmet",
-        "iconKey": "utensils"
-      },
-      {
-        "name": "Concierge",
-        "iconKey": "shield"
-      }
-    ],
-    "amenities_festival": [
-      {
-        "name": "VIP Access",
-        "iconKey": "ticket"
-      },
-      {
-        "name": "Boat Party",
-        "iconKey": "ship"
-      },
-      {
-        "name": "DJ Sets",
-        "iconKey": "music"
-      },
-      {
-        "name": "Sunset Lounge",
-        "iconKey": "martini"
-      }
-    ],
-    "title": "Hospitality Redefined",
-    "subtitle": "Our philosophy is built on three core pillars designed to transform your stay into an unforgettable memory.",
-    "pillars": [
-      {
-        "title": "Prime Location",
-        "description": "At the heart of Canasvieiras, just steps away from the crystal blue ocean."
-      },
-      {
-        "title": "Inclusive Luxury",
-        "description": "A sophisticated atmosphere where every guest feels part of our community."
-      },
-      {
-        "title": "Smart Living",
-        "description": "Digital-first check-in and full support for international nomads."
-      }
-    ],
-    "testimonial": {
-      "quote": "An absolute sanctuary. The staff understands luxury not just as a price point, but as a personalized service.",
-      "author_name": "James Sterling",
-      "author_role": "Loyalty Guest",
-      "avatar_url": "/images/testimonials/james-sterling.jpg"
-    }
-  },
-  "ai_gallery_section": {
-    "badge": "Ideogram 3.0 Powered",
-    "title": "AI Visual Synth",
-    "subtitle": "Explore a curated collection of algorithmically generated assets. Photorealism, perfect typography, and stylistic consistency, orchestrated by our sovereign CMS.",
-    "overlay_indicator": "LIVE RENDER • WEBGL 2.0",
-    "drag_label": "DRAG TO ORBIT",
-    "item_prefix": "ASSET",
-    "error_fallback": "VISUAL ENGINE NOT SUPPORTED ON THIS BROWSER",
-    "footer_prompt": "Advanced Prompt Engineering",
-    "footer_upscaling": "8K Upscaling & Optimization",
-    "items": {
-      "neon-typography": {
-        "title": "Neon Glass",
-        "description": "3D neon tubes rendering."
-      },
-      "editorial-fashion": {
-        "title": "High Fashion",
-        "description": "Photorealistic textile synthesis."
-      },
-      "tech-badge": {
-        "title": "Titanium Tech",
-        "description": "Macro product visualization."
-      },
-      "transparent-gadget": {
-        "title": "Glass Hardware",
-        "description": "Futuristic device engineering."
-      },
-      "luxury-perfume": {
-        "title": "Gold Scent",
-        "description": "Commercial product photography."
-      },
-      "concept-car": {
-        "title": "Auto Concept",
-        "description": "Abstract carbon fiber details."
-      },
-      "concrete-workspace": {
-        "title": "Raw Workspace",
-        "description": "Minimalist interior design."
-      },
-      "cyberpunk-street": {
-        "title": "Night City",
-        "description": "Volumetric lighting atmosphere."
-      },
-      "abstract-geometry": {
-        "title": "Parametric Form",
-        "description": "Algorithmic architecture."
-      },
-      "fluid-shapes": {
-        "title": "Iridescent Flux",
-        "description": "Liquid metal 3D simulation."
-      },
-      "mechanical-insect": {
-        "title": "Clockwork Life",
-        "description": "Precision steampunk macro."
-      },
-      "neural-network": {
-        "title": "Data Stream",
-        "description": "Abstract neural visualization."
-      }
-    }
+  "blog_page": {
+    "page_title": "Concierge Journal | Beach Hotel Canasvieiras",
+    "page_description": "Discover the island's best-kept secrets, exclusive nightlife guides, and Pride Escape news.",
+    "hero_title": "The Concierge Journal",
+    "featured_title": "Featured Read",
+    "all_posts_title": "Latest Updates",
+    "read_more_cta": "Read Article",
+    "empty_state": "No articles available at this time. Stay connected.",
+    "tag_results_singular": "One article available curated under",
+    "tag_results_plural": "Articles selected curated under"
   },
   "suite_gallery": {
     "title": "Luxury Suites",
@@ -496,91 +449,6 @@
     "label_suite_suffix": "Boutique Suite",
     "empty_state_title": "No results in the Sanctuary",
     "empty_state_signal": "SUITE SIGNAL NOT FOUND"
-  },
-  "festival": {
-    "hero": {
-      "title": "PRIDE ESCAPE 2026",
-      "subtitle": "The Boutique Takeover of Canasvieiras",
-      "video_url": "https://cdn.pixabay.com/video/2023/10/24/186358-877995180_large.mp4",
-      "countdown_target": "2026-06-15T20:00:00Z",
-      "cta_label": "SECURE MY SPOT"
-    },
-    "manifesto": "A week designed to meet, connect and enjoy in community. Escape the cold and live a unique experience in the heart of the Magic Island. 7 days of absolute freedom, exclusive parties and the finest boutique hospitality.",
-    "vip_upsell": {
-      "title": "VIP Diamond Experience",
-      "price_addon": "+U$ 125",
-      "per_guest_label": "per guest",
-      "benefits": [
-        "Front-row ocean view room",
-        "Priority Access (Fast Pass) to all events",
-        "Limited Edition Welcome Kit",
-        "Exclusive dinner with the International Line-up",
-        "Premium Open Bar at all Boat Parties"
-      ],
-      "cta_label": "UPGRADE TO VIP"
-    },
-    "events": [
-      {
-        "id": "sunset-welcome",
-        "day": 1,
-        "title": "HQ SUNSET",
-        "location": "Beach Hotel Pool",
-        "startTime": "4:00 PM",
-        "description": "Official opening party with welcome cocktails and melodic DJ sets.",
-        "vibe": "Chill",
-        "isVipOnly": false,
-        "image": "/images/festival/hq-sunset.jpg",
-        "neon_color": "#3B82F6"
-      },
-      {
-        "id": "main-boat-party",
-        "day": 3,
-        "title": "BOAT PARTY: THE NEW WAVE",
-        "location": "North Bay / Private Yacht",
-        "startTime": "2:00 PM",
-        "description": "Sunset cruise with hi-fi sound system and strategic swim stops.",
-        "vibe": "House",
-        "isVipOnly": true,
-        "image": "/images/festival/boat-party-main.jpg",
-        "neon_color": "#A855F7"
-      },
-      {
-        "id": "techno-sanctuary",
-        "day": 5,
-        "title": "THE SANCTUARY NIGHT",
-        "location": "The Cave / Underground Club",
-        "startTime": "11:00 PM",
-        "description": "A visual and sonic immersion with the best of European Techno.",
-        "vibe": "Techno",
-        "isVipOnly": false,
-        "image": "/images/festival/techno-night.jpg",
-        "neon_color": "#EC4899"
-      }
-    ],
-    "packages_section": {
-      "title": "Takeover Packages",
-      "subtitle": "Select your level of immersion in the Sanctuary",
-      "label_5_nights": "5 Nights Experience",
-      "label_7_nights": "7 Nights Full Takeover",
-      "cta": "Book Package"
-    },
-    "packages": [
-      {
-        "category": "Experience Base",
-        "price_5_nights": "U$ 465",
-        "price_7_nights": "U$ 595",
-        "hotel_name": "Beach Hotel Principal",
-        "availability_label": "LAST CALL"
-      },
-      {
-        "category": "Luxury Elite",
-        "price_5_nights": "U$ 810",
-        "price_7_nights": "U$ 1,050",
-        "hotel_name": "Beach Hotel Suites",
-        "availability_label": "EXCLUSIVE BOOKING"
-      }
-    ],
-    "footer_credits": "Canasvieiras Fest 2026 • Private Infrastructure • MetaShark Tech"
   },
   "quienes_somos": {
     "page_title": "Our History | Beach Hotel Canasvieiras",
@@ -601,126 +469,6 @@
     },
     "cta_title": "Experience the Unforgettable",
     "cta_button": "Book your Experience"
-  },
-  "history": {
-    "badge_label": "The Legacy",
-    "title": "Forged in Code",
-    "subtitle": "Discover the fusion of two decades of systems engineering with a creative vision obsessed with results. This is not just a portfolio; it is the legacy of an architecture built to last."
-  },
-  "contact": {
-    "title": "GET IN TOUCH",
-    "form_cta": "Have an idea or project in mind? I'd love to hear about it. Fill out the form and I'll get back to you shortly.",
-    "form_placeholder_name": "* Name",
-    "form_placeholder_email": "* Email",
-    "form_placeholder_message": "* Your message...",
-    "form_button_submit": "Send Message",
-    "form_button_loading": "Processing...",
-    "success_title": "Request Received",
-    "success_subtitle": "Our concierge will contact you shortly to refine the details of your stay or project.",
-    "error_submit": "Submission failed. Please try again or contact us directly via email.",
-    "validation": {
-      "name_required": "Name is required",
-      "email_required": "Email is required",
-      "email_invalid": "Please enter a valid email",
-      "message_too_short": "Message must be at least 10 characters"
-    }
-  },
-  "blog_page": {
-    "page_title": "Concierge Journal | Beach Hotel Canasvieiras",
-    "page_description": "Discover the island's best-kept secrets, exclusive nightlife guides, and Pride Escape news.",
-    "hero_title": "The Concierge Journal",
-    "featured_title": "Featured Read",
-    "all_posts_title": "Latest Updates",
-    "read_more_cta": "Read Article",
-    "empty_state": "No articles available at this time. Stay connected.",
-    "tag_results_singular": "One article available curated under",
-    "tag_results_plural": "Articles selected curated under"
-  },
-  "mission_vision": {
-    "mission_title": "Our Mission",
-    "mission_description": "To orchestrate the entire digital conversion lifecycle. We forge intelligent, sovereign ecosystems that unify brand strategy, experience creation, and continuous optimization, transforming marketing from a game of guesswork into a science of predictable growth.",
-    "vision_title": "Our Vision: The Growth Flywheel",
-    "vision_subtitle": "Our vision is to be the driving force behind a new paradigm: the web as a living, self-optimizing ecosystem, where every interaction fuels a perpetual growth flywheel.",
-    "vision_pillars": [
-      {
-        "title": "Understand",
-        "description": "We don't just capture metrics; we achieve holistic observability. We integrate qualitative and quantitative data to build a dynamic visitor profile, understanding the 'why' behind every 'what'."
-      },
-      {
-        "title": "Adapt",
-        "description": "The platforms we build are not static. They are living entities that use artificial intelligence to adapt and evolve harmoniously, personalizing the experience in real-time to meet each user's needs."
-      },
-      {
-        "title": "Maximize",
-        "description": "Conversion is not an event, it's a science. Our ecosystem uses the insights generated to fuel a cycle of continuous optimization, ensuring that every asset and every campaign becomes inherently more effective over time, maximizing business objectives."
-      }
-    ]
-  },
-  "profile_page": {
-    "page_title": "My Profile | Raz Podestá",
-    "welcome_title": "Digital Sanctuary",
-    "level_label": "Current Level",
-    "xp_label": "Experience",
-    "inventory_title": "Artifact Inventory",
-    "empty_inventory_message": "Your inventory is empty. Explore the ecosystem to discover artifacts."
-  },
-  "lucide_page": {
-    "page_title": "Lucide Iconography | Raz Podestá",
-    "page_description": "Explore the complete collection of Lucide icons available in the design system.",
-    "header_title": "Lucide Universe",
-    "header_subtitle": "A collection of beautiful and consistent SVG icons for modern interfaces.",
-    "search_placeholder": "Search icon by name...",
-    "load_more_button": "Load More Icons",
-    "showing_results": "Showing {count} of {total} icons",
-    "visit_official": "View Documentation",
-    "copy_import": "Copy JSX",
-    "view_details": "View Details",
-    "modal_install_title": "Library Installation",
-    "modal_usage_title": "Implementation",
-    "modal_close": "Close",
-    "scroll_top": "Scroll Up",
-    "scroll_bottom": "Scroll Down",
-    "library_help_btn": "Library Help",
-    "library_help_title": "Architecture Resource",
-    "library_help_desc": "This centralized index facilitates icon selection for new projects.",
-    "btn_docs": "Icon Documentation",
-    "btn_repo": "GitHub Repository",
-    "category_all": "All"
-  },
-  "homepage": {
-    "hero": {
-      "page_title": "Beach Hotel Canasvieiras | Florianópolis",
-      "page_description": "Boutique accommodation and official headquarters of the Pride Escape 2026 festival.",
-      "SUITES_SUBTITLE": "Where luxury meets the sea.",
-      "SUITES_TITLE": "BOUTIQUE SUITES",
-      "SUITES_FEATURES": "Panoramic Views · Gourmet Breakfast",
-      "FESTIVAL_SUBTITLE": "The new wave of Florianópolis.",
-      "FESTIVAL_TITLE": "PRIDE ESCAPE 2026",
-      "FESTIVAL_FEATURES": "Boat Party · VIP Club Nights · 7 Days of Takeover",
-      "CTA_BUTTON": "CHECK AVAILABILITY"
-    },
-    "about_section": {
-      "title": "A Sanctuary of Elite Hospitality.",
-      "paragraphs": [
-        {
-          "text": "Located in the heart of Canasvieiras, our hotel offers a unique blend of sophisticated luxury and the vibrant energy of Florianópolis.",
-          "highlight": "We redefine the beach experience."
-        }
-      ],
-      "cta_button": "Discover our Story"
-    },
-    "ai_gallery_section": {
-      "badge": "Ideogram 3.0 Powered",
-      "title": "AI Visual Synth",
-      "subtitle": "Explore a curated collection of algorithmically generated assets.",
-      "overlay_indicator": "LIVE RENDER • WEBGL 2.0",
-      "drag_label": "DRAG TO ORBIT",
-      "item_prefix": "ASSET",
-      "error_fallback": "VISUAL ENGINE NOT SUPPORTED",
-      "footer_prompt": "Advanced Prompt Engineering",
-      "footer_upscaling": "8K Upscaling & Optimization",
-      "items": {}
-    }
   },
   "legal": {
     "privacy_policy": {
@@ -786,5 +534,123 @@
     "description": "A critical anomaly has been detected in the core. Our automated sentinels have been notified and recovery protocols are engaging.",
     "retry_button": "Retry Connection",
     "home_button": "Emergency Evac (Home)"
+  },
+  "homepage": {
+    "hero": {
+      "page_title": "Beach Hotel Canasvieiras | Florianópolis",
+      "page_description": "Boutique accommodation and official headquarters of the Pride Escape 2026 festival.",
+      "SUITES_SUBTITLE": "Where luxury meets the sea.",
+      "SUITES_TITLE": "BOUTIQUE SUITES",
+      "SUITES_FEATURES": "Panoramic Views · Gourmet Breakfast",
+      "FESTIVAL_SUBTITLE": "The new wave of Florianópolis.",
+      "FESTIVAL_TITLE": "PRIDE ESCAPE 2026",
+      "FESTIVAL_FEATURES": "Boat Party · VIP Club Nights · 7 Days of Takeover",
+      "CTA_BUTTON": "CHECK AVAILABILITY"
+    },
+    "about_section": {
+      "title": "A Sanctuary of Elite Hospitality.",
+      "paragraphs": [
+        {
+          "text": "Located in the heart of Canasvieiras, our hotel offers a unique blend of sophisticated luxury and the vibrant energy of Florianópolis.",
+          "highlight": "We redefine the beach experience."
+        }
+      ],
+      "cta_button": "Discover our Story"
+    },
+    "ai_gallery_section": {
+      "badge": "Ideogram 3.0 Powered",
+      "title": "AI Visual Synth",
+      "subtitle": "Explore a curated collection of algorithmically generated assets.",
+      "overlay_indicator": "LIVE RENDER • WEBGL 2.0",
+      "drag_label": "DRAG TO ORBIT",
+      "item_prefix": "ASSET",
+      "error_fallback": "VISUAL ENGINE NOT SUPPORTED",
+      "footer_prompt": "Advanced Prompt Engineering",
+      "footer_upscaling": "8K Upscaling & Optimization",
+      "items": {}
+    }
+  },
+  "about": {
+    "title": "A Sanctuary of Elite Hospitality.",
+    "badge_label": "Boutique Sanctuary",
+    "paragraphs": [
+      {
+        "text": "Located in the heart of Canasvieiras, our hotel offers a unique blend of sophisticated luxury and the vibrant energy of Florianópolis.",
+        "highlight": "Exclusivity in every detail."
+      },
+      {
+        "text": "Our commitment is to transform every stay into a curated experience. With smart technology and a personalized concierge service, we ensure that every guest finds their perfect refuge.",
+        "highlight": "Your perfect refuge."
+      }
+    ],
+    "cta_button": "Discover our Story"
+  },
+  "history": {
+    "badge_label": "The Legacy",
+    "title": "Forged in Code",
+    "subtitle": "Discover the fusion of two decades of systems engineering with a creative vision obsessed with results. This is not just a portfolio; it is the legacy of an architecture built to last."
+  },
+  "value_proposition": {
+    "badge_label": "Hospitality Standards",
+    "amenities_title": "Premium Amenities",
+    "amenities_cta": "Exclusive access for Beach Hotel guests",
+    "amenities_hotel": [
+      {
+        "name": "WiFi 6",
+        "iconKey": "wifi"
+      },
+      {
+        "name": "Ocean View",
+        "iconKey": "waves"
+      },
+      {
+        "name": "Gourmet",
+        "iconKey": "utensils"
+      },
+      {
+        "name": "Concierge",
+        "iconKey": "shield"
+      }
+    ],
+    "amenities_festival": [
+      {
+        "name": "VIP Access",
+        "iconKey": "ticket"
+      },
+      {
+        "name": "Boat Party",
+        "iconKey": "ship"
+      },
+      {
+        "name": "DJ Sets",
+        "iconKey": "music"
+      },
+      {
+        "name": "Sunset Lounge",
+        "iconKey": "martini"
+      }
+    ],
+    "title": "Hospitality Redefined",
+    "subtitle": "Our philosophy is built on three core pillars designed to transform your stay into an unforgettable memory.",
+    "pillars": [
+      {
+        "title": "Prime Location",
+        "description": "At the heart of Canasvieiras, just steps away from the crystal blue ocean."
+      },
+      {
+        "title": "Inclusive Luxury",
+        "description": "A sophisticated atmosphere where every guest feels part of our community."
+      },
+      {
+        "title": "Smart Living",
+        "description": "Digital-first check-in and full support for international nomads."
+      }
+    ],
+    "testimonial": {
+      "quote": "An absolute sanctuary. The staff understands luxury not just as a price point, but as a personalized service.",
+      "author_name": "James Sterling",
+      "author_role": "Loyalty Guest",
+      "avatar_url": "/images/testimonials/james-sterling.jpg"
+    }
   }
 }

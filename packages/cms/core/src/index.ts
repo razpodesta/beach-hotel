@@ -1,46 +1,63 @@
 /**
  * @file packages/cms/core/src/index.ts
- * @description Fachada pública soberana de la librería @metashark/cms-core.
- *              Orquesta la exposición atómica de colecciones y configuración 
- *              para el ecosistema monorepo. Actúa como el Único Punto de Entrada (SSoT).
- * @version 8.0 - CRM Hub Integrated & Identity Sovereign
- * @author Raz Podestá - MetaShark Tech
+ * @description Enterprise Core Registry (The Data Gateway).
+ *              Fachada pública soberana que orquesta la exposición atómica de 
+ *              colecciones y configuraciones del ecosistema MetaShark.
+ *              Organizado por Unidades Estratégicas de Negocio (SBU).
+ * @version 9.0 - Enterprise Level 4.0 | Multi-Silo Integration
+ * @author Staff Engineer - MetaShark Tech
  */
 
 /**
- * 1. CONFIGURACIÓN DE INFRAESTRUCTRURA
- * @description Exportación del orquestador de Payload 3.0.
+ * 1. INFRASTRUCTURE & CONFIGURATION
+ * @description Exportación del orquestador central de Payload 3.0.
  */
 export { default as config } from './payload.config';
 
 /**
- * 2. COLECCIONES SOBERANAS (SSoT)
- * @pilar IX: Modularización y exportación atómica.
+ * 2. IDENTITY & ACCESS CONTROL (SBU: Core)
  */
 export * from './collections/Users';
 export * from './collections/Tenants';
-export * from './collections/Subscribers'; // <-- INTEGRACIÓN DEL CRM HUB
-export * from './collections/BlogPosts';
-export * from './collections/Projects';
-export * from './collections/Media';
-
-/**
- * 3. LÓGICA DE SEGURIDAD Y PERÍMETROS
- * @description Reglas de acceso Multi-Tenant y RBAC.
- */
 export * from './collections/Access';
 
 /**
- * 4. CONTRATOS DE TIPOS (Type-Only Exports)
- * @pilar III: Seguridad de Tipos Absoluta.
- * @description El uso de 'export type' garantiza que estas definiciones 
- *              no generen código JavaScript en el bundle final.
+ * 3. REVENUE ENGINE (SBU: Silo A)
  */
-export type { ProjectLayoutStyleType } from './collections/Projects';
+export * from './collections/Offers';
+export * from './collections/FlashSales';
 
 /**
- * @fix TS2307: Erradicación del "Chicken-and-Egg".
- * Exportamos contratos estructurales estáticos para blindar el build de Vercel
- * contra la latencia de autogeneración de tipos de Payload.
+ * 4. PARTNER NETWORK & PRM (SBU: Silo B)
  */
+export * from './collections/Agencies';
+export * from './collections/Agents';
+export * from './collections/BusinessMetrics';
+
+/**
+ * 5. INTELLIGENCE & MARKETING CLOUD (SBU: Silo C)
+ */
+export * from './collections/Ingestions';
+export * from './collections/Subscribers';
+
+/**
+ * 6. ASSET LIBRARY & CONTENT (SBU: Experience)
+ */
+export * from './collections/Media';
+export * from './collections/BlogPosts';
+export * from './collections/Projects';
+
+/**
+ * 7. INFRASTRUCTURE & COMMS (SBU: Silo D)
+ */
+export * from './collections/Notifications'; // <-- INTEGRACIÓN DEL LEDGER OPERATIVO
+export * from './collections/DynamicRoutes';
+
+/**
+ * 8. STATIC CONTRACTS & TYPES (Type-Only Exports)
+ * @pilar III: Seguridad de Tipos Absoluta.
+ * @description Estos contratos blindan el build contra la latencia de autogeneración.
+ */
+export type { ProjectLayoutStyleType } from './collections/Projects';
 export type { PayloadMediaDoc } from './collections/Media';
+export type { SovereignRoleType } from './collections/users/roles/config';

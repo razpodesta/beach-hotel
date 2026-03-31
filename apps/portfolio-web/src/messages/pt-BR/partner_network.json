@@ -1,0 +1,17 @@
+{
+  "title": "Rede de Parceiros B2B",
+  "subtitle": "Operações Atacadistas de Alta Fidelidade",
+  "label_trust_score": "Índice de Credibilidade",
+  "label_iata": "Registro IATA / EMBRATUR",
+  "btn_onboarding": "Iniciar Onboarding",
+  "metrics": {
+    "label_bookings": "Reservas Confirmadas",
+    "label_conversion": "Rendimento de Conversão",
+    "label_commissions": "Comissões Acumuladas"
+  },
+  "agent_management": {
+    "title": "Diretório de Agentes",
+    "add_agent": "Autorizar Novo Consultor",
+    "history": "Registro de Transações"
+  }
+}

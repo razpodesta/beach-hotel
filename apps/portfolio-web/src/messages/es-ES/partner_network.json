@@ -1,0 +1,17 @@
+{
+  "title": "Red de Aliados B2B",
+  "subtitle": "Operaciones Mayoristas de Alta Fidelidad",
+  "label_trust_score": "Índice de Credibilidad",
+  "label_iata": "Registro IATA / Nacional",
+  "btn_onboarding": "Iniciar Onboarding",
+  "metrics": {
+    "label_bookings": "Reservas Confirmadas",
+    "label_conversion": "Rendimiento de Conversión",
+    "label_commissions": "Comisiones Devengadas"
+  },
+  "agent_management": {
+    "title": "Directorio de Agentes",
+    "add_agent": "Autorizar Nuevo Consultor",
+    "history": "Libro de Transacciones"
+  }
+}

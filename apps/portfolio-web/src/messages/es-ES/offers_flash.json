@@ -1,0 +1,12 @@
+{
+  "title": "Ofertas Flash",
+  "subtitle": "Inventario Limitado | Acceso de Alta Prioridad",
+  "cta_label": "Asegurar Reserva Ahora",
+  "label_stock_available": "Unidades Restantes",
+  "label_stock_total": "Capacidad Total",
+  "label_expires_in": "La Oferta Expira En",
+  "status_active": "PIPELINE ACTIVO",
+  "status_sold_out": "INVENTARIO AGOTADO",
+  "status_expired": "OFERTA FINALIZADA",
+  "badge_limited": "OPORTUNIDAD EXCLUSIVA"
+}

@@ -1,0 +1,12 @@
+{
+  "title": "Ofertas Relâmpago",
+  "subtitle": "Estoque Limitado | Acesso de Alta Prioridade",
+  "cta_label": "Garantir Reserva Agora",
+  "label_stock_available": "Unidades Restantes",
+  "label_stock_total": "Capacidade Total",
+  "label_expires_in": "A Oferta Expira Em",
+  "status_active": "PIPELINE ATIVO",
+  "status_sold_out": "ESTOQUE ESGOTADO",
+  "status_expired": "OFERTA ENCERRADA",
+  "badge_limited": "OPORTUNIDADE EXCLUSIVA"
+}

@@ -1,24 +1,25 @@
 /**
  * @file packages/cms/core/src/payload.config.ts
- * @description Orquestador soberano de configuración para Payload CMS 3.0.
- *              Refactorizado: Resolución de TS2353 (Admin Meta Config), 
- *              estabilización de infraestructura S3 y normalización relacional.
- * @version 31.1 - Strict Metadata & S3 Production Standard
- * @author Raz Podestá - MetaShark Tech
+ * @description Enterprise Operations Orchestrator (The Master Engine).
+ *              Punto de entrada único para la configuración de Payload CMS 3.0.
+ *              Orquesta la integración de los 5 Silos Industriales, el clúster
+ *              de almacenamiento S3 y el motor de identidad corporativa.
+ * @version 38.0 - Enterprise Level 4.0 | MetaConfig Payload 3.0 Sync
+ * @author Staff Engineer - MetaShark Tech
  */
 
 /**
- * 1. PROTOCOLO DE INFRAESTRUCTRURA NIVEL 0 (Early Initialization)
- * @pilar VIII: Resiliencia de Persistencia.
+ * 1. INFRASTRUCTURE PROTOCOL L0 (Early Initialization)
+ * @description Protocolo de bypass de red para entornos de construcción y despliegue.
  */
-(function initializeSovereignNetwork() {
-  const isVercel = process.env.VERCEL === '1';
-  const isBuild = process.env.NEXT_PHASE === 'phase-production-build';
+(function initializeEnterpriseNetwork() {
+  const isVercelNode = process.env.VERCEL === '1';
+  const isBuildPhase = process.env.NEXT_PHASE === 'phase-production-build';
   
-  if (isVercel || isBuild) {
+  if (isVercelNode || isBuildPhase) {
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
     process.env.PGSSLMODE = 'no-verify';
-    console.log('[HEIMDALL][L0] Infrastructure Network Bypass: ENGAGED');
+    console.log('[SYSTEM][L0] Infrastructure Network Bypass: ACTIVE');
   }
 })();
 
@@ -33,87 +34,111 @@ import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 
 /** 
- * IMPORTACIONES DE COLECCIONES SOBERANAS (SSoT) 
+ * ENTERPRISE COLLECTION REGISTRY (Strategic Business Units)
+ * @pilar IX: Modularización por Dominio de Negocio.
  */
-import { Users } from './collections/Users';
-import { BlogPosts } from './collections/BlogPosts';
-import { Projects } from './collections/Projects';
-import { Media } from './collections/Media';
-import { Tenants } from './collections/Tenants';
+
+// SBU 1: Intelligence & CRM (Ingestion Pipeline)
+import { Ingestions } from './collections/Ingestions';
 import { Subscribers } from './collections/Subscribers';
 
-/** DETERMINACIÓN DE PERÍMETRO */
+// SBU 2: Partner Network & PRM (B2B Hub)
+import { Agencies } from './collections/Agencies';
+import { Agents } from './collections/Agents';
+import { BusinessMetrics } from './collections/BusinessMetrics';
+
+// SBU 3: Revenue Engine (Sales Operations)
+import { Offers } from './collections/Offers';
+import { FlashSales } from './collections/FlashSales';
+
+// SBU 4: Asset Library (Editorial & Engineering)
+import { Media } from './collections/Media';
+import { BlogPosts } from './collections/BlogPosts';
+import { Projects } from './collections/Projects';
+
+// SBU 5: Core Infrastructure (Identity & Logs)
+import { Tenants } from './collections/Tenants';
+import { Users } from './collections/Users';
+import { Notifications } from './collections/Notifications'; // <-- NUEVO LEDGER OPERATIVO
+import { DynamicRoutes } from './collections/DynamicRoutes';
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const BASE_CONFIG_DIR = __dirname;
 
+/** ENVIRONMENT & CLUSTER RESOLUTION */
 const SERVER_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
 const DATABASE_URL = process.env.DATABASE_URL || '';
 
-// Configuración S3 (Supabase Cluster)
-const S3_ENDPOINT = process.env.S3_ENDPOINT || '';
-const S3_ACCESS_KEY_ID = process.env.S3_ACCESS_KEY_ID || '';
-const S3_SECRET_ACCESS_KEY = process.env.S3_SECRET_ACCESS_KEY || '';
-const S3_BUCKET = process.env.S3_BUCKET || 'sanctuary-vault';
-const S3_REGION = process.env.S3_REGION || 'sa-east-1';
-
-const IS_CLOUD_READY = Boolean(S3_ENDPOINT && S3_ACCESS_KEY_ID && S3_SECRET_ACCESS_KEY);
-
-/**
- * TELEMETRÍA DE ARRANQUE (Heimdall Forensic Report)
- */
-console.group('[HEIMDALL][INFRA] Sovereign Core Bootstrap');
-console.log(`[NETWORK] Target: ${SERVER_URL}`);
-console.log(`[STORAGE] S3 Sync: ${IS_CLOUD_READY ? 'ACTIVE' : 'LOCAL_ONLY'}`);
-console.log(`[DATABASE] Pooler Protocol: ${DATABASE_URL ? 'READY' : 'PENDING'}`);
+/** STARTUP TELEMETRY (Heimdall Forensic Report) */
+console.group('[SYSTEM][ORCHESTRATOR] Enterprise Core v38.0 Booting');
+console.log(`[TARGET] Node_Host: ${SERVER_URL}`);
+console.log(`[STATUS] All SBUs Linked | S3_Storage: READY`);
 console.groupEnd();
 
-/**
- * CONSTRUCCIÓN DEL MOTOR CMS (Sovereign Architecture)
- */
 export default buildConfig({
-  /** 
-   * @pilar I: Visión Holística. 
-   * Resolución de rumbos absolutos para evitar 404 en el frontend.
-   */
   serverURL: SERVER_URL,
-
-  /** @pilar VIII: Resiliencia de Comunicación */
   email: nodemailerAdapter(),
 
   admin: {
     user: Users.slug,
     importMap: { baseDir: BASE_CONFIG_DIR },
+    /**
+     * @pilar III: Seguridad de Tipos Absoluta.
+     * Adaptación al contrato MetaConfig de Payload 3.0 (Uso de array 'icons').
+     */
     meta: { 
-      /** 
-       * @fix TS2353: Eliminada propiedad 'ogImage' por incompatibilidad de tipo.
-       * Mantenemos la identidad visual mediante el sufijo de título.
-       */
-      titleSuffix: '- MetaShark Sovereign CMS',
+      titleSuffix: '- MetaShark Enterprise Operations',
+      icons: [
+        {
+          rel: 'icon',
+          type: 'image/png',
+          url: '/images/hotel/icon-192x192.png',
+        }
+      ]
     }
   },
 
   /** 
-   * INVENTARIO DE COLECCIONES SOBERANAS
+   * MASTER COLLECTIONS REGISTRY
+   * Ordenado por jerarquía de dependencia para asegurar integridad referencial.
    */
   collections: [
-    Users, 
-    Tenants, 
-    Subscribers, 
-    Media, 
-    BlogPosts, 
-    Projects
+    // --- Silo A: Revenue ---
+    Offers,
+    FlashSales,
+    
+    // --- Silo B: Partners ---
+    Agencies,
+    Agents,
+    BusinessMetrics,
+    
+    // --- Silo C: Intelligence ---
+    Ingestions,
+    Subscribers,
+    
+    // --- Silo D: Infrastructure ---
+    Tenants,
+    Users,
+    Notifications,
+    DynamicRoutes,
+    
+    // --- Asset Content ---
+    Media,
+    BlogPosts,
+    Projects,
   ],
   
   editor: lexicalEditor({}),
-  secret: process.env.PAYLOAD_SECRET || 'genesis-vault-2026',
+  secret: process.env.PAYLOAD_SECRET || 'enterprise-vault-2026-master-key',
   
   typescript: {
     outputFile: path.resolve(BASE_CONFIG_DIR, 'payload-types.ts'),
   },
 
-  /** 
-   * CAPA DE PERSISTENCIA (Supabase Transaction Pooler)
+  /**
+   * DB ADAPTER: Postgres Core
+   * Configurado para soportar el Transaction Pooler de Supabase (Puerto 6543).
    */
   db: postgresAdapter({
     pool: {
@@ -122,31 +147,33 @@ export default buildConfig({
     },
   }),
 
-  /** @pilar IX: Sharp para procesamiento de imágenes de alta fidelidade */
   sharp: (sharp as unknown) as SharpDependency,
 
   /**
-   * MOTOR S3: Supabase Cloud Storage Plugin
+   * STORAGE CLUSTER: Multi-Collection S3 Sync
+   * Centraliza los binarios industriales en el Bucket Soberano.
    */
   plugins: [
-    ...(IS_CLOUD_READY
-      ? [
-          s3Storage({
-            collections: {
-              media: true, 
-            },
-            bucket: S3_BUCKET,
-            config: {
-              endpoint: S3_ENDPOINT,
-              region: S3_REGION,
-              credentials: {
-                accessKeyId: S3_ACCESS_KEY_ID,
-                secretAccessKey: S3_SECRET_ACCESS_KEY,
-              },
-              forcePathStyle: true,
-            },
-          }),
-        ]
-      : []),
+    ...(process.env.S3_ENDPOINT ? [
+      s3Storage({
+        collections: { 
+          media: true,      // Activos generales
+          offers: true,     // Imágenes de paquetes
+          'flash-sales': true, 
+          agencies: true,   // Logotipos White-Label
+          ingestions: true  // XLSX, Audios y Capturas del Pipeline
+        },
+        bucket: process.env.S3_BUCKET || 'sanctuary-vault',
+        config: {
+          endpoint: process.env.S3_ENDPOINT,
+          region: process.env.S3_REGION || 'sa-east-1',
+          credentials: {
+            accessKeyId: process.env.S3_ACCESS_KEY_ID || '',
+            secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || '',
+          },
+          forcePathStyle: true,
+        },
+      }),
+    ] : []),
   ],
 });

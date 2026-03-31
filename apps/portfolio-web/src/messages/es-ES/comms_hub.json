@@ -1,0 +1,17 @@
+{
+  "title": "Hub de Comunicaciones",
+  "subtitle": "Inteligencia en Tiempo Real y Despacho de Notificaciones",
+  "tab_notifications": "Flujo de Actividad",
+  "tab_direct_messages": "Comunicación entre Nodos",
+  "tab_system_logs": "Eventos de Infraestructura",
+  "label_priority_low": "NORMAL",
+  "label_priority_high": "ELEVADA",
+  "label_priority_critical": "CRÍTICA",
+  "label_sender_node": "Nodo de Origen",
+  "label_dispatch_time": "Hora de Despacho",
+  "label_trace_id": "Identificador de Traza",
+  "btn_mark_read": "Confirmar Lectura",
+  "btn_broadcast": "Iniciar Difusión",
+  "status_online": "ENLACE_ACTIVO",
+  "empty_inbox": "No hay transmisiones pendientes en el perímetro actual."
+}

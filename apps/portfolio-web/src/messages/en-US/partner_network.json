@@ -1,0 +1,17 @@
+{
+  "title": "B2B Partner Network",
+  "subtitle": "High-Fidelity Wholesale Operations",
+  "label_trust_score": "Trust Credibility Index",
+  "label_iata": "IATA / Regulatory Code",
+  "btn_onboarding": "Initialize Onboarding",
+  "metrics": {
+    "label_bookings": "Total Confirmed Bookings",
+    "label_conversion": "Conversion Yield",
+    "label_commissions": "Pending Accruals"
+  },
+  "agent_management": {
+    "title": "Agent Directory",
+    "add_agent": "Authorize New Consultant",
+    "history": "Transaction Ledger"
+  }
+}

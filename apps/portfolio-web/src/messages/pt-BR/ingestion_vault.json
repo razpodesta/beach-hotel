@@ -1,0 +1,19 @@
+{
+  "title": "Bóveda de Ingestão Universal",
+  "subtitle": "Captura inteligente de dados via Excel, Voz, WhatsApp e E-mail.",
+  "channel_web": "Portal Administrativo",
+  "channel_whatsapp": "Sincronia WhatsApp",
+  "channel_email": "Ingestão via E-mail",
+  "status_pending": "Aguardando Processamento",
+  "status_processing": "Analisando Estrutura...",
+  "status_success": "Dados Indexados com Sucesso",
+  "status_error": "Falha na Validação de Protocolo",
+  "status_ai_analysis": "Análise de IA em Curso",
+  "btn_upload_data": "Ingerir Novos Ativos",
+  "btn_cancel_ingest": "Abortar Sincronia",
+  "label_voice_note": "Transcrição de Voz",
+  "label_excel_db": "Base de Dados Estruturada",
+  "label_chat_log": "Histórico de Conversa",
+  "placeholder_dropzone": "Arraste bases Excel, fotos ou áudios aqui para processamento automático.",
+  "success_msg": "Handshake de dados concluído. O cluster de inteligência já está processando a entrada."
+}

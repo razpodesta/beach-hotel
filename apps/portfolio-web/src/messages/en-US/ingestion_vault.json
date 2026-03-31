@@ -1,0 +1,19 @@
+{
+  "title": "Universal Ingestion Vault",
+  "subtitle": "Intelligent data capture via Excel, Voice, WhatsApp, and Email.",
+  "channel_web": "Admin Portal",
+  "channel_whatsapp": "WhatsApp Sync",
+  "channel_email": "Email Ingestion",
+  "status_pending": "Awaiting Processing",
+  "status_processing": "Analyzing Structure...",
+  "status_success": "Data Indexed Successfully",
+  "status_error": "Protocol Validation Failed",
+  "status_ai_analysis": "AI Analysis in Progress",
+  "btn_upload_data": "Ingest New Assets",
+  "btn_cancel_ingest": "Abort Sync",
+  "label_voice_note": "Voice Transcription",
+  "label_excel_db": "Structured Database",
+  "label_chat_log": "Conversation Log",
+  "placeholder_dropzone": "Drop Excel sheets, photos, or audio notes here for automated processing.",
+  "success_msg": "Data handshake complete. The intelligence cluster is now processing the input."
+}

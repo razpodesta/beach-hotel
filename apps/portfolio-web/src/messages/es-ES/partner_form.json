@@ -1,0 +1,23 @@
+{
+  "title": "Alta de Agencias Aliadas B2B",
+  "section_corporate": "Identificación Corporativa",
+  "section_legal": "Representante Legal (KYB)",
+  "label_brand_name": "Nombre Comercial",
+  "label_legal_name": "Razón Social",
+  "label_tax_id": "RUT / Identificador Fiscal",
+  "placeholder_tax_id": "12.345.678-9",
+  "label_website": "Sitio Web Corporativo",
+  "label_iata": "Registro IATA / Nacional",
+  "label_representative_name": "Nombre del Apoderado",
+  "label_representative_email": "Email de Empresa",
+  "label_representative_birth": "Fecha de Nacimiento",
+  "label_representative_phone": "Móvil de Contacto Directo",
+  "btn_submit": "Solicitar Credenciales de Agente",
+  "success_msg": "Registro completado. Nuestro clúster administrativo validará su RUT en breve.",
+  "validation": {
+    "tax_id_invalid": "RUT o Identificador no reconocido",
+    "birth_date_required": "Fecha de nacimiento mandatoria para KYB",
+    "email_invalid": "Email fuera de norma corporativa",
+    "phone_invalid": "Número de contacto no válido"
+  }
+}

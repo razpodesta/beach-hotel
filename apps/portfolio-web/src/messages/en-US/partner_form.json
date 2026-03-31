@@ -1,0 +1,23 @@
+{
+  "title": "B2B Agency Onboarding",
+  "section_corporate": "Corporate Identity",
+  "section_legal": "Legal Representative (KYB)",
+  "label_brand_name": "Trading Name",
+  "label_legal_name": "Registered Company Name",
+  "label_tax_id": "Tax ID / VAT Number",
+  "placeholder_tax_id": "US-123456789",
+  "label_website": "Corporate Web Portal",
+  "label_iata": "IATA / Regulatory Code",
+  "label_representative_name": "Full Name of Authorized Signatory",
+  "label_representative_email": "Corporate Email Address",
+  "label_representative_birth": "Date of Birth",
+  "label_representative_phone": "Direct Contact Mobile",
+  "btn_submit": "Request Enterprise Access",
+  "success_msg": "Onboarding initiated. Document verification process in progress (24h).",
+  "validation": {
+    "tax_id_invalid": "Invalid Tax ID or VAT Number",
+    "birth_date_required": "Birth date is mandatory for KYB protocols",
+    "email_invalid": "Invalid email protocol",
+    "phone_invalid": "Phone number not recognized"
+  }
+}

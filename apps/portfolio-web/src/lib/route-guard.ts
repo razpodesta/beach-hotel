@@ -1,112 +1,114 @@
 /**
  * @file apps/portfolio-web/src/lib/route-guard.ts
- * @description Centinela soberano de seguridad (RBAC) en el Edge. 
- *              Orquesta el acceso perimetral para los 5 roles del ecosistema.
- *              Refactorizado: Implementación de Protocolo de Bypass para Desarrollo (Ghost Admin),
- *              resolución de bloqueos perimetrales y trazabilidad forense Heimdall.
- * @version 16.0 - Auth Bypass & Sovereign Access
- * @author Raz Podestá - MetaShark Tech
+ * @description Enterprise RBAC Orchestrator (Edge Security).
+ *              Orquesta el control de acceso perimetral para los 5 niveles
+ *              de la jerarquía industrial MetaShark. Implementa Gating
+ *              para el Silo B (Partner Network) y auditoría forense.
+ * @version 4.0 - Enterprise Level 4.0 Standard
+ * @author Staff Engineer - MetaShark Tech
  */
 
 import { NextResponse, type NextRequest } from 'next/server';
 
 /**
  * IMPORTACIONES DE INFRAESTRUCTRURA
- * @pilar V: Adherencia arquitectónica a fronteras Nx.
+ * @pilar V: Adherencia arquitectónica.
  */
 import { type Locale } from '../config/i18n.config';
 import { mainNavStructure, type NavItem } from './nav-links';
 
 /**
- * MATRIZ DE PODER SOBERANA (SSoT)
- * @description Define el nivel numérico de cada rol para comparaciones de jerarquía.
+ * MATRIZ DE JERARQUÍA CORPORATIVA (Enterprise RBAC)
+ * @description Define el nivel numérico de autoridad para validación de fronteras.
  */
-const ROLE_LEVELS = {
-  developer: 99, // Root Access
-  admin: 50,     // Hotel Manager
-  operator: 30,  // Wholesale / B2B
-  sponsor: 20,   // Elite Guest
-  guest: 10,     // Standard Guest
-  anonymous: 0   // Visitor
+const AUTHORITY_LEVELS = {
+  developer: 99, // Root / Infrastructure
+  admin: 50,     // Operations Manager
+  operator: 30,  // B2B Partner / Agency
+  sponsor: 20,   // Elite / VIP
+  guest: 10,     // Standard Identity
+  anonymous: 0   // Unverified Visitor
 } as const;
 
 /**
- * @type SovereignRole
- * @description Unión de tipos basada en las llaves de la matriz de niveles.
+ * @type EnterpriseRole
+ * @description Unión de tipos basada en el registro de autoridad.
  */
-export type SovereignRole = keyof typeof ROLE_LEVELS;
+export type EnterpriseRole = keyof typeof AUTHORITY_LEVELS;
 
 /**
- * @interface SessionState
- * @description Contrato inmutable para la identidad detectada en el perímetro.
+ * @interface EnterpriseSession
+ * @description Contrato inmutable para la identidad detectada en el Edge.
  */
-export interface SessionState {
+export interface EnterpriseSession {
   isAuthenticated: boolean;
-  role: SovereignRole;
+  role: EnterpriseRole;
   tenantId: string | null;
   userId?: string;
-  isBypass?: boolean; // Trazabilidad de acceso sintético
+  isBypassActive?: boolean;
 }
 
 /** 
- * MAPA DE RUTAS PROTEGIDAS POR JERARQUÍA
+ * MAPA DE PROTECCIÓN DE RUMBOS (Access Gating)
+ * @description Mapeo de prefijos de ruta hacia el nivel de autoridad mínimo requerido.
  */
-const ACCESS_MAP: Record<string, SovereignRole> = {
+const PROTECTION_MAP: Record<string, EnterpriseRole> = {
   '/portal/dev': 'developer',
   '/portal/admin': 'admin',
   '/portal/b2b': 'operator',
+  '/p/': 'operator',        // <-- GATING PARA RED DE ALIANZAS (Silo B)
   '/portal/vip': 'sponsor',
   '/portal': 'guest',
 };
 
 /** 
- * RUTAS CRÍTICAS DE INFRAESTRUCTRURA (Bypass total)
+ * PREFIXES DE INFRAESTRUCTRURA (Exclusión de Gating)
  */
-const INFRA_PREFIXES = ['/admin', '/_payload', '/api/payload'];
+const INFRA_RESOURCES = ['/admin', '/_payload', '/api/payload'];
 
 /** 
- * REGISTRO DE RUTAS PÚBLICAS (Whitelisting)
+ * WHITE-LIST DE ACCESO PÚBLICO
  */
-const PUBLIC_PATHS = new Set([
+const PUBLIC_INVENTORY = new Set([
   '/', '/login', '/auth/callback', '/contacto', '/blog', 
   '/maintenance', '/quienes-somos', '/mision-y-vision', 
   '/festival', '/subscribe', '/server-error', '/legal'
 ]);
 
+// Sincronización dinámica de rumbos desde el Navigation Provider
 mainNavStructure.forEach((item: NavItem) => {
   if (item.href && item.href !== '#' && !item.href.startsWith('http')) {
     const cleanPath = item.href.split('#')[0];
-    if (cleanPath) PUBLIC_PATHS.add(cleanPath);
+    if (cleanPath) PUBLIC_INVENTORY.add(cleanPath);
   }
 });
 
 /**
- * Recupera la sesión evaluando tokens o flags de bypass.
- * @pilar VIII: Resiliencia - Permite el acceso universal si la variable de entorno está activa.
+ * MODULE: getEnterpriseSession
+ * @description Resuelve la identidad evaluando tokens criptográficos o flags de emergencia.
  */
-function getSovereignSession(req: NextRequest): SessionState {
-  // 1. EVALUACIÓN DE BYPASS (Modo Emergencia/Desarrollo)
-  const isBypassActive = process.env.NEXT_PUBLIC_AUTH_BYPASS === 'true';
-  
-  if (isBypassActive) {
+function getEnterpriseSession(req: NextRequest): EnterpriseSession {
+  // 1. EVALUACIÓN DE BYPASS TÉCNICO (Modo Desarrollo/Producción Crítica)
+  if (process.env.NEXT_PUBLIC_AUTH_BYPASS === 'true') {
     return { 
       isAuthenticated: true, 
       role: 'developer', 
-      tenantId: '00000000-0000-0000-0000-000000000001', // Master Tenant Genesis
-      userId: 'BYPASS_ADMIN',
-      isBypass: true
+      tenantId: '00000000-0000-0000-0000-000000000001',
+      userId: 'SYSTEM_ROOT_BYPASS',
+      isBypassActive: true
     };
   }
 
-  // 2. EVALUACIÓN ESTÁNDAR (Cookies)
+  // 2. EVALUACIÓN DE CREDENCIALES (Persistence Audit)
   const payloadToken = req.cookies.get('payload-token')?.value;
   const supabaseToken = req.cookies.get('sb-access-token')?.value;
 
   if (payloadToken) {
-    return { isAuthenticated: true, role: 'developer', tenantId: 'SYSTEM_ROOT' };
+    return { isAuthenticated: true, role: 'developer', tenantId: 'MASTER_INFRA' };
   }
   
   if (supabaseToken) {
+    // @todo: En Fase 4.5, validar JWT mediante auth-shield para extraer rol real
     return { isAuthenticated: true, role: 'guest', tenantId: null };
   }
 
@@ -114,9 +116,9 @@ function getSovereignSession(req: NextRequest): SessionState {
 }
 
 /**
- * Normaliza rumbos eliminando el prefijo de idioma.
+ * HELPER: normalizeEnterprisePath
  */
-function getSanitizedPath(pathname: string, locale: Locale): string {
+function normalizeEnterprisePath(pathname: string, locale: Locale): string {
   const prefix = `/${locale}`;
   const path = pathname.startsWith(prefix) ? pathname.replace(prefix, '') || '/' : pathname;
   return path.length > 1 && path.endsWith('/') ? path.slice(0, -1) : path;
@@ -124,7 +126,7 @@ function getSanitizedPath(pathname: string, locale: Locale): string {
 
 /**
  * APARATO: routeGuard
- * @description Orquestador de acceso dinámico en el Edge de Vercel.
+ * @description Sentinel de borde que orquesta el tráfico basado en la identidad verificada.
  */
 export async function routeGuard(
   request: NextRequest, 
@@ -132,51 +134,53 @@ export async function routeGuard(
 ): Promise<NextResponse | null> {
   const { pathname } = request.nextUrl;
 
-  if (INFRA_PREFIXES.some((prefix) => pathname.startsWith(prefix))) {
+  // 1. BYPASS DE RECURSOS DE SISTEMA
+  if (INFRA_RESOURCES.some((prefix) => pathname.startsWith(prefix))) {
     return null;
   }
 
-  const logicalPath = getSanitizedPath(pathname, locale);
-  const isPublic = PUBLIC_PATHS.has(logicalPath) || 
-                   logicalPath.startsWith('/blog/') || 
-                   logicalPath.startsWith('/legal/');
+  const logicalPath = normalizeEnterprisePath(pathname, locale);
+  const isPublicResource = PUBLIC_INVENTORY.has(logicalPath) || 
+                          logicalPath.startsWith('/blog/') || 
+                          logicalPath.startsWith('/legal/');
   
-  if (isPublic) return null;
+  if (isPublicResource) return null;
 
-  // AUDITORÍA DE IDENTIDAD
-  const session = getSovereignSession(request);
+  // 2. AUDITORÍA DE IDENTIDAD (Identity Handshake)
+  const session = getEnterpriseSession(request);
   
-  // LOG DE TELEMETRÍA HEIMDALL
-  if (session.isBypass) {
-    console.info(`[HEIMDALL][SECURITY] Global Access Granted via BYPASS_MODE: ${logicalPath}`);
+  /** PROTOCOLO HEIMDALL: Registro de Acceso Directo */
+  if (session.isBypassActive) {
+    console.info(`[SECURITY][BYPASS] Global Access Granted to ${logicalPath} | Node: ${process.env.VERCEL_REGION || 'local'}`);
   }
 
-  // VALIDACIÓN DE AUTENTICACIÓN
+  // 3. VALIDACIÓN DE AUTENTICACIÓN (Gate 1)
   if (!session.isAuthenticated) {
     const redirectUrl = new URL(`/${locale}/login`, request.url);
     redirectUrl.searchParams.set('next', logicalPath);
     return NextResponse.redirect(redirectUrl);
   }
 
-  // VALIDACIÓN JERÁRQUICA (RBAC)
-  const requiredRoleEntry = Object.entries(ACCESS_MAP)
-    .sort((a, b) => b[0].length - a[0].length)
+  // 4. VALIDACIÓN DE AUTORIDAD (RBAC Gate 2)
+  const requiredRoleEntry = Object.entries(PROTECTION_MAP)
+    .sort((a, b) => b[0].length - a[0].length) // Prioridad por profundidad de ruta
     .find(([path]) => logicalPath.startsWith(path));
 
   if (requiredRoleEntry) {
     const [, requiredRole] = requiredRoleEntry;
     
-    // Si no es bypass y no tiene nivel, bloqueamos.
-    if (!session.isBypass && ROLE_LEVELS[session.role] < ROLE_LEVELS[requiredRole]) {
-      console.error(`[HEIMDALL][RBAC] Unauthorized: User[${session.role}] -> Tier[${requiredRole}] at ${logicalPath}`);
+    // Verificación de Jerarquía Numérica
+    if (!session.isBypassActive && AUTHORITY_LEVELS[session.role] < AUTHORITY_LEVELS[requiredRole]) {
+      console.error(`[RBAC][VIOLATION] Access Denied: Role[${session.role}] attempted to reach Tier[${requiredRole}] at ${logicalPath}`);
       return NextResponse.redirect(new URL(`/${locale}/portal`, request.url));
     }
   }
 
+  // 5. INYECCIÓN DE CABECERAS DE INFRAESTRUCTRURA
   const response = NextResponse.next();
-  response.headers.set('X-Sovereign-Role', session.role);
-  if (session.tenantId) response.headers.set('X-Tenant-Id', session.tenantId);
-  if (session.isBypass) response.headers.set('X-Auth-Status', 'Bypass-Active');
+  response.headers.set('X-Enterprise-Identity', session.role);
+  if (session.tenantId) response.headers.set('X-Enterprise-Tenant', session.tenantId);
+  if (session.isBypassActive) response.headers.set('X-Security-Mode', 'Emergency-Bypass');
 
   return null;
 }

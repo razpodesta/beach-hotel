@@ -28,6 +28,38 @@ INPUT ESPERADO: A continuación te proporcionaré los logs de error de Vercel/Ty
 
 ---
 
+Registro de Bitácora: Transición a Arquitectura Enterprise v3.0 (The Sovereign Pivot) 🦈
+Fecha: 30 de Marzo, 2026
+Fase: Decomisado de Festival & Activación de Ecosistema de Micro-Dominios Comerciales.
+Estatus: Infraestructura nivelada / Preparando Invasión de Servicios.
+📝 1. DECISIONES ESTRATÉGICAS Y ESTRUCTURALES
+A. El Pivot de Negocio: De Evento a Motor de Ventas
+Se ha decidido erradicar la lógica del "Festival 2026" (cancelado) para reorientar el 100% de los recursos de computación y diseño hacia un Motor de Paquetes y Programas. Este cambio reduce el peso del bundle y prioriza la conversión directa.
+B. Paradigma de Atomización Radical (Micro-Dominios)
+Rechazamos la creación de colecciones genéricas. Cada vertical comercial (Last Minute, B2B Agencias, Grupos/MICE, Reputación P33) operará como un Aparato Lego Independiente.
+Lógica: Cada micro-dominio tiene su propio contrato Zod y su repositorio JSON.
+Beneficio: Escalabilidad SaaS. Podemos activar o desactivar verticales de venta sin afectar el núcleo del sistema.
+C. Unificación Relacional (MACS-DB Protocol)
+Se ha estandarizado el campo de propiedad en todas las colecciones como tenant (tipo relationship).
+Impacto: Se erradicó el Schema Drift (tenant_id_id). Ahora PostgreSQL garantiza integridad referencial absoluta, permitiendo que un partner o agencia "pertenezca" físicamente a una propiedad del hotel.
+D. Soberanía de Activos y Performance
+Media: Migración total a URLs absolutas de S3 (Supabase) para evitar errores 404 en el Edge de Vercel.
+Tipografía: Adopción del estándar Google Variable Fonts (Sora/Inter) + Branding Local (Dicaten) para eliminar errores de decodificación binaria y maximizar el LCP.
+🛠️ 2. NUEVOS APARATOS Y WORKSPACES A CREAR
+Siguiendo la metodología de Pure Source-First, iniciaremos la construcción de los siguientes bloques:
+Aparato / Módulo	Ubicación Sugerida	Lógica Adoptada
+Offers_Vault	packages/offers-vault	Unión discriminada de tipos de oferta (Flash, B2B, B2C).
+MailCloud_Engine	packages/mail-cloud	Patrón Adapter para Resend/SMTP. Ingesta forense de Excels.
+Partner_Network	packages/partner-network	Sistema de White-Label para agencias. Gestión de IATA y comisiones.
+FlyerSynth_API	src/lib/visuals	Orquestador de Canvas API para inyectar logos de partners en activos de lujo.
+Comms_Hub	apps/portfolio-web/src/lib/comms	Mensajería interna de baja latencia vinculada al ID del Partner.
+🧠 3. LÓGICA DE INTEGRACIÓN (The Next-Gen Handshake)
+Validación en Borde (Edge Gating): El route-guard.ts y el middleware.ts ahora reconocerán rumbos dinámicos como /paquetes/[slug] y /p/[partner_id], protegiendo el acceso B2B mediante el rol operator.
+Sincronía SSoT: Ninguna funcionalidad nueva se creará sin antes registrar su esquema en dictionary.schema.ts. El contenido manda sobre la UI.
+Higiene Forense (Heimdall): Cada subida de Excel o generación de Flyer PDF emitirá un log estructurado con traceId para auditoría en tiempo real.
+
+---
+
 
 
 

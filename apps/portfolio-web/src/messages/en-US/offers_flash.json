@@ -1,0 +1,12 @@
+{
+  "title": "Flash Offers",
+  "subtitle": "Limited Inventory | High Priority Access",
+  "cta_label": "Secure Booking Now",
+  "label_stock_available": "Units Remaining",
+  "label_stock_total": "Total Capacity",
+  "label_expires_in": "Offer Expiring In",
+  "status_active": "ACTIVE PIPELINE",
+  "status_sold_out": "INVENTORY DEPLETED",
+  "status_expired": "OFFER CONCLUDED",
+  "badge_limited": "EXCLUSIVE OPPORTUNITY"
+}

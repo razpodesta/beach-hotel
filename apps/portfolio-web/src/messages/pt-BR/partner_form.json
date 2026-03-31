@@ -1,0 +1,23 @@
+{
+  "title": "Credenciamento de Agências B2B",
+  "section_corporate": "Identificação Corporativa",
+  "section_legal": "Representante Legal (KYB)",
+  "label_brand_name": "Nome Fantasia",
+  "label_legal_name": "Razão Social",
+  "label_tax_id": "CNPJ da Empresa",
+  "placeholder_tax_id": "00.000.000/0001-00",
+  "label_website": "Portal Web Corporativo",
+  "label_iata": "Registro IATA / EMBRATUR",
+  "label_representative_name": "Nome Completo do Gestor",
+  "label_representative_email": "E-mail Corporativo",
+  "label_representative_birth": "Data de Nascimento",
+  "label_representative_phone": "Contato WhatsApp Direct",
+  "btn_submit": "Solicitar Acesso ao Cluster B2B",
+  "success_msg": "Solicitação em análise. O handshake de documentos será processado em 24h.",
+  "validation": {
+    "tax_id_invalid": "CNPJ com formato inconsistente",
+    "birth_date_required": "Data de nascimento obrigatória para validação",
+    "email_invalid": "Protocolo de e-mail inválido",
+    "phone_invalid": "Telefone fora dos padrões internacionais"
+  }
+}

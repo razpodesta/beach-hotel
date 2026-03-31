@@ -1,9 +1,9 @@
 /**
- * @file apps/portfolio-web/middleware.ts
- * @description Orquestador Soberano de Tráfico en el Edge (Vercel).
- *              Refactorizado: Detección de locale optimizada (O(1)), normalización
- *              de rumbos SEO y blindaje perimetral RBAC.
- * @version 16.0 - Edge Performance Optimized & SEO Guarded
+ * @file middleware.ts
+ * @description Enterprise Edge Traffic Orchestrator for MetaShark Ecosystem.
+ *              Refactorizado: Procesamiento de Gateways Dinámicos, optimización 
+ *              de localización O(1) y blindaje de activos de infraestructura.
+ * @version 17.0 - Enterprise Standard & Dynamic Routing
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -11,94 +11,106 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 /**
- * IMPORTACIONES DE CONTRATO
- * @pilar V: Adherencia arquitectónica.
+ * INFRASTRUCTURE CONTRACTS
+ * @pilar V: Monorepo architectural adherence.
  */
 import { i18n, isValidLocale } from './src/config/i18n.config';
 import { routeGuard } from './src/lib/route-guard';
 
 /**
- * MATRIZ DE EXCLUSIÓN (SSoT)
- * @description Rutas que no requieren internacionalización ni lógica de negocio.
+ * SYSTEM SEGMENT EXCLUSIONS (SSoT)
+ * @description Static assets and internal API prefixes.
  */
-const PUBLIC_ASSET_PREFIXES = [
+const SYSTEM_PREFIXES = [
   '/_next', '/api', '/admin', '/_payload', '/static', 
   '/images', '/video', '/audio', '/fonts', '/icons'
 ];
 
 /**
+ * ENTERPRISE GATEWAYS
+ * @description Prefixes handled by the Dynamic Routing Manager.
+ */
+const GATEWAY_PREFIXES = ['/r/'];
+
+/**
  * APARATO PRINCIPAL: middleware
- * @description Punto de control único para la red soberana MetaShark.
+ * @description Edge-side request processing for high-performance orchestration.
  */
 export async function middleware(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
 
-  // 1. PROTOCOLO DE EXCLUSIÓN RÁPIDA (Early Exit)
-  // @pilar X: Performance - Evita procesar lógica pesada para activos binarios.
+  // 1. FAST-PATH: STATIC ASSET FILTERING
+  // @pilar X: Performance. Bypassing logic for binary streams and metadata.
   if (
-    PUBLIC_ASSET_PREFIXES.some((path) => pathname.startsWith(path)) ||
-    pathname.includes('.') // Archivos con extensión (favicon.ico, sitemap.xml)
+    SYSTEM_PREFIXES.some((path) => pathname.startsWith(path)) ||
+    pathname.includes('.')
   ) {
     return NextResponse.next();
   }
 
-  // 2. AUDITORÍA DE LOCALIZACIÓN (O(1) Detection)
-  const segments = pathname.split('/');
-  const firstSegment = segments[1]; // El segmento tras el primer slash
-  
-  const hasValidLocale = isValidLocale(firstSegment);
+  // 2. ENTERPRISE GATEWAY RESOLUTION (Smart QR)
+  // Intercepta peticiones de enrutamiento contextual (estilo asiático).
+  const isGateway = GATEWAY_PREFIXES.some((path) => pathname.startsWith(path));
+  if (isGateway) {
+    console.log(`[GATEWAY] Intercepting Dynamic Route: ${pathname}`);
+    // Permitimos que la petición llegue al Route Handler de la aplicación
+    return NextResponse.next();
+  }
 
-  if (!hasValidLocale) {
-    const locale = i18n.defaultLocale;
+  // 3. LOCALE HANDSHAKE (O(1) Detection)
+  const segments = pathname.split('/');
+  const activeLocale = segments[1];
+  
+  const isLocalized = isValidLocale(activeLocale);
+
+  if (!isLocalized) {
+    const defaultLocale = i18n.defaultLocale;
     
-    /** @pilar IV: Protocolo Heimdall - Trazabilidad de Redirección */
-    console.info(`[HEIMDALL][EDGE] I18N_HANDSHAKE: Missing locale. Routing to ${locale}`);
+    /** @pilar IV: Enterprise Telemetry */
+    console.info(`[EDGE] I18N_HANDSHAKE: Normalizing route to ${defaultLocale}`);
 
     /**
-     * @fix: Normalización de rumbos.
-     * Preserva la ruta original y los parámetros de búsqueda (UTM/Query).
+     * URL NORMALIZATION
+     * Preserves original path and query parameters for UTM tracking.
      */
     const redirectUrl = new URL(
-      `/${locale}${pathname === '/' ? '' : pathname}${search}`, 
+      `/${defaultLocale}${pathname === '/' ? '' : pathname}${search}`, 
       request.url
     );
     
     return NextResponse.redirect(redirectUrl);
   }
 
-  // 3. SEGURIDAD PERIMETRAL (RBAC Gating)
-  // El guardia resuelve si el usuario tiene nivel para el rumbo solicitado.
-  const localeInPath = firstSegment;
-  const guardResponse = await routeGuard(request, localeInPath);
+  // 4. SECURITY AUDIT (RBAC Gating)
+  // Delegates identity and permission validation to the specialized guard.
+  const guardResponse = await routeGuard(request, activeLocale);
   
   if (guardResponse) {
-    // Si el guardia emite una decisión (Redirect), la ejecutamos de inmediato.
     return guardResponse;
   }
 
-  // 4. FINALIZACIÓN Y TELEMETRÍA DE RESPUESTA
+  // 5. RESPONSE FINALIZATION
   const response = NextResponse.next();
   
   /**
-   * @description Inyectamos metadatos de infraestructura para auditoría en vivo.
-   * X-MetaShark-Edge: Confirma que la petición pasó por el orquestador.
-   * X-Locale-Active: Sincronía del nodo lingüístico.
+   * INFRASTRUCTURE HEADERS
+   * X-Enterprise-Edge: Confirmation of middleware processing.
+   * X-Locale-Active: Injected for front-end consistency.
    */
-  response.headers.set('X-MetaShark-Edge', 'Orchestrated_v16');
-  response.headers.set('X-Locale-Active', localeInPath);
+  response.headers.set('X-Enterprise-Edge', 'Orchestrated_v17');
+  response.headers.set('X-Locale-Active', activeLocale);
   
   return response;
 }
 
 /**
- * CONFIGURACIÓN DE SELECTORES (Edge Matcher)
- * @description Filtra el tráfico a nivel de kernel de Vercel para maximizar el throughput.
+ * EDGE MATCHER CONFIGURATION
+ * @description High-performance filter to minimize Edge Function execution.
  */
 export const config = {
   matcher: [
     /**
-     * Excluimos explícitamente rutas de sistema para que el Middleware
-     * no consuma unidades de ejecución (Edge Function execution units) en vano.
+     * Exclude system files and internal Next.js assets to save execution units.
      */
     '/((?!api|_next/static|_next/image|images|video|audio|fonts|icons|favicon.ico|robots.txt|sitemap.xml).*)',
   ],

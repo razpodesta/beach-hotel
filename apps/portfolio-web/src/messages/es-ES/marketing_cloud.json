@@ -1,0 +1,16 @@
+{
+  "title": "Nube de Marketing Enterprise",
+  "subtitle": "Comunicación Masiva y Transaccional de Alto Volumen",
+  "tab_audience": "Inventario de Audiencia",
+  "tab_campaigns": "Campañas Activas",
+  "tab_templates": "Plantillas de Fidelidad",
+  "label_recipients": "Nodos Destinatarios",
+  "label_subject": "Asunto del Protocolo",
+  "label_status_sent": "DESPACHADO",
+  "label_open_rate": "Rendimiento de Apertura",
+  "btn_new_campaign": "Inicializar Campaña",
+  "btn_send_now": "Ejecutar Despacho",
+  "btn_import_vault": "Sincronizar desde Data Pipeline",
+  "success_dispatch": "Comunicación transmitida con éxito a la red.",
+  "error_quota": "Alerta de Infraestructura: Límite de cuota SMTP alcanzado."
+}

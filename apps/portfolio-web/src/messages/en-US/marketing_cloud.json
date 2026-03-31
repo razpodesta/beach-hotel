@@ -1,0 +1,16 @@
+{
+  "title": "Enterprise Marketing Cloud",
+  "subtitle": "High-Volume Transactional & Mass Communication",
+  "tab_audience": "Audience Inventory",
+  "tab_campaigns": "Active Campaigns",
+  "tab_templates": "Fidelity Templates",
+  "label_recipients": "Target Nodes",
+  "label_subject": "Protocol Subject",
+  "label_status_sent": "DISPATCHED",
+  "label_open_rate": "Engagement Yield",
+  "btn_new_campaign": "Initialize Campaign",
+  "btn_send_now": "Execute Dispatch",
+  "btn_import_vault": "Sync from Ingestion Pipeline",
+  "success_dispatch": "Communication successfully broadcasted to the network.",
+  "error_quota": "Infrastructure alert: SMTP quota limit reached."
+}

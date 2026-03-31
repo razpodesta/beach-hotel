@@ -1,13 +1,23 @@
 /**
  * @file apps/portfolio-web/src/lib/nav-links.ts
- * @version 2.1 - Contrato de Navegación Recursiva
  * @description Fuente única de verdad tipada para la navegación del ecosistema.
+ *              Refactorizado: Decomisado de Festival y activación del motor
+ *              de Paquetes y Programas Boutique.
+ * @version 3.0 - Offers & Programs Transformation
  * @author Raz Podestá - MetaShark Tech
  */
 
 import { 
-  Hotel, Sparkles, BedDouble, History, MessageSquare, MapPin,
-  ShieldCheck, FileText, LayoutGrid, Laptop
+  Hotel, 
+  BedDouble, 
+  History, 
+  MessageSquare, 
+  MapPin,
+  ShieldCheck, 
+  FileText, 
+  Gift, // Icono para Paquetes/Ofertas
+  LayoutGrid, 
+  Laptop
 } from 'lucide-react';
 import { type LucideIcon } from 'lucide-react';
 
@@ -32,7 +42,7 @@ export interface FooterColumn {
 
 /**
  * Estructura de navegación principal (Header)
- * Tipada explícitamente con NavItem para habilitar children.
+ * @description Orquesta el acceso a las suites y los nuevos programas del hotel.
  */
 export const mainNavStructure: NavItem[] = [
   { 
@@ -45,7 +55,11 @@ export const mainNavStructure: NavItem[] = [
       { labelKey: 'historia', href: '/quienes-somos', Icon: History },
     ], 
   },
-  { labelKey: 'festival', href: '/festival', Icon: Sparkles }, 
+  /**
+   * @pilar II: Transformación de Producto.
+   * Sustituimos el Festival por el catálogo de Programas y Paquetes.
+   */
+  { labelKey: 'paquetes', href: '/paquetes', Icon: Gift }, 
   { labelKey: 'ubicacion', href: '/#location', Icon: MapPin },
   { labelKey: 'contacto', href: '/contacto', Icon: MessageSquare },
 ];
@@ -58,7 +72,7 @@ export const footerNavStructure: FooterColumn[] = [
     columnKey: 'column_nav_title',
     links: [
       { labelKey: 'hotel', href: '/#hero' },
-      { labelKey: 'festival', href: '/festival' },
+      { labelKey: 'paquetes', href: '/paquetes' }, // Sincronía con Header
       { labelKey: 'habitaciones', href: '/#suites' },
       { labelKey: 'historia', href: '/quienes-somos' },
     ]
@@ -67,7 +81,8 @@ export const footerNavStructure: FooterColumn[] = [
     columnKey: 'column_services_title',
     links: [
       { labelKey: 'reservas', href: '/#reservas', Icon: Laptop },
-      { labelKey: 'servicios', href: '/servicios/desarrollo-frontend', Icon: LayoutGrid },
+      /** @fix: Re-orientación de servicios institucionales a hospitalidad */
+      { labelKey: 'servicios', href: '/servicios', Icon: LayoutGrid },
     ]
   },
   {
