@@ -1,9 +1,9 @@
 /**
  * @file packages/cms/core/src/collections/Access.ts
  * @description Orquestador Soberano de Seguridad Multi-Tenant.
- *              Implementa aislamiento de datos, visibilidad condicional E-E-A-T
- *              y blindaje contra fallos de esquema (Pilar VIII).
- * @version 6.0 - Shielded Multi-Tenancy & Type Guards
+ *              Refactorizado: Sincronización con el campo relacional 'tenant',
+ *              blindaje de tipos para RBAC de 5 capas y aislamiento de datos.
+ * @version 7.0 - Sovereign Tenant Security & Zero Drift
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -12,12 +12,14 @@ import type { Access, Where } from 'payload';
 /**
  * @interface SovereignUser
  * @description Contrato de identidad para operaciones del CMS.
+ *              Nivelado: 'tenant' sustituye a 'tenantId' para integridad relacional.
  */
 interface SovereignUser {
   id: string;
   email: string;
-  role: 'admin' | 'user' | 'sponsor';
-  tenantId?: string;
+  role: 'developer' | 'admin' | 'operator' | 'sponsor' | 'guest';
+  /** El tenant puede venir como ID (string) o como objeto poblado */
+  tenant?: string | { id: string } | null;
 }
 
 /**
@@ -38,27 +40,28 @@ const isSovereignUser = (user: unknown): user is SovereignUser => {
  * @description Orquesta la visibilidad basada en el estado del contenido y pertenencia.
  */
 export const multiTenantReadAccess: Access = ({ req: { user } }) => {
-  // 1. Administrador Maestro: Acceso Total
-  if (isSovereignUser(user) && user.role === 'admin') {
+  // 1. Root Developer & Admin: Acceso Total
+  if (isSovereignUser(user) && (user.role === 'admin' || user.role === 'developer')) {
     return true;
   }
 
   // 2. Filtro Público (Contenido listo para producción)
-  // Nota: Payload manejará internamente si la colección no posee el campo 'status'
   const publicFilter: Where = {
     status: {
       equals: 'published',
     },
   };
 
-  // 3. Usuario con Identidad de Tenant
-  if (isSovereignUser(user) && user.tenantId) {
+  // 3. Usuario con Identidad de Propiedad (Tenant)
+  if (isSovereignUser(user) && user.tenant) {
+    const tenantId = typeof user.tenant === 'object' ? user.tenant.id : user.tenant;
+
     return {
       or: [
         publicFilter,
         {
-          tenantId: {
-            equals: user.tenantId,
+          tenant: {
+            equals: tenantId,
           },
         },
       ],
@@ -79,32 +82,34 @@ export const multiTenantWriteAccess: Access = ({ req: { user, url } }) => {
     return false;
   }
 
-  // Bypass para el Administrador Maestro
-  if (user.role === 'admin') {
+  // Bypass para rangos superiores
+  if (user.role === 'admin' || user.role === 'developer') {
     return true;
   }
 
-  // Aislamiento por Tenant
-  if (user.tenantId) {
+  // Aislamiento por Propiedad (Tenant)
+  if (user.tenant) {
+    const tenantId = typeof user.tenant === 'object' ? user.tenant.id : user.tenant;
+
     return {
-      tenantId: {
-        equals: user.tenantId,
+      tenant: {
+        equals: tenantId,
       },
     } as Where;
   }
 
   /**
    * ALERTA DE SEGURIDAD (Heimdall Protocol)
-   * Usuario autenticado intentando escribir sin ID de propiedad.
+   * Usuario autenticado intentando escribir sin vínculo de propiedad.
    */
-  console.error(`[HEIMDALL][SECURITY-BREACH] Access Denied: User ${user.email} lacks TenantID at ${url}`);
+  console.error(`[HEIMDALL][SECURITY-BREACH] Access Denied: User ${user.email} lacks Sovereign Tenant at ${url}`);
   return false;
 };
 
 /**
  * REGLA EXCLUSIVA: adminOnly
- * @description Reserva el acceso estrictamente a la identidad raíz.
+ * @description Reserva el acceso estrictamente a la jerarquía raíz.
  */
 export const adminOnly: Access = ({ req: { user } }) => {
-  return isSovereignUser(user) && user.role === 'admin';
+  return isSovereignUser(user) && (user.role === 'admin' || user.role === 'developer');
 };

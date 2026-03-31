@@ -1,17 +1,17 @@
 /**
  * @file packages/cms/core/src/collections/Projects.ts
  * @description Colección soberana para la gestión de activos digitales de ingeniería.
- *              Implementa arquitectura multitenant, normalización polimórfica para 
- *              el Genesis Engine y validación de branding estricta.
- * @version 9.0 - Pure Source Resolution (No Ext)
+ *              Refactorizado: Unificación relacional del campo 'tenant' y 
+ *              normalización de integridad para el motor de hospitalidad.
+ * @version 10.0 - Sovereign Tenant Sync & Relational Integrity
  * @author Raz Podestá - MetaShark Tech
  */
 
 import { type CollectionConfig } from 'payload';
 
 /**
- * IMPORTACIONES DE PERÍMETRO (Saneadas)
- * @nivelación: Extensión .js eliminada para alineación con Next.js 15 (Bundler Resolution).
+ * IMPORTACIONES DE PERÍMETRO
+ * @pilar V: Adherencia arquitectónica.
  */
 import { multiTenantReadAccess, multiTenantWriteAccess } from './Access';
 
@@ -29,7 +29,7 @@ export const Projects: CollectionConfig = {
   slug: 'projects',
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'status', 'reputationWeight', 'tenantId'],
+    defaultColumns: ['title', 'status', 'reputationWeight', 'tenant'],
     group: 'Hospitality Assets',
     description: 'Catálogo de infraestructuras digitales y activos de alta ingeniería.',
   },
@@ -45,11 +45,15 @@ export const Projects: CollectionConfig = {
    * GUARDIANES DE INTEGRIDAD (Hooks)
    */
   hooks: {
-    beforeChange:[
+    beforeChange: [
       ({ req: _req, data, operation: _operation }) => {
-        // 1. Garantía de Identidad Multi-Tenant
-        if (_operation === 'create' && _req.user?.tenantId) {
-          if (!data.tenantId) data.tenantId = _req.user.tenantId;
+        // 1. Garantía de Identidad Multi-Tenant (Relacional)
+        if (_operation === 'create' && _req.user) {
+          /**
+           * @fix: Sincronización con el nuevo esquema 'tenant'.
+           * Heredamos la propiedad del contexto del usuario autenticado.
+           */
+          if (!data.tenant) data.tenant = _req.user.tenant;
         }
 
         // 2. Slugificación Automática Sanitizada
@@ -61,7 +65,8 @@ export const Projects: CollectionConfig = {
             .replace(/\s+/g, '-');
         }
 
-        // 3. Normalización "Mirror Sync"
+        // 3. Normalización "Mirror Sync" (Tags & Tech Stack)
+        // Permite que el Seeder envíe arrays de strings o de objetos
         if (Array.isArray(data.tags) && typeof data.tags[0] === 'string') {
           data.tags = data.tags.map((tag: string) => ({ tag }));
         }
@@ -80,17 +85,17 @@ export const Projects: CollectionConfig = {
         return data;
       },
     ],
-    afterChange:[
+    afterChange: [
       ({ doc, operation: _operation }) => {
-        // Corrección TS6133: Parámetro ignorado con guion bajo
         if (_operation === 'create') {
+          /** @pilar IV: Protocolo Heimdall - Telemetría de Infraestructura */
           console.log(`[HEIMDALL][INFRASTRUCTURE] Digital Asset Ingested: ${doc.title} (Weight: ${doc.reputationWeight} RZB)`);
         }
       }
     ]
   },
 
-  fields:[
+  fields: [
     {
       name: 'id',
       type: 'text',
@@ -98,16 +103,27 @@ export const Projects: CollectionConfig = {
       admin: { position: 'sidebar' }
     },
     { 
-      name: 'tenantId', 
-      type: 'text', 
+      /**
+       * @property tenant
+       * @fix: Cambio de 'text' a 'relationship' para integridad referencial.
+       * Renombrado para evitar la columna fantasma 'tenant_id_id'.
+       */
+      name: 'tenant', 
+      type: 'relationship', 
+      relationTo: 'tenants',
+      required: true,
       index: true, 
-      admin: { position: 'sidebar', readOnly: true } 
+      admin: { 
+        position: 'sidebar', 
+        readOnly: true,
+        description: 'Propriedade proprietária deste ativo.'
+      } 
     },
     { 
       name: 'status', 
       type: 'select', 
       index: true, 
-      options:[
+      options: [
         { label: 'Borrador', value: 'draft' }, 
         { label: 'Publicado', value: 'published' }
       ], 
@@ -116,17 +132,17 @@ export const Projects: CollectionConfig = {
     },
     {
       type: 'tabs',
-      tabs:[
+      tabs: [
         {
           label: 'Identidad del Activo',
           fields: [
-            { type: 'row', fields:[
+            { type: 'row', fields: [
                 { name: 'title', type: 'text', required: true, admin: { width: '70%' } },
                 { name: 'slug', type: 'text', unique: true, index: true, admin: { width: '30%' } },
             ]},
             { name: 'description', type: 'textarea', required: true },
             { name: 'imageUrl', type: 'text', required: true, admin: { description: 'URL canónica del activo visual.' } },
-            { type: 'row', fields:[
+            { type: 'row', fields: [
                 { name: 'liveUrl', type: 'text', admin: { placeholder: 'https://...' } },
                 { name: 'codeUrl', type: 'text', admin: { placeholder: 'GitHub Repository' } },
             ]},
@@ -141,12 +157,12 @@ export const Projects: CollectionConfig = {
         },
         {
           label: 'Ingeniería de Élite',
-          fields:[
+          fields: [
             {
               name: 'introduction',
               type: 'group',
               required: true,
-              fields:[
+              fields: [
                 { name: 'heading', type: 'text', required: true },
                 { name: 'body', type: 'textarea', required: true }
               ]
@@ -161,14 +177,14 @@ export const Projects: CollectionConfig = {
               name: 'backend_architecture',
               type: 'group',
               required: true,
-              fields:[
+              fields: [
                 { name: 'title', type: 'text', required: true },
                 { name: 'description', type: 'textarea' },
                 { 
                   name: 'features', 
                   type: 'array', 
                   required: true, 
-                  fields:[{ name: 'feature', type: 'text', required: true }] 
+                  fields: [{ name: 'feature', type: 'text', required: true }] 
                 }
               ]
             }
@@ -176,12 +192,12 @@ export const Projects: CollectionConfig = {
         },
         {
           label: 'Estética & Branding',
-          fields:[
+          fields: [
             {
               name: 'branding',
               type: 'group',
               required: true,
-              fields:[
+              fields: [
                 { 
                   name: 'primary_color', 
                   type: 'text', 
@@ -197,7 +213,7 @@ export const Projects: CollectionConfig = {
                   type: 'select', 
                   required: true, 
                   defaultValue: 'minimal',
-                  options:[
+                  options: [
                     { label: 'Minimalista', value: 'minimal' },
                     { label: 'Inmersivo', value: 'immersive' },
                     { label: 'Editorial', value: 'editorial' },
@@ -211,7 +227,7 @@ export const Projects: CollectionConfig = {
         },
         {
           label: 'Protocolo 33',
-          fields:[
+          fields: [
             { 
               name: 'reputationWeight', 
               type: 'number', 

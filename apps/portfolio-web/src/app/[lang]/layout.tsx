@@ -1,9 +1,9 @@
 /**
  * @file layout.tsx
  * @description Orquestador Soberano del Shell Principal (The Master Shell).
- *              Refactorizado: Resolución de error TS2741 mediante inyección de 
- *              contratos segregados (Footer + Newsletter) y optimización de PWA.
- * @version 38.0 - Data Congruence & Strict Type Compliance
+ *              Refactorizado: Sincronización tipográfica híbrida (Sora/Inter/Dicaten),
+ *              resolución de rumbos PWA (Anti-404) y optimización de LCP.
+ * @version 42.0 - Sovereign Typography & PWA Shielded
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -17,7 +17,7 @@ import type { Metadata, Viewport } from 'next';
 import { i18n } from '../../config/i18n.config';
 import type { Locale } from '../../config/i18n.config';
 import { getDictionary } from '../../lib/get-dictionary';
-import { fontInter, fontSignature, fontClashDisplay } from '../../lib/fonts';
+import { fontVariables } from '../../lib/fonts';
 import { cn } from '../../lib/utils/cn';
 
 /**
@@ -37,11 +37,12 @@ import '../global.css';
 
 /**
  * CONFIGURACIÓN DE VIEWPORT (Next.js 15 Standard)
+ * @description Sincronizado con Oxygen Engine v9.0 para estabilidad cromática inicial.
  */
 export const viewport: Viewport = {
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#fcfcfc' }, // Arena (Light)
-    { media: '(prefers-color-scheme: dark)', color: '#050505' }   // Obsidiana (Dark)
+    { media: '(prefers-color-scheme: light)', color: '#fcfcfc' }, // Arena
+    { media: '(prefers-color-scheme: dark)', color: '#080808' }   // Obsidiana
   ],
   width: 'device-width',
   initialScale: 1,
@@ -100,7 +101,7 @@ export async function generateMetadata(props: {
       locale: lang,
       type: 'website',
       images: [{
-        url: '/images/hotel/og-main.jpg',
+        url: '/images/hotel/og-main.jpg', // Resolución de rumbo absoluto anti-404
         width: 1200, height: 630,
         alt: siteName
       }]
@@ -122,30 +123,20 @@ interface RootLayoutProps {
  */
 export default async function RootLayout({ children, params }: RootLayoutProps) {
   const { lang } = await params;
-  
-  /** @pilar IV: Protocolo Heimdall - Trazabilidad de montaje del Shell */
-  console.log(`[HEIMDALL][SHELL] Master Shell Instantiated: [${lang}]`);
-
   const dictionary = await getDictionary(lang);
-
-  /**
-   * CONFIGURACIÓN TIPOGRÁFICA SOBERANA (Pilar VII)
-   */
-  const fontVariables = cn(
-    fontInter.variable, 
-    fontSignature.variable, 
-    fontClashDisplay.variable,
-    "[--font-clash:var(--font-clash-display)]" 
-  );
+  
+  /** @pilar IV: Protocolo Heimdall - Telemetría de Montaje del Shell */
+  console.log(`[HEIMDALL][SHELL] Master Shell Synced: [${lang}]`);
 
   return (
     <html lang={lang} suppressHydrationWarning className="scroll-smooth">
       <head>
         <link rel="preconnect" href="https://flagcdn.com" />
-        <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
+        {/* @fix: Ruta corregida para evitar error de descarga en PWA Manifest */}
+        <link rel="apple-touch-icon" href="/images/hotel/icon-192x192.png" />
       </head>
       <body className={cn(
-        fontVariables, 
+        fontVariables, // Inyección atómica de tokens Sora, Inter y Dicaten
         "font-sans antialiased min-h-screen flex flex-col bg-background text-foreground selection:bg-primary/30 transition-colors duration-1000"
       )}>
         <Providers>
@@ -169,9 +160,7 @@ export default async function RootLayout({ children, params }: RootLayoutProps) 
             {children}
           </main>
 
-          {/* PIE DE PÁGINA (Compliance & Trust) 
-              @fix TS2741: Inyección del nuevo contrato segregado 'newsletter_form'.
-          */}
+          {/* PIE DE PÁGINA (Compliance & Trust) */}
           <Footer
             content={dictionary.footer}
             newsletterContent={dictionary.newsletter_form}
@@ -184,9 +173,6 @@ export default async function RootLayout({ children, params }: RootLayoutProps) 
           */}
           <Suspense fallback={null}>
             <AuthPortal dictionary={dictionary.auth_portal} />
-            {/* 
-               @nivelación: NewsletterModal ahora consume su propio esquema congruente. 
-            */}
             <NewsletterModal dictionary={dictionary.newsletter_form} />
             <VisitorHud dictionary={dictionary} />
           </Suspense>

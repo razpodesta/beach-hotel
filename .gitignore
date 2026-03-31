@@ -1,93 +1,39 @@
-# =================================================================
-# ECOSISTEMA METASHARK: CONSTITUCIÓN DE RASTREO Y SINCRONIZACIÓN
-# Versión: 3.0 (Cloud-First & Mirror Architecture Ready)
-# =================================================================
-
-# -----------------------------------------------------------------
-# 1. INFRAESTRUCTRURA DE DEPENDENCIAS
-# -----------------------------------------------------------------
-# Pnpm gestiona los enlaces simbólicos. Nunca subir.
+# --- INFRAESTRUCTRURA CORE ---
 node_modules
-.pnpm-debug.log
-
-# -----------------------------------------------------------------
-# 2. ARTEFACTOS DE COMPILACIÓN (Paradigma Dual-Mode)
-# -----------------------------------------------------------------
-# Ignoramos los binarios emitidos. El CI/CD los generará mediante Nx.
-.next/
-dist/
-out/
-build/
-
-# Metadatos incrementales de TypeScript (evita colisiones de caché local)
-*.tsbuildinfo
-*.tsticket
-
-# -----------------------------------------------------------------
-# 3. CACHÉ DE ORQUESTACIÓN (Nx Engine)
-# -----------------------------------------------------------------
-# La caché local se queda en el equipo. El CI usará caché remota o limpia.
-.nx/cache
-.nx/workspace-data
-
-# -----------------------------------------------------------------
-# 4. SOBERANÍA DE PRUEBAS (The Quality Mirror)
-# -----------------------------------------------------------------
-# REGLA OBLIGATORIA: El código de validación SIEMPRE se sube.
-# NO añadir 'tests/' o '*.spec.ts' a este archivo.
-
-# Ignoramos solo los resultados volátiles de las ejecuciones.
-coverage/
-test-output/
-.nyc_output/
-playwright-report/
-blob-report/
-test-results/
-
-# -----------------------------------------------------------------
-# 5. SEGURIDAD Y SECRETOS (Compliance)
-# -----------------------------------------------------------------
-# NUNCA subir llaves privadas. Usar GitHub Secrets para el CI.
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-*.apps.googleusercontent.com
-*.pem
-*.key
-
-# Permitir explícitamente el ejemplo como contrato de entorno.
+.next
+.nx
+dist
+coverage
+test-output
+tmp
+.env*
 !.env.example
 
-# -----------------------------------------------------------------
-# 6. CONFIGURACIONES DE ENTORNO LOCAL (DX)
-# -----------------------------------------------------------------
+# --- SISTEMA OPERATIVO & IDE ---
+.DS_Store
 .vscode/*
 !.vscode/extensions.json
-!.vscode/launch.json
 !.vscode/settings.json
-.idea/
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# -----------------------------------------------------------------
-# 7. BASURA DEL SISTEMA OPERATIVO
-# -----------------------------------------------------------------
-.DS_Store
-Thumbs.db
-desktop.ini
-ehthumbs.db
-Icon?
+# --- ACTIVOS BINARIOS Y FUENTES ---
+# Bloqueamos fuentes por defecto para evitar contaminación de archivos pesados
+public/fonts/*
 
-# -----------------------------------------------------------------
-# 8. ASSETS Y TEMPORALES
-# -----------------------------------------------------------------
-# Ignorar descargas accidentales o temporales de diseño.
-*.tmp
-*.log
-.vercel
-.turbo
+# @fix: EXCEPCIÓN SOBERANA (ADN de Marca)
+# Permitimos explícitamente la fuente del logo/firma para evitar el OTS error.
+!public/fonts/Dicaten.woff2
+
+# --- PRUEBAS Y CALIDAD (Espejo de Calidad) ---
+# @pilar V: No bloqueamos *.spec.ts ni la carpeta /tests.
+# Aseguramos que GitHub Actions tenga acceso al ADN de validación.
+!tests/
+!**/*.spec.ts
+!**/*.spec.tsx
+!**/*.test.ts
+!**/*.test.tsx
+
+# --- INFRAESTRUCTRURA CMS ---
+packages/cms/core/src/payload-types.ts

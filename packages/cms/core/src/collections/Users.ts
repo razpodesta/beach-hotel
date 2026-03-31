@@ -1,9 +1,9 @@
 /**
  * @file packages/cms/core/src/collections/Users.ts
  * @description Orquestador soberano del Clúster de Identidad. 
- *              Implementa arquitectura modular basada en Responsabilidad Única
- *              para gestionar identidades multi-tenant con RBAC de 5 capas.
- * @version 7.0 - Identity Cluster Standard (Modular Edition)
+ *              Refactorizado: Unificación del campo 'tenant' como relación real
+ *              para erradicar el Schema Drift y blindar el aislamiento Multi-Tenant.
+ * @version 8.0 - Sovereign Tenant Sync & Identity Cluster Hardening
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -15,12 +15,11 @@ import { v4 as uuidv4 } from 'uuid';
  * @pilar V: Adherencia arquitectónica.
  */
 import { multiTenantReadAccess } from './Access';
-import { ROLES_CONFIG } from './users/roles/config'; // Archivo que crearemos a continuación
+import { ROLES_CONFIG } from './users/roles/config';
 
 /**
  * APARATO: Users (Master Identity Collection)
- * @description Centraliza el acceso perimetral y delega la configuración granular
- *              a los módulos de rol específicos.
+ * @description Centraliza el acceso perimetral y orquesta el RBAC de 5 capas.
  */
 export const Users: CollectionConfig = {
   slug: 'users',
@@ -43,7 +42,7 @@ export const Users: CollectionConfig = {
 
   admin: {
     useAsTitle: 'email',
-    defaultColumns: ['email', 'role', 'tenantId', 'level'],
+    defaultColumns: ['email', 'role', 'tenant', 'level'],
     group: 'Infrastructure',
     description: 'Gestión de Identidades Soberanas y Control de Acceso Perimetral.',
   },
@@ -70,8 +69,12 @@ export const Users: CollectionConfig = {
     beforeChange: [
       ({ data, operation }) => {
         if (operation === 'create') {
-          // Garantía de Identidad Multi-Tenant
-          if (!data.tenantId) data.tenantId = uuidv4();
+          /**
+           * @fix: Garantía de Identidad Multi-Tenant.
+           * Renombrado de tenantId a tenant para sincronía relacional.
+           */
+          if (!data.tenant) data.tenant = uuidv4();
+          
           // Protocolo de Rescate para Seeding
           if (process.env.IS_SEEDING_MODE === 'true') data._verified = true;
         }
@@ -114,21 +117,26 @@ export const Users: CollectionConfig = {
               ],
             },
             {
-              name: 'tenantId',
-              type: 'text',
+              /**
+               * @property tenant
+               * @fix: Cambio de 'text' a 'relationship' para integridad referencial.
+               * Renombrado para evitar la redundancia 'tenant_id_id' en Postgres.
+               */
+              name: 'tenant',
+              type: 'relationship',
+              relationTo: 'tenants',
               required: true,
               saveToJWT: true,
               index: true,
               admin: { 
                 readOnly: true, 
-                description: 'Propiedad física/digital a la que pertenece esta identidad.' 
+                description: 'Propriedade física/digital à qual esta identidade pertence.' 
               },
             },
           ],
         },
         /**
-         * @description Inyección de Configuraciones Granulares por Rol.
-         * En las próximas refactorizaciones, cada objeto 'config' vendrá de su propio archivo.
+         * @description Atributos de Rol (Configuraciones Granulares).
          */
         {
           label: 'Atributos de Rol',
@@ -136,7 +144,7 @@ export const Users: CollectionConfig = {
             {
               name: 'operatorMetadata',
               type: 'group',
-              label: 'Configuración Mayorista (B2B)',
+              label: 'Configuração Mayorista (B2B)',
               admin: {
                 condition: (data) => data.role === 'operator',
               },

@@ -1,14 +1,13 @@
 {
-  "timestamp": "2026-03-30T18:58:15.720Z",
+  "timestamp": "2026-03-30T23:21:57.666Z",
   "globalStatus": "SUCCESS",
-  "localesAudited": [
+  "performance": "3.33s",
+  "audits": [
     {
       "locale": "en-US",
       "status": "SUCCESS",
       "featuresCount": 33,
-      "errors": 0,
       "outputSize": "31.27 KB",
-      "postWriteVerification": "PASSED",
       "assembledFeatures": [
         "about",
         "admin_media",
@@ -49,9 +48,7 @@
       "locale": "es-ES",
       "status": "SUCCESS",
       "featuresCount": 33,
-      "errors": 0,
       "outputSize": "32.58 KB",
-      "postWriteVerification": "PASSED",
       "assembledFeatures": [
         "about",
         "admin_media",
@@ -92,9 +89,7 @@
       "locale": "pt-BR",
       "status": "SUCCESS",
       "featuresCount": 33,
-      "errors": 0,
       "outputSize": "32.67 KB",
-      "postWriteVerification": "PASSED",
       "assembledFeatures": [
         "about",
         "admin_media",
@@ -132,6 +127,5 @@
       ]
     }
   ],
-  "issues": [],
-  "performance": "4.47s"
+  "issues": []
 }

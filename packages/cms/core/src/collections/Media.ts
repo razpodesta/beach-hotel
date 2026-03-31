@@ -1,10 +1,9 @@
 /**
  * @file packages/cms/core/src/collections/Media.ts
  * @description Bóveda Soberana de Activos Multimedia (The Sanctuary Vault).
- *              Refactorizado: Integración de integridad referencial Multi-Tenant,
- *              optimización de focal-point para UX cinemática, sincronía S3 y
- *              contratos estáticos para resiliencia de Build.
- * @version 7.1 - Zero Any Compliance & Static Type Contracts
+ *              Refactorizado: Unificación semántica del campo 'tenant' para 
+ *              erradicar el Schema Drift y asegurar integridad referencial.
+ * @version 8.0 - Sovereign Tenant Naming & Postgres Optimization
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -19,10 +18,8 @@ import { multiTenantWriteAccess } from './Access';
 /**
  * @interface PayloadMediaDoc
  * @description Contrato estático estructural para los documentos multimedia.
- *              Desacopla a los consumidores (Frontend Shapers) de los tipos
- *              autogenerados de Payload, erradicando el problema del "Huevo y la Gallina"
- *              en entornos de CI/CD como Vercel o GitHub Actions.
- * @pilar III: Seguridad de Tipos Absoluta (Cero 'any').
+ *              Nivelado: 'tenantId' -> 'tenant' para sincronía con la base de datos.
+ * @pilar III: Seguridad de Tipos Absoluta.
  */
 export interface PayloadMediaDoc {
   id: string;
@@ -34,10 +31,10 @@ export interface PayloadMediaDoc {
   height?: number | null;
   filename?: string | null;
   /** 
-   * Tipado flexible para la relación (string = ID, Record = objeto poblado) 
-   * blindado contra la regla no-explicit-any.
+   * Relación con la Propiedad (Tenant). 
+   * Tipado flexible para soportar IDs (string) u objetos poblados.
    */
-  tenantId?: string | Record<string, unknown> | null; 
+  tenant?: string | Record<string, unknown> | null; 
   caption?: string | null;
 }
 
@@ -47,7 +44,7 @@ export const Media: CollectionConfig = {
     useAsTitle: 'alt',
     group: 'Infrastructure',
     description: 'Gestão centralizada de ativos visuais de alta fidelidade.',
-    defaultColumns: ['alt', 'filename', 'mimeType', 'tenantId'],
+    defaultColumns: ['alt', 'filename', 'mimeType', 'tenant'],
     /** @pilar XII: MEA/UX - Facilita la identificación visual en el listado */
     preview: (doc) => doc?.url as string,
   },
@@ -71,34 +68,13 @@ export const Media: CollectionConfig = {
   upload: {
     staticDir: 'media',
     imageSizes: [
-      {
-        name: 'thumbnail',
-        width: 400,
-        height: 300,
-        position: 'centre',
-      },
-      {
-        name: 'card',
-        width: 768,
-        height: 1024,
-        position: 'centre',
-      },
-      {
-        name: 'hero-cinematic', // Optimizado para Desktop Ultra-Wide
-        width: 2560,
-        height: 1080,
-        position: 'centre',
-      },
-      {
-        name: 'mobile-optimized', // Optimizado para iPhone/Android High PPI
-        width: 1170,
-        height: 2532,
-        position: 'centre',
-      },
+      { name: 'thumbnail', width: 400, height: 300, position: 'centre' },
+      { name: 'card', width: 768, height: 1024, position: 'centre' },
+      { name: 'hero-cinematic', width: 2560, height: 1080, position: 'centre' },
+      { name: 'mobile-optimized', width: 1170, height: 2532, position: 'centre' },
     ],
     adminThumbnail: 'thumbnail',
     mimeTypes: ['image/*', 'video/mp4'],
-    /** Habilita el control manual del punto de interés en el Dashboard */
     focalPoint: true,
   },
 
@@ -109,8 +85,11 @@ export const Media: CollectionConfig = {
     beforeChange: [
       ({ req, data, operation }) => {
         if (operation === 'create' && req.user) {
-          // Asignación automática del Tenant propietario
-          if (!data.tenantId) data.tenantId = req.user.tenantId;
+          /**
+           * @fix: Sincronización con el nuevo esquema de identidad.
+           * Aseguramos que el activo herede la propiedad del usuario creador.
+           */
+          if (!data.tenant) data.tenant = req.user.tenant;
         }
         return data;
       },
@@ -118,11 +97,11 @@ export const Media: CollectionConfig = {
     afterChange: [
       ({ doc, operation }) => {
         if (operation === 'create') {
-          /** @pilar IV: Protocolo Heimdall - Telemetría de Ingesta */
+          /** @pilar IV: Protocolo Heimdall - Telemetría de Ingesta S3 */
           console.log(`[HEIMDALL][MEDIA-VAULT] Handshake Successful:`);
           console.log(`   - Filename: ${doc.filename}`);
           console.log(`   - ID: ${doc.id}`);
-          console.log(`   - Origin: ${doc.tenantId}`);
+          console.log(`   - Origin: ${doc.tenant}`);
           console.log(`   - S3_Status: DISTRIBUTED_REPLICA_ACTIVE`);
         }
       }
@@ -136,7 +115,12 @@ export const Media: CollectionConfig = {
       admin: { readOnly: true, position: 'sidebar' }
     },
     {
-      name: 'tenantId',
+      /**
+       * @property tenant
+       * @fix: Renombrado de 'tenantId' a 'tenant' para evitar la columna 'tenant_id_id'.
+       * El adaptador de Postgres generará automáticamente 'tenant_id'.
+       */
+      name: 'tenant',
       type: 'relationship',
       relationTo: 'tenants',
       required: true,

@@ -1,9 +1,9 @@
 /**
  * @file packages/cms/core/src/payload.config.ts
  * @description Orquestador soberano de configuración para Payload CMS 3.0.
- *              Refactorizado: Arquitectura S3 (Supabase Storage) integrada,
- *              telemetría forense hiper-verbosa y estabilización del pooler SSL.
- * @version 26.5 - Build Fixed & Production Ready
+ *              Refactorizado: Integración del Clúster CRM (Subscribers), 
+ *              estabilización de infraestructura S3 y normalización relacional.
+ * @version 30.0 - CRM Integrated & Multi-Tenant Sovereign
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -18,7 +18,7 @@
   if (isVercel || isBuild) {
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
     process.env.PGSSLMODE = 'no-verify';
-    console.log('[HEIMDALL][L0] SSL Infrastructure Bypass: ENGAGED (Vercel/Build Context)');
+    console.log('[HEIMDALL][L0] Infrastructure SSL Bypass: ENGAGED');
   }
 })();
 
@@ -32,122 +32,96 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 
-/**
- * IMPORTACIONES ATÓMICAS DE COLECCIONES
+/** 
+ * IMPORTACIONES DE COLECCIONES SOBERANAS (SSoT) 
+ * @pilar IX: Modularización atómica.
  */
 import { Users } from './collections/Users';
 import { BlogPosts } from './collections/BlogPosts';
 import { Projects } from './collections/Projects';
 import { Media } from './collections/Media';
 import { Tenants } from './collections/Tenants';
+import { Subscribers } from './collections/Subscribers'; // <-- NUEVO CRM HUB
 
-/**
- * DETERMINACIÓN DE PERÍMETRO DE INFRAESTRUCTRURA
- */
+/** DETERMINACIÓN DE PERÍMETRO */
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const BASE_CONFIG_DIR = __dirname;
 
-const PAYLOAD_SECRET = process.env.PAYLOAD_SECRET || 'genesis-engine-production-vault-2026';
-let DATABASE_URL = process.env.DATABASE_URL || '';
+const SERVER_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+const DATABASE_URL = process.env.DATABASE_URL || '';
 
-// Credenciales de Nube (Supabase S3)
+// Configuración S3 (Supabase Cluster)
 const S3_ENDPOINT = process.env.S3_ENDPOINT || '';
 const S3_ACCESS_KEY_ID = process.env.S3_ACCESS_KEY_ID || '';
 const S3_SECRET_ACCESS_KEY = process.env.S3_SECRET_ACCESS_KEY || '';
 const S3_BUCKET = process.env.S3_BUCKET || 'sanctuary-vault';
 const S3_REGION = process.env.S3_REGION || 'sa-east-1';
 
-/**
- * SANEAMIENTO DE CADENA DE CONEXIÓN
- */
-if (DATABASE_URL) {
-  try {
-    const url = new URL(DATABASE_URL);
-    url.searchParams.set('uselibpqcompat', 'true');
-    url.searchParams.set('sslmode', 'no-verify'); 
-    DATABASE_URL = url.toString();
-  } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : 'Unknown URI Drift';
-    console.error(`[HEIMDALL][CRITICAL] Database URI corruption detected: ${msg}`);
-  }
-}
-
-const IS_CLOUD_STORAGE_READY = Boolean(S3_ENDPOINT && S3_ACCESS_KEY_ID && S3_SECRET_ACCESS_KEY);
+const IS_CLOUD_READY = Boolean(S3_ENDPOINT && S3_ACCESS_KEY_ID && S3_SECRET_ACCESS_KEY);
 
 /**
- * TELEMETRÍA DE ARRANQUE VERBOSA (Heimdall)
- */
-console.group('[HEIMDALL][INFRA] Sovereign Engine Bootstrap');
-console.log(`[CORE] Payload Version: 3.0 Lifecycle`);
-console.log(`[CORE] Database Status: ${DATABASE_URL ? 'URI_RESOLVED' : 'MISSING_URI'}`);
-console.log(`[CORE] Media Storage: ${IS_CLOUD_STORAGE_READY ? 'S3_CLOUD_ACTIVE (Supabase)' : 'LOCAL_EPHEMERAL (Vercel Warning)'}`);
-console.groupEnd();
-
-if (!DATABASE_URL && process.env.NODE_ENV === 'production') {
-  throw new Error('[CRITICAL] SSoT Failure: DATABASE_URL is mandatory for production.');
-}
-
-/**
- * CONSTRUCCIÓN DEL MOTOR CMS
+ * CONSTRUCCIÓN DEL MOTOR CMS (Sovereign Architecture)
  */
 export default buildConfig({
-  serverURL: process.env.NEXT_PUBLIC_BASE_URL || '',
+  /** 
+   * @pilar I: Visión Holística. 
+   * Resolución de rumbos absolutos para evitar 404 en el frontend.
+   */
+  serverURL: SERVER_URL,
 
-  email: nodemailerAdapter({
-    defaultFromAddress: 'admin@beachhotelcanasvieiras.com',
-    defaultFromName: 'Sanctuary Concierge Engine',
-  }),
-
-  sharp: (sharp as unknown) as SharpDependency,
+  /** @pilar VIII: Resiliencia de Comunicación */
+  email: nodemailerAdapter(),
 
   admin: {
     user: Users.slug,
-    importMap: { 
-      baseDir: BASE_CONFIG_DIR, 
-    },
-    meta: {
-      titleSuffix: '- MetaShark Sovereign CMS',
-    }
+    importMap: { baseDir: BASE_CONFIG_DIR },
+    meta: { titleSuffix: '- MetaShark Sovereign CMS' }
   },
 
+  /** 
+   * INVENTARIO DE COLECCIONES
+   * El orden determina la prioridad en el Dashboard administrativo.
+   */
   collections: [
     Users, 
-    BlogPosts, 
-    Projects, 
-    Media, 
-    Tenants
+    Tenants, 
+    Subscribers, // Gestión de Leads
+    Media,       // Gestión de Assets
+    BlogPosts,   // Gestión Editorial
+    Projects     // Gestión de Activos Digitales
   ],
   
   editor: lexicalEditor({}),
-  secret: PAYLOAD_SECRET,
+  secret: process.env.PAYLOAD_SECRET || 'genesis-vault-2026',
   
   typescript: {
     outputFile: path.resolve(BASE_CONFIG_DIR, 'payload-types.ts'),
   },
 
-  /**
+  /** 
    * CAPA DE PERSISTENCIA (Supabase Transaction Pooler)
-   * @pilar VIII: Resiliencia de Persistencia.
+   * Sincronizado para operar sobre el puerto 6543.
    */
   db: postgresAdapter({
     pool: {
       connectionString: DATABASE_URL,
-      ssl: {
-        rejectUnauthorized: false,
-      },
+      ssl: { rejectUnauthorized: false },
     },
   }),
 
+  /** @pilar IX: Resiliencia Nativa */
+  sharp: (sharp as unknown) as SharpDependency,
+
   /**
-   * SISTEMA DE PLUGINS: S3 Storage (Supabase)
+   * MOTOR S3: Supabase Cloud Storage
    */
   plugins: [
-    ...(IS_CLOUD_STORAGE_READY
+    ...(IS_CLOUD_READY
       ? [
           s3Storage({
             collections: {
-              media: true,
+              media: true, 
             },
             bucket: S3_BUCKET,
             config: {

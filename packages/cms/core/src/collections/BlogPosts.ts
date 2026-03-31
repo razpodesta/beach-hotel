@@ -1,9 +1,9 @@
 /**
  * @file packages/cms/core/src/collections/BlogPosts.ts
  * @description Colección soberana para el motor editorial (The Concierge Journal).
- *              Implementa orquestación multitenant, cálculo automatizado de métricas
- *              de lectura y blindaje de autoridad SEO E-E-A-T.
- * @version 5.0 - Pure Source Resolution (No Ext)
+ *              Refactorizado: Unificación relacional del campo 'tenant' para 
+ *              integridad referencial y aislamiento Multi-Tenant.
+ * @version 6.0 - Sovereign Tenant Sync & Relational Hardening
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -18,7 +18,7 @@ import {
 
 /**
  * IMPORTACIONES DE PERÍMETRO (Saneadas)
- * @nivelación: Extensión .js eliminada para alineación con Next.js 15 (Bundler Resolution).
+ * @pilar V: Adherencia arquitectónica.
  */
 import { multiTenantReadAccess, multiTenantWriteAccess } from './Access';
 
@@ -27,7 +27,7 @@ export const BlogPosts: CollectionConfig = {
   defaultSort: '-publishedDate',
   admin: {
     useAsTitle: 'title',
-    defaultColumns:['title', 'author', 'status', 'publishedDate', 'tenantId'],
+    defaultColumns: ['title', 'author', 'status', 'publishedDate', 'tenant'],
     group: 'Editorial Sanctuary',
     description: 'Curaduría de artículos exclusivos para el Santuario Digital.',
   },
@@ -46,11 +46,15 @@ export const BlogPosts: CollectionConfig = {
    * GUARDIANES DE INTEGRIDAD (Hooks)
    */
   hooks: {
-    beforeChange:[
+    beforeChange: [
       ({ req: _req, data, operation: _operation }) => {
         // 1. Garantía de Identidad Multi-Tenant y Atribución
         if (_operation === 'create' && _req.user) {
-          if (!data.tenantId) data.tenantId = _req.user.tenantId;
+          /**
+           * @fix: Sincronización con el nuevo esquema 'tenant'.
+           * Aseguramos que el post pertenezca al perímetro del creador.
+           */
+          if (!data.tenant) data.tenant = _req.user.tenant;
           if (!data.author) data.author = _req.user.id;
         }
         
@@ -81,19 +85,19 @@ export const BlogPosts: CollectionConfig = {
         return data;
       },
     ],
-    afterChange:[
+    afterChange: [
       ({ doc, operation: _operation }) => {
-        // Corrección TS6133: Ignorar parámetros no usados con guion bajo
         if (_operation === 'create' || _operation === 'update') {
+          /** @pilar IV: Protocolo Heimdall - Telemetría Editorial */
           console.log(
-            `[HEIMDALL][EDITORIAL] Sync: "${doc.title}" | Status: ${doc.status} | ETA: ${doc.readingTime} min.`
+            `[HEIMDALL][EDITORIAL] Sync: "${doc.title}" | Status: ${doc.status} | Tenant: ${doc.tenant}`
           );
         }
       }
     ]
   },
 
-  fields:[
+  fields: [
     {
       name: 'id',
       type: 'text',
@@ -101,20 +105,31 @@ export const BlogPosts: CollectionConfig = {
       admin: { position: 'sidebar' }
     },
     {
-      name: 'tenantId',
-      type: 'text',
+      /**
+       * @property tenant
+       * @fix: Cambio de 'text' a 'relationship' para integridad referencial.
+       * Renombrado para evitar la columna fantasma 'tenant_id_id'.
+       */
+      name: 'tenant',
+      type: 'relationship',
+      relationTo: 'tenants',
+      required: true,
       index: true,
-      admin: { position: 'sidebar', readOnly: true },
+      admin: { 
+        position: 'sidebar', 
+        readOnly: true,
+        description: 'Propriedade à qual este artigo pertence.'
+      },
     },
     {
       type: 'tabs',
       tabs: [
         {
           label: 'Narrativa Editorial',
-          fields:[
+          fields: [
             {
               type: 'row',
-              fields:[
+              fields: [
                 { 
                   name: 'title', 
                   type: 'text', 
@@ -137,7 +152,7 @@ export const BlogPosts: CollectionConfig = {
               required: true,
               admin: { description: 'Contenido enriquecido del artículo.' },
               editor: lexicalEditor({
-                features: () =>[
+                features: () => [
                   HeadingFeature({ enabledHeadingSizes: ['h2', 'h3', 'h4'] }),
                   FixedToolbarFeature(),
                   LinkFeature({}),
@@ -158,7 +173,7 @@ export const BlogPosts: CollectionConfig = {
           fields: [
             {
               type: 'row',
-              fields:[
+              fields: [
                 { 
                   name: 'author', 
                   type: 'relationship', 
@@ -186,7 +201,7 @@ export const BlogPosts: CollectionConfig = {
               name: 'status', 
               type: 'select', 
               index: true,
-              options:[
+              options: [
                 { label: 'Borrador', value: 'draft' },
                 { label: 'Publicado', value: 'published' }
               ], 
@@ -212,7 +227,7 @@ export const BlogPosts: CollectionConfig = {
         },
         {
           label: 'SEO & Social',
-          fields:[
+          fields: [
             { name: 'metaTitle', type: 'text', admin: { description: 'Título alternativo para buscadores.' } },
             { 
               name: 'ogImage', 
