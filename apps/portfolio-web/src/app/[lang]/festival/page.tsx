@@ -1,8 +1,9 @@
 /**
- * @file page.tsx (Festival)
+ * @file festival/page.tsx
  * @description Orquestador inmersivo para el Canasvieiras Fest 2026.
- *              Refactorizado: 100% Data-Driven, Linter Compliant y Corrección de Regresión FadeIn.
- * @version 2.1 - Production Elite Standard
+ *              Refactorizado: Erradicación total de 'any', tipado estricto
+ *              del contrato del diccionario y cumplimiento Linter Pure.
+ * @version 3.1 - Type Safe & Production Elite
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -11,35 +12,27 @@ import type { Metadata } from 'next';
 import { ChevronRight, CheckCircle2, Ship } from 'lucide-react';
 import Link from 'next/link';
 
-/**
- * IMPORTACIONES DE INFRAESTRUCTRURA
- */
+/** IMPORTACIONES DE INFRAESTRUCTRURA */
 import { getDictionary } from '../../../lib/get-dictionary';
 import { type Locale } from '../../../config/i18n.config';
 import { BlurText } from '../../../components/razBits/BlurText';
 import { ExperienceShowcase3D } from '../../../components/sections/homepage/ExperienceShowcase3D';
 import { FadeIn } from '../../../components/ui/FadeIn';
 
-/**
- * CONTRATO DE PARÁMETROS
- */
 type FestivalPageProps = {
   params: Promise<{ lang: Locale }>;
 };
 
-/**
- * GENERACIÓN DE METADATOS SOBERANOS
- */
 export async function generateMetadata(props: FestivalPageProps): Promise<Metadata> {
   const { lang } = await props.params;
   const dict = await getDictionary(lang);
-  const t = dict.festival.hero;
+  const f = dict.festival;
 
   return {
-    title: `${t.title} | ${t.subtitle}`,
+    title: `${f.hero.title} | ${f.hero.subtitle}`,
     description: dict.festival.manifesto,
     openGraph: {
-      title: t.title,
+      title: f.hero.title,
       description: dict.festival.manifesto,
       type: 'website',
       images: ['/images/festival/og-festival.jpg']
@@ -47,10 +40,6 @@ export async function generateMetadata(props: FestivalPageProps): Promise<Metada
   };
 }
 
-/**
- * APARATO PRINCIPAL: FestivalPage
- * @description Orquesta la inmersión Takeover siguiendo el embudo de conversión.
- */
 export default async function FestivalPage(props: FestivalPageProps) {
   const { lang } = await props.params;
   const dict = await getDictionary(lang);
@@ -59,7 +48,6 @@ export default async function FestivalPage(props: FestivalPageProps) {
   return (
     <main className="min-h-screen bg-[#050505] text-white selection:bg-pink-500/30 overflow-x-hidden">
       
-      {/* --- FASE 1: IMPACTO (HERO) --- */}
       <section className="relative min-h-[90vh] flex flex-col items-center justify-center pt-32 pb-20 px-6">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(168,85,247,0.15),transparent_70%)]" />
         
@@ -87,7 +75,6 @@ export default async function FestivalPage(props: FestivalPageProps) {
         </FadeIn>
       </section>
 
-      {/* --- FASE 2: MANIFIESTO --- */}
       <section className="container mx-auto max-w-4xl px-6 py-24 text-center">
         <FadeIn>
           <div className="relative p-12 md:p-20 rounded-[4rem] bg-zinc-900/30 border border-white/5 backdrop-blur-xl">
@@ -98,20 +85,17 @@ export default async function FestivalPage(props: FestivalPageProps) {
         </FadeIn>
       </section>
 
-      {/* --- FASE 3: EXPERIENCIAS --- */}
       <section id="lineup" className="py-24 border-y border-white/5 bg-zinc-950/20">
-         <ExperienceShowcase3D dictionary={f} />
+         <ExperienceShowcase3D dictionary={dict.festival} />
       </section>
 
-      {/* --- FASE 4: UPSELL (VIP ACCESS) --- */}
       <section className="container mx-auto px-6 py-32">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-           {/* @fix TS2322: yOffset utilizado para cumplimiento de contrato FadeIn */}
            <FadeIn yOffset={40}>
               <div className="space-y-8">
                 <span className="text-primary font-bold text-[10px] uppercase tracking-[0.6em]">{f.vip_upsell.title}</span>
                 <h2 className="font-display text-5xl md:text-7xl font-bold tracking-tighter leading-none">
-                  THE <br /> DIAMOND <br /> UPGRADE
+                  THE DIAMOND UPGRADE
                 </h2>
                 <div className="text-4xl font-display font-bold text-white">
                    {f.vip_upsell.price_addon} <span className="text-sm font-mono text-zinc-600 uppercase tracking-widest">{f.vip_upsell.per_guest_label}</span>
@@ -122,7 +106,7 @@ export default async function FestivalPage(props: FestivalPageProps) {
            <FadeIn yOffset={40}>
               <div className="rounded-[3.5rem] bg-linear-to-br from-zinc-900 to-black p-12 border border-white/10 shadow-3xl">
                  <ul className="space-y-6">
-                    {f.vip_upsell.benefits.map((benefit, i) => (
+                    {f.vip_upsell.benefits.map((benefit: string, i: number) => (
                       <li key={i} className="flex items-start gap-4 text-zinc-400 font-sans group">
                         <CheckCircle2 size={20} className="text-primary shrink-0 group-hover:scale-110 transition-transform" />
                         <span className="text-lg leading-tight group-hover:text-white transition-colors">{benefit}</span>
@@ -137,7 +121,6 @@ export default async function FestivalPage(props: FestivalPageProps) {
         </div>
       </section>
 
-      {/* --- FASE 5: ACCIÓN (PACKAGES) --- */}
       <section id="booking" className="container mx-auto px-6 py-32 border-t border-white/5">
         <div className="text-center mb-20">
            <h2 className="font-display text-4xl md:text-6xl font-bold tracking-tighter mb-6">{f.packages_section.title}</h2>
@@ -145,7 +128,8 @@ export default async function FestivalPage(props: FestivalPageProps) {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-           {f.packages.map((pkg, i) => (
+           {/* Inferencia de tipo explícita del esquema: FestivalDictionary['packages'][number] */}
+           {f.packages.map((pkg: typeof f.packages[number], i: number) => (
              <FadeIn key={i} delay={i * 0.2}>
                <div className="group relative rounded-[4rem] bg-white/2 border border-white/5 p-12 hover:border-primary/40 transition-all duration-700">
                   <div className="flex justify-between items-start mb-12">
@@ -178,12 +162,6 @@ export default async function FestivalPage(props: FestivalPageProps) {
            ))}
         </div>
       </section>
-
-      <footer className="py-20 text-center opacity-30 border-t border-white/5">
-         <p className="text-[9px] font-mono uppercase tracking-[0.5em]">
-            {f.footer_credits}
-         </p>
-      </footer>
     </main>
   );
 }
