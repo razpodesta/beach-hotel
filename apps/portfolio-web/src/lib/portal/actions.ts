@@ -1,16 +1,14 @@
 /**
  * @file apps/portfolio-web/src/lib/portal/actions.ts
  * @description Orquestador de datos soberanos para el Portal.
- *              Refactorizado: Resolución de TS2339 mediante Type Guards,
- *              inyección de métricas reales y blindaje de tipos SSoT.
- * @version 2.1 - Type-Safe Telemetry Integration
- * @author Raz Podestá - MetaShark Tech
+ *              Refactorizado: Purga de código muerto (variable payload) y
+ *              blindaje de tipos SSoT.
+ * @version 2.3 - Clean Infrastructure Standard
+ * @author Staff Engineer - MetaShark Tech
  */
 
-import { getPayload } from 'payload';
-import configPromise from '@metashark/cms-core/config';
 import { portalDataSchema, type PortalData } from '../schemas/portal_data.schema';
-import type { SovereignRole } from '../route-guard';
+import type { EnterpriseRole } from '../route-guard';
 
 /**
  * @interface TelemetryStatus
@@ -34,21 +32,12 @@ const isTelemetryStatus = (data: unknown): data is TelemetryStatus => {
  *              conectando con el clúster de infraestructura.
  * @pilar VIII: Resiliencia - Fallbacks automáticos si la DB está en mantenimiento.
  */
-export async function getPortalData(role: SovereignRole, userId: string): Promise<PortalData> {
+export async function getPortalData(role: EnterpriseRole, userId: string): Promise<PortalData> {
   console.group(`[HEIMDALL][PORTAL-API] Fetching Data for User: ${userId} | Role: ${role}`);
   
   try {
-    const payload = await getPayload({ config: await configPromise });
-
     // Orquestación paralela de datos (Pilar X: Performance)
-    const [
-      //reservations, 
-      serverStatusRaw] = await Promise.all([
-      // Fetch de reservas activas
-      (role === 'guest' || role === 'admin') 
-        ? payload.find({ collection: 'blog-posts', limit: 5 }) 
-        : Promise.resolve({ docs: [] }),
-      
+    const [serverStatusRaw] = await Promise.all([
       // Fetch de telemetría (Soberanía de rol)
       (role === 'developer')
         ? Promise.resolve({ cpu: 14, connections: 42 }) 

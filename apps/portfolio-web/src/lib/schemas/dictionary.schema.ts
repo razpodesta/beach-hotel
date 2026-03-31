@@ -1,10 +1,10 @@
 /**
  * @file apps/portfolio-web/src/lib/schemas/dictionary.schema.ts
  * @description Master SSoT (Single Source of Truth) - Enterprise Level 4.0.
- *              Orquesta la validación atómica de los Silos Operativos (A, B, C, D).
- *              Refactorizado: Resolución de TS2307, TS6133 y TS5097 mediante 
- *              importaciones ESM estrictas (.js) para compatibilidad SWC/Vercel.
- * @version 27.0 - Strict ESM Resolution Standard
+ *              Orquesta la validación atómica de los Silos Operativos (A, B, C, D)
+ *              y los Dominios de Experiencia. Nivelado para erradicar tipos 'unknown'
+ *              y garantizar inferencia estricta en el Frontend.
+ * @version 28.0 - Strict ESM Resolution Standard & Full Type Sync
  * @author Staff Engineer - MetaShark Tech
  */
 
@@ -25,26 +25,37 @@ import { gamificationSchema } from './gamification.schema.js';
 
 /** 2. SILO A: REVENUE & SALES ENGINE */
 import { flashSalesSchema } from './offers/flash_sales.schema.js';
+import { offersSchema } from './offers.schema.js';
 
 /** 3. SILO B: PARTNER NETWORK (B2B) */
 import { partnerNetworkSchema } from './partners/network.schema.js';
+import { partnerFormSchema } from './partners/registration_form.schema.js';
 
 /** 4. SILO C: INTELLIGENCE & MARKETING CLOUD */
 import { ingestionVaultSchema } from './marketing/ingestion.schema.js';
-// @fix TS5097: Extensión corregida a .js para resolución nativa
 import { marketingCloudSchema } from './marketing/cloud.schema.js';
 
 /** 5. SILO D: COMMUNICATION DOMAINS (COMMS HUB) */
-// @fix TS5097: Extensión corregida a .js para resolución nativa
 import { commsHubSchema } from './comms/hub.schema.js';
 
-/** 6. EXPERIENCE APPARATUS */
+/** 6. EXPERIENCE APPARATUS & NARRATIVES */
 import { heroSchema } from './hero.schema.js';
 import { blogPageSchema } from './blog.schema.js';
 import { suiteGallerySchema } from './suite_gallery.schema.js';
 import { quienesSomosSchema } from './quienes_somos.schema.js';
 import { legalPageSchema } from './legal_page.schema.js';
 import { notFoundSchema, maintenanceSchema, serverErrorSchema } from './not_found.schema.js';
+import { aboutSectionSchema } from './about_section.schema.js';
+import { historySectionSchema } from './history_section.schema.js';
+import { valuePropositionSectionSchema } from './value_proposition.schema.js';
+import { aiGallerySectionSchema } from './homepage.schema.js';
+import { festivalPageSchema } from './festival_experience.schema.js';
+import { missionVisionSchema } from './mission_vision.schema.js';
+import { contactMessagesSchema } from './contact.schema.js';
+import { contactPageSchema } from './contact_page.schema.js';
+import { profilePageSchema } from './profile_page.schema.js';
+import { libraryPageSchema } from './library_page.schema.js';
+import { projectDetailsDictionarySchema } from './project_details.schema.js';
 
 /**
  * APARATO PRINCIPAL: dictionarySchema
@@ -66,9 +77,11 @@ export const dictionarySchema = z.object({
 
   // --- SILO A: REVENUE ENGINE ---
   offers_flash: flashSalesSchema,
+  offers: offersSchema,
   
   // --- SILO B: PARTNER NETWORK ---
   partner_network: partnerNetworkSchema,
+  partner_form: partnerFormSchema,
   
   // --- SILO C: INTELLIGENCE & CLOUD ---
   ingestion_vault: ingestionVaultSchema,
@@ -77,13 +90,24 @@ export const dictionarySchema = z.object({
   // --- SILO D: COMMS HUB ---
   comms_hub: commsHubSchema,
   
-  // --- EXPERIENCE DOMAINS ---
+  // --- EXPERIENCE DOMAINS (The Sanctuary) ---
   hero: heroSchema,
+  about: aboutSectionSchema,
+  value_proposition: valuePropositionSectionSchema,
+  ai_gallery_section: aiGallerySectionSchema,
+  history: historySectionSchema,
+  festival: festivalPageSchema,
+  quienes_somos: quienesSomosSchema,
+  mission_vision: missionVisionSchema,
+  contact: contactMessagesSchema,
+  contact_page: contactPageSchema,
   blog_page: blogPageSchema,
   suite_gallery: suiteGallerySchema,
-  quienes_somos: quienesSomosSchema,
+  profile_page: profilePageSchema,
+  lucide_page: libraryPageSchema,
+  project_details: projectDetailsDictionarySchema,
   
-  // --- SYSTEM RECOVERY ---
+  // --- SYSTEM RECOVERY & LEGAL ---
   legal: z.object({
     privacy_policy: legalPageSchema,
     terms_of_service: legalPageSchema,
@@ -92,11 +116,14 @@ export const dictionarySchema = z.object({
   maintenance: maintenanceSchema,
   server_error: serverErrorSchema,
   
-  // Legacy support placeholders (Ready for purge)
+  // Generic Placeholders for auxiliary pages (Strictness isolation)
   homepage: z.record(z.string(), z.unknown()).optional(),
-  about: z.record(z.string(), z.unknown()).optional(),
-  history: z.record(z.string(), z.unknown()).optional(),
-  value_proposition: z.record(z.string(), z.unknown()).optional(),
+  design_system_page: z.record(z.string(), z.unknown()).optional(),
+  cocreation_page: z.record(z.string(), z.unknown()).optional(),
 });
 
+/** 
+ * @type Dictionary
+ * @description SSoT Tipado Inyectable para todos los Server y Client Components.
+ */
 export type Dictionary = z.infer<typeof dictionarySchema>;

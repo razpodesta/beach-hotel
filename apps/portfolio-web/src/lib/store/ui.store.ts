@@ -1,9 +1,9 @@
 /**
  * @file ui.store.ts
  * @description Orquestador Soberano del Estado Global de la Interfaz.
- *              Refactorizado: Erradicación de empty-functions (Linter Compliance)
- *              e inyección de telemetría forense en el motor de persistencia.
- * @version 9.1 - Forensic Observability Edition
+ *              Refactorizado: Resolución de contrato EnterpriseRole y 
+ *              estabilización del motor de persistencia forense.
+ * @version 10.0 - Enterprise Level 4.0 Standard
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -16,7 +16,7 @@ import type { StateStorage } from 'zustand/middleware';
  * IMPORTACIONES DE CONTRATO
  * @pilar V: Alineación con el Centinela de Borde.
  */
-import type { SovereignRole } from '../route-guard';
+import type { EnterpriseRole } from '../route-guard';
 
 /**
  * @interface SovereignSession
@@ -25,7 +25,7 @@ import type { SovereignRole } from '../route-guard';
 export interface SovereignSession {
   userId: string;
   email: string;
-  role: SovereignRole;
+  role: EnterpriseRole;
   tenantId: string | null;
   lastLogin: string;
 }
@@ -55,22 +55,18 @@ interface UIState {
  * @description Mutaciones permitidas sobre la bóveda de estado.
  */
 interface UIActions {
-  // Controles de HUD
   toggleVisitorHud: () => void;
   closeVisitorHud: () => void;
   openVisitorHud: () => void;
   
-  // Controles de Navegación
   toggleMobileMenu: () => void;
   closeMobileMenu: () => void;
   
-  // Controles de Portales
   openNewsletterModal: () => void;
   closeNewsletterModal: () => void;
   toggleAuthModal: () => void;
   closeAuthModal: () => void;
   
-  // Acciones de Identidad
   setHasHydrated: (state: boolean) => void;
   setTenant: (tenantId: string | null) => void;
   setSession: (session: SovereignSession | null) => void;
@@ -81,8 +77,6 @@ type UIStore = UIState & UIActions;
 
 /**
  * SOVEREIGN STORAGE ENGINE (Resilience Fallback)
- * @description Motor de respaldo para entornos SSR o almacenamiento bloqueado.
- * @pilar IV & VIII: Observabilidad forense sobre la persistencia.
  */
 const forensicMockStorage: StateStorage = {
   getItem: (): string | null => null,
@@ -94,9 +88,6 @@ const forensicMockStorage: StateStorage = {
   },
 };
 
-/**
- * RESOLVER DE ALMACENAMIENTO
- */
 const resolveStorageEngine = (): StateStorage => {
   if (typeof window === 'undefined') return forensicMockStorage;
   try {
@@ -105,7 +96,6 @@ const resolveStorageEngine = (): StateStorage => {
     window.localStorage.removeItem(testKey);
     return window.localStorage;
   } catch {
-    console.warn('[HEIMDALL][STORE] LocalStorage inaccesible. Modo volátil activado.');
     return forensicMockStorage;
   }
 };
@@ -114,7 +104,6 @@ const resolveStorageEngine = (): StateStorage => {
  * CREADOR DE ESTADO
  */
 const stateCreator: StateCreator<UIStore, [["zustand/persist", unknown]]> = (set) => ({
-  // --- ESTADO INICIAL ---
   isVisitorHudOpen: true,
   isMobileMenuOpen: false,
   isNewsletterModalOpen: false,
@@ -123,7 +112,6 @@ const stateCreator: StateCreator<UIStore, [["zustand/persist", unknown]]> = (set
   tenantId: null,
   session: null,
 
-  // --- ACCIONES ---
   setHasHydrated: (state: boolean) => set({ hasHydrated: state }),
   setTenant: (tenantId: string | null) => set({ tenantId }),
 
@@ -162,7 +150,7 @@ export const useUIStore = create<UIStore>()(
         if (error) console.error('[HEIMDALL][STORE] Error en rehidratación:', error);
         state?.setHasHydrated(true);
       },
-      version: 6,
+      version: 7,
     }
   )
 );
