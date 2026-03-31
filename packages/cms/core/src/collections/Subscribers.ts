@@ -1,50 +1,63 @@
 /**
  * @file packages/cms/core/src/collections/Subscribers.ts
  * @description Centro de Inteligencia de Leads y Ciclo de Vida del Huésped.
- *              Implementa rastreo de comportamiento, métricas de engagement 
- *              y cumplimiento de soberanía de datos Multi-Tenant.
- * @version 1.0 - Next-Gen CRM Architecture
+ *              Refactorizado: Optimización de índices, hooks resilientes y
+ *              sincronización total con el motor de ingesta de Server Actions.
+ * @version 2.0 - Index Optimized & Production Hardened
  * @author Raz Podestá - MetaShark Tech
  */
 
-import { type CollectionConfig } from 'payload';
+import type { CollectionConfig, CollectionBeforeChangeHook, CollectionAfterChangeHook } from 'payload';
 import { multiTenantReadAccess, multiTenantWriteAccess } from './Access';
 
+/**
+ * APARATO: Subscribers (The CRM Hub)
+ */
 export const Subscribers: CollectionConfig = {
   slug: 'subscribers',
   admin: {
     useAsTitle: 'email',
     group: 'Management',
-    defaultColumns: ['email', 'status', 'engagementLevel', 'tenant'],
-    description: 'Bóveda de identidades captadas para marketing y fidelización.',
+    defaultColumns: ['email', 'status', 'engagementLevel', 'source', 'tenant'],
+    description: 'Gestão centralizada de leads e identidades para fidelização boutique.',
   },
   
   /**
    * REGLAS DE ACCESO SOBERANO
-   * LECTURA/ESCRITURA: Restringida por jerarquía de Tenant (Privacidad Total).
+   * @pilar VIII: Aislamiento Multi-Tenant.
    */
   access: {
     read: multiTenantReadAccess,
-    create: () => true, // Permite ingesta desde Server Actions públicas
+    // Permite la creación desde el formulario público de la web
+    create: () => true, 
     update: multiTenantWriteAccess,
     delete: multiTenantWriteAccess,
   },
 
+  /**
+   * GUARDIANES DE INTEGRIDAD (Hooks)
+   */
   hooks: {
     beforeChange: [
-      ({ req, data, operation }) => {
-        if (operation === 'create' && req.user) {
-          if (!data.tenant) data.tenant = req.user.tenant;
+      (({ req, data, operation }) => {
+        /**
+         * @fix: Lógica de herencia de propiedad.
+         * Si es una creación manual desde el Admin Panel, hereda el tenant del Admin.
+         * Si viene de la Server Action, respeta el tenant ya inyectado.
+         */
+        if (operation === 'create' && req.user && !data.tenant) {
+          data.tenant = req.user.tenant;
         }
         return data;
-      },
+      }) as CollectionBeforeChangeHook,
     ],
     afterChange: [
-      ({ doc, operation }) => {
+      (({ doc, operation }) => {
         if (operation === 'create') {
-          console.log(`[HEIMDALL][CRM] New Identity Linked: ${doc.email} | Origin: ${doc.source}`);
+          /** @pilar IV: Protocolo Heimdall - Telemetría CRM */
+          console.log(`[HEIMDALL][CRM] Identity Registered: ${doc.email} | Origin: ${doc.source}`);
         }
-      }
+      }) as CollectionAfterChangeHook
     ]
   },
 
@@ -62,6 +75,7 @@ export const Subscribers: CollectionConfig = {
                   name: 'email',
                   type: 'email',
                   required: true,
+                  unique: true, // Blindaje contra duplicados a nivel DB
                   index: true,
                   admin: { width: '60%' }
                 },
@@ -70,7 +84,11 @@ export const Subscribers: CollectionConfig = {
                   type: 'relationship',
                   relationTo: 'tenants',
                   required: true,
-                  admin: { width: '40%' }
+                  index: true,
+                  admin: { 
+                    width: '40%',
+                    description: 'Propriedade vinculada a este lead.'
+                  }
                 },
               ]
             },
@@ -81,10 +99,11 @@ export const Subscribers: CollectionConfig = {
                   name: 'status',
                   type: 'select',
                   defaultValue: 'active',
+                  index: true,
                   options: [
-                    { label: 'Activo', value: 'active' },
-                    { label: 'Darse de baja', value: 'unsubscribed' },
-                    { label: 'Rebotado', value: 'bounced' }
+                    { label: 'Ativo', value: 'active' },
+                    { label: 'Cancelado', value: 'unsubscribed' },
+                    { label: 'Inválido (Bounce)', value: 'bounced' }
                   ],
                   admin: { width: '50%' }
                 },
@@ -92,8 +111,9 @@ export const Subscribers: CollectionConfig = {
                   name: 'source',
                   type: 'text',
                   defaultValue: 'web-landing',
+                  index: true,
                   admin: { 
-                    description: 'Punto de entrada (ej: landing-hero, festival-popup)',
+                    description: 'Ponto de entrada (ej: hero-form, festival-takeover)',
                     width: '50%' 
                   }
                 }
@@ -102,7 +122,7 @@ export const Subscribers: CollectionConfig = {
           ]
         },
         {
-          label: 'Métricas de Comportamiento',
+          label: 'Engagement & Comportamiento',
           fields: [
             {
               type: 'row',
@@ -117,16 +137,16 @@ export const Subscribers: CollectionConfig = {
                   name: 'openRate',
                   type: 'number',
                   defaultValue: 0,
-                  admin: { readOnly: true, width: '33%', description: 'Porcentaje de apertura' }
+                  admin: { readOnly: true, width: '33%' }
                 },
                 {
                   name: 'engagementLevel',
                   type: 'select',
                   defaultValue: 'newbie',
                   options: [
-                    { label: 'Nuevo', value: 'newbie' },
-                    { label: 'Interesado', value: 'engaged' },
-                    { label: 'Fanático', value: 'loyalist' }
+                    { label: 'Novo Lead', value: 'newbie' },
+                    { label: 'Engajado', value: 'engaged' },
+                    { label: 'Fidelizado', value: 'loyalist' }
                   ],
                   admin: { width: '34%' }
                 }
@@ -135,25 +155,27 @@ export const Subscribers: CollectionConfig = {
             {
               name: 'lastEngagementDate',
               type: 'date',
-              admin: { readOnly: true, description: 'Última vez que abrió un correo' }
+              admin: { readOnly: true }
             }
           ]
         },
         {
-          label: 'Historial Técnico',
+          label: 'Datos Técnicos (Forensic)',
           fields: [
             {
               name: 'unsubscribedAt',
               type: 'date',
               admin: { 
                 condition: (data) => data.status === 'unsubscribed',
-                description: 'Fecha en la que solicitó el retiro de sus datos.'
+                description: 'Carimbo de tempo da solicitação de saída.'
               }
             },
             {
               name: 'metaData',
               type: 'json',
-              admin: { description: 'Payload técnico (I.P., UserAgent, Idioma del Navegador)' }
+              admin: { 
+                description: 'Payload de telemetria capturado pelo Protocolo Heimdall.' 
+              }
             }
           ]
         }

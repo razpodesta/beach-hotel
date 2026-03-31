@@ -1,9 +1,9 @@
 /**
  * @file packages/cms/core/src/payload.config.ts
  * @description Orquestador soberano de configuración para Payload CMS 3.0.
- *              Refactorizado: Integración del Clúster CRM (Subscribers), 
+ *              Refactorizado: Resolución de TS2353 (Admin Meta Config), 
  *              estabilización de infraestructura S3 y normalización relacional.
- * @version 30.0 - CRM Integrated & Multi-Tenant Sovereign
+ * @version 31.1 - Strict Metadata & S3 Production Standard
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -18,7 +18,7 @@
   if (isVercel || isBuild) {
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
     process.env.PGSSLMODE = 'no-verify';
-    console.log('[HEIMDALL][L0] Infrastructure SSL Bypass: ENGAGED');
+    console.log('[HEIMDALL][L0] Infrastructure Network Bypass: ENGAGED');
   }
 })();
 
@@ -34,14 +34,13 @@ import sharp from 'sharp';
 
 /** 
  * IMPORTACIONES DE COLECCIONES SOBERANAS (SSoT) 
- * @pilar IX: Modularización atómica.
  */
 import { Users } from './collections/Users';
 import { BlogPosts } from './collections/BlogPosts';
 import { Projects } from './collections/Projects';
 import { Media } from './collections/Media';
 import { Tenants } from './collections/Tenants';
-import { Subscribers } from './collections/Subscribers'; // <-- NUEVO CRM HUB
+import { Subscribers } from './collections/Subscribers';
 
 /** DETERMINACIÓN DE PERÍMETRO */
 const __filename = fileURLToPath(import.meta.url);
@@ -61,6 +60,15 @@ const S3_REGION = process.env.S3_REGION || 'sa-east-1';
 const IS_CLOUD_READY = Boolean(S3_ENDPOINT && S3_ACCESS_KEY_ID && S3_SECRET_ACCESS_KEY);
 
 /**
+ * TELEMETRÍA DE ARRANQUE (Heimdall Forensic Report)
+ */
+console.group('[HEIMDALL][INFRA] Sovereign Core Bootstrap');
+console.log(`[NETWORK] Target: ${SERVER_URL}`);
+console.log(`[STORAGE] S3 Sync: ${IS_CLOUD_READY ? 'ACTIVE' : 'LOCAL_ONLY'}`);
+console.log(`[DATABASE] Pooler Protocol: ${DATABASE_URL ? 'READY' : 'PENDING'}`);
+console.groupEnd();
+
+/**
  * CONSTRUCCIÓN DEL MOTOR CMS (Sovereign Architecture)
  */
 export default buildConfig({
@@ -76,20 +84,25 @@ export default buildConfig({
   admin: {
     user: Users.slug,
     importMap: { baseDir: BASE_CONFIG_DIR },
-    meta: { titleSuffix: '- MetaShark Sovereign CMS' }
+    meta: { 
+      /** 
+       * @fix TS2353: Eliminada propiedad 'ogImage' por incompatibilidad de tipo.
+       * Mantenemos la identidad visual mediante el sufijo de título.
+       */
+      titleSuffix: '- MetaShark Sovereign CMS',
+    }
   },
 
   /** 
-   * INVENTARIO DE COLECCIONES
-   * El orden determina la prioridad en el Dashboard administrativo.
+   * INVENTARIO DE COLECCIONES SOBERANAS
    */
   collections: [
     Users, 
     Tenants, 
-    Subscribers, // Gestión de Leads
-    Media,       // Gestión de Assets
-    BlogPosts,   // Gestión Editorial
-    Projects     // Gestión de Activos Digitales
+    Subscribers, 
+    Media, 
+    BlogPosts, 
+    Projects
   ],
   
   editor: lexicalEditor({}),
@@ -101,7 +114,6 @@ export default buildConfig({
 
   /** 
    * CAPA DE PERSISTENCIA (Supabase Transaction Pooler)
-   * Sincronizado para operar sobre el puerto 6543.
    */
   db: postgresAdapter({
     pool: {
@@ -110,11 +122,11 @@ export default buildConfig({
     },
   }),
 
-  /** @pilar IX: Resiliencia Nativa */
+  /** @pilar IX: Sharp para procesamiento de imágenes de alta fidelidade */
   sharp: (sharp as unknown) as SharpDependency,
 
   /**
-   * MOTOR S3: Supabase Cloud Storage
+   * MOTOR S3: Supabase Cloud Storage Plugin
    */
   plugins: [
     ...(IS_CLOUD_READY

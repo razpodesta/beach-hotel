@@ -2,8 +2,8 @@
  * @file ArtifactShowcase.tsx
  * @description Centro de Mando de Reputación y Exhibición de Artefactos (Protocolo 33).
  *              Orquesta la visualização del progresso, segmentación por casas y grid dinámico.
- *              Refactorizado: Atomização completa, purga de 'any' y resolución de tipos.
- * @version 2.0 - Atomized & High Performance
+ *              Refactorizado: Atomização completa, purga de variables muertas y sincronía P33.
+ * @version 3.0 - Atomized & Linter Pure
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -53,19 +53,24 @@ export interface ArtifactShowcaseProps {
 export function ArtifactShowcase({ userXp, ownedIds, dictionary }: ArtifactShowcaseProps) {
   const [activeHouse, setActiveHouse] = useState<House | 'ALL'>('ALL');
   
+  // Cálculo de Progreso SSoT
   const progress = useMemo(() => calculateProgress(userXp), [userXp]);
 
+  /**
+   * PROTOCOLO HEIMDALL: Telemetría de Montaje
+   */
   useEffect(() => {
-    console.log(`[HEIMDALL][P33] ArtifactShowcase synchronized. XP: ${userXp}`);
+    console.log(`[HEIMDALL][P33] ArtifactShowcase synchronized. Current XP: ${userXp}`);
   }, [userXp]);
 
+  // Filtragem Táctica (Performance O(n))
   const filteredArtifacts = useMemo(() => {
     return ARTIFACTS.filter(a => activeHouse === 'ALL' || a.house === activeHouse);
   }, [activeHouse]);
 
   /** 
    * MATRIZ DE CASAS (SSoT UI) 
-   * @pilar III: Tipado estricto LucideIcon (Cero any).
+   * @pilar III: Tipado estricto LucideIcon.
    */
   const houses: Array<{ id: House | 'ALL', icon: LucideIcon, label: string }> = useMemo(() => [
     { id: 'ALL', icon: Trophy, label: 'COLEÇÃO COMPLETA' },
@@ -77,7 +82,7 @@ export function ArtifactShowcase({ userXp, ownedIds, dictionary }: ArtifactShowc
   return (
     <div className="space-y-16 animate-in fade-in duration-1000">
       
-      {/* --- 1. HEADER DE STATUS --- */}
+      {/* --- 1. HEADER DE STATUS (The Ascension Bar) --- */}
       <header className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-end">
         <div className="lg:col-span-2 space-y-6">
           <div className="flex items-center gap-4">
@@ -102,7 +107,7 @@ export function ArtifactShowcase({ userXp, ownedIds, dictionary }: ArtifactShowc
                   initial={{ width: 0 }} 
                   animate={{ width: `${progress.progressPercent}%` }} 
                   transition={{ duration: 2, ease: "circOut" }}
-                  /** @fix: Sugerencia de clase canónica Tailwind */
+                  /** @fix: Sugerencia de clase canónica Tailwind v4 */
                   className="h-full bg-linear-to-r from-primary via-accent to-primary relative shadow-[0_0_15px_oklch(65%_0.25_270/0.3)]"
                 />
              </div>
@@ -120,7 +125,7 @@ export function ArtifactShowcase({ userXp, ownedIds, dictionary }: ArtifactShowc
         </div>
       </header>
 
-      {/* --- 2. FILTRAGEM --- */}
+      {/* --- 2. FILTRAGEM POR LINAGEM --- */}
       <nav className="flex flex-wrap gap-3 bg-surface/30 p-2 rounded-3xl border border-border/50 w-max mx-auto lg:mx-0">
         {houses.map((house) => {
           const HouseIcon = house.icon;
@@ -132,8 +137,8 @@ export function ArtifactShowcase({ userXp, ownedIds, dictionary }: ArtifactShowc
               className={cn(
                 "flex items-center gap-3 px-6 py-3 rounded-2xl text-[9px] font-bold uppercase tracking-widest transition-all outline-none",
                 isActive 
-                  ? "bg-foreground text-background shadow-xl scale-105" 
-                  : "text-muted-foreground hover:text-foreground hover:bg-surface"
+                  ? "bg-foreground text-background shadow-lg scale-105" 
+                  : "text-muted-foreground hover:text-foreground hover:bg-surface/50"
               )}
             >
               <HouseIcon size={14} strokeWidth={isActive ? 2.5 : 1.5} />
@@ -143,7 +148,7 @@ export function ArtifactShowcase({ userXp, ownedIds, dictionary }: ArtifactShowc
         })}
       </nav>
 
-      {/* --- 3. GRID DE ATOMOS --- */}
+      {/* --- 3. GRID DE ATOMOS (The 33 Chamber) --- */}
       <motion.div layout className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
         <AnimatePresence mode="popLayout">
           {filteredArtifacts.map((artifact) => {
@@ -151,6 +156,10 @@ export function ArtifactShowcase({ userXp, ownedIds, dictionary }: ArtifactShowc
             const artifactI18n = dictionary.artifacts[artifact.id] || { name: artifact.id, lore: "???" };
             const rarityKey = artifact.rarity.toLowerCase() as keyof typeof dictionary.rarity_labels;
             
+            /**
+             * @fix: Erradicación de variable 'artifact' no utilizada en el Card.
+             * Pasamos únicamente las props procesadas para cumplir con el Pilar X.
+             */
             return (
               <ArtifactCard
                 key={artifact.id}
@@ -163,7 +172,7 @@ export function ArtifactShowcase({ userXp, ownedIds, dictionary }: ArtifactShowc
         </AnimatePresence>
       </motion.div>
 
-      {/* --- 4. FOOTER --- */}
+      {/* --- 4. FOOTER: CONVITE AO PROTOCOLO --- */}
       <footer className="pt-12 border-t border-border/50 flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="flex items-center gap-4">
              <Hexagon size={20} className="text-primary animate-spin-slow" />

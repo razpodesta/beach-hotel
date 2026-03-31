@@ -1,9 +1,9 @@
 /**
  * @file apps/portfolio-web/middleware.ts
  * @description Orquestador Soberano de Tráfico en el Edge (Vercel).
- *              Implementa orquestación i18n proactiva, blindaje RBAC y 
- *              protocolo de exclusión de infraestructura de alto rendimiento.
- * @version 15.0 - Next-Gen Edge & Forensic Telemetry
+ *              Refactorizado: Detección de locale optimizada (O(1)), normalización
+ *              de rumbos SEO y blindaje perimetral RBAC.
+ * @version 16.0 - Edge Performance Optimized & SEO Guarded
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -11,106 +11,95 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 /**
- * IMPORTACIONES DE CONTRATO (Sincronización Monorepo)
- * @pilar V: Adherencia arquitectónica mediante rutas relativas internas.
+ * IMPORTACIONES DE CONTRATO
+ * @pilar V: Adherencia arquitectónica.
  */
 import { i18n, isValidLocale } from './src/config/i18n.config';
 import { routeGuard } from './src/lib/route-guard';
 
 /**
- * MATRIZ DE EXCLUSIÓN DE INFRAESTRUCTRURA (SSoT)
- * @pilar X: Rendimiento de Élite. Estas rutas nunca activarán la lógica i18n.
+ * MATRIZ DE EXCLUSIÓN (SSoT)
+ * @description Rutas que no requieren internacionalización ni lógica de negocio.
  */
-const INFRA_PREFIXES = [
-  '/_next',
-  '/_vercel',
-  '/api',
-  '/admin',
-  '/_payload',
-  '/static',
-  '/images',
-  '/favicon.ico',
-  '/robots.txt',
-  '/sitemap.xml',
+const PUBLIC_ASSET_PREFIXES = [
+  '/_next', '/api', '/admin', '/_payload', '/static', 
+  '/images', '/video', '/audio', '/fonts', '/icons'
 ];
 
 /**
  * APARATO PRINCIPAL: middleware
- * @description Controla el ciclo de vida de la petición en el perímetro de Vercel.
+ * @description Punto de control único para la red soberana MetaShark.
  */
 export async function middleware(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
 
-  /**
-   * 1. PROTOCOLO DE EXCLUSIÓN RÁPIDA (Early Exit)
-   */
-  const isInfra = INFRA_PREFIXES.some((path) => pathname.startsWith(path));
-  if (isInfra) {
+  // 1. PROTOCOLO DE EXCLUSIÓN RÁPIDA (Early Exit)
+  // @pilar X: Performance - Evita procesar lógica pesada para activos binarios.
+  if (
+    PUBLIC_ASSET_PREFIXES.some((path) => pathname.startsWith(path)) ||
+    pathname.includes('.') // Archivos con extensión (favicon.ico, sitemap.xml)
+  ) {
     return NextResponse.next();
   }
 
-  /**
-   * 2. AUDITORÍA DE LOCALIZACIÓN (i18n Orchestration)
-   * Verifica si el prefijo de idioma está presente en la ruta.
-   */
-  const pathnameIsMissingLocale = i18n.locales.every(
-    (locale) => !pathname.startsWith(`/${locale}/`) && pathname !== `/${locale}`
-  );
+  // 2. AUDITORÍA DE LOCALIZACIÓN (O(1) Detection)
+  const segments = pathname.split('/');
+  const firstSegment = segments[1]; // El segmento tras el primer slash
+  
+  const hasValidLocale = isValidLocale(firstSegment);
 
-  if (pathnameIsMissingLocale) {
+  if (!hasValidLocale) {
     const locale = i18n.defaultLocale;
     
-    // Protocolo Heimdall: Trazabilidad de redirección i18n
-    console.log(`[HEIMDALL][EDGE] I18N_REDIRECT: ${pathname} -> /${locale}${pathname}`);
+    /** @pilar IV: Protocolo Heimdall - Trazabilidad de Redirección */
+    console.info(`[HEIMDALL][EDGE] I18N_HANDSHAKE: Missing locale. Routing to ${locale}`);
 
     /**
-     * @fix Next.js 15: Normalización de rumbos. 
-     * Preservamos parámetros de búsqueda (UTM, Session IDs).
+     * @fix: Normalización de rumbos.
+     * Preserva la ruta original y los parámetros de búsqueda (UTM/Query).
      */
-    return NextResponse.redirect(
-      new URL(`/${locale}${pathname}${search}`, request.url)
+    const redirectUrl = new URL(
+      `/${locale}${pathname === '/' ? '' : pathname}${search}`, 
+      request.url
     );
+    
+    return NextResponse.redirect(redirectUrl);
   }
 
-  /**
-   * 3. SEGURIDAD PERIMETRAL (RBAC Guard)
-   * Delegamos la inteligencia de acceso al aparato especializado.
-   */
-  const currentLocale = pathname.split('/')[1];
-  const localeInPath = isValidLocale(currentLocale) ? currentLocale : i18n.defaultLocale;
-
-  // El routeGuard realiza el handshake asíncrono con las cookies de sesión
+  // 3. SEGURIDAD PERIMETRAL (RBAC Gating)
+  // El guardia resuelve si el usuario tiene nivel para el rumbo solicitado.
+  const localeInPath = firstSegment;
   const guardResponse = await routeGuard(request, localeInPath);
   
   if (guardResponse) {
-    // Si el guardia retorna una respuesta, abortamos y aplicamos su decisión (Redirect/401)
+    // Si el guardia emite una decisión (Redirect), la ejecutamos de inmediato.
     return guardResponse;
   }
 
-  /**
-   * 4. FINALIZACIÓN Y HEADER DE RASTREO
-   * Inyectamos cabeceras de infraestructura para depuración en producción.
-   */
+  // 4. FINALIZACIÓN Y TELEMETRÍA DE RESPUESTA
   const response = NextResponse.next();
-  response.headers.set('X-MetaShark-Edge', 'Orchestrated');
+  
+  /**
+   * @description Inyectamos metadatos de infraestructura para auditoría en vivo.
+   * X-MetaShark-Edge: Confirma que la petición pasó por el orquestador.
+   * X-Locale-Active: Sincronía del nodo lingüístico.
+   */
+  response.headers.set('X-MetaShark-Edge', 'Orchestrated_v16');
   response.headers.set('X-Locale-Active', localeInPath);
-
+  
   return response;
 }
 
 /**
  * CONFIGURACIÓN DE SELECTORES (Edge Matcher)
- * @description Filtra el tráfico antes de ejecutar el JS para maximizar performance.
- * Se excluyen extensiones estáticas comunes.
+ * @description Filtra el tráfico a nivel de kernel de Vercel para maximizar el throughput.
  */
 export const config = {
   matcher: [
-    /*
-     * Excluir archivos estáticos:
-     * - .svg, .png, .jpg, .jpeg, .gif, .webp (Media)
-     * - .css, .js (Assets)
-     * - favicon.ico, robots.txt (Metadata)
+    /**
+     * Excluimos explícitamente rutas de sistema para que el Middleware
+     * no consuma unidades de ejecución (Edge Function execution units) en vano.
      */
-    '/((?!api|_next/static|_next/image|images|static|favicon.ico|robots.txt|sitemap.xml|.*\\..*).*)',
+    '/((?!api|_next/static|_next/image|images|video|audio|fonts|icons|favicon.ico|robots.txt|sitemap.xml).*)',
   ],
 };
