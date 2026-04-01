@@ -1,47 +1,59 @@
 /**
  * @file apps/portfolio-web/src/app/layout.tsx
  * @description Único Punto de Entrada al DOM (The Master Shell).
- *              Refactorizado: Centralización de tipografía híbrida (Google + Local),
- *              erradicación de errores de decodificación de fuentes y
- *              optimización de renderizado para Next.js 15.
- * @version 4.0 - Font Orchestrator Sync & OTS Error Fix
+ *              Refactorizado: Inyección dinámica de idioma (SSoT),
+ *              erradicación de Hydration Mismatches y blindaje PWA.
+ * @version 5.0 - Dynamic Localization & Hydration Hardening
  * @author Raz Podestá - MetaShark Tech
  */
 
 import React from 'react';
-import { fontVariables } from '../lib/fonts';
-import { cn } from '../lib/utils/cn';
-import './global.css';
+import type { Viewport } from 'next';
 
 /**
- * @interface RootLayoutProps
+ * IMPORTACIONES DE INFRAESTRUCTRURA
  */
-interface RootLayoutProps {
-  children: React.ReactNode;
-}
+import { i18n } from '../config/i18n.config';
+import { fontVariables } from '../lib/fonts';
+import { cn } from '../lib/utils/cn';
+import '../global.css';
+
+/**
+ * CONFIGURACIÓN DE VIEWPORT
+ */
+export const viewport: Viewport = {
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#fcfcfc' },
+    { media: '(prefers-color-scheme: dark)', color: '#080808' }
+  ],
+  width: 'device-width',
+  initialScale: 1,
+};
 
 /**
  * APARATO: RootLayout
- * @description Este es el ÚNICO lugar del ecosistema donde residen las etiquetas <html> y <body>.
- *              Garantiza una base tipográfica y estética inmutable para toda la aplicación.
+ * @description Este layout maneja la raíz absoluta. Al no tener el segmento [lang],
+ *              se comporta como un contenedor de infraestructura para toda la App.
  */
-export default function RootLayout({ children }: RootLayoutProps) {
+export default async function RootLayout({ 
+  children 
+}: { 
+  children: React.ReactNode;
+}) {
+  /**
+   * @pilar VI: i18n Nativa.
+   * Usamos el idioma por defecto definido en el Códice.
+   */
+  const lang = i18n.defaultLocale;
+
   return (
-    /**
-     * @pilar VIII: Resiliencia de Hidratación.
-     * 'suppressHydrationWarning' es vital para que 'next-themes' inyecte 
-     * el atributo 'data-theme' sin generar errores de discrepancia.
-     */
-    <html lang="pt-BR" suppressHydrationWarning>
+    <html lang={lang} suppressHydrationWarning className="scroll-smooth">
       <head>
-        {/* 
-            Precarga de recursos críticos. 
-            El orquestador de fuentes ya gestiona el preloading de Google Fonts.
-        */}
+        <link rel="apple-touch-icon" href="/images/hotel/icon-192x192.png" />
       </head>
       <body
         className={cn(
-          fontVariables, // Inyección de Sora (Impacto), Inter (Claridad) y Dicaten (Marca)
+          fontVariables,
           "font-sans bg-background text-foreground antialiased selection:bg-primary/30",
           "transition-colors duration-1000 min-h-screen"
         )}
