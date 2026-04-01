@@ -3,7 +3,7 @@
   "version": 2,
   "framework": "nextjs",
   "buildCommand": "pnpm run build",
-  "outputDirectory": "dist/apps/portfolio-web/.next",
+  "outputDirectory": "dist/apps/portfolio-web",
   "cleanUrls": true,
   "trailingSlash": false,
   "regions": ["gru1"],
