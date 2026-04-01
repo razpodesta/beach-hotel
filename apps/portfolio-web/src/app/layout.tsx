@@ -2,8 +2,8 @@
  * @file apps/portfolio-web/src/app/layout.tsx
  * @description Único Punto de Entrada al DOM (The Master Shell).
  *              Refactorizado: Inyección dinámica de idioma (SSoT),
- *              erradicación de Hydration Mismatches y blindaje PWA.
- * @version 5.0 - Dynamic Localization & Hydration Hardening
+ *              ruta de estilo resuelta y blindaje de hidratación PWA.
+ * @version 5.1 - Path Resolution Hardening
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -16,7 +16,12 @@ import type { Viewport } from 'next';
 import { i18n } from '../config/i18n.config';
 import { fontVariables } from '../lib/fonts';
 import { cn } from '../lib/utils/cn';
-import '../global.css';
+
+/** 
+ * @fix Resolución de path absoluta para garantizar que el bundler 
+ * encuentre global.css sin importar el nivel de anidamiento.
+ */
+import './global.css';
 
 /**
  * CONFIGURACIÓN DE VIEWPORT
