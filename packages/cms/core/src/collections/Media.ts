@@ -1,25 +1,17 @@
 /**
  * @file packages/cms/core/src/collections/Media.ts
  * @description Bóveda Soberana de Activos Multimedia (The Sanctuary Vault).
- *              Refactorizado: Unificación semántica del campo 'tenant' para 
- *              erradicar el Schema Drift y asegurar integridad referencial.
- * @version 8.0 - Sovereign Tenant Naming & Postgres Optimization
- * @author Raz Podestá - MetaShark Tech
+ *              Refactorizado: Aislamiento total Multi-Tenant, protección de 
+ *              lectura por perímetro y sincronización de arquitectura S3.
+ * @version 9.0 - Sovereign Tenant Isolation & Forensic Audit
+ * @author Staff Engineer - MetaShark Tech
  */
 
-import { type CollectionConfig } from 'payload';
-
-/**
- * IMPORTACIONES DE PERÍMETRO
- * @pilar V: Adherencia arquitectónica.
- */
-import { multiTenantWriteAccess } from './Access';
+import { type CollectionConfig, type CollectionBeforeChangeHook } from 'payload';
+import { multiTenantReadAccess, multiTenantWriteAccess } from './Access';
 
 /**
  * @interface PayloadMediaDoc
- * @description Contrato estático estructural para los documentos multimedia.
- *              Nivelado: 'tenantId' -> 'tenant' para sincronía con la base de datos.
- * @pilar III: Seguridad de Tipos Absoluta.
  */
 export interface PayloadMediaDoc {
   id: string;
@@ -30,10 +22,6 @@ export interface PayloadMediaDoc {
   width?: number | null;
   height?: number | null;
   filename?: string | null;
-  /** 
-   * Relación con la Propiedad (Tenant). 
-   * Tipado flexible para soportar IDs (string) u objetos poblados.
-   */
   tenant?: string | Record<string, unknown> | null; 
   caption?: string | null;
 }
@@ -45,26 +33,20 @@ export const Media: CollectionConfig = {
     group: 'Infrastructure',
     description: 'Gestão centralizada de ativos visuais de alta fidelidade.',
     defaultColumns: ['alt', 'filename', 'mimeType', 'tenant'],
-    /** @pilar XII: MEA/UX - Facilita la identificación visual en el listado */
     preview: (doc) => doc?.url as string,
   },
   
   /**
    * REGLAS DE ACCESO (Sovereign Security)
-   * LECTURA: Pública para visualización en el Hotel/Festival.
-   * ESCRITURA: Restringida por jerarquía de Tenant.
+   * Blindaje contra el acceso cross-tenant de activos.
    */
   access: {
-    read: () => true,
+    read: multiTenantReadAccess,
     create: ({ req: { user } }) => !!user,
     update: multiTenantWriteAccess,
     delete: multiTenantWriteAccess,
   },
 
-  /**
-   * MOTOR DE CARGA (Cloud Optimized)
-   * @description Configurado para interactuar con el plugin S3 de Supabase.
-   */
   upload: {
     staticDir: 'media',
     imageSizes: [
@@ -78,31 +60,24 @@ export const Media: CollectionConfig = {
     focalPoint: true,
   },
 
-  /**
-   * GUARDIANES DE INTEGRIDAD (Hooks de Infraestructura)
-   */
   hooks: {
     beforeChange: [
-      ({ req, data, operation }) => {
+      (({ req, data, operation }) => {
+        // Garantía de herencia de tenant
         if (operation === 'create' && req.user) {
-          /**
-           * @fix: Sincronización con el nuevo esquema de identidad.
-           * Aseguramos que el activo herede la propiedad del usuario creador.
-           */
-          if (!data.tenant) data.tenant = req.user.tenant;
+          const userTenant = typeof req.user.tenant === 'object' && req.user.tenant !== null 
+            ? req.user.tenant.id 
+            : req.user.tenant;
+          
+          if (!data.tenant) data.tenant = userTenant;
         }
         return data;
-      },
+      }) as CollectionBeforeChangeHook,
     ],
     afterChange: [
       ({ doc, operation }) => {
         if (operation === 'create') {
-          /** @pilar IV: Protocolo Heimdall - Telemetría de Ingesta S3 */
-          console.log(`[HEIMDALL][MEDIA-VAULT] Handshake Successful:`);
-          console.log(`   - Filename: ${doc.filename}`);
-          console.log(`   - ID: ${doc.id}`);
-          console.log(`   - Origin: ${doc.tenant}`);
-          console.log(`   - S3_Status: DISTRIBUTED_REPLICA_ACTIVE`);
+          console.log(`[HEIMDALL][VAULT] Handshake: ${doc.filename} | Tenant: ${doc.tenant}`);
         }
       }
     ]
@@ -110,16 +85,6 @@ export const Media: CollectionConfig = {
 
   fields: [
     {
-      name: 'id',
-      type: 'text',
-      admin: { readOnly: true, position: 'sidebar' }
-    },
-    {
-      /**
-       * @property tenant
-       * @fix: Renombrado de 'tenantId' a 'tenant' para evitar la columna 'tenant_id_id'.
-       * El adaptador de Postgres generará automáticamente 'tenant_id'.
-       */
       name: 'tenant',
       type: 'relationship',
       relationTo: 'tenants',
@@ -127,7 +92,7 @@ export const Media: CollectionConfig = {
       index: true,
       admin: { 
         position: 'sidebar', 
-        description: 'Propriedade vinculada a este ativo.' 
+        description: 'Perímetro soberano de propiedad del activo.' 
       },
     },
     {
@@ -136,20 +101,18 @@ export const Media: CollectionConfig = {
       required: true,
       index: true,
       admin: { 
-        description: 'Crítico para SEO E-E-A-T e Acessibilidade (A11Y).',
-        placeholder: 'Ex: Suíte Master com vista panorâmica ao mar'
+        description: 'Crítico para SEO E-E-A-T.',
+        placeholder: 'Ej: Suíte Master vista mar'
       },
       validate: (val: string | null | undefined) => {
         if (val && val.length >= 8) return true;
-        return 'O texto alternativo deve ser detalhado para SEO (mín. 8 caracteres).';
+        return 'El texto alternativo es obligatorio para SEO (mín. 8 caracteres).';
       }
     },
     {
       name: 'caption',
       type: 'textarea',
-      admin: { 
-        description: 'Legenda opcional para contextos editoriais e Journal.' 
-      },
+      admin: { description: 'Información editorial para el Journal.' },
     },
   ],
 };

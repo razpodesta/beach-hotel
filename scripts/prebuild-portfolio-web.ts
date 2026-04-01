@@ -1,193 +1,95 @@
 /**
  * @file scripts/prebuild-portfolio-web.ts
- * @description MACS Engine (Master Architecture of Content Sovereignty).
- *              Orquestador soberano de ensamblaje, validación y auditoría i18n.
- *              Refactorizado: Arquitectura de clase, validación atómica por feature
- *              y reporte forense de integridad total.
- * @version 20.0 - MACS Engine & Forensic Stability
- * @author Raz Podestá - MetaShark Tech
+ * @description MACS Engine v21.0: Orquestador soberano de i18n.
+ *              Implementa caché de estado para evitar duplicidad de ejecución
+ *              y validación robusta ante corrupción de datos.
+ * @version 21.0 - Idempotent & Deterministic
+ * @author Staff Engineer - MetaShark Tech
  */
 
-import { mkdir, readdir, readFile, writeFile, access } from 'node:fs/promises';
+import { mkdir, readdir, readFile, writeFile, access, stat } from 'node:fs/promises';
 import { join, parse } from 'node:path';
 import { constants } from 'node:fs';
-import { ZodError, type ZodIssue } from 'zod';
-
-/**
- * IMPORTACIONES DE CONTRATO (Soberanía de Tipos)
- * @pilar III: Seguridad de Tipos Absoluta.
- */
+import { ZodError } from 'zod';
 import { dictionarySchema } from '../apps/portfolio-web/src/lib/schemas/dictionary.schema.js';
 
-// --- CONFIGURACIÓN DE TELEMETRÍA (Protocolo Heimdall) ---
 const C = {
   reset: '\x1b[0m', bold: '\x1b[1m', green: '\x1b[32m', red: '\x1b[31m',
   cyan: '\x1b[36m', yellow: '\x1b[33m', magenta: '\x1b[35m', gray: '\x1b[90m',
-  blue: '\x1b[34m', white: '\x1b[37m',
 };
 
 const ROOT = process.cwd();
-const APP_SRC = join(ROOT, 'apps', 'portfolio-web', 'src');
 const PATHS = {
-  MESSAGES: join(APP_SRC, 'messages'),
-  DICTIONARIES: join(APP_SRC, 'dictionaries'),
+  MESSAGES: join(ROOT, 'apps', 'portfolio-web', 'src', 'messages'),
+  DICTIONARIES: join(ROOT, 'apps', 'portfolio-web', 'src', 'dictionaries'),
   REPORTS: join(ROOT, 'reports', 'dictionaries'),
 };
 
-/**
- * @interface LocaleAudit
- * @description Contrato para la trazabilidad individual por nodo lingüístico.
- */
-interface LocaleAudit {
-  locale: string;
-  status: 'SUCCESS' | 'FAILED';
-  featuresCount: number;
-  outputSize: string;
-  assembledFeatures: string[];
-}
-
-/**
- * @class MACSEngine
- * @description Motor de ingeniería de contenido con validación de frontera.
- */
 class MACSEngine {
-  private startTime: number = Date.now();
-  private audits: LocaleAudit[] = [];
-  private issues: string[] = [];
-
-  /**
-   * @description Inicializa los perímetros de infraestructura física.
-   */
-  private async ensurePerimeter(): Promise<void> {
-    const directories = [PATHS.DICTIONARIES, PATHS.REPORTS];
-    for (const dir of directories) {
-      try {
-        await access(dir, constants.W_OK);
-      } catch {
-        await mkdir(dir, { recursive: true });
+  private async shouldRebuild(localePath: string, outputPath: string): Promise<boolean> {
+    try {
+      const outputStat = await stat(outputPath);
+      const messagesDir = await readdir(localePath);
+      for (const file of messagesDir) {
+        const m = await stat(join(localePath, file));
+        if (m.mtime > outputStat.mtime) return true;
       }
-    }
+      return false;
+    } catch { return true; }
   }
 
-  /**
-   * @description Realiza el ensamblaje atómico de un idioma.
-   */
-  private async processLocale(locale: string): Promise<void> {
-    console.log(`${C.blue}${C.bold}▶ PROCESANDO NODO: ${locale.toUpperCase()}${C.reset}`);
-    
+  private async processLocale(locale: string): Promise<boolean> {
     const localePath = join(PATHS.MESSAGES, locale);
-    const files = (await readdir(localePath)).filter(f => f.endsWith('.json'));
+    const outputPath = join(PATHS.DICTIONARIES, `${locale}.json`);
     
-    const accumulator: Record<string, unknown> = {};
-    const features: string[] = [];
+    if (!(await this.shouldRebuild(localePath, outputPath))) {
+      console.log(`   ${C.gray}○ NODO ${locale.toUpperCase()}: CACHE_HIT (Saltando)${C.reset}`);
+      return true;
+    }
 
-    // 1. Ingesta de Fragmentos (MACS Protocol)
+    const files = (await readdir(localePath)).filter(f => f.endsWith('.json'));
+    const accumulator: Record<string, unknown> = {};
+
     for (const file of files) {
       const featureName = parse(file).name;
       const content = await readFile(join(localePath, file), 'utf-8');
-      accumulator[featureName] = JSON.parse(content);
-      features.push(featureName);
+      try {
+        accumulator[featureName] = JSON.parse(content);
+      } catch (e) {
+        throw new Error(`JSON_CORRUPT: ${file}`);
+      }
     }
 
-    // 2. Auditoría contra Contrato Soberano
     try {
-      console.log(`   ${C.yellow}🔍 Validando contra Master Schema...${C.reset}`);
       const validated = dictionarySchema.parse(accumulator);
-      
-      // 3. Persistencia de Artefacto Nivelado
-      const outputPath = join(PATHS.DICTIONARIES, `${locale}.json`);
-      const outputBuffer = Buffer.from(JSON.stringify(validated, null, 2));
-      
-      await writeFile(outputPath, outputBuffer);
-      
-      const sizeKB = (outputBuffer.length / 1024).toFixed(2);
-      console.log(`   ${C.green}✓ ARTEFACTO NIVELADO: ${locale}.json (${sizeKB} KB)${C.reset}\n`);
-
-      this.audits.push({
-        locale,
-        status: 'SUCCESS',
-        featuresCount: files.length,
-        outputSize: `${sizeKB} KB`,
-        assembledFeatures: features
-      });
-
+      await writeFile(outputPath, JSON.stringify(validated, null, 2));
+      console.log(`   ${C.green}✓ NODO ${locale.toUpperCase()}: SINCRONIZADO${C.reset}`);
+      return true;
     } catch (err: unknown) {
-      this.handleValidationError(locale, err);
+      if (err instanceof ZodError) {
+        console.error(`   ${C.red}💥 VIOLACIÓN CONTRATO [${locale}]: ${err.issues.map(i => i.path.join('.')).join(', ')}${C.reset}`);
+      }
+      return false;
     }
   }
 
-  /**
-   * @description Gestiona y categoriza errores de validación de frontera.
-   */
-  private handleValidationError(locale: string, error: unknown): void {
-    let message = 'Unknown Corruption';
-    
-    if (error instanceof ZodError) {
-      message = error.issues
-        .map((i: ZodIssue) => `[${i.path.join(' -> ')}] ${i.message}`)
-        .join(' | ');
-    } else if (error instanceof Error) {
-      message = error.message;
-    }
-
-    console.error(`   ${C.red}${C.bold}💥 VIOLACIÓN DE CONTRATO EN [${locale}]:${C.reset}`);
-    console.error(`      ${C.red}${message}${C.reset}\n`);
-
-    this.issues.push(`${locale.toUpperCase()}: ${message}`);
-    this.audits.push({
-      locale,
-      status: 'FAILED',
-      featuresCount: 0,
-      outputSize: '0 KB',
-      assembledFeatures: []
-    });
-  }
-
-  /**
-   * @description Ejecuta el ciclo de vida completo del prebuild.
-   */
   public async execute(): Promise<void> {
-    console.log(`\n${C.magenta}${C.bold}🛡️ [HEIMDALL] INICIANDO MACS ENGINE v20.0${C.reset}`);
-    console.log(`${C.gray}Source: ${PATHS.MESSAGES}${C.reset}\n`);
+    console.log(`${C.magenta}${C.bold}🛡️ [HEIMDALL] MACS ENGINE v21.0${C.reset}`);
+    await mkdir(PATHS.DICTIONARIES, { recursive: true });
+    await mkdir(PATHS.REPORTS, { recursive: true });
 
-    try {
-      await this.ensurePerimeter();
-      
-      const locales = (await readdir(PATHS.MESSAGES)).filter(d => !d.startsWith('.'));
-      
-      for (const locale of locales) {
-        await this.processLocale(locale);
-      }
+    const locales = (await readdir(PATHS.MESSAGES)).filter(d => !d.startsWith('.'));
+    let hasFailed = false;
 
-      const performance = `${((Date.now() - this.startTime) / 1000).toFixed(2)}s`;
-      
-      // Emisión de Reporte Forense Final
-      await writeFile(
-        join(PATHS.REPORTS, 'prematch-report.json'),
-        JSON.stringify({
-          timestamp: new Date().toISOString(),
-          globalStatus: this.issues.length === 0 ? 'SUCCESS' : 'FAILED',
-          performance,
-          audits: this.audits,
-          issues: this.issues
-        }, null, 2)
-      );
-
-      if (this.issues.length > 0) {
-        console.log(`${C.red}${C.bold}🚨 BUILD ABORTADO: Ecosistema inconsistente.${C.reset}`);
-        process.exit(1);
-      }
-
-      console.log(`${C.green}${C.bold}✨ ECOSISTEMA 100% NIVELADO (${performance})${C.reset}\n`);
-      process.exit(0);
-
-    } catch (fatal: unknown) {
-      const msg = fatal instanceof Error ? fatal.message : 'Engine Crash';
-      console.error(`\n${C.red}${C.bold}💥 FALLO CATASTRÓFICO:${C.reset} ${msg}`);
-      process.exit(1);
+    for (const locale of locales) {
+      const success = await this.processLocale(locale);
+      if (!success) hasFailed = true;
     }
+
+    if (hasFailed) process.exit(1);
+    console.log(`${C.green}${C.bold}✨ ECOSISTEMA 100% NIVELADO${C.reset}\n`);
+    process.exit(0);
   }
 }
 
-// Inicialización del motor
 new MACSEngine().execute();

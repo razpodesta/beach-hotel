@@ -1,27 +1,20 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    /* 
-       PILAR V: NIVELACIÓN DE RESOLUCIÓN
-       Mantenemos el baseUrl en la raíz para que los 'paths' del base
-       mapeen correctamente a las carpetas físicas de /packages
-       sin necesidad de usar Project References locales.
-    */
     "baseUrl": "../..",
     
     /* 
        PILAR V: ADHERENCIA AL GRAFO SOBERANO
-       Mantenemos 'composite' para la integración con la raíz, 
-       pero sin referencias internas para evitar bloqueos de emisión.
+       'composite' requiere 'incremental' activo en TS.
     */
     "composite": true,
+    "incremental": true,
+    "tsBuildInfoFile": "../../dist/apps/portfolio-web/tsconfig.tsbuildinfo",
     
     /* 
        PILAR XIII: ALINEACIÓN CON EL MOTOR NEXT.JS
-       Next.js 15 requiere estrictamente noEmit: true.
     */
     "noEmit": true,
-    "incremental": true,
 
     /* CONFIGURACIÓN NEXT.JS 15 + REACT 19 */
     "target": "es2022",
@@ -38,19 +31,10 @@
     ]
   },
   "include": [
-    /* 
-       CORRECCIÓN CRÍTICA: Rutas locales sin el prefijo de la carpeta app.
-       TypeScript busca estos archivos RELATIVOS a la ubicación de este tsconfig.
-    */
     "next-env.d.ts", 
     ".next/types/**/*.ts",
     "src/**/*.ts", 
     "src/**/*.tsx",
-    /* 
-       PILAR II: CERO REGRESIONES (Recursive Source Scope)
-       Ruta relativa hacia la carpeta de paquetes desde la app.
-       Esto permite validar tipos de las librerías en modo Source-First.
-    */
     "../../packages/**/src/**/*.ts",
     "../../packages/**/src/**/*.tsx"
   ],

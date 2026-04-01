@@ -2,9 +2,9 @@
  * @file apps/portfolio-web/src/lib/portal/actions/media.actions.ts
  * @description Motor de Ingesta y Purga Multimedia (Server Actions).
  *              Orquesta la carga y eliminación de binarios hacia el Clúster S3 de Supabase.
- *              Refactorizado: Blindaje perimetral mediante esquemas Zod (Pilar III.IV),
- *              observabilidad forense Heimdall y resiliencia Multi-Tenant.
- * @version 3.0 - Shielded Actions & Zod Validation
+ *              Refactorizado: Resolución estricta de contratos TS2322 y blindaje
+ *              perimetral con validación Zod (Pilar III).
+ * @version 3.1 - Type Safe Response Edition
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -90,7 +90,7 @@ export async function uploadMediaAction(formData: FormData): Promise<ActionRespo
       collection: 'media',
       data: {
         alt,
-        tenantId,
+        tenantId, // Nota: el mapping del Seeder ahora usa el relacional en el CMS.
       },
       file: {
         data: buffer,
@@ -102,17 +102,19 @@ export async function uploadMediaAction(formData: FormData): Promise<ActionRespo
 
     console.log(`[SUCCESS] Asset indexed in Cloud Vault: ${result.id}`);
     
-    // 5. SINCRONIZACIÓN DE CACHÉ
+    // 5. SINCRONIZACIÓN DE CACHÉ Y SHAPER (Type Integrity Sync)
     revalidatePath('/portal');
 
-    /**
-     * @pilar IX: Justificación de 'as'.
-     * Validado por el esquema superior 'uploadMediaSchema', garantizando 
-     * compatibilidad con el Shaper.
-     */
+    const shapedAsset = shapeMediaEntity(result as unknown as PayloadMediaDoc, tenantId);
+
+    // Validación post-shaping para evitar inyecciones de 'null' en el contrato 'ActionResponse'
+    if (!shapedAsset) {
+      throw new Error('TENANT_BOUNDARY_BREACH_DETECTED_POST_INGESTION');
+    }
+
     return { 
       success: true, 
-      data: shapeMediaEntity(result as unknown as PayloadMediaDoc) 
+      data: shapedAsset 
     };
 
   } catch (error: unknown) {
@@ -156,8 +158,13 @@ export async function deleteMediaAction(id: string, tenantId: string): Promise<A
     }
 
     // Verificación de integridad referencial del Tenant
-    if (asset.tenantId !== tenantId) {
-      console.error(`[SECURITY_ALERT] Breach Attempt: Tenant ${tenantId} tried to purge asset ${id} owned by ${asset.tenantId}`);
+    // Manejo de objetos poblados vs strings simples.
+    const assetTenant = typeof asset.tenant === 'object' && asset.tenant !== null 
+      ? asset.tenant.id 
+      : asset.tenant;
+
+    if (assetTenant !== tenantId) {
+      console.error(`[SECURITY_ALERT] Breach Attempt: Tenant ${tenantId} tried to purge asset ${id} owned by ${assetTenant}`);
       throw new Error('UNAUTHORIZED_PERIMETER_ACCESS');
     }
 

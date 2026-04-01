@@ -4,13 +4,12 @@
  *              Punto de entrada único para la configuración de Payload CMS 3.0.
  *              Orquesta la integración de los 5 Silos Industriales, el clúster
  *              de almacenamiento S3 y el motor de identidad corporativa.
- * @version 38.0 - Enterprise Level 4.0 | MetaConfig Payload 3.0 Sync
+ * @version 39.0 - Enterprise Level 4.0 | Email Adapter Resilience
  * @author Staff Engineer - MetaShark Tech
  */
 
 /**
  * 1. INFRASTRUCTURE PROTOCOL L0 (Early Initialization)
- * @description Protocolo de bypass de red para entornos de construcción y despliegue.
  */
 (function initializeEnterpriseNetwork() {
   const isVercelNode = process.env.VERCEL === '1';
@@ -19,7 +18,6 @@
   if (isVercelNode || isBuildPhase) {
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
     process.env.PGSSLMODE = 'no-verify';
-    console.log('[SYSTEM][L0] Infrastructure Network Bypass: ACTIVE');
   }
 })();
 
@@ -33,60 +31,51 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 
-/** 
- * ENTERPRISE COLLECTION REGISTRY (Strategic Business Units)
- * @pilar IX: Modularización por Dominio de Negocio.
- */
-
-// SBU 1: Intelligence & CRM (Ingestion Pipeline)
+// Importación de Colecciones
 import { Ingestions } from './collections/Ingestions';
 import { Subscribers } from './collections/Subscribers';
-
-// SBU 2: Partner Network & PRM (B2B Hub)
 import { Agencies } from './collections/Agencies';
 import { Agents } from './collections/Agents';
 import { BusinessMetrics } from './collections/BusinessMetrics';
-
-// SBU 3: Revenue Engine (Sales Operations)
 import { Offers } from './collections/Offers';
 import { FlashSales } from './collections/FlashSales';
-
-// SBU 4: Asset Library (Editorial & Engineering)
 import { Media } from './collections/Media';
 import { BlogPosts } from './collections/BlogPosts';
 import { Projects } from './collections/Projects';
-
-// SBU 5: Core Infrastructure (Identity & Logs)
 import { Tenants } from './collections/Tenants';
 import { Users } from './collections/Users';
-import { Notifications } from './collections/Notifications'; // <-- NUEVO LEDGER OPERATIVO
+import { Notifications } from './collections/Notifications';
 import { DynamicRoutes } from './collections/DynamicRoutes';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const BASE_CONFIG_DIR = __dirname;
 
-/** ENVIRONMENT & CLUSTER RESOLUTION */
 const SERVER_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
 const DATABASE_URL = process.env.DATABASE_URL || '';
 
-/** STARTUP TELEMETRY (Heimdall Forensic Report) */
-console.group('[SYSTEM][ORCHESTRATOR] Enterprise Core v38.0 Booting');
-console.log(`[TARGET] Node_Host: ${SERVER_URL}`);
-console.log(`[STATUS] All SBUs Linked | S3_Storage: READY`);
-console.groupEnd();
+/**
+ * @description Inyector condicional de adaptador de correo.
+ * Previene errores de red (ENOTFOUND) durante el seeding o falta de configuración.
+ */
+const getEmailAdapter = () => {
+  if (process.env.IS_SEEDING_MODE === 'true' || !process.env.SMTP_USER) {
+    return undefined; // Deshabilita el servicio de email si no es crítico
+  }
+  return nodemailerAdapter({
+    defaultFromAddress: 'concierge@metashark.tech',
+    defaultFromName: 'Beach Hotel Sanctuary',
+    // Configuración real via variables de entorno
+  });
+};
 
 export default buildConfig({
   serverURL: SERVER_URL,
-  email: nodemailerAdapter(),
+  email: getEmailAdapter(),
 
   admin: {
     user: Users.slug,
     importMap: { baseDir: BASE_CONFIG_DIR },
-    /**
-     * @pilar III: Seguridad de Tipos Absoluta.
-     * Adaptación al contrato MetaConfig de Payload 3.0 (Uso de array 'icons').
-     */
     meta: { 
       titleSuffix: '- MetaShark Enterprise Operations',
       icons: [
@@ -99,34 +88,10 @@ export default buildConfig({
     }
   },
 
-  /** 
-   * MASTER COLLECTIONS REGISTRY
-   * Ordenado por jerarquía de dependencia para asegurar integridad referencial.
-   */
   collections: [
-    // --- Silo A: Revenue ---
-    Offers,
-    FlashSales,
-    
-    // --- Silo B: Partners ---
-    Agencies,
-    Agents,
-    BusinessMetrics,
-    
-    // --- Silo C: Intelligence ---
-    Ingestions,
-    Subscribers,
-    
-    // --- Silo D: Infrastructure ---
-    Tenants,
-    Users,
-    Notifications,
-    DynamicRoutes,
-    
-    // --- Asset Content ---
-    Media,
-    BlogPosts,
-    Projects,
+    Offers, FlashSales, Agencies, Agents, BusinessMetrics,
+    Ingestions, Subscribers, Tenants, Users, Notifications,
+    DynamicRoutes, Media, BlogPosts, Projects,
   ],
   
   editor: lexicalEditor({}),
@@ -136,10 +101,6 @@ export default buildConfig({
     outputFile: path.resolve(BASE_CONFIG_DIR, 'payload-types.ts'),
   },
 
-  /**
-   * DB ADAPTER: Postgres Core
-   * Configurado para soportar el Transaction Pooler de Supabase (Puerto 6543).
-   */
   db: postgresAdapter({
     pool: {
       connectionString: DATABASE_URL,
@@ -149,19 +110,12 @@ export default buildConfig({
 
   sharp: (sharp as unknown) as SharpDependency,
 
-  /**
-   * STORAGE CLUSTER: Multi-Collection S3 Sync
-   * Centraliza los binarios industriales en el Bucket Soberano.
-   */
   plugins: [
     ...(process.env.S3_ENDPOINT ? [
       s3Storage({
         collections: { 
-          media: true,      // Activos generales
-          offers: true,     // Imágenes de paquetes
-          'flash-sales': true, 
-          agencies: true,   // Logotipos White-Label
-          ingestions: true  // XLSX, Audios y Capturas del Pipeline
+          media: true, offers: true, 'flash-sales': true, 
+          agencies: true, ingestions: true 
         },
         bucket: process.env.S3_BUCKET || 'sanctuary-vault',
         config: {

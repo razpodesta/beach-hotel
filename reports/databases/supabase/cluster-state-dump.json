@@ -1,0 +1,160 @@
+{
+  "timestamp": "2026-04-01T18:38:00.032Z",
+  "clusterState": {
+    "offers": {
+      "rowCount": 0,
+      "sample": []
+    },
+    "flash_sales": {
+      "rowCount": 0,
+      "sample": []
+    },
+    "agents_employment_history": {
+      "rowCount": 0,
+      "sample": []
+    },
+    "agents": {
+      "rowCount": 0,
+      "sample": []
+    },
+    "business_metrics": {
+      "rowCount": 0,
+      "sample": []
+    },
+    "ingestions": {
+      "rowCount": 0,
+      "sample": []
+    },
+    "subscribers": {
+      "rowCount": 0,
+      "sample": []
+    },
+    "users_sessions": {
+      "rowCount": 0,
+      "sample": []
+    },
+    "users": {
+      "rowCount": 1,
+      "sample": [
+        {
+          "id": "b174d3a8-e1ed-4054-8b63-55cce8749c11",
+          "email": "admin@metashark.tech",
+          "role": "developer",
+          "tenant_id": "00000000-0000-0000-0000-000000000001",
+          "operator_metadata_agency_id": null,
+          "operator_metadata_access_level": "consultant",
+          "guest_metadata_loyalty_points": "0",
+          "guest_metadata_preferred_language": null,
+          "level": "99",
+          "experience_points": "3300",
+          "_verified": true,
+          "updated_at": "2026-04-01T16:59:12.910Z",
+          "created_at": "2026-04-01T16:59:12.909Z",
+          "enable_a_p_i_key": null,
+          "api_key": null,
+          "api_key_index": null,
+          "reset_password_token": null,
+          "reset_password_expiration": null,
+          "salt": "d7092f8c0f250385607b87f2455636634e3accc1a4a3e253e44d6381d9b26832",
+          "hash": "e51ba12f3340b8580bae0d444c4963453dad4a09d6b32702c3b8ec5cd330d8ff6ab93655ddfbc3aac3142b1c9aa41b7d31914d242be90a540de3d679af6531cd42a5d00eca07bc13cdb4e071890569d64bfcbd56a466f2b1f14b3ff000acd3dbe33ffd1f69bd263c33e67937a1c493566512f273a0dd1c6491c0f45a864d9def3deddd75eefdff9f2052979ae0df2943570f9ad762b06f8f30d12c04ae207ba4aa9ee604cd81d1d492aac8dbcfa4ea702b0f83b21c799dce7ebf6a8d6672104a96da212bb0f3de8a4c24fb677097e5af0458cab05e1f4d23712a346af314f3ce68a9f4df0ba3ced9584d71c1a03646075f4be5e8f339d323022563b7d0f19884135478abc82f57dd83da1d54b5059e95397b0d55c423ebc743d84401184cc98e06f3a86498deb99ac18201ec124423757bcd77426f608ebb2bec516935a626190b5fe1e82d60d69874271e9a55a7442759033d0a1dd50834429a288aea2e4dcbc29a82e2d15181d96473f9d389d374416afa11d279c6fdb5d80c438eeb36183b620375ef989298146845948ba93ab1440378b4ed8f61c156acce8efa9587c1b9c27b35ba18075fd7fa8f66d5e33ee7cb472cca4a7e5687ec59bd0e778d1f7b0314a5d72f49ff205799bcdc4968dcd4e28933fe8f78a0a87bc195f44ab4d5ab6418fe5650047a78f4b8aacdc1781271e8f74e4ab1a332f7be11df7f622fecaa1f",
+          "login_attempts": "0",
+          "lock_until": null,
+          "_verificationtoken": null
+        }
+      ]
+    },
+    "notifications": {
+      "rowCount": 0,
+      "sample": []
+    },
+    "dynamic_routes": {
+      "rowCount": 0,
+      "sample": []
+    },
+    "media": {
+      "rowCount": 0,
+      "sample": []
+    },
+    "blog_posts_tags": {
+      "rowCount": 0,
+      "sample": []
+    },
+    "blog_posts": {
+      "rowCount": 0,
+      "sample": []
+    },
+    "projects_tech_stack": {
+      "rowCount": 0,
+      "sample": []
+    },
+    "projects_backend_architecture_features": {
+      "rowCount": 0,
+      "sample": []
+    },
+    "projects": {
+      "rowCount": 0,
+      "sample": []
+    },
+    "payload_kv": {
+      "rowCount": 0,
+      "sample": []
+    },
+    "payload_locked_documents": {
+      "rowCount": 0,
+      "sample": []
+    },
+    "payload_locked_documents_rels": {
+      "rowCount": 0,
+      "sample": []
+    },
+    "payload_preferences": {
+      "rowCount": 0,
+      "sample": []
+    },
+    "payload_preferences_rels": {
+      "rowCount": 0,
+      "sample": []
+    },
+    "payload_migrations": {
+      "rowCount": 1,
+      "sample": [
+        {
+          "id": 1,
+          "name": "dev",
+          "batch": "-1",
+          "updated_at": "2026-04-01T17:17:27.488Z",
+          "created_at": "2026-04-01T16:58:56.040Z"
+        }
+      ]
+    },
+    "offers_inclusions": {
+      "rowCount": 0,
+      "sample": []
+    },
+    "tenants": {
+      "rowCount": 1,
+      "sample": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "name": "Beach Hotel Canasvieiras",
+          "slug": "beach-hotel-main",
+          "domain": "https://beach-hotel.vercel.app",
+          "updated_at": "2026-04-01T16:59:10.145Z",
+          "created_at": "2026-04-01T16:59:10.141Z"
+        }
+      ]
+    },
+    "agencies": {
+      "rowCount": 0,
+      "sample": []
+    },
+    "dynamic_routes_conditional_rules": {
+      "rowCount": 0,
+      "sample": []
+    },
+    "projects_tags": {
+      "rowCount": 0,
+      "sample": []
+    }
+  }
+}

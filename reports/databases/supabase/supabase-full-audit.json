@@ -1,93 +1,182 @@
 {
-  "timestamp": "2026-03-30T23:53:07.769Z",
+  "timestamp": "2026-04-01T18:48:35.954Z",
   "summary": {
-    "totalTables": 16,
+    "totalTables": 28,
     "totalPolicies": 0,
-    "tablesWithRlsDisabled": [],
-    "isSecurityCompliant": true
+    "tablesWithRlsDisabled": [
+      "offers",
+      "flash_sales",
+      "agents",
+      "business_metrics",
+      "agents_employment_history",
+      "subscribers",
+      "ingestions",
+      "users_sessions",
+      "users",
+      "notifications",
+      "blog_posts_tags",
+      "dynamic_routes",
+      "media",
+      "projects_tech_stack",
+      "projects_backend_architecture_features",
+      "payload_locked_documents",
+      "payload_kv",
+      "blog_posts",
+      "projects",
+      "payload_migrations",
+      "offers_inclusions",
+      "tenants",
+      "agencies",
+      "dynamic_routes_conditional_rules",
+      "projects_tags",
+      "payload_locked_documents_rels",
+      "payload_preferences",
+      "payload_preferences_rels"
+    ],
+    "isSecurityCompliant": false
   },
   "tables": [
-    "payload_locked_documents",
-    "payload_locked_documents_rels",
+    "offers",
+    "flash_sales",
+    "agents_employment_history",
+    "agents",
+    "business_metrics",
+    "ingestions",
+    "subscribers",
+    "users_sessions",
+    "users",
+    "notifications",
+    "dynamic_routes",
     "media",
-    "projects",
+    "blog_posts_tags",
+    "blog_posts",
     "projects_tech_stack",
     "projects_backend_architecture_features",
-    "tenants",
-    "projects_tags",
+    "projects",
     "payload_kv",
-    "users",
+    "payload_locked_documents",
+    "payload_locked_documents_rels",
     "payload_preferences",
     "payload_preferences_rels",
     "payload_migrations",
-    "users_sessions",
-    "blog_posts_tags",
-    "blog_posts"
+    "offers_inclusions",
+    "tenants",
+    "agencies",
+    "dynamic_routes_conditional_rules",
+    "projects_tags"
   ],
   "rlsStatus": [
     {
-      "tablename": "payload_locked_documents",
-      "rowsecurity": true
+      "tablename": "offers",
+      "rowsecurity": false
     },
     {
-      "tablename": "payload_locked_documents_rels",
-      "rowsecurity": true
+      "tablename": "flash_sales",
+      "rowsecurity": false
     },
     {
-      "tablename": "users",
-      "rowsecurity": true
+      "tablename": "agents",
+      "rowsecurity": false
     },
     {
-      "tablename": "tenants",
-      "rowsecurity": true
+      "tablename": "business_metrics",
+      "rowsecurity": false
     },
     {
-      "tablename": "media",
-      "rowsecurity": true
+      "tablename": "agents_employment_history",
+      "rowsecurity": false
     },
     {
-      "tablename": "projects",
-      "rowsecurity": true
+      "tablename": "subscribers",
+      "rowsecurity": false
     },
     {
-      "tablename": "projects_tech_stack",
-      "rowsecurity": true
-    },
-    {
-      "tablename": "projects_backend_architecture_features",
-      "rowsecurity": true
-    },
-    {
-      "tablename": "projects_tags",
-      "rowsecurity": true
-    },
-    {
-      "tablename": "payload_kv",
-      "rowsecurity": true
-    },
-    {
-      "tablename": "payload_preferences",
-      "rowsecurity": true
-    },
-    {
-      "tablename": "payload_preferences_rels",
-      "rowsecurity": true
-    },
-    {
-      "tablename": "payload_migrations",
-      "rowsecurity": true
+      "tablename": "ingestions",
+      "rowsecurity": false
     },
     {
       "tablename": "users_sessions",
-      "rowsecurity": true
+      "rowsecurity": false
     },
     {
-      "tablename": "blog_posts",
-      "rowsecurity": true
+      "tablename": "users",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "notifications",
+      "rowsecurity": false
     },
     {
       "tablename": "blog_posts_tags",
-      "rowsecurity": true
+      "rowsecurity": false
+    },
+    {
+      "tablename": "dynamic_routes",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "media",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "projects_tech_stack",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "projects_backend_architecture_features",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "payload_locked_documents",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "payload_kv",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "blog_posts",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "projects",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "payload_migrations",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "offers_inclusions",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "tenants",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "agencies",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "dynamic_routes_conditional_rules",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "projects_tags",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "payload_locked_documents_rels",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "payload_preferences",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "payload_preferences_rels",
+      "rowsecurity": false
     }
   ],
   "policies": [],

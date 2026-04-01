@@ -3,7 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/portfolio-web/src",
   "projectType": "application",
-  "tags":["platform:web", "scope:metashark", "type:app"],
+  "tags": ["platform:web", "scope:metashark", "type:app"],
   "targets": {
     "prebuild": {
       "executor": "nx:run-commands",
@@ -12,33 +12,23 @@
         "color": true
       },
       "inputs": ["{projectRoot}/src/messages/**/*.json"],
-      "outputs":["{projectRoot}/src/dictionaries/*.json"],
+      "outputs": ["{projectRoot}/src/dictionaries/*.json"],
+      "cache": true,
       "description": "Protocolo MACS: Ensamblaje y validación soberana de diccionarios i18n."
     },
     "build": {
       "executor": "@nx/next:build",
-      "outputs":[
+      "outputs": [
         "{options.outputPath}",
-        "{workspaceRoot}/dist/apps/portfolio-web/.next",
-        "{workspaceRoot}/dist/apps/portfolio-web/.next/routes-manifest.json",
-        "{workspaceRoot}/dist/apps/portfolio-web/.next/required-server-files.json"
+        "{workspaceRoot}/dist/apps/portfolio-web/.next"
       ],
       "defaultConfiguration": "production",
       "options": {
         "outputPath": "dist/apps/portfolio-web",
         "generatePackageJson": true
       },
-      "dependsOn":[
-        "^build",
-        "prebuild"
-      ],
-      "configurations": {
-        "production": {
-          "debug": false,
-          "fileReplacements":[],
-          "generateSourcemaps": false
-        }
-      }
+      "dependsOn": ["^build", "prebuild"],
+      "cache": true
     },
     "serve": {
       "executor": "@nx/next:server",
@@ -47,13 +37,7 @@
         "dev": true,
         "port": 4200
       },
-      "dependsOn": ["prebuild"],
-      "configurations": {
-        "production": {
-          "buildTarget": "@metashark/portfolio-web:build:production",
-          "dev": false
-        }
-      }
+      "dependsOn": ["prebuild"]
     },
     "typecheck": {
       "executor": "nx:run-commands",
@@ -62,11 +46,8 @@
         "forwardAllArgs": true
       },
       "cache": true,
-      "dependsOn":[
-        "^build",
-        "prebuild"
-      ],
-      "description": "Verificación estática de tipos de élite sobre el código fuente."
+      "dependsOn": ["prebuild"],
+      "description": "Verificación estática de tipos de élite."
     },
     "test": {
       "executor": "@nx/jest:jest",
@@ -75,15 +56,14 @@
         "jestConfig": "apps/portfolio-web/jest.config.ts",
         "passWithNoTests": true
       },
-      "cache": true,
-      "dependsOn": ["prebuild"]
+      "cache": true
     },
     "lint": {
       "executor": "@nx/eslint:lint",
       "inputs": ["default", "{workspaceRoot}/eslint.config.mjs"],
       "cache": true,
       "options": {
-        "lintFilePatterns":["apps/portfolio-web/**/*.{ts,tsx,js,jsx}"]
+        "lintFilePatterns": ["apps/portfolio-web/**/*.{ts,tsx,js,jsx}"]
       }
     }
   }

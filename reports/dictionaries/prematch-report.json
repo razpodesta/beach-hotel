@@ -1,13 +1,13 @@
 {
-  "timestamp": "2026-03-31T22:53:44.105Z",
+  "timestamp": "2026-04-01T17:04:16.442Z",
   "globalStatus": "SUCCESS",
-  "performance": "0.22s",
+  "performance": "0.18s",
   "audits": [
     {
       "locale": "en-US",
       "status": "SUCCESS",
       "featuresCount": 40,
-      "outputSize": "25.89 KB",
+      "outputSize": "38.34 KB",
       "assembledFeatures": [
         "about",
         "admin_media",
@@ -55,7 +55,7 @@
       "locale": "es-ES",
       "status": "SUCCESS",
       "featuresCount": 40,
-      "outputSize": "26.85 KB",
+      "outputSize": "40.12 KB",
       "assembledFeatures": [
         "about",
         "admin_media",
@@ -103,7 +103,7 @@
       "locale": "pt-BR",
       "status": "SUCCESS",
       "featuresCount": 40,
-      "outputSize": "27.14 KB",
+      "outputSize": "40.18 KB",
       "assembledFeatures": [
         "about",
         "admin_media",

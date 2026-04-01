@@ -1,9 +1,9 @@
 /**
  * @file apps/portfolio-web/src/app/sitemap.ts
- * @description Generador soberano del mapa del sitio (Sitemap). 
- *              Refactorizado: Erradicación de anotaciones de tipo redundantes 
- *              y cumplimiento estricto de higiene ESLint.
- * @version 7.1 - Linter Pure Edition
+ * @description Generador soberano del mapa del sitio (Sitemap Engine).
+ *              Refactorizado: Auditoría forense completa, eliminación de linter 
+ *              warnings y normalización de URLs.
+ * @version 8.3 - Production Hardened & Forensic Ready
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -11,57 +11,64 @@ import type { MetadataRoute } from 'next';
 import { i18n } from '../config/i18n.config';
 import { getAllPosts } from '../lib/blog-api';
 
+const PRIORITY_MAP: Record<string, number> = {
+  home: 1.0,
+  festival: 0.9,
+  blog: 0.8,
+  legal: 0.5,
+  default: 0.7
+};
+
+interface SitemapRoute {
+  slug: string;
+  type: string;
+  lastModified?: string;
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://beach-hotel.vercel.app';
 
-  const staticRoutes = [
-    '', '/festival', '/quienes-somos', '/mision-y-vision',
-    '/contacto', '/blog', '/subscribe',
-    '/legal/politica-de-privacidad', '/legal/terminos-de-servicio',
+  const staticRoutes: SitemapRoute[] = [
+    { slug: '', type: 'home' },
+    { slug: '/festival', type: 'festival' },
+    { slug: '/quienes-somos', type: 'default' },
+    { slug: '/mision-y-vision', type: 'default' },
+    { slug: '/contacto', type: 'default' },
+    { slug: '/blog', type: 'blog' },
+    { slug: '/subscribe', type: 'default' },
+    { slug: '/legal/politica-de-privacidad', type: 'legal' },
+    { slug: '/legal/terminos-de-servicio', type: 'legal' },
   ];
 
-  let blogEntries: Array<{ slug: string, lastModified: string }> = [];
+  let blogEntries: SitemapRoute[] = [];
   
   try {
     const posts = await getAllPosts();
-    blogEntries = posts.map(post => ({
-      slug: `/blog/${post.slug}`,
-      lastModified: post.metadata.published_date
-    }));
-  } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'UNKNOWN_SYNC_ERROR';
-    console.error(`[HEIMDALL][SITEMAP] Error: ${message}.`);
+    if (Array.isArray(posts)) {
+      blogEntries = posts
+        .filter(post => post && post.slug)
+        .map(post => ({
+          slug: `/blog/${post.slug}`,
+          type: 'blog',
+          lastModified: post.metadata?.published_date || new Date().toISOString()
+        }));
+    }
+  } catch (err: unknown) {
+    // RESOLUCIÓN LINTER: Usamos el error para telemetría forense
+    const errorMessage = err instanceof Error ? err.message : 'Unknown sync failure';
+    console.warn(`[HEIMDALL][SITEMAP] Editorial sync degraded: ${errorMessage}. Skipping dynamic posts.`);
   }
 
-  const staticLogical = staticRoutes.map(route => ({ 
-    slug: route, 
-    lastModified: new Date().toISOString() 
-  }));
-  
-  const allLogicalRoutes = [...staticLogical, ...blogEntries];
-
-  return allLogicalRoutes.flatMap((route) =>
+  return [...staticRoutes, ...blogEntries].flatMap((route) =>
     i18n.locales.map((locale) => {
-      const isHome = route.slug === '';
-      const isFestival = route.slug === '/festival';
-      const isBlogContent = route.slug.startsWith('/blog/');
-      const isLegal = route.slug.startsWith('/legal/');
-
-      // RESOLUCIÓN ESLINT: Se elimina ': number' ya que se infiere del literal.
-      let priority = 0.7;
-      if (isHome) priority = 1.0;
-      else if (isFestival) priority = 0.9;
-      else if (isBlogContent) priority = 0.8;
-      else if (isLegal) priority = 0.5;
-
-      const changeFrequency: 'daily' | 'weekly' | 'monthly' = 
-        (isHome || isFestival || isBlogContent) ? 'daily' : 'monthly';
-
+      const cleanSlug = route.slug.startsWith('/') ? route.slug : `/${route.slug}`;
+      const url = `${baseUrl}/${locale}${cleanSlug}`.replace(/([^:]\/)\/+/g, "$1");
+      
       return {
-        url: `${baseUrl}/${locale}${route.slug}`,
-        lastModified: route.lastModified,
-        changeFrequency,
-        priority,
+        url,
+        lastModified: route.lastModified ? new Date(route.lastModified).toISOString() : new Date().toISOString(),
+        changeFrequency: 'daily' as const,
+        priority: PRIORITY_MAP[route.type] ?? PRIORITY_MAP.default,
       };
     })
   );
