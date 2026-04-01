@@ -1,11 +1,11 @@
 /**
  * @file apps/portfolio-web/src/lib/route-guard.ts
  * @description Enterprise RBAC Orchestrator (Edge Security).
- *              Orquesta el control de acceso perimetral para los 5 niveles
- *              de la jerarquía industrial MetaShark. Implementa Gating
- *              para el Silo B (Partner Network) y auditoría forense.
- * @version 4.0 - Enterprise Level 4.0 Standard
- * @author Staff Engineer - MetaShark Tech
+ *              Refactorizado: Erradicación del bug 404 de '/login' inexistente,
+ *              normalización estricta de barras (Anti-Double-Slash) y
+ *              evaluación determinista de fronteras de rol (Fail-Fast RBAC).
+ * @version 5.0 - Strict Perimeter & Anti-404 Hardening
+ * @author Raz Podestá - MetaShark Tech
  */
 
 import { NextResponse, type NextRequest } from 'next/server';
@@ -30,10 +30,6 @@ const AUTHORITY_LEVELS = {
   anonymous: 0   // Unverified Visitor
 } as const;
 
-/**
- * @type EnterpriseRole
- * @description Unión de tipos basada en el registro de autoridad.
- */
 export type EnterpriseRole = keyof typeof AUTHORITY_LEVELS;
 
 /**
@@ -51,28 +47,31 @@ export interface EnterpriseSession {
 /** 
  * MAPA DE PROTECCIÓN DE RUMBOS (Access Gating)
  * @description Mapeo de prefijos de ruta hacia el nivel de autoridad mínimo requerido.
+ * @fix Eliminada la barra diagonal final en '/p' para permitir coincidencia exacta.
  */
 const PROTECTION_MAP: Record<string, EnterpriseRole> = {
   '/portal/dev': 'developer',
   '/portal/admin': 'admin',
   '/portal/b2b': 'operator',
-  '/p/': 'operator',        // <-- GATING PARA RED DE ALIANZAS (Silo B)
+  '/p': 'operator', // Gating para Red de Alianzas (Silo B)
   '/portal/vip': 'sponsor',
   '/portal': 'guest',
 };
 
 /** 
  * PREFIXES DE INFRAESTRUCTRURA (Exclusión de Gating)
+ * @description Rutas nativas que gestionan su propia autenticación.
  */
-const INFRA_RESOURCES = ['/admin', '/_payload', '/api/payload'];
+const INFRA_RESOURCES = ['/admin', '/_payload', '/api/payload', '/auth/callback'];
 
 /** 
  * WHITE-LIST DE ACCESO PÚBLICO
+ * @description Inventario SSoT de rutas abiertas.
  */
 const PUBLIC_INVENTORY = new Set([
-  '/', '/login', '/auth/callback', '/contacto', '/blog', 
-  '/maintenance', '/quienes-somos', '/mision-y-vision', 
-  '/festival', '/subscribe', '/server-error', '/legal'
+  '/', '/contacto', '/blog', '/maintenance', '/quienes-somos', 
+  '/mision-y-vision', '/festival', '/paquetes', '/subscribe', 
+  '/server-error'
 ]);
 
 // Sincronización dinámica de rumbos desde el Navigation Provider
@@ -88,7 +87,7 @@ mainNavStructure.forEach((item: NavItem) => {
  * @description Resuelve la identidad evaluando tokens criptográficos o flags de emergencia.
  */
 function getEnterpriseSession(req: NextRequest): EnterpriseSession {
-  // 1. EVALUACIÓN DE BYPASS TÉCNICO (Modo Desarrollo/Producción Crítica)
+  // 1. EVALUACIÓN DE BYPASS TÉCNICO (Modo Desarrollo)
   if (process.env.NEXT_PUBLIC_AUTH_BYPASS === 'true') {
     return { 
       isAuthenticated: true, 
@@ -108,7 +107,6 @@ function getEnterpriseSession(req: NextRequest): EnterpriseSession {
   }
   
   if (supabaseToken) {
-    // @todo: En Fase 4.5, validar JWT mediante auth-shield para extraer rol real
     return { isAuthenticated: true, role: 'guest', tenantId: null };
   }
 
@@ -117,11 +115,25 @@ function getEnterpriseSession(req: NextRequest): EnterpriseSession {
 
 /**
  * HELPER: normalizeEnterprisePath
+ * @description Extrae de forma matemática y segura el sub-path, eliminando
+ *              el locale y previniendo los saltos a '404' por dobles diagonales.
  */
 function normalizeEnterprisePath(pathname: string, locale: Locale): string {
-  const prefix = `/${locale}`;
-  const path = pathname.startsWith(prefix) ? pathname.replace(prefix, '') || '/' : pathname;
-  return path.length > 1 && path.endsWith('/') ? path.slice(0, -1) : path;
+  if (pathname === `/${locale}`) return '/';
+
+  const prefix = `/${locale}/`;
+  let normalized = pathname;
+
+  if (pathname.startsWith(prefix)) {
+    normalized = '/' + pathname.substring(prefix.length);
+  }
+
+  // Limpieza de Trailing Slash final para consistencia de enrutamiento
+  if (normalized.length > 1 && normalized.endsWith('/')) {
+    normalized = normalized.slice(0, -1);
+  }
+
+  return normalized;
 }
 
 /**
@@ -134,49 +146,56 @@ export async function routeGuard(
 ): Promise<NextResponse | null> {
   const { pathname } = request.nextUrl;
 
-  // 1. BYPASS DE RECURSOS DE SISTEMA
+  // 1. BYPASS DE RECURSOS DE SISTEMA E INFRAESTRUCTURA
   if (INFRA_RESOURCES.some((prefix) => pathname.startsWith(prefix))) {
     return null;
   }
 
   const logicalPath = normalizeEnterprisePath(pathname, locale);
   const isPublicResource = PUBLIC_INVENTORY.has(logicalPath) || 
-                          logicalPath.startsWith('/blog/') || 
-                          logicalPath.startsWith('/legal/');
+                           logicalPath.startsWith('/blog/') || 
+                           logicalPath.startsWith('/legal/');
   
   if (isPublicResource) return null;
 
   // 2. AUDITORÍA DE IDENTIDAD (Identity Handshake)
   const session = getEnterpriseSession(request);
   
-  /** PROTOCOLO HEIMDALL: Registro de Acceso Directo */
   if (session.isBypassActive) {
-    console.info(`[SECURITY][BYPASS] Global Access Granted to ${logicalPath} | Node: ${process.env.VERCEL_REGION || 'local'}`);
+    console.info(`[HEIMDALL][BYPASS] Global Access Granted to ${logicalPath} | Node: ${process.env.VERCEL_REGION || 'local'}`);
   }
 
   // 3. VALIDACIÓN DE AUTENTICACIÓN (Gate 1)
   if (!session.isAuthenticated) {
-    const redirectUrl = new URL(`/${locale}/login`, request.url);
-    redirectUrl.searchParams.set('next', logicalPath);
+    /**
+     * @fix Anti-404: La ruta '/login' no existe. Redirigimos al Home (raíz)
+     * para que el visitante acceda orgánicamente al Modal de Autenticación.
+     */
+    console.warn(`[HEIMDALL][SECURITY] Unauthenticated access to ${logicalPath}. Redirecting to Sanctuary Home.`);
+    const redirectUrl = new URL(`/${locale}`, request.url);
     return NextResponse.redirect(redirectUrl);
   }
 
   // 4. VALIDACIÓN DE AUTORIDAD (RBAC Gate 2)
+  /**
+   * @fix Fail-Fast Matcher: Garantiza que '/portal-data' no se valide erróneamente
+   * como '/portal'. Exige coincidencia exacta o subruta estricta.
+   */
   const requiredRoleEntry = Object.entries(PROTECTION_MAP)
-    .sort((a, b) => b[0].length - a[0].length) // Prioridad por profundidad de ruta
-    .find(([path]) => logicalPath.startsWith(path));
+    .sort((a, b) => b[0].length - a[0].length)
+    .find(([path]) => logicalPath === path || logicalPath.startsWith(`${path}/`));
 
   if (requiredRoleEntry) {
-    const [, requiredRole] = requiredRoleEntry;
+    const [path, requiredRole] = requiredRoleEntry;
     
     // Verificación de Jerarquía Numérica
     if (!session.isBypassActive && AUTHORITY_LEVELS[session.role] < AUTHORITY_LEVELS[requiredRole]) {
-      console.error(`[RBAC][VIOLATION] Access Denied: Role[${session.role}] attempted to reach Tier[${requiredRole}] at ${logicalPath}`);
+      console.error(`[HEIMDALL][RBAC] Violation: Role[${session.role}] attempted to reach Tier[${requiredRole}] at ${path}`);
       return NextResponse.redirect(new URL(`/${locale}/portal`, request.url));
     }
   }
 
-  // 5. INYECCIÓN DE CABECERAS DE INFRAESTRUCTRURA
+  // 5. INYECCIÓN DE CABECERAS DE INFRAESTRUCTURA
   const response = NextResponse.next();
   response.headers.set('X-Enterprise-Identity', session.role);
   if (session.tenantId) response.headers.set('X-Enterprise-Tenant', session.tenantId);

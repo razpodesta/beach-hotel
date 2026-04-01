@@ -1,11 +1,10 @@
 /**
  * @file apps/portfolio-web/src/lib/blog/actions.ts
  * @description Orquestador soberano de datos para el Concierge Journal.
- *              Implementa el Patrón Resolver para conmutación dinámica entre 
- *              infraestructura Cloud y Genesis Mocks, compilación JIT de Lexical 
- *              y observabilidad forense integrada.
- *              Refactorizado: Erradicación de non-null assertions y variables huérfanas.
- * @version 33.0 - Linter Pure & Robust Error Handling
+ *              Refactorizado: Atomización funcional en Clases Especializadas,
+ *              resolución del Crash de Build (Polimorfismo en Tags Mocks vs CMS),
+ *              y erradicación del "non-null assertion" (Linter Strict Compliance).
+ * @version 35.0 - Elite Linter Pure & Atomic Pipeline
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -19,17 +18,17 @@ import configPromise from '@metashark/cms-core/config';
 import { postWithSlugSchema, type PostWithSlug } from '../schemas/blog.schema';
 import { i18n, type Locale } from '../../config/i18n.config';
 import { getDictionary } from '../get-dictionary';
-import { MOCK_POSTS } from '../../data/mocks/cms.mocks';
+import { MOCK_POSTS, type RawMockPost } from '../../data/mocks/cms.mocks';
 import type { Dictionary } from '../schemas/dictionary.schema';
 
 /**
- * CONSTANTES DE INFRAESTRUCTRURA
+ * CONSTANTES DE ENTORNO SOBERANAS
  */
 const IS_BUILD_ENV = process.env.NEXT_PHASE === 'phase-production-build' || process.env.VERCEL === '1';
 const DB_READY = Boolean(process.env.DATABASE_URL);
 
 /**
- * CONTRATOS TÉCNICOS: Lexical AST (Sovereign CMS)
+ * CONTRATOS TÉCNICOS: Frontera de Datos (Raw Payloads)
  */
 interface LexicalNode {
   type: string;
@@ -43,6 +42,7 @@ interface LexicalRoot {
   root?: { children?: LexicalNode[] };
 }
 
+/** Contrato híbrido para soportar tanto la DB real como los Mocks en la extracción */
 interface RawPayloadPost {
   title?: string | null;
   slug?: string | null;
@@ -50,105 +50,132 @@ interface RawPayloadPost {
   content?: LexicalRoot | string | null;
   publishedDate?: string | null;
   author?: string | { username?: string; email?: string } | null;
-  tags?: Array<{ tag: string }> | null;
+  tags?: Array<{ tag: string }> | string[] | null;
   ogImage?: string | { url: string } | null;
 }
 
-// Singleton de conexión para el motor de datos (Pilar X)
+// Singleton de conexión para el motor de datos
 let cachedPayload: Payload | null = null;
 
 /**
- * COMPILADOR JIT: Lexical to Markdown
- * @description Transmuta nodos AST en contenido MDX puro de forma recursiva.
- * @pilar X: Performance de transpilación.
+ * ============================================================================
+ * APARATO 1: COMPILADOR LEXICAL (The Transmuter)
+ * @description Responsabilidad Única: Transmutar nodos AST a Markdown puro.
+ * ============================================================================
  */
-function compileLexicalToMarkdown(contentNode: unknown): string {
-  if (!contentNode) return '';
-  if (typeof contentNode === 'string') return contentNode;
+class LexicalCompiler {
+  public static compile(contentNode: unknown): string {
+    if (!contentNode) return '';
+    if (typeof contentNode === 'string') return contentNode;
 
-  const processNodes = (nodes: LexicalNode[] = []): string => {
-    return nodes.reduce((acc, node) => {
-      const children = node.children ? processNodes(node.children) : '';
-      
-      switch (node.type) {
-        case 'text': return acc + (node.text || '');
-        case 'paragraph': return acc + `${children}\n\n`;
-        case 'heading': {
-          const level = node.tag?.replace('h', '') || '2';
-          return acc + `${'#'.repeat(Number(level))} ${children}\n\n`;
+    const processNodes = (nodes: LexicalNode[] = []): string => {
+      return nodes.reduce((acc, node) => {
+        const children = node.children ? processNodes(node.children) : '';
+        
+        switch (node.type) {
+          case 'text': return acc + (node.text || '');
+          case 'paragraph': return acc + `${children}\n\n`;
+          case 'heading': {
+            const level = node.tag?.replace('h', '') || '2';
+            return acc + `${'#'.repeat(Number(level))} ${children}\n\n`;
+          }
+          case 'link': return acc + `[${children}](${node.url || '#'})`;
+          case 'quote': return acc + `> ${children}\n\n`;
+          default: return acc + children;
         }
-        case 'link': return acc + `[${children}](${node.url || '#'})`;
-        case 'quote': return acc + `> ${children}\n\n`;
-        default: return acc + children;
-      }
-    }, '');
-  };
+      }, '');
+    };
 
-  try {
-    return processNodes((contentNode as LexicalRoot).root?.children);
-  } catch (error: unknown) {
-    const msg = error instanceof Error ? error.message : 'Unknown AST Anomaly';
-    console.warn(`[HEIMDALL][PARSER] AST Corruption detected: ${msg}`);
-    return '';
+    try {
+      return processNodes((contentNode as LexicalRoot).root?.children);
+    } catch (error: unknown) {
+      const msg = error instanceof Error ? error.message : 'Unknown AST Anomaly';
+      console.warn(`[HEIMDALL][PARSER] AST Corruption detected: ${msg}`);
+      return '';
+    }
   }
 }
 
 /**
- * SHAPER SOBERANO: Normalización de Entidades
- * @pilar III: Seguridad de Tipos Absoluta.
+ * ============================================================================
+ * APARATO 2: SHAPER EDITORIAL (The Purifier)
+ * @description Responsabilidad Única: Normalizar la entidad y garantizar Zod SSoT.
+ * ============================================================================
  */
-function shapeEditorialEntry(entry: unknown, dict: Dictionary): PostWithSlug {
-  const raw = entry as RawPayloadPost;
-  const t = dict.blog_page;
+class EditorialShaper {
+  public static shape(entry: unknown, dict: Dictionary): PostWithSlug {
+    /** 
+     * @pilar III: Justificación de 'as' -> El motor de DB retorna 'unknown' o 
+     * Record genéricos. Aserimos al contrato intermedio antes de pasarlo a Zod 
+     * para su validación final estricta.
+     */
+    const raw = entry as RawPayloadPost;
+    const t = dict.blog_page;
 
-  // 1. Resolución de Atribución (Author Authority)
-  let author = t.hero_title;
-  if (raw.author) {
-    author = typeof raw.author === 'object' 
-      ? raw.author.username || raw.author.email?.split('@')[0] || author 
-      : raw.author;
+    // 1. Resolución de Atribución
+    let author = t.hero_title;
+    if (raw.author) {
+      author = typeof raw.author === 'object' 
+        ? raw.author.username || raw.author.email?.split('@')[0] || author 
+        : raw.author;
+    }
+
+    // 2. Resolución de Taxonomía Polimórfica (Soporte Mocks vs CMS)
+    const rawTagsArray = Array.isArray(raw.tags) ? raw.tags : [];
+    const normalizedTags = rawTagsArray.map(tagItem => {
+      if (typeof tagItem === 'string') return tagItem.toLowerCase().trim();
+      if (typeof tagItem === 'object' && tagItem !== null && 'tag' in tagItem) {
+        return String(tagItem.tag).toLowerCase().trim();
+      }
+      return null;
+    }).filter(Boolean) as string[];
+
+    // 3. Inteligencia de Contenido
+    const mdx = LexicalCompiler.compile(raw.content);
+    
+    // Detección de atmósfera (Pilar XII: MEA/UX)
+    const isNight = ['night', 'festival', 'party', 'techno', 'pride'].some(v => normalizedTags.includes(v));
+
+    // 4. Inferencia y Validación Estricta SSoT
+    return postWithSlugSchema.parse({
+      slug: raw.slug || `journal-fallback-${Date.now()}`,
+      metadata: {
+        title: raw.title || 'Untitled Sanctuary Entry',
+        description: raw.description || t.page_description,
+        author,
+        published_date: raw.publishedDate || new Date().toISOString(),
+        tags: normalizedTags.length > 0 ? normalizedTags : ['sanctuary'],
+        vibe: isNight ? 'night' : 'day',
+        ogImage: typeof raw.ogImage === 'object' ? raw.ogImage?.url : (raw.ogImage || undefined),
+        readingTime: Math.max(1, Math.ceil(mdx.split(/\s+/).length / 225))
+      },
+      content: mdx
+    });
   }
-
-  // 2. Inteligencia de Contenido
-  const rawTags = (raw.tags || []).map(t => t.tag.toLowerCase());
-  const mdx = compileLexicalToMarkdown(raw.content);
-  
-  // Detección de atmósfera (Pilar XII: MEA/UX)
-  const isNight = ['night', 'festival', 'party', 'techno', 'pride'].some(v => rawTags.includes(v));
-
-  // 3. Inferencia y Validación SSoT
-  return postWithSlugSchema.parse({
-    slug: raw.slug || `journal-fallback-${Date.now()}`,
-    metadata: {
-      title: raw.title || 'Untitled Sanctuary Entry',
-      description: raw.description || t.page_description,
-      author,
-      published_date: raw.publishedDate || new Date().toISOString(),
-      tags: rawTags.length > 0 ? rawTags : ['sanctuary'],
-      vibe: isNight ? 'night' : 'day',
-      ogImage: typeof raw.ogImage === 'object' ? raw.ogImage?.url : (raw.ogImage || undefined),
-      readingTime: Math.max(1, Math.ceil(mdx.split(/\s+/).length / 225))
-    },
-    content: mdx
-  });
 }
 
 /**
- * PRIVATE CLASS: EditorialDataResolver
- * @description Centraliza la orquestación de fuentes de datos con resiliencia total.
+ * ============================================================================
+ * APARATO 3: DATA RESOLVER (The Orchestrator)
+ * @description Responsabilidad Única: Enlace de Red, Mocks y Fallbacks.
+ * ============================================================================
  */
 class EditorialDataResolver {
-  private static async getPayload() {
+  private static async getPayloadInstance() {
     if (cachedPayload) return cachedPayload;
     cachedPayload = await getPayload({ config: await configPromise });
     return cachedPayload;
   }
 
-  /**
-   * @description Determina si el sistema debe operar en modo "Mocks Only".
-   */
   private static get useMocks(): boolean {
     return (IS_BUILD_ENV && !DB_READY) || process.env.DATA_SOURCE === 'MOCKS';
+  }
+
+  private static adaptMockToRaw(mock: RawMockPost): RawPayloadPost {
+    return {
+      ...mock,
+      ogImage: mock.ogImageLocal,
+    };
   }
 
   public static async fetch(options: { 
@@ -159,18 +186,30 @@ class EditorialDataResolver {
     const sourceLabel = this.useMocks ? 'MOCKS' : 'CMS';
     console.log(`[HEIMDALL][EDITORIAL] Source: ${sourceLabel} | Lang: ${options.lang}`);
 
+    // VIA 1: GENESIS MOCKS
     if (this.useMocks) {
-      const mocks = MOCK_POSTS.map(m => shapeEditorialEntry(m, dict));
-      if (options.slug) return mocks.filter(m => m.slug === options.slug);
+      const mocks = MOCK_POSTS.map(m => EditorialShaper.shape(this.adaptMockToRaw(m), dict));
+      
+      if (options.slug) {
+        const targetSlug = options.slug;
+        return mocks.filter(m => m.slug === targetSlug);
+      }
+      
       if (options.tag) {
+        /** 
+         * @fix Linter 'no-non-null-assertion': Se aísla el valor en una constante de 
+         * bloque para que TS garantice que no es nulo dentro del closure de filtrado.
+         */
         const targetTag = options.tag;
         return mocks.filter(m => m.metadata.tags.includes(targetTag));
       }
+      
       return mocks;
     }
 
+    // VIA 2: PAYLOAD CMS
     try {
-      const payload = await this.getPayload();
+      const payload = await this.getPayloadInstance();
       const { docs } = await payload.find({
         collection: 'blog-posts',
         where: {
@@ -186,17 +225,19 @@ class EditorialDataResolver {
         throw new Error('EMPTY_COLLECTION');
       }
 
-      return docs.map(doc => shapeEditorialEntry(doc, dict));
+      return docs.map(doc => EditorialShaper.shape(doc, dict));
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message : 'Link Interrupted';
       console.warn(`[HEIMDALL][RECOVERY] CMS Link Degraded: ${msg}. Activating Genesis Fallback.`);
-      return MOCK_POSTS.map(m => shapeEditorialEntry(m, dict));
+      return MOCK_POSTS.map(m => EditorialShaper.shape(this.adaptMockToRaw(m), dict));
     }
   }
 }
 
 /**
- * ACCIONES PÚBLICAS SOBERANAS
+ * ============================================================================
+ * ACCIONES PÚBLICAS SOBERANAS (The Public API)
+ * ============================================================================
  */
 
 export async function getAllPosts(lang: Locale = i18n.defaultLocale): Promise<PostWithSlug[]> {
