@@ -1,30 +1,27 @@
 /**
  * @file apps/portfolio-web/src/app/not-found.tsx
- * @description Guardián de errores 404 a nivel raíz (fuera de segmentos de idioma).
- *              Implementa un protocolo de rescate redireccionando al usuario a la
- *              recepción (Home) del idioma soberano por defecto.
- * @version 10.0
- * @author Raz Podestá - MetaShark Tech
+ * @description Guardián de errores 404 a nivel raíz.
+ *              Refactorizado: Inyección de <html> y <body> obligatorios
+ *              para el App Router, erradicando el error de Next.js fallback.
+ * @version 11.0 - Next.js 15 Native Router Standard
+ * @author Staff Engineer - MetaShark Tech
  */
 
-import { redirect } from 'next/navigation';
-
-/**
- * IMPORTACIONES NIVELADAS (Cumplimiento estricto @nx/enforce-module-boundaries)
- * Se utiliza la ruta relativa para mantener la integridad del grafo de Nx.
- */
-import { i18n } from '../config/i18n.config';
-
-/**
- * Aparato de Rescate: GlobalNotFound
- * Este componente actúa como la última línea de defensa cuando el middleware
- * no logra interceptar una ruta inexistente o mal formada en la raíz del dominio.
- */
 export default function GlobalNotFound() {
-  /**
-   * PROTOCOLO DE REDIRECCIÓN:
-   * Forzamos el regreso al ecosistema controlado mediante el locale por defecto.
-   * En el Beach Hotel Canasvieiras, el flujo siempre debe ser localizado.
-   */
-  redirect(`/${i18n.defaultLocale}`);
+  return (
+    <html lang="en">
+      <body style={{ margin: 0, backgroundColor: '#050505', color: '#ffffff', fontFamily: 'sans-serif' }}>
+        <main style={{ display: 'flex', height: '100vh', width: '100%', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+          <h1 style={{ fontSize: '3rem', fontWeight: 'bold', margin: '0 0 1rem 0' }}>404</h1>
+          <p style={{ color: '#a1a1aa', marginBottom: '2rem' }}>Sanctuary perimeter not found.</p>
+          <a 
+            href="/pt-BR" 
+            style={{ padding: '12px 24px', backgroundColor: '#a855f7', color: '#fff', textDecoration: 'none', borderRadius: '9999px', fontSize: '12px', letterSpacing: '0.2em', textTransform: 'uppercase', fontWeight: 'bold' }}
+          >
+            Return to Core
+          </a>
+        </main>
+      </body>
+    </html>
+  );
 }

@@ -1,30 +1,23 @@
 /**
  * @file apps/portfolio-web/src/app/[lang]/maintenance/page.tsx
  * @description Página de Mantenimiento Programado.
- *              Refactorizado: Blindaje contra serialización JSON (Fix: reading 'env'),
- *              SSG Hardened y cumplimiento de tipos Next.js 15.
- * @version 6.0 - Build-Ready
+ *              Refactorizado: Purga de generateStaticParams para evitar 
+ *              colisiones de worker threads en Next.js 15.
+ * @version 6.1 - Build-Ready
  * @author Staff Engineer - MetaShark Tech
  */
 
 import type { Metadata } from 'next';
 import { AlertOctagon, RefreshCw } from 'lucide-react';
 
-/** IMPORTACIONES NIVELADAS */
 import { getDictionary } from '../../../lib/get-dictionary';
-import { i18n, type Locale } from '../../../config/i18n.config';
+import { type Locale } from '../../../config/i18n.config';
 import { FadeIn } from '../../../components/ui/FadeIn';
 
 type MaintenancePageProps = {
   params: Promise<{ lang: Locale }>;
 };
 
-/** Genera parámetros estáticos para SSG total. */
-export async function generateStaticParams() {
-  return i18n.locales.map((lang) => ({ lang }));
-}
-
-/** Orquestador de Metadatos: Estable y serializable. */
 export async function generateMetadata(props: MaintenancePageProps): Promise<Metadata> {
   const params = await props.params;
   const dictionary = await getDictionary(params.lang);
@@ -44,7 +37,6 @@ export default async function MaintenancePage(props: MaintenancePageProps) {
 
   return (
     <main className="relative flex h-screen w-full flex-col items-center justify-center bg-[#050505] text-white px-6 text-center overflow-hidden">
-      
       <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_center,rgba(234,179,8,0.05),transparent_70%)] pointer-events-none" />
       
       <FadeIn delay={0.2} yOffset={0}>
@@ -68,7 +60,7 @@ export default async function MaintenancePage(props: MaintenancePageProps) {
           </p>
 
           <div className="flex flex-col items-center gap-6">
-            <div className="rounded-full bg-white/[0.03] border border-white/10 px-8 py-3 text-xs text-zinc-500 font-mono tracking-widest uppercase flex items-center gap-3">
+            <div className="rounded-full bg-white/3 border border-white/10 px-8 py-3 text-xs text-zinc-500 font-mono tracking-widest uppercase flex items-center gap-3">
               <RefreshCw size={14} className="animate-spin" />
               {t.estimated_return}
             </div>
