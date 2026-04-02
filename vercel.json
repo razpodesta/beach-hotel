@@ -4,7 +4,7 @@
   "installCommand": "pnpm install",
   "buildCommand": "pnpm run build",
   "outputDirectory": "dist/apps/portfolio-web/.next",
-  "ignoreCommand": "npx nx affected:apps --plain --base=main --head=HEAD | grep -q portfolio-web && exit 1 || exit 0",
+  "ignoreCommand": "exit 1",
   "cleanUrls": true,
   "trailingSlash": false,
   "regions": ["gru1"],
