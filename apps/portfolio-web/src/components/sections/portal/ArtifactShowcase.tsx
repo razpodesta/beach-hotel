@@ -1,10 +1,11 @@
 /**
  * @file ArtifactShowcase.tsx
  * @description Centro de Mando de Reputación y Exhibición de Artefactos (Protocolo 33).
- *              Orquesta la visualização del progresso, segmentación por casas y grid dinámico.
- *              Refactorizado: Atomização completa, purga de variables muertas y sincronía P33.
- * @version 3.0 - Atomized & Linter Pure
- * @author Raz Podestá - MetaShark Tech
+ *              Orquesta la visualización del progreso y la taxonomía de fragmentos.
+ *              Refactorizado: Sincronía dinámica de rangos i18n, optimización de 
+ *              interpolación de grid y cumplimiento de arquitectura Multi-Silo.
+ * @version 3.1 - Dynamic Rank Sync & Layout Fluidity
+ * @author Raz Podestá - Staff Engineer, MetaShark Tech
  */
 
 'use client';
@@ -29,8 +30,8 @@ import {
 } from '@metashark/protocol-33';
 
 /**
- * IMPORTACIONES DE INFRAESTRUCTRURA Y ATOMOS
- * @pilar V: Adherencia arquitectónica.
+ * IMPORTACIONES DE INFRAESTRUCTRURA
+ * @pilar_V: Adherencia arquitectónica.
  */
 import { cn } from '../../../lib/utils/cn';
 import { ArtifactCard } from './ArtifactCard';
@@ -38,7 +39,7 @@ import type { Dictionary } from '../../../lib/schemas/dictionary.schema';
 
 /**
  * @interface ArtifactShowcaseProps
- * @pilar III: Seguridad de Tipos Absoluta.
+ * @pilar_III: Seguridad de Tipos Absoluta.
  */
 export interface ArtifactShowcaseProps {
   userXp: number;
@@ -48,85 +49,104 @@ export interface ArtifactShowcaseProps {
 
 /**
  * APARATO PRINCIPAL: ArtifactShowcase
- * @description Gestiona el estado de filtrado y compone los átomos de la cuadrícula.
+ * @description Gestiona el estado de filtrado y compone los átomos de la cuadrícula de reputación.
  */
 export function ArtifactShowcase({ userXp, ownedIds, dictionary }: ArtifactShowcaseProps) {
   const [activeHouse, setActiveHouse] = useState<House | 'ALL'>('ALL');
   
-  // Cálculo de Progreso SSoT
+  /** 1. CÁLCULO DE PROGRESO SOBERANO (Math Engine Sync) */
   const progress = useMemo(() => calculateProgress(userXp), [userXp]);
+
+  /** 
+   * 2. RESOLVER DE RANGO DINÁMICO 
+   * @description Selecciona el título honorífico basado en el nivel de ascensión.
+   */
+  const rankTitle = useMemo(() => {
+    const lvl = progress.currentLevel;
+    const r = dictionary.ranks;
+    if (lvl >= 33) return r.oracle;
+    if (lvl >= 25) return r.sovereigns;
+    if (lvl >= 15) return r.masters;
+    if (lvl >= 5) return r.advanced;
+    return r.initiates;
+  }, [progress.currentLevel, dictionary.ranks]);
 
   /**
    * PROTOCOLO HEIMDALL: Telemetría de Montaje
    */
   useEffect(() => {
-    console.log(`[HEIMDALL][P33] ArtifactShowcase synchronized. Current XP: ${userXp}`);
-  }, [userXp]);
+    console.log(`[HEIMDALL][P33] ArtifactShowcase Calibrated. Rank: ${rankTitle} | Level: ${progress.currentLevel}`);
+  }, [progress.currentLevel, rankTitle]);
 
-  // Filtragem Táctica (Performance O(n))
+  /** 3. MOTOR DE FILTRADO TÁCTICO (O(n) Performance) */
   const filteredArtifacts = useMemo(() => {
     return ARTIFACTS.filter(a => activeHouse === 'ALL' || a.house === activeHouse);
   }, [activeHouse]);
 
-  /** 
-   * MATRIZ DE CASAS (SSoT UI) 
-   * @pilar III: Tipado estricto LucideIcon.
-   */
+  /** 4. MATRIZ DE CASAS (SSoT Navigation) */
   const houses: Array<{ id: House | 'ALL', icon: LucideIcon, label: string }> = useMemo(() => [
     { id: 'ALL', icon: Trophy, label: 'COLEÇÃO COMPLETA' },
-    { id: 'ARCHITECTS', icon: Shield, label: 'CASA DOS ARQUITETOS' },
-    { id: 'WEAVERS', icon: Sparkles, label: 'CASA DAS TEJEDORAS' },
-    { id: 'ANOMALIES', icon: Cpu, label: 'CASA DOS ANOMALIA' }
+    { id: 'ARCHITECTS', icon: Shield, label: 'ARQUITETOS' },
+    { id: 'WEAVERS', icon: Sparkles, label: 'TEJEDORAS' },
+    { id: 'ANOMALIES', icon: Cpu, label: 'ANOMALIA' }
   ], []);
 
   return (
     <div className="space-y-16 animate-in fade-in duration-1000">
       
-      {/* --- 1. HEADER DE STATUS (The Ascension Bar) --- */}
+      {/* --- 1. HEADER DE STATUS (The Ascension Hub) --- */}
       <header className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-end">
         <div className="lg:col-span-2 space-y-6">
-          <div className="flex items-center gap-4">
-             <div className="h-12 w-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
-                <Zap size={24} className="animate-pulse" />
+          <div className="flex items-center gap-5">
+             <div className="h-14 w-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shadow-luxury">
+                <Zap size={28} className="animate-pulse" />
              </div>
              <div>
-                <span className="text-[10px] font-mono font-bold text-muted-foreground uppercase tracking-[0.5em]">Nível de Ascensão</span>
-                <h2 className="text-3xl font-display font-bold text-foreground tracking-tighter">
-                   {progress.currentLevel} • <span className="text-primary">Soberano</span>
+                <span className="text-[10px] font-mono font-bold text-muted-foreground uppercase tracking-[0.5em] block mb-1">
+                  Nível de Ascensão {progress.currentLevel}
+                </span>
+                <h2 className="text-4xl font-display font-bold text-foreground tracking-tighter leading-none">
+                   {rankTitle}
                 </h2>
              </div>
           </div>
 
-          <div className="space-y-3">
-             <div className="flex justify-between text-[9px] font-bold uppercase tracking-widest text-muted-foreground">
-                <span>Experiência Total: {progress.currentXp} RZB</span>
-                <span>Próximo Nível: {progress.nextLevelXp} RZB</span>
+          <div className="space-y-4">
+             <div className="flex justify-between text-[9px] font-bold uppercase tracking-widest text-muted-foreground/60">
+                <span className="flex items-center gap-2">
+                  <StarIcon className="text-primary h-3 w-3" /> 
+                  Experiência: {progress.currentXp} RZB
+                </span>
+                <span>Próximo Rango: {progress.nextLevelXp} RZB</span>
              </div>
-             <div className="h-2 w-full bg-foreground/5 rounded-full overflow-hidden border border-white/5">
+             <div className="h-2.5 w-full bg-foreground/5 rounded-full overflow-hidden border border-white/5 p-0.5">
                 <motion.div 
                   initial={{ width: 0 }} 
                   animate={{ width: `${progress.progressPercent}%` }} 
-                  transition={{ duration: 2, ease: "circOut" }}
-                  /** @fix: Sugerencia de clase canónica Tailwind v4 */
-                  className="h-full bg-linear-to-r from-primary via-accent to-primary relative shadow-[0_0_15px_oklch(65%_0.25_270/0.3)]"
-                />
+                  transition={{ duration: 2, ease: [0.16, 1, 0.3, 1] }}
+                  className="h-full bg-linear-to-r from-primary via-accent to-primary relative rounded-full shadow-[0_0_20px_oklch(65%_0.25_270/0.4)]"
+                >
+                   <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
+                </motion.div>
              </div>
           </div>
         </div>
 
-        <div className="bg-surface/60 border border-border p-6 rounded-4xl flex items-center justify-between shadow-2xl">
-           <div className="space-y-1">
-              <span className="block text-[8px] font-mono text-zinc-500 uppercase tracking-widest">Artefatos Coletados</span>
-              <span className="text-2xl font-display font-bold text-foreground">{ownedIds.length}<span className="text-zinc-700">/33</span></span>
+        <div className="bg-surface/40 backdrop-blur-xl border border-border/50 p-8 rounded-[2.5rem] flex items-center justify-between shadow-3xl">
+           <div className="space-y-2">
+              <span className="block text-[9px] font-mono text-zinc-500 uppercase tracking-widest font-bold">Patrimônio Digital</span>
+              <span className="text-3xl font-display font-bold text-foreground tracking-tighter">
+                {ownedIds.length}<span className="text-zinc-700">/33</span>
+              </span>
            </div>
-           <div className="h-12 w-12 rounded-full border border-border flex items-center justify-center text-zinc-800">
-              <Info size={20} />
+           <div className="h-12 w-12 rounded-full border border-border flex items-center justify-center text-zinc-800 hover:text-primary transition-colors cursor-help group">
+              <Info size={20} className="group-hover:scale-110 transition-transform" />
            </div>
         </div>
       </header>
 
-      {/* --- 2. FILTRAGEM POR LINAGEM --- */}
-      <nav className="flex flex-wrap gap-3 bg-surface/30 p-2 rounded-3xl border border-border/50 w-max mx-auto lg:mx-0">
+      {/* --- 2. FILTRAGEM POR LINAGEM (Tactic Navigation) --- */}
+      <nav className="flex flex-wrap gap-3 bg-surface/30 p-2 rounded-3xl border border-border/50 w-max mx-auto lg:mx-0 backdrop-blur-md">
         {houses.map((house) => {
           const HouseIcon = house.icon;
           const isActive = activeHouse === house.id;
@@ -137,7 +157,7 @@ export function ArtifactShowcase({ userXp, ownedIds, dictionary }: ArtifactShowc
               className={cn(
                 "flex items-center gap-3 px-6 py-3 rounded-2xl text-[9px] font-bold uppercase tracking-widest transition-all outline-none",
                 isActive 
-                  ? "bg-foreground text-background shadow-lg scale-105" 
+                  ? "bg-foreground text-background shadow-2xl scale-105" 
                   : "text-muted-foreground hover:text-foreground hover:bg-surface/50"
               )}
             >
@@ -149,17 +169,19 @@ export function ArtifactShowcase({ userXp, ownedIds, dictionary }: ArtifactShowc
       </nav>
 
       {/* --- 3. GRID DE ATOMOS (The 33 Chamber) --- */}
-      <motion.div layout className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+      <motion.div 
+        layout 
+        className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 min-h-[400px]"
+      >
         <AnimatePresence mode="popLayout">
           {filteredArtifacts.map((artifact) => {
             const isOwned = ownedIds.includes(artifact.id);
-            const artifactI18n = dictionary.artifacts[artifact.id] || { name: artifact.id, lore: "???" };
+            const artifactI18n = dictionary.artifacts[artifact.id] || { 
+              name: `Fragmento ${artifact.id.substring(0, 5)}`, 
+              lore: "Dados de fragmento em fase de sincronização..." 
+            };
             const rarityKey = artifact.rarity.toLowerCase() as keyof typeof dictionary.rarity_labels;
             
-            /**
-             * @fix: Erradicación de variable 'artifact' no utilizada en el Card.
-             * Pasamos únicamente las props procesadas para cumplir con el Pilar X.
-             */
             return (
               <ArtifactCard
                 key={artifact.id}
@@ -173,17 +195,26 @@ export function ArtifactShowcase({ userXp, ownedIds, dictionary }: ArtifactShowc
       </motion.div>
 
       {/* --- 4. FOOTER: CONVITE AO PROTOCOLO --- */}
-      <footer className="pt-12 border-t border-border/50 flex flex-col md:flex-row items-center justify-between gap-8">
+      <footer className="pt-12 border-t border-border/50 flex flex-col md:flex-row items-center justify-between gap-8 opacity-60 hover:opacity-100 transition-opacity duration-700">
           <div className="flex items-center gap-4">
-             <Hexagon size={20} className="text-primary animate-spin-slow" />
-             <p className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">
-                Acesse o <span className="text-foreground font-bold">Concierge Journal</span> para pistas sobre fragmentos.
+             <Hexagon size={24} className="text-primary animate-spin-slow" strokeWidth={1.5} />
+             <p className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest leading-relaxed">
+                Consulte o <span className="text-foreground font-bold underline decoration-primary/30">Concierge Journal</span> para localizar pistas sobre novos fragmentos latentes.
              </p>
           </div>
-          <button className="group flex items-center gap-4 px-10 py-5 rounded-full bg-white text-black font-bold text-[10px] uppercase tracking-[0.4em] transition-all hover:bg-primary hover:text-white shadow-3xl active:scale-95">
-             Ver Rank Global <ChevronRight size={16} className="transition-transform group-hover:translate-x-2" />
+          <button className="group flex items-center gap-5 px-10 py-5 rounded-full bg-white text-black font-bold text-[10px] uppercase tracking-[0.4em] transition-all hover:bg-primary hover:text-white shadow-3xl active:scale-95">
+             Rank Global de Ascensão <ChevronRight size={16} className="transition-transform group-hover:translate-x-2" />
           </button>
       </footer>
     </div>
+  );
+}
+
+/** Átomos Locales para higiene visual */
+function StarIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} fill="currentColor" viewBox="0 0 24 24">
+      <path d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.784 1.4 8.168L12 18.896l-7.334 3.866 1.4-8.168L.132 9.21l8.2-1.192L12 .587z" />
+    </svg>
   );
 }

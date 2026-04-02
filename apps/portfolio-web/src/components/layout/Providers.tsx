@@ -2,20 +2,28 @@
  * @file Providers.tsx
  * @description Orquestador Soberano de Infraestructura de UI. 
  *              Implementa el Protocolo "Day-First" con persistencia de atmósfera,
- *              inyección vía data-attributes y blindaje de hidratación React 19.
- * @version 5.0 - Sovereign Day-First Edition
- * @author Raz Podestá - MetaShark Tech
+ *              inyección vía data-attributes, blindaje de hidratación React 19,
+ *              y el Nuevo Guardián de Identidad (Supabase Sync).
+ * @version 6.0 - Sovereign Identity & Day-First Edition
+ * @author Raz Podestá - Staff Engineer, MetaShark Tech
  */
 
 'use client';
 
-import { useCallback, useSyncExternalStore } from 'react';
+import React, { useCallback, useSyncExternalStore, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { ThemeProvider } from 'next-themes';
 
 /**
+ * IMPORTACIONES DE INFRAESTRUCTURA
+ * @pilar_V: Adherencia arquitectónica.
+ */
+import { supabase } from '../../lib/supabase/client';
+import { useUIStore } from '../../lib/store/ui.store';
+import type { EnterpriseRole } from '../../lib/route-guard';
+
+/**
  * @interface ProvidersProps
- * @description Contrato de propiedades para el orquestador de contextos.
  */
 interface ProvidersProps {
   children: ReactNode;
@@ -23,17 +31,12 @@ interface ProvidersProps {
 
 /**
  * Hook de Hidratación de Élite: useIsMounted
- * @description Utiliza la suscripción atómica al DOM para garantizar que el
- *              cliente está totalmente sincronizado antes de renderizar lógica de tema.
+ * @description Evita el "Hydration Mismatch" asegurando sincronía atómica con el DOM.
  */
 function useIsMounted(): boolean {
-  /**
-   * @pilar X: Higiene de Código.
-   * La función de suscripción es terminal y estática en el cliente.
-   */
   const subscribe = useCallback(() => {
     return () => {
-      /* No-op: El ciclo de vida de montaje no requiere des-suscripción activa */
+      /* No-op: Suscripción estática en cliente */
     };
   }, []);
 
@@ -45,16 +48,65 @@ function useIsMounted(): boolean {
 }
 
 /**
- * APARATO: Providers
+ * SUB-APARATO: IdentityGuard (El Eslabón Perdido)
+ * @description Escucha silenciosamente el motor de Supabase y sincroniza la
+ *              bóveda de estado global (Zustand) con la realidad criptográfica.
+ * @pilar_VIII: Resiliencia - Mantiene la UI congruente entre múltiples pestañas.
+ */
+function IdentityGuard() {
+  const setSession = useUIStore((s) => s.setSession);
+  const clearSession = useUIStore((s) => s.clearSession);
+
+  useEffect(() => {
+    // 1. Sincronización Inicial (Al montar la app)
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        setSession({
+          userId: session.user.id,
+          email: session.user.email ?? '',
+          role: (session.user.app_metadata?.role as EnterpriseRole) || 'guest',
+          tenantId: (session.user.app_metadata?.tenantId as string) || null,
+          lastLogin: new Date().toISOString(),
+        });
+      }
+    });
+
+    // 2. Suscripción a la Matriz de Eventos (Real-Time Auth)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log(`[HEIMDALL][AUTH] Cryptographic Transition Detected: ${event}`);
+      
+      if (event === 'SIGNED_OUT' || !session) {
+        clearSession();
+      } else if (session) {
+        setSession({
+          userId: session.user.id,
+          email: session.user.email ?? '',
+          role: (session.user.app_metadata?.role as EnterpriseRole) || 'guest',
+          tenantId: (session.user.app_metadata?.tenantId as string) || null,
+          lastLogin: new Date().toISOString(),
+        });
+      }
+    });
+
+    // Limpieza forense de la suscripción al desmontar
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [setSession, clearSession]);
+
+  return null; // Componente de infraestructura, no renderiza UI
+}
+
+/**
+ * APARATO PRINCIPAL: Providers
  * @description Inyecta la inteligencia de atmósfera y estado global en el ecosistema.
  */
 export function Providers({ children }: ProvidersProps) {
   const isMounted = useIsMounted();
 
   /**
-   * @pilar VIII: Resiliencia de Hidratación.
-   * Devolvemos un fragmento puro durante SSR para prevenir el error de
-   * discrepancia entre el servidor y el cliente (Hydration Mismatch).
+   * @pilar_VIII: Resiliencia de Hidratación.
+   * Devolvemos un fragmento puro durante SSR para prevenir discrepancias visuales.
    */
   if (!isMounted) {
     return <>{children}</>;
@@ -63,11 +115,10 @@ export function Providers({ children }: ProvidersProps) {
   return (
     <ThemeProvider
       /**
-       * @pilar VII: Theming Soberano
-       * 1. Usamos 'data-theme' para permitir selectores CSS más potentes y escalables.
-       * 2. 'defaultTheme="light"' asegura que el hotel reciba al huésped con luz.
-       * 3. 'enableSystem={true}' permite al usuario volver a sincronizar con su SO.
-       * 4. 'storageKey' personalizado para asegurar la persistencia en el dominio.
+       * @pilar_VII: Theming Soberano
+       * 1. Usamos 'data-theme' para selectores CSS (Tailwind v4 OKLCH).
+       * 2. 'defaultTheme="light"' asegura el Modo Día inicial.
+       * 3. 'enableSystem={true}' sincroniza con el S.O.
        */
       attribute="data-theme"
       defaultTheme="light"
@@ -75,6 +126,9 @@ export function Providers({ children }: ProvidersProps) {
       disableTransitionOnChange={true}
       storageKey="beach-hotel-atmosphere"
     >
+      {/* El Guardián de Identidad orquesta la sesión en segundo plano */}
+      <IdentityGuard />
+      
       {children}
     </ThemeProvider>
   );

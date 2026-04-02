@@ -1,10 +1,10 @@
 /**
  * @file HeroCarousel.tsx
  * @description Orquestador Cinemático de la Recepción (Fase 1: Awareness).
- *              Refactorizado: Resolución de error de linter no-empty-function,
- *              blindaje de rutas multimedia y optimización de LCP.
- * @version 16.1 - Linter Pure & Cinematic Buffer Optimization
- * @author Raz Podestá - MetaShark Tech
+ *              Refactorizado: Purificación total de funciones vacías (no-empty-function),
+ *              resolución de retornos de efectos (TS7030) y optimización Supabase Storage.
+ * @version 17.2 - Flawless Linter & React 19 Standard
+ * @author Raz Podestá - Staff Engineer, MetaShark Tech
  */
 
 'use client';
@@ -21,7 +21,7 @@ import { Volume2, VolumeX, Sparkles, ArrowRight } from 'lucide-react';
 
 /**
  * IMPORTACIONES DE INFRAESTRUCTRURA
- * @pilar V: Adherencia arquitectónica.
+ * @pilar_V: Adherencia arquitectónica.
  */
 import { cn } from '../../../lib/utils/cn';
 import { getLocalizedHref } from '../../../lib/utils/link-helpers';
@@ -40,17 +40,13 @@ interface HeroCarouselProps {
  * @description Garantiza que el cliente está totalmente sincronizado antes de pintar multimedia.
  */
 function useIsMounted(): boolean {
-  /**
-   * @fix: @typescript-eslint/no-empty-function
-   * Se añade comentario descriptivo para satisfacer la regla de higiene del linter.
-   */
   const subscribe = useCallback(() => {
-    const noopUnsubscribe = () => {
-      /* No-op: El estado de montaje es terminal y estático en el cliente */
-    };
-    return noopUnsubscribe;
+    /** 
+     * @fix: no-empty-function 
+     * Se añade 'void 0' para declarar una intención de no-operación explícita.
+     */
+    return () => { void 0; };
   }, []);
-
   return useSyncExternalStore(subscribe, () => true, () => false);
 }
 
@@ -62,11 +58,27 @@ export function HeroCarousel({ dictionary }: HeroCarouselProps) {
   const isMounted = useIsMounted();
   const pathname = usePathname();
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const fadeIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const videoRefs = useRef<Record<number, HTMLVideoElement | null>>({});
   
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [isMuted, setIsMuted] = useState(true);
-  const [videoLoaded, setVideoLoaded] = useState<Record<number, boolean>>({});
+  const [loadedAssets, setLoadedAssets] = useState<Record<number, boolean>>({});
+
+  /**
+   * RESOLVER SOBERANO DE ACTIVOS (Supabase Sync)
+   * @description Mapea rutas lógicas a URLs físicas del bucket 'sanctuary-vault'.
+   */
+  const getAssetUrl = useCallback((path: string) => {
+    if (!path) return '';
+    if (path.startsWith('http')) return path;
+    
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    if (supabaseUrl && !path.startsWith('/')) {
+        return `${supabaseUrl}/storage/v1/object/public/sanctuary-vault/${path}`;
+    }
+    
+    return path.startsWith('/') ? path : `/${path}`;
+  }, []);
 
   const currentLang = useMemo(() => {
     const segments = pathname?.split('/') ?? [];
@@ -74,20 +86,6 @@ export function HeroCarousel({ dictionary }: HeroCarouselProps) {
     return i18n.locales.includes(candidate) ? candidate : i18n.defaultLocale;
   }, [pathname]);
 
-  /**
-   * HELPER: resolveAsset
-   * @description Garantiza que las rutas apunten a los subdirectorios correctos de /public.
-   */
-  const resolveAsset = (path: string) => {
-    if (!path) return '';
-    if (path.startsWith('http') || path.startsWith('/')) return path;
-    if (path.endsWith('.mp4')) return `/video/${path}`;
-    return `/images/hotel/${path}`;
-  };
-
-  /**
-   * MATRIZ NARRATIVA (Sincronizada con MACS)
-   */
   const slides = useMemo(() => [
     {
       id: 'hotel',
@@ -95,9 +93,9 @@ export function HeroCarousel({ dictionary }: HeroCarouselProps) {
       subtitle: dictionary.HOTEL_SUBTITLE,
       features: dictionary.HOTEL_FEATURES,
       assets: {
-        video: resolveAsset(dictionary.assets.hotel.video_url),
-        poster: resolveAsset(dictionary.assets.hotel.poster_url),
-        audio: resolveAsset(dictionary.assets.hotel.audio_url)
+        video: getAssetUrl(dictionary.assets.hotel.video_url),
+        poster: getAssetUrl(dictionary.assets.hotel.poster_url),
+        audio: getAssetUrl(dictionary.assets.hotel.audio_url)
       },
       cta: '/quienes-somos'
     },
@@ -107,53 +105,67 @@ export function HeroCarousel({ dictionary }: HeroCarouselProps) {
       subtitle: dictionary.FESTIVAL_SUBTITLE,
       features: dictionary.FESTIVAL_FEATURES,
       assets: {
-        video: resolveAsset(dictionary.assets.festival.video_url),
-        poster: resolveAsset(dictionary.assets.festival.poster_url),
-        audio: resolveAsset(dictionary.assets.festival.audio_url)
+        video: getAssetUrl(dictionary.assets.festival.video_url),
+        poster: getAssetUrl(dictionary.assets.festival.poster_url),
+        audio: getAssetUrl(dictionary.assets.festival.audio_url)
       },
       cta: '/festival'
     }
-  ], [dictionary]);
+  ], [dictionary, getAssetUrl]);
 
   const [emblaRef, emblaApi] = useEmblaCarousel(
-    { loop: true, duration: 60, skipSnaps: false }, 
-    [Fade(), Autoplay({ delay: 9000, stopOnInteraction: false })]
+    { loop: true, duration: 30, skipSnaps: false }, 
+    [Fade(), Autoplay({ delay: 10000, stopOnInteraction: false })]
   );
 
   /**
-   * MOTOR SENSORIAL: Audio Crossfade
+   * MOTOR DE AUDIO: Fade-In / Fade-Out
+   * @fix TS7030: Garantiza que todas las rutas de ejecución devuelvan una función de limpieza.
    */
   useEffect(() => {
-    if (!isMounted || !audioRef.current) return;
+    if (!isMounted || !audioRef.current) return () => { void 0; };
     
     const audio = audioRef.current;
-    if (fadeIntervalRef.current) clearInterval(fadeIntervalRef.current);
-
+    let fadeTimer: NodeJS.Timeout | undefined;
+    
     if (!isMuted) {
       audio.volume = 0;
-      audio.play().catch(() => console.warn('[HEIMDALL] Interaction required for audio.'));
+      audio.play().catch(() => { 
+        console.warn('[HEIMDALL] Interaction required for audio.'); 
+      });
       
-      let vol = 0;
-      fadeIntervalRef.current = setInterval(() => {
-        if (vol < 0.20) {
-          vol = Math.min(0.20, vol + 0.02);
-          audio.volume = vol;
+      fadeTimer = setInterval(() => {
+        if (audio.volume < 0.25) {
+          audio.volume = Math.min(0.25, audio.volume + 0.05);
         } else {
-          if (fadeIntervalRef.current) clearInterval(fadeIntervalRef.current);
+          if (fadeTimer) clearInterval(fadeTimer);
         }
-      }, 100);
+      }, 200);
     } else {
       audio.pause();
     }
 
-    return () => { if (fadeIntervalRef.current) clearInterval(fadeIntervalRef.current); };
-  }, [isMuted, isMounted, selectedIndex]);
+    return () => {
+      if (fadeTimer) clearInterval(fadeTimer);
+    };
+  }, [isMuted, isMounted]);
 
   const onSelect = useCallback(() => {
     if (!emblaApi) return;
     const index = emblaApi.selectedScrollSnap();
     setSelectedIndex(index);
-    console.log(`[HEIMDALL][UX] Awareness_Focus: Slide[${index}] -> ${slides[index].id}`);
+    
+    /** @pilar_IV: Heimdall Telemetry */
+    console.log(`[HEIMDALL][UX] Cinematic_Focus: Slide[${index}] | Asset: ${slides[index].id}`);
+    
+    // Gestión de reproducción sincronizada con el viewport activo
+    Object.values(videoRefs.current).forEach((v, i) => {
+      if (i === index) {
+        v?.play().catch(() => { void 0; });
+      } else {
+        v?.pause();
+      }
+    });
   }, [emblaApi, slides]);
 
   useEffect(() => {
@@ -166,38 +178,32 @@ export function HeroCarousel({ dictionary }: HeroCarouselProps) {
 
   return (
     <section 
-      className="relative h-[95vh] md:h-screen w-full bg-background overflow-hidden transition-colors duration-1000" 
+      className="relative h-[92vh] md:h-screen w-full bg-zinc-950 overflow-hidden" 
       role="region" 
-      aria-label={dictionary.page_title}
+      aria-label="Experience Showcase"
     >
-      {/* 1. CONTROL SENSORIAL */}
-      <div className="absolute top-32 right-8 z-50">
+      {/* 1. INTERFAZ DE CONTROL (HUD) */}
+      <div className="absolute top-32 right-8 z-50 flex flex-col gap-4">
         <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+          whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
           onClick={() => setIsMuted(!isMuted)}
           className={cn(
-            "group flex items-center gap-4 rounded-full border border-border/40 bg-surface/60 p-4 text-foreground backdrop-blur-2xl transition-all hover:bg-surface/80 shadow-luxury",
+            "group flex items-center gap-4 rounded-full border border-white/10 bg-black/40 p-4 text-white backdrop-blur-2xl transition-all hover:bg-black/60 shadow-2xl",
             !isMuted && "border-primary/50"
           )}
         >
-          {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} className="text-primary animate-pulse" />}
-          <AnimatePresence>
-            {!isMuted && (
-              <motion.span 
-                initial={{ width: 0, opacity: 0 }} animate={{ width: 'auto', opacity: 1 }} exit={{ width: 0, opacity: 0 }}
-                className="text-[9px] font-bold uppercase tracking-[0.2em] overflow-hidden whitespace-nowrap"
-              >
-                {dictionary.audio_active_label}
-              </motion.span>
-            )}
-          </AnimatePresence>
+          {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} className="text-primary animate-pulse" />}
+          {!isMuted && (
+            <span className="text-[9px] font-bold uppercase tracking-[0.2em] pr-2">
+              {dictionary.audio_active_label}
+            </span>
+          )}
         </motion.button>
       </div>
 
       <audio ref={audioRef} src={slides[selectedIndex].assets.audio} loop />
 
-      {/* 2. MOTOR CINEMÁTICO */}
+      {/* 2. MOTOR DE RENDERIZADO (Embla Viewport) */}
       <div className="h-full w-full" ref={emblaRef}>
         <div className="flex h-full">
           {slides.map((slide, index) => {
@@ -205,7 +211,7 @@ export function HeroCarousel({ dictionary }: HeroCarouselProps) {
             return (
               <div className="relative flex-[0_0_100%] h-full min-w-0" key={slide.id}>
                 {/* Visual Stack (LCP Optimized) */}
-                <div className="absolute inset-0 z-0 overflow-hidden bg-zinc-950">
+                <div className="absolute inset-0 z-0 overflow-hidden transform-gpu">
                   <Image
                     src={slide.assets.poster}
                     alt=""
@@ -213,21 +219,25 @@ export function HeroCarousel({ dictionary }: HeroCarouselProps) {
                     priority={index === 0}
                     className={cn(
                       "object-cover transition-opacity duration-1000",
-                      videoLoaded[index] ? "opacity-0" : "opacity-100",
-                      "brightness-[0.4] [data-theme='light']:brightness-[0.6]"
+                      loadedAssets[index] ? "opacity-0" : "opacity-100",
+                      "brightness-[0.4]"
                     )}
                   />
-                  {/* @pilar VIII: Resiliencia de carga de video */}
+                  
                   <video
+                    ref={(el) => { videoRefs.current[index] = el; }}
                     src={slide.assets.video}
                     poster={slide.assets.poster}
-                    autoPlay loop muted playsInline
-                    onCanPlayThrough={() => setVideoLoaded(prev => ({ ...prev, [index]: true }))}
+                    autoPlay={index === 0}
+                    loop muted playsInline
+                    onCanPlayThrough={() => {
+                      setLoadedAssets(prev => ({ ...prev, [index]: true }));
+                    }}
                     className={cn(
-                      "h-full w-full object-cover transition-transform duration-10000 ease-linear gpu-layer",
-                      "brightness-[0.4] [data-theme='light']:brightness-[0.65]",
-                      isActive ? "scale-110" : "scale-100",
-                      videoLoaded[index] ? "opacity-100" : "opacity-0"
+                      "h-full w-full object-cover transition-all duration-1000 transform-gpu",
+                      "brightness-[0.5] [data-theme='light']:brightness-[0.7]",
+                      isActive ? "scale-105" : "scale-100",
+                      loadedAssets[index] ? "opacity-100" : "opacity-0"
                     )}
                   />
                   
@@ -241,18 +251,18 @@ export function HeroCarousel({ dictionary }: HeroCarouselProps) {
                     {isActive && (
                       <motion.div
                         key={slide.id}
-                        initial={{ opacity: 0, y: 40, filter: 'blur(12px)' }}
+                        initial={{ opacity: 0, y: 40, filter: 'blur(10px)' }}
                         animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                        exit={{ opacity: 0, y: -20, filter: 'blur(12px)' }}
+                        exit={{ opacity: 0, y: -20, filter: 'blur(10px)' }}
                         transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-                        className="max-w-5xl"
+                        className="max-w-6xl"
                       >
-                        <div className="inline-flex items-center gap-4 px-6 py-2 rounded-full bg-surface/20 border border-white/10 text-[10px] font-bold text-white tracking-[0.5em] uppercase mb-10 backdrop-blur-xl">
-                           <Sparkles size={14} className="text-primary" />
+                        <div className="inline-flex items-center gap-4 px-6 py-2 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold text-primary tracking-[0.5em] uppercase mb-10 backdrop-blur-xl">
+                           <Sparkles size={14} className="animate-pulse" />
                            {slide.features}
                         </div>
                         
-                        <h1 className="font-display text-6xl md:text-8xl lg:text-9xl font-bold text-white tracking-tighter leading-[0.8] mb-12 uppercase drop-shadow-2xl">
+                        <h1 className="font-display text-6xl md:text-8xl lg:text-9xl font-bold text-white tracking-tighter leading-[0.8] mb-12 uppercase drop-shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
                           {slide.title}
                         </h1>
                         
@@ -262,7 +272,7 @@ export function HeroCarousel({ dictionary }: HeroCarouselProps) {
 
                         <Link 
                           href={getLocalizedHref(slide.cta, currentLang)}
-                          className="group relative inline-flex items-center gap-6 rounded-full px-12 py-6 text-[11px] font-bold uppercase tracking-[0.4em] transition-all duration-500 shadow-luxury active:scale-95 bg-foreground text-background hover:bg-primary hover:text-white"
+                          className="group relative inline-flex items-center gap-6 rounded-full px-12 py-6 text-[11px] font-bold uppercase tracking-[0.4em] transition-all duration-500 shadow-3xl active:scale-95 bg-primary text-white hover:bg-white hover:text-black"
                         >
                           {dictionary.CTA_BUTTON}
                           <ArrowRight size={18} className="transition-transform group-hover:translate-x-3" />
@@ -278,19 +288,24 @@ export function HeroCarousel({ dictionary }: HeroCarouselProps) {
       </div>
 
       {/* 3. NAVEGACIÓN */}
-      <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-50 flex items-center gap-4 bg-surface/40 backdrop-blur-md px-6 py-3 rounded-full border border-border/20 shadow-luxury transition-colors duration-1000">
+      <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-50 flex items-center gap-6 bg-black/20 backdrop-blur-xl px-8 py-4 rounded-full border border-white/5 shadow-luxury">
         {slides.map((_, i) => (
           <button
             key={i}
-            onClick={() => emblaApi?.scrollTo(i)}
-            className="group relative p-2 outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-full"
+            onClick={() => { emblaApi?.scrollTo(i); }}
+            className="group relative flex items-center justify-center p-2 outline-none"
+            aria-label={`Go to slide ${i + 1}`}
           >
             <div className={cn(
-              "h-1 transition-all duration-700 rounded-full",
-              i === selectedIndex ? "w-12 bg-foreground" : "w-4 bg-foreground/20 group-hover:bg-foreground/40"
+              "h-1.5 transition-all duration-1000 rounded-full",
+              i === selectedIndex ? "w-16 bg-primary shadow-[0_0_15px_var(--color-primary)]" : "w-4 bg-white/20 group-hover:bg-white/40"
             )} />
           </button>
         ))}
+      </div>
+      
+      <div className="absolute bottom-4 right-8 opacity-10 pointer-events-none select-none">
+         <span className="text-[7px] font-mono text-white uppercase tracking-[0.5em]">Supabase Asset Stream v17.2</span>
       </div>
     </section>
   );

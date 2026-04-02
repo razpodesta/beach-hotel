@@ -3,20 +3,21 @@
   "compilerOptions": {
     "baseUrl": "../..",
     
-    /* 
-       PILAR V: ADHERENCIA AL GRAFO SOBERANO
-       'composite' requiere 'incremental' activo en TS.
-    */
+    /**
+     * @pilar_V: Adherencia al Grafo Soberano.
+     * 'composite' requiere que todas las dependencias externas 
+     * sean rastreables mediante 'references'.
+     */
     "composite": true,
     "incremental": true,
     "tsBuildInfoFile": "../../dist/apps/portfolio-web/tsconfig.tsbuildinfo",
     
-    /* 
-       PILAR XIII: ALINEACIÓN CON EL MOTOR NEXT.JS
-    */
+    /**
+     * @pilar_XIII: Alineación con el Motor Next.js.
+     */
     "noEmit": true,
 
-    /* CONFIGURACIÓN NEXT.JS 15 + REACT 19 */
+    /* CONFIGURACIÓN NEXT.JS 15 + REACT 19 STANDARDS */
     "target": "es2022",
     "lib": ["dom", "dom.iterable", "esnext"],
     "module": "esnext",
@@ -35,6 +36,10 @@
     ".next/types/**/*.ts",
     "src/**/*.ts", 
     "src/**/*.tsx",
+    /**
+     * @fix_TS6307: Globbing recursivo. 
+     * El uso de '**' permite alcanzar subcarpetas como 'packages/cms/core'.
+     */
     "../../packages/**/src/**/*.ts",
     "../../packages/**/src/**/*.tsx"
   ],
@@ -42,6 +47,7 @@
     "node_modules", 
     "dist",
     "../../dist",
-    ".next"
+    ".next",
+    "out"
   ]
 }

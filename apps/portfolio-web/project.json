@@ -18,21 +18,37 @@
     },
     "build": {
       "executor": "@nx/next:build",
-      "outputs": ["{projectRoot}/.next"],
+      "outputs": ["{workspaceRoot}/dist/apps/portfolio-web"],
       "defaultConfiguration": "production",
       "options": {
-        "outputPath": "apps/portfolio-web",
-        "generatePackageJson": true
+        "outputPath": "dist/apps/portfolio-web"
+      },
+      "configurations": {
+        "development": {
+          "outputPath": "dist/apps/portfolio-web/dev"
+        },
+        "production": {}
       },
       "dependsOn": ["^build", "prebuild"],
       "cache": true
     },
     "serve": {
       "executor": "@nx/next:server",
+      "defaultConfiguration": "development",
       "options": {
         "buildTarget": "@metashark/portfolio-web:build",
         "dev": true,
         "port": 4200
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "@metashark/portfolio-web:build:development",
+          "dev": true
+        },
+        "production": {
+          "buildTarget": "@metashark/portfolio-web:build:production",
+          "dev": false
+        }
       },
       "dependsOn": ["prebuild"]
     },

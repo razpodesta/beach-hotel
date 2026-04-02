@@ -2,31 +2,35 @@
  * @file apps/portfolio-web/src/app/auth/callback/route.ts
  * @description Orquestador Soberano de Sincronización de Identidad.
  *              Maneja el intercambio de tokens de Supabase (OAuth/Magic Link)
- *              e inicializa el perfil del Huésped en el Clúster de Identidad.
- * @version 3.0 - Next.js 15 Standard & Identity Initialization
- * @author Raz Podestá - MetaShark Tech
+ *              e implementa el "Identity Bridge" para sincronizar automáticamente 
+ *              al huésped con el clúster de Payload CMS (SSoT).
+ * @version 4.0 - Next.js 15 & CMS Identity Bridge 
+ * @author Raz Podestá - Staff Engineer, MetaShark Tech
  */
 
 import { NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
+import crypto from 'node:crypto';
+import { getPayload } from 'payload';
+import configPromise from '@metashark/cms-core/config';
 
 /**
- * IMPORTACIONES DE INFRAESTRUCTRURA
- * @pilar V: Adherencia arquitectónica.
+ * IMPORTACIONES DE INFRAESTRUCTURA
+ * @pilar_V: Adherencia arquitectónica.
  */
 import { i18n } from '../../../config/i18n.config';
 
 /**
  * APARATO PRINCIPAL: GET (Auth Handshake)
- * @description Punto de retorno para Google, Facebook y Apple.
+ * @description Punto de retorno inmutable para proveedores OAuth y enlaces mágicos.
  */
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get('code');
   const next = searchParams.get('next') ?? '/';
   
-  // Detectar idioma para redirecciones de error
+  // Detectar idioma para redirecciones de error (Fallback seguro)
   const locale = next.split('/')[1] || i18n.defaultLocale;
 
   if (code) {
@@ -50,46 +54,94 @@ export async function GET(request: Request) {
             cookiesToSet.forEach(({ name, value, options }) =>
               cookieStore.set(name, value, options)
             );
-          } catch { /* Ignorado en Server Components */ }
+          } catch { 
+            // Ignorado intencionalmente: En Route Handlers puede fallar si 
+            // las cabeceras ya fueron enviadas, pero el middleware lo respaldará.
+          }
         },
       },
     });
 
-    // 3. Intercambio de Código por Sesión Soberana
-    console.group(`[HEIMDALL][AUTH] Handshake Initiated: ${new Date().toISOString()}`);
+    // 3. Intercambio Criptográfico
+    const traceId = `oauth_${Date.now()}`;
+    console.group(`[HEIMDALL][AUTH] Handshake Initiated: ${traceId}`);
+    
     const { data, error } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error && data.user) {
       const { user } = data;
+      const email = user.email;
       const provider = user.app_metadata.provider || 'email';
       
-      /**
-       * 4. PROTOCOLO DE INICIALIZACIÓN DE HUÉSPED
-       * @description Si el usuario es nuevo, Supabase lo registra.
-       * Aquí preparamos la metadata para el Clúster de Identidad.
-       */
       console.log(`[SUCCESS] Identity Verified via ${provider.toUpperCase()}`);
-      console.log(`[USER_ID] ${user.id}`);
-
-      // Telemetría de Metadatos del Dispositivo (MEA/UX)
-      //const userAgent = request.headers.get('user-agent') || 'unknown';
-      //const isApple = userAgent.toLowerCase().includes('iphone') || provider === 'apple';
 
       /**
-       * @todo En Fase 2: Realizar un upsert en la tabla 'public.users' 
-       * para asegurar que el rol 'guest' esté asignado en el CMS.
+       * 4. THE IDENTITY BRIDGE (Sincronización CMS SSoT)
+       * @description Aseguramos que la identidad exista en el ecosistema operativo
+       *              antes de dejar que el usuario acceda a zonas restringidas (RBAC).
        */
+      if (email) {
+        try {
+          const payload = await getPayload({ config: await configPromise });
+          
+          const existingUser = await payload.find({
+            collection: 'users',
+            where: { email: { equals: email } },
+            limit: 1
+          });
+
+          if (existingUser.docs.length === 0) {
+            console.log(`[SYNC] First-time OAuth detection. Provisioning CMS Identity...`);
+            
+            // Password de fallback criptográfico (deshabilitado para acceso manual, solo OAuth)
+            const fallbackPassword = crypto.randomBytes(32).toString('hex');
+            
+            await payload.create({
+              collection: 'users',
+              data: {
+                email: email,
+                password: fallbackPassword,
+                role: 'guest',
+                tenant: '00000000-0000-0000-0000-000000000001', // Master Tenant Genesis ID
+                _verified: true,
+                level: 1,
+                experiencePoints: 0
+              }
+            });
+            console.log(`[SUCCESS] Identity bridged to Sovereign CMS.`);
+          } else {
+            console.log(`[SYNC] Existing identity synced with CMS Cluster.`);
+          }
+        } catch (syncError) {
+          /**
+           * @pilar_VIII: Resiliencia Fail-Safe.
+           * Si el CMS está inaccesible o la BD fluctúa, no bloqueamos el login. 
+           * Reportamos el error pero permitimos que la sesión de Supabase fluya.
+           */
+          const msg = syncError instanceof Error ? syncError.message : 'Unknown CMS DB Drift';
+          console.error(`[CRITICAL] Identity Bridge Failed: ${msg}`);
+        }
+      }
 
       console.groupEnd();
       
-      // Redirección al Dashboard o a la ruta previa
-      return NextResponse.redirect(`${origin}${next}`);
+      /**
+       * 5. SMART ROUTING (MEA/UX)
+       * @description Si el destino es puramente la raíz ('/'), asumimos que 
+       *              el objetivo principal tras el login es el Dashboard.
+       */
+      const cleanNext = next === '/' ? `/${locale}/portal` : next;
+      
+      // Saneamiento Anti-Double-Slash
+      const finalUrl = `${origin}${cleanNext.startsWith('/') ? '' : '/'}${cleanNext}`;
+      return NextResponse.redirect(finalUrl);
+      
     } else {
       console.error(`[HEIMDALL][AUTH-ERROR] ${error?.message || 'Unknown Exchange Failure'}`);
       console.groupEnd();
     }
   }
 
-  // Fallback ante fallo de handshake
-  return NextResponse.redirect(`${origin}/${locale}/auth/error?reason=handshake_failed`);
+  // Fallback ante fallo de handshake o falta de código
+  return NextResponse.redirect(`${origin}/${locale}?auth=error`);
 }

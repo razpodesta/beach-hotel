@@ -1,11 +1,10 @@
 /**
  * @file apps/portfolio-web/src/lib/blog/actions.ts
  * @description Orquestador soberano de datos para el Concierge Journal.
- *              Refactorizado: Atomización funcional en Clases Especializadas,
- *              resolución del Crash de Build (Polimorfismo en Tags Mocks vs CMS),
- *              y erradicación del "non-null assertion" (Linter Strict Compliance).
- * @version 35.0 - Elite Linter Pure & Atomic Pipeline
- * @author Raz Podestá - MetaShark Tech
+ *              Refactorizado: Resolución de TS6307 vía tsconfig sync,
+ *              normalización de atmósfera (MEA/UX) y blindaje de tipos.
+ * @version 36.0 - Build Integrity & Linter Pure
+ * @author Raz Podestá - Staff Engineer, MetaShark Tech
  */
 
 import { getPayload, type Payload } from 'payload';
@@ -13,13 +12,14 @@ import configPromise from '@metashark/cms-core/config';
 
 /**
  * IMPORTACIONES DE INFRAESTRUCTRURA Y CONTRATO
- * @pilar V: Adherencia arquitectónica.
+ * @pilar_V: Adherencia arquitectónica.
+ * @nivelacion: Uso de extensiones .js para compatibilidad total con ESM/SWC.
  */
-import { postWithSlugSchema, type PostWithSlug } from '../schemas/blog.schema';
-import { i18n, type Locale } from '../../config/i18n.config';
-import { getDictionary } from '../get-dictionary';
-import { MOCK_POSTS, type RawMockPost } from '../../data/mocks/cms.mocks';
-import type { Dictionary } from '../schemas/dictionary.schema';
+import { postWithSlugSchema, type PostWithSlug } from '../schemas/blog.schema.js';
+import { i18n, type Locale } from '../../config/i18n.config.js';
+import { getDictionary } from '../get-dictionary.js';
+import { MOCK_POSTS, type RawMockPost } from '../../data/mocks/cms.mocks.js';
+import type { Dictionary } from '../schemas/dictionary.schema.js';
 
 /**
  * CONSTANTES DE ENTORNO SOBERANAS
@@ -58,10 +58,7 @@ interface RawPayloadPost {
 let cachedPayload: Payload | null = null;
 
 /**
- * ============================================================================
  * APARATO 1: COMPILADOR LEXICAL (The Transmuter)
- * @description Responsabilidad Única: Transmutar nodos AST a Markdown puro.
- * ============================================================================
  */
 class LexicalCompiler {
   public static compile(contentNode: unknown): string {
@@ -97,22 +94,13 @@ class LexicalCompiler {
 }
 
 /**
- * ============================================================================
  * APARATO 2: SHAPER EDITORIAL (The Purifier)
- * @description Responsabilidad Única: Normalizar la entidad y garantizar Zod SSoT.
- * ============================================================================
  */
 class EditorialShaper {
   public static shape(entry: unknown, dict: Dictionary): PostWithSlug {
-    /** 
-     * @pilar III: Justificación de 'as' -> El motor de DB retorna 'unknown' o 
-     * Record genéricos. Aserimos al contrato intermedio antes de pasarlo a Zod 
-     * para su validación final estricta.
-     */
     const raw = entry as RawPayloadPost;
     const t = dict.blog_page;
 
-    // 1. Resolución de Atribución
     let author = t.hero_title;
     if (raw.author) {
       author = typeof raw.author === 'object' 
@@ -120,7 +108,6 @@ class EditorialShaper {
         : raw.author;
     }
 
-    // 2. Resolución de Taxonomía Polimórfica (Soporte Mocks vs CMS)
     const rawTagsArray = Array.isArray(raw.tags) ? raw.tags : [];
     const normalizedTags = rawTagsArray.map(tagItem => {
       if (typeof tagItem === 'string') return tagItem.toLowerCase().trim();
@@ -130,13 +117,9 @@ class EditorialShaper {
       return null;
     }).filter(Boolean) as string[];
 
-    // 3. Inteligencia de Contenido
     const mdx = LexicalCompiler.compile(raw.content);
-    
-    // Detección de atmósfera (Pilar XII: MEA/UX)
     const isNight = ['night', 'festival', 'party', 'techno', 'pride'].some(v => normalizedTags.includes(v));
 
-    // 4. Inferencia y Validación Estricta SSoT
     return postWithSlugSchema.parse({
       slug: raw.slug || `journal-fallback-${Date.now()}`,
       metadata: {
@@ -155,10 +138,7 @@ class EditorialShaper {
 }
 
 /**
- * ============================================================================
  * APARATO 3: DATA RESOLVER (The Orchestrator)
- * @description Responsabilidad Única: Enlace de Red, Mocks y Fallbacks.
- * ============================================================================
  */
 class EditorialDataResolver {
   private static async getPayloadInstance() {
@@ -186,20 +166,14 @@ class EditorialDataResolver {
     const sourceLabel = this.useMocks ? 'MOCKS' : 'CMS';
     console.log(`[HEIMDALL][EDITORIAL] Source: ${sourceLabel} | Lang: ${options.lang}`);
 
-    // VIA 1: GENESIS MOCKS
     if (this.useMocks) {
       const mocks = MOCK_POSTS.map(m => EditorialShaper.shape(this.adaptMockToRaw(m), dict));
       
       if (options.slug) {
-        const targetSlug = options.slug;
-        return mocks.filter(m => m.slug === targetSlug);
+        return mocks.filter(m => m.slug === options.slug);
       }
       
       if (options.tag) {
-        /** 
-         * @fix Linter 'no-non-null-assertion': Se aísla el valor en una constante de 
-         * bloque para que TS garantice que no es nulo dentro del closure de filtrado.
-         */
         const targetTag = options.tag;
         return mocks.filter(m => m.metadata.tags.includes(targetTag));
       }
@@ -207,7 +181,6 @@ class EditorialDataResolver {
       return mocks;
     }
 
-    // VIA 2: PAYLOAD CMS
     try {
       const payload = await this.getPayloadInstance();
       const { docs } = await payload.find({
@@ -235,11 +208,8 @@ class EditorialDataResolver {
 }
 
 /**
- * ============================================================================
- * ACCIONES PÚBLICAS SOBERANAS (The Public API)
- * ============================================================================
+ * ACCIONES PÚBLICAS SOBERANAS
  */
-
 export async function getAllPosts(lang: Locale = i18n.defaultLocale): Promise<PostWithSlug[]> {
   const dict = await getDictionary(lang);
   return EditorialDataResolver.fetch({ lang }, dict);

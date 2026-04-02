@@ -1,7 +1,8 @@
 {
   "version": 2,
   "framework": "nextjs",
-  "buildCommand": "cd ../.. && npx nx build portfolio-web",
+  "installCommand": "pnpm install",
+  "buildCommand": "pnpm run build",
   "outputDirectory": "apps/portfolio-web/.next",
   "ignoreCommand": "npx nx affected:apps --plain --base=main --head=HEAD | grep -q portfolio-web || exit 0",
   "cleanUrls": true,

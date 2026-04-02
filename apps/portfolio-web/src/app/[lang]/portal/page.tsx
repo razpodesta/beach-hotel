@@ -1,9 +1,10 @@
 /**
  * @file apps/portfolio-web/src/app/[lang]/portal/page.tsx
- * @description Enterprise Operations Portal (HopEx v4.0).
- *              Refactorizado: Resolución de importaciones (TS2305/TS2304),
- *              tipado estricto de agentes y consolidación de silos.
- * @version 23.4 - Stable Orchestration
+ * @description Enterprise Operations Portal (HopEx v24.1).
+ *              Orquestador Soberano del Centro de Mando Administrativo.
+ *              Refactorizado: Resolución de importaciones faltantes (Framer Motion),
+ *              eliminación de código muerto y sincronización de tipos industriales.
+ * @version 24.1 - Sync Visual Engine & Clean Imports
  * @author Staff Engineer - MetaShark Tech
  */
 
@@ -15,6 +16,7 @@ import Link from 'next/link';
 import { getPayload, type CollectionSlug } from 'payload';
 import configPromise from '@metashark/cms-core/config';
 import { createServerClient } from '@supabase/ssr';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Terminal, Hotel, Briefcase, User, Settings, LogOut, 
   Activity, LayoutGrid, type LucideIcon,
@@ -22,17 +24,20 @@ import {
   ShieldCheck 
 } from 'lucide-react';
 
-/** IMPORTACIONES DE INFRAESTRUCTURA */
+/** IMPORTACIONES DE INFRAESTRUCTRURA */
 import { getDictionary } from '../../../lib/get-dictionary';
 import { type Locale } from '../../../config/i18n.config';
 import { BlurText } from '../../../components/razBits/BlurText';
 import { cn } from '../../../lib/utils/cn';
 
-/** OPERATIONAL MANAGERS */
+/** OPERATIONAL MANAGERS (Silos A, B, C, D) */
 import { AdminMediaPanel } from '../../../components/sections/portal/AdminMediaPanel';
 import { ArtifactShowcase } from '../../../components/sections/portal/ArtifactShowcase';
 import { IngestionManager } from '../../../components/sections/portal/IngestionManager';
 import { PartnerNetworkManager } from '../../../components/sections/portal/PartnerNetworkManager';
+import { OffersDashboard } from '../../../components/sections/portal/OffersDashboard';
+import { MarketingCloudManager } from '../../../components/sections/portal/MarketingCloudManager';
+import { CommsHubManager } from '../../../components/sections/portal/CommsHubManager';
 import type { AgencyEntity } from '../../../components/sections/portal/types';
 
 /** IMPORTACIONES DE CONTRATO */
@@ -54,12 +59,17 @@ interface EnterpriseSessionData {
   artifacts: string[];
 }
 
+/**
+ * MODULE: getActiveEnterpriseSession
+ * @description Resuelve la identidad del operador consultando el clúster de Supabase y el CMS.
+ */
 async function getActiveEnterpriseSession(): Promise<EnterpriseSessionData | null> {
+  // 1. EVALUACIÓN DE BYPASS TÉCNICO
   if (process.env.NEXT_PUBLIC_AUTH_BYPASS === 'true') {
     return { 
       userId: 'ROOT_ADMIN_S0', role: 'developer', email: 'dev-ops@metashark.tech', 
       tenant: '00000000-0000-0000-0000-000000000001', xp: 3333,
-      artifacts: ['monolito-obsidiana', 'terminal-fantasma']
+      artifacts: ['monolito-obsidiana', 'terminal-fantasma', 'entidad-ia']
     };
   }
 
@@ -109,19 +119,26 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
   return { title: `${dict.portal.nav_overview} | Platform Operations` };
 }
 
+/**
+ * APARATO PRINCIPAL: PortalPage
+ * @description Orquesta el acceso a las herramientas operativas del hotel con renderizado dinámico.
+ */
 export default async function PortalPage(props: PageProps) {
   const { lang } = await props.params;
   const { view } = await props.searchParams;
   const activeView = view || 'overview';
+  
   const session = await getActiveEnterpriseSession();
+  if (!session) redirect(`/${lang}`);
 
-  if (!session) redirect(`/${lang}/login`);
+  console.group(`[HEIMDALL][PORTAL] Entry: ${session.email} | View: ${activeView}`);
 
+  // 2. ORQUESTACIÓN PARALELA DE DATOS (Pilar X)
   const [dict, partnerInventory] = await Promise.all([
     getDictionary(lang),
     (async () => {
       const isManager = session.role === 'admin' || session.role === 'developer';
-      if (activeView === 'partner-hub' && isManager) {
+      if (activeView === 'partner-hub' && (isManager || session.role === 'operator')) {
         const payload = await getPayload({ config: await configPromise });
         const result = await payload.find({
           collection: 'agencies' as CollectionSlug,
@@ -133,6 +150,8 @@ export default async function PortalPage(props: PageProps) {
       return [];
     })()
   ]);
+
+  console.groupEnd();
 
   const t = dict.portal;
   const role: EnterpriseRole = session.role;
@@ -148,44 +167,109 @@ export default async function PortalPage(props: PageProps) {
 
   const operationSilos = [
     { group: "Core Operations", items: [{ id: 'overview', label: t.nav_overview, icon: Activity, roles: null }, { id: 'inventory', label: t.nav_inventory, icon: LayoutGrid, roles: ['admin', 'developer'] }] },
-    { group: "Silo A", items: [{ id: 'offers-flash', label: dict.offers_flash.title, icon: Zap, roles: ['admin', 'developer'] }, { id: 'offers-enterprise', label: 'B2B/Wholesale', icon: Percent, roles: ['admin', 'developer', 'operator'] }] },
-    { group: "Silo B", items: [{ id: 'partner-hub', label: dict.partner_network.title, icon: Users, roles: ['admin', 'developer', 'operator'] }, { id: 'partner-onboarding', label: dict.partner_network.agent_management.add_agent, icon: QrCode, roles: ['admin', 'developer'] }] },
-    { group: "Silo C", items: [{ id: 'data-pipeline', label: dict.ingestion_vault.title, icon: Database, roles: ['admin', 'developer'] }, { id: 'marketing-cloud', label: dict.marketing_cloud.title, icon: Send, roles: ['admin', 'developer'] }] },
-    { group: "Silo D", items: [{ id: 'comms-hub', label: dict.comms_hub.title, icon: Bell, roles: null }, { id: 'settings', label: t.cta_settings, icon: Settings, roles: null }] }
+    { group: "Silo A: Revenue", items: [{ id: 'offers-revenue', label: 'Revenue Dashboard', icon: Zap, roles: ['admin', 'developer'] }, { id: 'offers-enterprise', label: 'B2B Wholesale', icon: Percent, roles: ['admin', 'developer', 'operator'] }] },
+    { group: "Silo B: Partners", items: [{ id: 'partner-hub', label: dict.partner_network.title, icon: Users, roles: ['admin', 'developer', 'operator'] }, { id: 'partner-onboarding', label: 'Auth Gateway', icon: QrCode, roles: ['admin', 'developer'] }] },
+    { group: "Silo C: Intelligence", items: [{ id: 'data-pipeline', label: 'Ingestion Vault', icon: Database, roles: ['admin', 'developer'] }, { id: 'marketing-cloud', label: 'Marketing Cloud', icon: Send, roles: ['admin', 'developer'] }] },
+    { group: "Silo D: Communications", items: [{ id: 'comms-hub', label: 'Signal Stream', icon: Bell, roles: null }, { id: 'settings', label: t.cta_settings, icon: Settings, roles: null }] }
   ];
 
   return (
-    <main className="min-h-screen bg-background text-foreground pt-32 pb-24">
+    <main className="min-h-screen bg-background text-foreground pt-32 pb-24 selection:bg-primary/20 transition-colors duration-1000">
       <div className="container mx-auto px-6">
-        <header className="mb-20 flex flex-col md:flex-row items-start justify-between border-b border-border/50 pb-12">
+        
+        {/* --- HEADER: IDENTIDAD SOBERANA --- */}
+        <header className="mb-20 flex flex-col md:flex-row items-start justify-between border-b border-border/50 pb-12 gap-8">
            <div className="space-y-6">
-             <BlurText text={currentBranding.title.toUpperCase()} className="font-display text-5xl font-bold tracking-tighter" delay={50} />
-             <p className="text-sm font-light opacity-60 italic">{session.email}</p>
+             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-primary/10 border border-primary/20 text-primary text-[8px] font-bold uppercase tracking-widest animate-fade-in">
+                <ShieldCheck size={10} /> {session.role} LEVEL_S{session.xp > 1000 ? '0' : '4'}
+             </div>
+             <BlurText text={currentBranding.title.toUpperCase()} className="font-display text-5xl md:text-6xl font-bold tracking-tighter text-foreground" delay={50} />
+             <div className="flex items-center gap-4 text-sm font-light opacity-60 italic">
+                <span className="h-2 w-2 rounded-full bg-success animate-pulse" />
+                {session.email}
+             </div>
            </div>
-           <button className="flex items-center gap-3 px-8 py-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-500 transition-all hover:bg-red-500 hover:text-white">
+           <button className="flex items-center gap-4 px-10 py-5 rounded-full bg-red-500/10 border border-red-500/20 text-red-500 font-bold text-[10px] uppercase tracking-[0.3em] transition-all hover:bg-red-500 hover:text-white active:scale-95 shadow-xl">
              <LogOut size={16} /> {t.cta_logout}
            </button>
         </header>
 
-        <section className="grid grid-cols-1 md:grid-cols-12 gap-12">
-          <aside className="md:col-span-3 space-y-10">
-            {operationSilos.map((silo) => (
-              <div key={silo.group} className="space-y-3">
-                <h4 className="px-4 text-[9px] font-bold text-muted-foreground uppercase tracking-[0.4em]">{silo.group}</h4>
-                {silo.items.map((nav) => (
-                  <Link key={nav.id} href={`/${lang}/portal?view=${nav.id}`} className={cn("block px-6 py-4 rounded-2xl text-[10px] font-bold uppercase tracking-widest", activeView === nav.id ? "bg-primary text-white" : "hover:bg-surface")}>
-                    <nav.icon size={16} className="inline mr-3" /> {nav.label}
-                  </Link>
-                ))}
-              </div>
-            ))}
+        <section className="grid grid-cols-1 lg:grid-cols-12 gap-16">
+          {/* --- NAVEGACIÓN LATERAL (RBAC Filtered) --- */}
+          <aside className="lg:col-span-3 space-y-10">
+            {operationSilos.map((silo) => {
+              const authorizedItems = silo.items.filter(item => 
+                !item.roles || item.roles.includes(session.role)
+              );
+
+              if (authorizedItems.length === 0) return null;
+
+              return (
+                <div key={silo.group} className="space-y-4">
+                  <h4 className="px-6 text-[9px] font-bold text-muted-foreground uppercase tracking-[0.5em] opacity-40">{silo.group}</h4>
+                  <div className="space-y-1">
+                    {authorizedItems.map((nav) => (
+                      <Link 
+                        key={nav.id} 
+                        href={`/${lang}/portal?view=${nav.id}`} 
+                        className={cn(
+                          "group flex items-center justify-between px-6 py-4 rounded-2xl text-[10px] font-bold uppercase tracking-widest transition-all",
+                          activeView === nav.id 
+                            ? "bg-foreground text-background shadow-2xl scale-[1.02]" 
+                            : "hover:bg-surface text-muted-foreground hover:text-foreground"
+                        )}
+                      >
+                        <div className="flex items-center gap-4">
+                          <nav.icon size={16} className={cn("transition-colors", activeView === nav.id ? "text-primary" : "group-hover:text-primary")} /> 
+                          {nav.label}
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
           </aside>
 
-          <div className="md:col-span-9">
-            {activeView === 'overview' && <ArtifactShowcase userXp={session.xp} ownedIds={session.artifacts} dictionary={dict.gamification} />}
-            {activeView === 'inventory' && <AdminMediaPanel mediaLabels={dict.admin_media} />}
-            {activeView === 'data-pipeline' && <IngestionManager dictionary={dict.ingestion_vault} />}
-            {activeView === 'partner-hub' && <PartnerNetworkManager agencies={partnerInventory} dictionary={dict.partner_network} />}
+          {/* --- VIEWPORT DE CONTENIDO (Polymorphic Content) --- */}
+          <div className="lg:col-span-9 min-h-[600px]">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeView}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.4 }}
+              >
+                {activeView === 'overview' && (
+                  <ArtifactShowcase userXp={session.xp} ownedIds={session.artifacts} dictionary={dict.gamification} />
+                )}
+                {activeView === 'inventory' && (
+                  <AdminMediaPanel mediaLabels={dict.admin_media} />
+                )}
+                {(activeView === 'offers-revenue' || activeView === 'offers-enterprise') && (
+                  <OffersDashboard dictionary={dict} />
+                )}
+                {activeView === 'partner-hub' && (
+                  <PartnerNetworkManager agencies={partnerInventory} dictionary={dict.partner_network} />
+                )}
+                {activeView === 'data-pipeline' && (
+                  <IngestionManager dictionary={dict.ingestion_vault} />
+                )}
+                {activeView === 'marketing-cloud' && (
+                  <MarketingCloudManager dictionary={dict.marketing_cloud} />
+                )}
+                {activeView === 'comms-hub' && (
+                  <CommsHubManager dictionary={dict.comms_hub} />
+                )}
+                {activeView === 'settings' && (
+                  <div className="py-40 text-center rounded-[4rem] border border-dashed border-border bg-surface/20">
+                     <Settings size={48} className="mx-auto text-muted-foreground/20 mb-6" />
+                     <p className="text-sm font-mono text-muted-foreground uppercase tracking-[0.4em]">Configuration Node Under Maintenance</p>
+                  </div>
+                )}
+              </motion.div>
+            </AnimatePresence>
           </div>
         </section>
       </div>

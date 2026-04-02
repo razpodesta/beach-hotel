@@ -1,28 +1,29 @@
 /**
- * @file layout.tsx
+ * @file apps/portfolio-web/src/app/[lang]/layout.tsx
  * @description Orquestador Soberano del Shell Principal (The Master Shell).
- *              Refactorizado: Sincronización tipográfica híbrida (Sora/Inter/Dicaten),
- *              resolución de rumbos PWA (Anti-404) y optimización de LCP.
- * @version 42.0 - Sovereign Typography & PWA Shielded
- * @author Raz Podestá - MetaShark Tech
+ *              Consolidado como el ÚNICO Root Layout del ecosistema.
+ *              Refactorizado: Erradicación de doble anidamiento DOM, 
+ *              optimización de hidratación y soporte PWA nativo.
+ * @version 43.0 - Single Root Integrity & Hydration Safe
+ * @author Raz Podestá - Staff Engineer, MetaShark Tech
  */
 
 import React, { Suspense } from 'react';
 import type { Metadata, Viewport } from 'next';
 
 /**
- * IMPORTACIONES DE INFRAESTRUCTRURA
- * @pilar V: Adherencia arquitectónica a las fronteras de Nx.
+ * IMPORTACIONES DE INFRAESTRUCTURA
+ * @pilar_V: Adherencia arquitectónica a las fronteras de Nx.
  */
-import { i18n } from '../../config/i18n.config';
-import type { Locale } from '../../config/i18n.config';
+import { i18n, type Locale } from '../../config/i18n.config';
 import { getDictionary } from '../../lib/get-dictionary';
 import { fontVariables } from '../../lib/fonts';
 import { cn } from '../../lib/utils/cn';
+import '../global.css';
 
 /**
  * IMPORTACIONES DE COMPONENTES DEL SHELL (Lego System)
- * @pilar IX: Componentización de responsabilidad única.
+ * @pilar_IX: Componentización de responsabilidad única.
  */
 import { Providers } from '../../components/layout/Providers';
 import { Header } from '../../components/layout/Header';
@@ -33,16 +34,14 @@ import { AuthPortal } from '../../components/ui/AuthPortal';
 import { NavigationTracker } from '../../components/layout/NavigationTracker';
 import { VisitorHud } from '../../components/ui/VisitorHud';
 
-import '../global.css';
-
 /**
  * CONFIGURACIÓN DE VIEWPORT (Next.js 15 Standard)
- * @description Sincronizado con Oxygen Engine v9.0 para estabilidad cromática inicial.
+ * @description Sincronizado con Oxygen Engine para estabilidad cromática inicial.
  */
 export const viewport: Viewport = {
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#fcfcfc' }, // Arena
-    { media: '(prefers-color-scheme: dark)', color: '#080808' }   // Obsidiana
+    { media: '(prefers-color-scheme: light)', color: '#fcfcfc' }, // Arena (Día)
+    { media: '(prefers-color-scheme: dark)', color: '#080808' }   // Obsidiana (Noche)
   ],
   width: 'device-width',
   initialScale: 1,
@@ -51,6 +50,7 @@ export const viewport: Viewport = {
 
 /**
  * GENERACIÓN DE RUTAS ESTÁTICAS (SSG)
+ * @description Pre-construye el esqueleto para todos los idiomas autorizados.
  */
 export async function generateStaticParams() {
   return i18n.locales.map((locale) => ({ lang: locale }));
@@ -58,7 +58,7 @@ export async function generateStaticParams() {
 
 /**
  * ORQUESTADOR DE METADATOS SOBERANO
- * @pilar I: Visión Holística - SEO E-E-A-T & PWA Identity.
+ * @pilar_I: Visión Holística - SEO E-E-A-T & PWA Identity.
  */
 export async function generateMetadata(props: { 
   params: Promise<{ lang: Locale }> 
@@ -101,8 +101,9 @@ export async function generateMetadata(props: {
       locale: lang,
       type: 'website',
       images: [{
-        url: '/images/hotel/og-main.jpg', // Resolución de rumbo absoluto anti-404
-        width: 1200, height: 630,
+        url: '/images/hotel/og-main.jpg',
+        width: 1200, 
+        height: 630,
         alt: siteName
       }]
     }
@@ -118,21 +119,21 @@ interface RootLayoutProps {
 }
 
 /**
- * APARATO PRINCIPAL: RootLayout
+ * APARATO PRINCIPAL: RootLayout (The Master Shell)
  * @description Orquesta la jerarquía visual base y la inyección de recursos globales.
+ *              Actúa como el único <html> y <body> del árbol de renderizado.
  */
 export default async function RootLayout({ children, params }: RootLayoutProps) {
   const { lang } = await params;
   const dictionary = await getDictionary(lang);
   
-  /** @pilar IV: Protocolo Heimdall - Telemetría de Montaje del Shell */
+  /** @pilar_IV: Protocolo Heimdall - Telemetría de Montaje del Shell */
   console.log(`[HEIMDALL][SHELL] Master Shell Synced: [${lang}]`);
 
   return (
     <html lang={lang} suppressHydrationWarning className="scroll-smooth">
       <head>
         <link rel="preconnect" href="https://flagcdn.com" />
-        {/* @fix: Ruta corregida para evitar error de descarga en PWA Manifest */}
         <link rel="apple-touch-icon" href="/images/hotel/icon-192x192.png" />
       </head>
       <body className={cn(
@@ -169,7 +170,8 @@ export default async function RootLayout({ children, params }: RootLayoutProps) 
           />
 
           {/* --- CAPA DE PORTALES (Overlay Layer) --- 
-              @pilar XII: MEA/UX - Gestión de modales y HUDs.
+              @pilar_XII: MEA/UX - Gestión de modales y HUDs. Envueltos en Suspense
+              para no bloquear la hidratación del hilo principal.
           */}
           <Suspense fallback={null}>
             <AuthPortal dictionary={dictionary.auth_portal} />

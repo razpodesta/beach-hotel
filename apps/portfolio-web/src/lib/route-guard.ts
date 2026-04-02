@@ -1,18 +1,18 @@
 /**
  * @file apps/portfolio-web/src/lib/route-guard.ts
  * @description Enterprise RBAC Orchestrator (Edge Security).
- *              Refactorizado: Erradicación del bug 404 de '/login' inexistente,
- *              normalización estricta de barras (Anti-Double-Slash) y
- *              evaluación determinista de fronteras de rol (Fail-Fast RBAC).
- * @version 5.0 - Strict Perimeter & Anti-404 Hardening
- * @author Raz Podestá - MetaShark Tech
+ *              Refactorizado: Reparación del flujo de cabeceras downstream (Header Loss Fix),
+ *              inyección táctica de query param para UX de autenticación,
+ *              y normalización estricta de rutas.
+ * @version 6.0 - Downstream Headers & UX Sync
+ * @author Raz Podestá - Staff Engineer, MetaShark Tech
  */
 
 import { NextResponse, type NextRequest } from 'next/server';
 
 /**
- * IMPORTACIONES DE INFRAESTRUCTRURA
- * @pilar V: Adherencia arquitectónica.
+ * IMPORTACIONES DE INFRAESTRUCTURA
+ * @pilar_V: Adherencia arquitectónica.
  */
 import { type Locale } from '../config/i18n.config';
 import { mainNavStructure, type NavItem } from './nav-links';
@@ -47,7 +47,6 @@ export interface EnterpriseSession {
 /** 
  * MAPA DE PROTECCIÓN DE RUMBOS (Access Gating)
  * @description Mapeo de prefijos de ruta hacia el nivel de autoridad mínimo requerido.
- * @fix Eliminada la barra diagonal final en '/p' para permitir coincidencia exacta.
  */
 const PROTECTION_MAP: Record<string, EnterpriseRole> = {
   '/portal/dev': 'developer',
@@ -59,7 +58,7 @@ const PROTECTION_MAP: Record<string, EnterpriseRole> = {
 };
 
 /** 
- * PREFIXES DE INFRAESTRUCTRURA (Exclusión de Gating)
+ * PREFIXES DE INFRAESTRUCTURA (Exclusión de Gating)
  * @description Rutas nativas que gestionan su propia autenticación.
  */
 const INFRA_RESOURCES = ['/admin', '/_payload', '/api/payload', '/auth/callback'];
@@ -71,7 +70,7 @@ const INFRA_RESOURCES = ['/admin', '/_payload', '/api/payload', '/auth/callback'
 const PUBLIC_INVENTORY = new Set([
   '/', '/contacto', '/blog', '/maintenance', '/quienes-somos', 
   '/mision-y-vision', '/festival', '/paquetes', '/subscribe', 
-  '/server-error'
+  '/server-error', '/fotos'
 ]);
 
 // Sincronización dinámica de rumbos desde el Navigation Provider
@@ -167,20 +166,18 @@ export async function routeGuard(
 
   // 3. VALIDACIÓN DE AUTENTICACIÓN (Gate 1)
   if (!session.isAuthenticated) {
-    /**
-     * @fix Anti-404: La ruta '/login' no existe. Redirigimos al Home (raíz)
-     * para que el visitante acceda orgánicamente al Modal de Autenticación.
-     */
     console.warn(`[HEIMDALL][SECURITY] Unauthenticated access to ${logicalPath}. Redirecting to Sanctuary Home.`);
     const redirectUrl = new URL(`/${locale}`, request.url);
+    
+    /**
+     * @pilar_XII: MEA/UX - Inyectamos el parámetro 'auth=required'.
+     * Esto permite que el cliente abra automáticamente el Auth Portal.
+     */
+    redirectUrl.searchParams.set('auth', 'required');
     return NextResponse.redirect(redirectUrl);
   }
 
   // 4. VALIDACIÓN DE AUTORIDAD (RBAC Gate 2)
-  /**
-   * @fix Fail-Fast Matcher: Garantiza que '/portal-data' no se valide erróneamente
-   * como '/portal'. Exige coincidencia exacta o subruta estricta.
-   */
   const requiredRoleEntry = Object.entries(PROTECTION_MAP)
     .sort((a, b) => b[0].length - a[0].length)
     .find(([path]) => logicalPath === path || logicalPath.startsWith(`${path}/`));
@@ -195,11 +192,27 @@ export async function routeGuard(
     }
   }
 
-  // 5. INYECCIÓN DE CABECERAS DE INFRAESTRUCTURA
-  const response = NextResponse.next();
-  response.headers.set('X-Enterprise-Identity', session.role);
-  if (session.tenantId) response.headers.set('X-Enterprise-Tenant', session.tenantId);
-  if (session.isBypassActive) response.headers.set('X-Security-Mode', 'Emergency-Bypass');
+  // --- 5. INYECCIÓN DE CABECERAS DE INFRAESTRUCTURA (Downstream Headers) ---
+  // @fix: Clonamos los headers nativos y devolvemos la mutación para que
+  // Server Components puedan identificar el rol del usuario de forma síncrona.
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set('X-Enterprise-Identity', session.role);
+  
+  if (session.tenantId) {
+    requestHeaders.set('X-Enterprise-Tenant', session.tenantId);
+  }
+  if (session.isBypassActive) {
+    requestHeaders.set('X-Security-Mode', 'Emergency-Bypass');
+  }
 
-  return null;
+  const response = NextResponse.next({
+    request: {
+      headers: requestHeaders,
+    },
+  });
+
+  // Marca de agua del Edge para trazabilidad en respuestas del navegador
+  response.headers.set('X-Enterprise-Edge', 'Orchestrated_v20.0');
+
+  return response;
 }

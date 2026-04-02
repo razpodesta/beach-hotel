@@ -2,10 +2,10 @@
  * @file apps/portfolio-web/src/lib/services/data-parser.ts
  * @description Enterprise Data Parser Engine (Silo C Infrastructure).
  *              Orquestador de procesamiento de buffers para la ingesta masiva.
- *              Implementa normalización forense, deduplicación inteligente,
- *              erradicación total de 'any' y extracción tipada.
- * @version 2.0 - Zero Any & Strict Type Extraction
- * @author Staff Engineer - MetaShark Tech
+ *              Refactorizado: Auditoría de errores por fila, saneamiento 
+ *              proactivo y mapeo multilingüe de cabeceras.
+ * @version 3.0 - Forensic Reporting & Multilingual Mapping
+ * @author Raz Podestá - Staff Engineer, MetaShark Tech
  */
 
 import * as XLSX from 'xlsx';
@@ -16,40 +16,37 @@ import { z } from 'zod';
  * @description Define la estructura mínima requerida para un nodo de audiencia.
  */
 const audienceNodeSchema = z.object({
-  email: z.string().email().toLowerCase().trim(),
-  name: z.string().min(2).optional(),
+  email: z.string().email('INVALID_EMAIL_FORMAT').toLowerCase().trim(),
+  name: z.string().min(2, 'NAME_TOO_SHORT').optional(),
   phone: z.string().optional(),
   source: z.string().default('bulk_import'),
 });
 
 export type AudienceNode = z.infer<typeof audienceNodeSchema>;
 
+/**
+ * @interface ParserIssue
+ * @description Registro de anomalía detectada en una fila específica.
+ */
+export interface ParserIssue {
+  row: number;
+  error: string;
+  data: unknown;
+}
+
 export interface ParserResult {
   success: boolean;
   data: AudienceNode[];
+  issues: ParserIssue[]; // Trazabilidad forense
   metrics: {
     totalRows: number;
     validNodes: number;
     duplicatesRemoved: number;
+    failedRows: number;
     latencyMs: string;
   };
   error?: string;
 }
-
-/**
- * HELPER: Extractor Tipado Dinámico
- * @description Busca llaves alternativas en un objeto desconocido y retorna su valor como string.
- * @pilar III: Seguridad de Tipos (Sustituye al uso de 'any').
- */
-const extractString = (obj: Record<string, unknown>, keys: string[]): string | undefined => {
-  for (const key of keys) {
-    const value = obj[key];
-    if (value !== undefined && value !== null && String(value).trim() !== '') {
-      return String(value).trim();
-    }
-  }
-  return undefined;
-};
 
 /**
  * CLASS: DataParserEngine
@@ -57,9 +54,25 @@ const extractString = (obj: Record<string, unknown>, keys: string[]): string | u
  */
 class DataParserEngine {
   /**
+   * HELPER: Extractor Tipado Multilingüe
+   * @description Busca llaves alternativas en el objeto (soporte para EN, ES, PT).
+   */
+  private extractAndSanitize(obj: Record<string, unknown>, keys: string[]): string | undefined {
+    for (const key of keys) {
+      const value = obj[key];
+      if (value !== undefined && value !== null) {
+        // Limpieza proactiva de ruido y espacios en blanco
+        const sanitized = String(value).trim().replace(/[\u200B-\u200D\uFEFF]/g, '');
+        if (sanitized !== '') return sanitized;
+      }
+    }
+    return undefined;
+  }
+
+  /**
    * MODULE: parseExcelBuffer
-   * @description Procesa un buffer de Excel y lo transforma en un inventario de contactos.
-   * @pilar X: Performance - Procesamiento O(n) con deduplicación en memoria.
+   * @description Transmuta un buffer binario en un inventario de nodos de audiencia.
+   * @pilar_X: Performance O(n) con reporte de incidentes en tiempo real.
    */
   public async parseExcelBuffer(buffer: ArrayBuffer): Promise<ParserResult> {
     const startTime = performance.now();
@@ -67,8 +80,13 @@ class DataParserEngine {
     console.group(`[SYSTEM][PARSER] Data Transmutation Initiated: ${traceId}`);
 
     try {
-      // 1. LECTURA DE STREAM (Sovereign Buffer Handshake)
-      const workbook = XLSX.read(buffer, { type: 'array' });
+      // 1. HANDSHAKE BINARIO
+      const workbook = XLSX.read(buffer, { 
+        type: 'array',
+        cellDates: true,
+        cellText: false 
+      });
+      
       const firstSheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[firstSheetName];
 
@@ -76,67 +94,86 @@ class DataParserEngine {
       const rawData = XLSX.utils.sheet_to_json(worksheet) as Record<string, unknown>[];
       const totalRows = rawData.length;
 
-      console.log(`[PARSER] Raw throughput detected: ${totalRows} entries.`);
+      console.log(`[PARSER] Direct throughput: ${totalRows} entries detected.`);
 
-      // 3. PIPELINE DE NORMALIZACIÓN Y DEDUPLICACIÓN
+      // 3. PIPELINE DE NORMALIZACIÓN, VALIDACIÓN Y AUDITORÍA
       const seenEmails = new Set<string>();
       const validNodes: AudienceNode[] = [];
+      const issues: ParserIssue[] = [];
       let duplicatesCount = 0;
 
-      for (const entry of rawData) {
+      // Mapeo exhaustivo de cabeceras comerciales
+      const EMAIL_KEYS = ['email', 'e-mail', 'mail', 'correo', 'contacto'];
+      const NAME_KEYS = ['name', 'nombre', 'nome', 'fullname', 'cliente'];
+      const PHONE_KEYS = ['phone', 'tel', 'whatsapp', 'celular', 'telefone'];
+
+      rawData.forEach((entry, index) => {
+        const rowNumber = index + 2; // Offset para coincidir con el Excel (Header + 0-index)
+        
         try {
-          // Mapeo dinámico seguro utilizando el extractor tipado
-          const nodeData = {
-            email: extractString(entry, ['email', 'Email', 'EMAIL', 'correo', 'MAIL']),
-            name: extractString(entry, ['name', 'nombre', 'FullName', 'Nome']),
-            phone: extractString(entry, ['phone', 'tel', 'whatsapp', 'Telefone']),
-            source: extractString(entry, ['source', 'Origen']) || 'enterprise_bulk_sync'
+          const rawNode = {
+            email: this.extractAndSanitize(entry, EMAIL_KEYS),
+            name: this.extractAndSanitize(entry, NAME_KEYS),
+            phone: this.extractAndSanitize(entry, PHONE_KEYS),
+            source: 'enterprise_bulk_ingestion'
           };
 
-          // Si no hay email, descartamos silenciosamente la fila
-          if (!nodeData.email) continue;
-
-          // Validación Atómica contra el Contrato Zod
-          const validatedNode = audienceNodeSchema.parse(nodeData);
-
-          // Deduplicación Inteligente en memoria
-          if (seenEmails.has(validatedNode.email)) {
-            duplicatesCount++;
-            continue;
+          if (!rawNode.email) {
+            throw new Error('MISSING_MANDATORY_EMAIL');
           }
 
-          seenEmails.add(validatedNode.email);
-          validNodes.push(validatedNode);
-        } catch {
-          // Ignoramos filas corruptas para mantener el rendimiento del pipeline
-          continue;
+          // Validación atómica Zod
+          const validated = audienceNodeSchema.parse(rawNode);
+
+          // Deduplicación inteligente
+          if (seenEmails.has(validated.email)) {
+            duplicatesCount++;
+            return;
+          }
+
+          seenEmails.add(validated.email);
+          validNodes.push(validated);
+
+        } catch (err: unknown) {
+          const msg = err instanceof z.ZodError 
+            ? err.issues.map(i => i.message).join(', ') 
+            : (err as Error).message;
+            
+          issues.push({
+            row: rowNumber,
+            error: msg,
+            data: entry
+          });
         }
-      }
+      });
 
       const endTime = performance.now();
       const latency = (endTime - startTime).toFixed(2);
 
-      console.log(`[SUCCESS] Transmutation Complete. Throughput: ${validNodes.length} nodes/batch.`);
+      console.log(`[SUCCESS] Transmutation Concluded. Issues: ${issues.length}`);
       
       return {
         success: true,
         data: validNodes,
+        issues,
         metrics: {
           totalRows,
           validNodes: validNodes.length,
           duplicatesRemoved: duplicatesCount,
+          failedRows: issues.length,
           latencyMs: `${latency}ms`
         }
       };
 
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'BINARY_CORRUPTION_DETECTED';
-      console.error(`[CRITICAL][PARSER] Transmutation Aborted: ${msg}`);
+      const msg = err instanceof Error ? err.message : 'BINARY_STREAM_CORRUPTION';
+      console.error(`[CRITICAL][PARSER] Pipeline Aborted: ${msg}`);
       
       return {
         success: false,
         data: [],
-        metrics: { totalRows: 0, validNodes: 0, duplicatesRemoved: 0, latencyMs: '0ms' },
+        issues: [],
+        metrics: { totalRows: 0, validNodes: 0, duplicatesRemoved: 0, failedRows: 0, latencyMs: '0ms' },
         error: msg
       };
     } finally {
@@ -145,18 +182,13 @@ class DataParserEngine {
   }
 
   /**
-   * HELPER: Sanitación de Ruido
-   * @description Limpia caracteres peligrosos de una cadena de entrada.
-   * @fix ESLint: Reemplazo de 'any' por 'unknown' con validación estricta.
+   * MODULE: sanitizeField
+   * @description Purga caracteres peligrosos de strings desconocidos.
    */
-  public sanitizeField(value: unknown): string {
-    if (value === undefined || value === null) return '';
-    return String(value).trim().replace(/[<>"{}]/g, '');
+  public sanitize(value: unknown): string {
+    if (typeof value !== 'string') return '';
+    return value.trim().replace(/[<>"{}$%]/g, '');
   }
 }
 
-/**
- * INSTANCIA SOBERANA (Singleton)
- * @description Exportación del motor para su consumo en las Server Actions de Ingesta.
- */
 export const dataParser = new DataParserEngine();
