@@ -14,14 +14,14 @@
       "inputs": ["{projectRoot}/src/messages/**/*.json"],
       "outputs": ["{projectRoot}/src/dictionaries/*.json"],
       "cache": true,
-      "description": "Protocolo MACS: Ensamblaje y validación soberana de diccionarios i18n."
+      "description": "Protocolo MACS: Ensamblaje y validación soberana."
     },
     "build": {
       "executor": "@nx/next:build",
-      "outputs": ["{options.outputPath}"],
+      "outputs": ["{projectRoot}/.next"],
       "defaultConfiguration": "production",
       "options": {
-        "outputPath": "dist/apps/portfolio-web",
+        "outputPath": "apps/portfolio-web",
         "generatePackageJson": true
       },
       "dependsOn": ["^build", "prebuild"],

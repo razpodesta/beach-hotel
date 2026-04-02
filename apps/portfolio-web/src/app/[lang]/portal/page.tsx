@@ -1,17 +1,17 @@
 /**
  * @file apps/portfolio-web/src/app/[lang]/portal/page.tsx
  * @description Enterprise Operations Portal (HopEx v4.0).
- *              Refactorizado: Resolución de TS2304/TS2339, limpieza de importaciones 
- *              y consolidación de diccionarios.
- * @version 23.2 - Production Inmaculate Edition
+ *              Refactorizado: Resolución de importaciones (TS2305/TS2304),
+ *              tipado estricto de agentes y consolidación de silos.
+ * @version 23.4 - Stable Orchestration
  * @author Staff Engineer - MetaShark Tech
  */
 
 import React from 'react';
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import Link from 'next/link';
 import { getPayload, type CollectionSlug } from 'payload';
 import configPromise from '@metashark/cms-core/config';
 import { createServerClient } from '@supabase/ssr';
@@ -19,10 +19,10 @@ import {
   Terminal, Hotel, Briefcase, User, Settings, LogOut, 
   Activity, LayoutGrid, type LucideIcon,
   Zap, Users, Send, Percent, QrCode, Database, Bell,
-  ShieldCheck // <-- Restaurado: Esencial para el rol 'sponsor'
+  ShieldCheck 
 } from 'lucide-react';
 
-/** IMPORTACIONES DE INFRAESTRUCTURA (SSoT) */
+/** IMPORTACIONES DE INFRAESTRUCTURA */
 import { getDictionary } from '../../../lib/get-dictionary';
 import { type Locale } from '../../../config/i18n.config';
 import { BlurText } from '../../../components/razBits/BlurText';
@@ -32,13 +32,11 @@ import { cn } from '../../../lib/utils/cn';
 import { AdminMediaPanel } from '../../../components/sections/portal/AdminMediaPanel';
 import { ArtifactShowcase } from '../../../components/sections/portal/ArtifactShowcase';
 import { IngestionManager } from '../../../components/sections/portal/IngestionManager';
-import { PartnerManagement } from '../../../components/sections/portal/PartnerManagement';
+import { PartnerNetworkManager } from '../../../components/sections/portal/PartnerNetworkManager';
+import type { AgencyEntity } from '../../../components/sections/portal/types';
 
 /** IMPORTACIONES DE CONTRATO */
 import type { EnterpriseRole } from '../../../lib/route-guard';
-import type { AgencyEntity } from '../../../components/sections/portal/PartnerManagement';
-
-type PartnerAgencies = AgencyEntity[];
 
 interface RoleBrandingConfig {
   color: string;
@@ -130,7 +128,7 @@ export default async function PortalPage(props: PageProps) {
           where: session.tenant ? { tenant: { equals: session.tenant } } : {},
           limit: 50, sort: '-trustScore'
         });
-        return result.docs;
+        return result.docs as AgencyEntity[];
       }
       return [];
     })()
@@ -187,7 +185,7 @@ export default async function PortalPage(props: PageProps) {
             {activeView === 'overview' && <ArtifactShowcase userXp={session.xp} ownedIds={session.artifacts} dictionary={dict.gamification} />}
             {activeView === 'inventory' && <AdminMediaPanel mediaLabels={dict.admin_media} />}
             {activeView === 'data-pipeline' && <IngestionManager dictionary={dict.ingestion_vault} />}
-            {activeView === 'partner-hub' && <PartnerManagement agencies={partnerInventory as unknown as PartnerAgencies} dictionary={dict.partner_network} />}
+            {activeView === 'partner-hub' && <PartnerNetworkManager agencies={partnerInventory} dictionary={dict.partner_network} />}
           </div>
         </section>
       </div>
