@@ -1,17 +1,20 @@
 /**
  * @file scripts/prebuild-portfolio-web.ts
- * @description MACS Engine v21.0: Orquestador soberano de i18n.
+ * @description MACS Engine v21.1: Orquestador soberano de i18n.
  *              Implementa caché de estado para evitar duplicidad de ejecución
  *              y validación robusta ante corrupción de datos.
- * @version 21.0 - Idempotent & Deterministic
+ *              Refactorizado: Eliminada extensión .js para cumplir con
+ *              SWC Bundler Resolution en Next.js 15.
+ * @version 21.1 - Idempotent & Deterministic
  * @author Staff Engineer - MetaShark Tech
  */
 
-import { mkdir, readdir, readFile, writeFile, access, stat } from 'node:fs/promises';
+import { mkdir, readdir, readFile, writeFile, stat } from 'node:fs/promises';
 import { join, parse } from 'node:path';
-import { constants } from 'node:fs';
 import { ZodError } from 'zod';
-import { dictionarySchema } from '../apps/portfolio-web/src/lib/schemas/dictionary.schema.js';
+
+// @pilar_XIII: Erradicación de extensión .js para resolución nativa.
+import { dictionarySchema } from '../apps/portfolio-web/src/lib/schemas/dictionary.schema';
 
 const C = {
   reset: '\x1b[0m', bold: '\x1b[1m', green: '\x1b[32m', red: '\x1b[31m',
@@ -74,7 +77,7 @@ class MACSEngine {
   }
 
   public async execute(): Promise<void> {
-    console.log(`${C.magenta}${C.bold}🛡️ [HEIMDALL] MACS ENGINE v21.0${C.reset}`);
+    console.log(`${C.magenta}${C.bold}🛡️ [HEIMDALL] MACS ENGINE v21.1${C.reset}`);
     await mkdir(PATHS.DICTIONARIES, { recursive: true });
     await mkdir(PATHS.REPORTS, { recursive: true });
 

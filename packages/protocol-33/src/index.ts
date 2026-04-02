@@ -3,10 +3,10 @@
  * @description Fachada Pública Soberana del Protocolo 33 (Gamification Engine).
  *              Orquesta la exposición atómica de tipos, catálogo de artefactos
  *              y motor matemático de ascensión.
- *              Refactorizado: Cumplimiento estricto de ESM (extensiones .js), 
- *              segregación de tipos para empaquetado de ultra-performance y
- *              alineación con Next.js 15 Standard.
- * @version 4.0 - Strict ESM & Type Segregation
+ *              Refactorizado: Migración a resolución "Bundler" (Next.js 15),
+ *              erradicación de extensiones .js para empaquetado Source-First
+ *              sin colisiones en Vercel.
+ * @version 4.1 - Bundler Resolution Sync & SWC Ready
  * @author Raz Podestá - Staff Engineer, MetaShark Tech
  */
 
@@ -22,7 +22,7 @@ export type {
   ArtifactDefinition, 
   LevelDefinition, 
   UserProgress 
-} from './lib/types.js';
+} from './lib/types';
 
 /**
  * 2. EL CÓDICE (Sovereign Assets)
@@ -32,7 +32,7 @@ export type {
 export { 
   ARTIFACTS, 
   getArtifactById 
-} from './lib/codex.js';
+} from './lib/codex';
 
 /**
  * 3. MOTOR DE ASCENSIÓN (Math Engine)
@@ -42,9 +42,9 @@ export {
 export { 
   LEVELS, 
   calculateProgress 
-} from './lib/engine.js';
+} from './lib/engine';
 
 /**
  * @pilar_IV: Observabilidad Forense.
- * Registro de versión del orquestador: P33_ENGINE_V4.0_STABLE
+ * Registro de versión del orquestador: P33_ENGINE_V4.1_STABLE
  */

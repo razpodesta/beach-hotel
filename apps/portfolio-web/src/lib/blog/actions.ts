@@ -2,8 +2,10 @@
  * @file apps/portfolio-web/src/lib/blog/actions.ts
  * @description Orquestador soberano de datos para el Concierge Journal.
  *              Refactorizado: Resolución de TS6307 vía tsconfig sync,
- *              normalización de atmósfera (MEA/UX) y blindaje de tipos.
- * @version 36.0 - Build Integrity & Linter Pure
+ *              eliminación de extensiones .js para compatibilidad nativa
+ *              con el empaquetador de Next.js 15 (Bundler Resolution),
+ *              y blindaje de tipos sin regresiones.
+ * @version 36.1 - Build Integrity & SWC Resolution Sync
  * @author Raz Podestá - Staff Engineer, MetaShark Tech
  */
 
@@ -13,13 +15,13 @@ import configPromise from '@metashark/cms-core/config';
 /**
  * IMPORTACIONES DE INFRAESTRUCTRURA Y CONTRATO
  * @pilar_V: Adherencia arquitectónica.
- * @nivelacion: Uso de extensiones .js para compatibilidad total con ESM/SWC.
+ * @nivelacion: Purgadas extensiones .js para evitar 'Module not found' en el build.
  */
-import { postWithSlugSchema, type PostWithSlug } from '../schemas/blog.schema.js';
-import { i18n, type Locale } from '../../config/i18n.config.js';
-import { getDictionary } from '../get-dictionary.js';
-import { MOCK_POSTS, type RawMockPost } from '../../data/mocks/cms.mocks.js';
-import type { Dictionary } from '../schemas/dictionary.schema.js';
+import { postWithSlugSchema, type PostWithSlug } from '../schemas/blog.schema';
+import { i18n, type Locale } from '../../config/i18n.config';
+import { getDictionary } from '../get-dictionary';
+import { MOCK_POSTS, type RawMockPost } from '../../data/mocks/cms.mocks';
+import type { Dictionary } from '../schemas/dictionary.schema';
 
 /**
  * CONSTANTES DE ENTORNO SOBERANAS
