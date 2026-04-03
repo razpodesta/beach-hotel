@@ -3,7 +3,7 @@
   "framework": "nextjs",
   "installCommand": "pnpm install",
   "buildCommand": "pnpm run build",
-  "outputDirectory": "dist/apps/portfolio-web",
+  "outputDirectory": "dist/apps/portfolio-web/.next",
   "ignoreCommand": "exit 1",
   "cleanUrls": true,
   "trailingSlash": false,
@@ -12,15 +12,7 @@
   ],
   "images": {
     "sizes": [
-      256,
-      384,
-      640,
-      750,
-      828,
-      1080,
-      1200,
-      1920,
-      2048
+      256, 384, 640, 750, 828, 1080, 1200, 1920, 2048
     ],
     "remotePatterns": [
       {
@@ -42,22 +34,10 @@
     {
       "source": "/(.*)",
       "headers": [
-        {
-          "key": "X-Content-Type-Options",
-          "value": "nosniff"
-        },
-        {
-          "key": "X-Frame-Options",
-          "value": "DENY"
-        },
-        {
-          "key": "X-XSS-Protection",
-          "value": "1; mode=block"
-        },
-        {
-          "key": "Referrer-Policy",
-          "value": "strict-origin-when-cross-origin"
-        }
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "DENY" },
+        { "key": "X-XSS-Protection", "value": "1; mode=block" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
       ]
     }
   ]

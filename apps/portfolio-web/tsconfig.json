@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "baseUrl": "../..",
+    "baseUrl": ".",
     
     /**
      * @pilar_V: Adherencia al Grafo Soberano.
@@ -16,6 +16,12 @@
      * @pilar_XIII: Alineación con el Motor Next.js.
      */
     "noEmit": true,
+
+    /**
+     * @fix_TS6305: Silenciado de aviso de deprecación (TypeScript 5.0+).
+     * Esto asegura que el compilador no reporte avisos innecesarios en el pipeline de CI/CD.
+     */
+    "ignoreDeprecations": "5.0",
 
     /* CONFIGURACIÓN NEXT.JS 15 + REACT 19 STANDARDS */
     "target": "es2022",
