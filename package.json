@@ -10,9 +10,9 @@
   },
   "license": "Proprietary",
   "private": true,
- "scripts": {
+"scripts": {
     "dev": "nx serve portfolio-web",
-    "build": "pnpm run prebuild:web && nx build portfolio-web --configuration=production",
+    "build": "node scripts/heimdall-build-audit.mjs",
     "build:web": "pnpm run build",
     "vercel-build": "pnpm run build",
     "lint": "nx run-many --target=lint --all --parallel=1",
