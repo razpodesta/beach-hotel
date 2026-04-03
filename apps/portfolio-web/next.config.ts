@@ -1,7 +1,11 @@
 /**
  * @file apps/portfolio-web/next.config.ts
  * @description Orquestador Soberano de Compilación.
- *              Actualización: Sincronización de distDir para paridad Nx/Vercel.
+ *              Refactorizado: Erradicación de colisiones de distDir y
+ *              limpieza de opciones experimentales no reconocidas para
+ *              garantizar la compatibilidad con Vercel/Nx.
+ * @version 2.0 - Build Stable Edition
+ * @author Staff Engineer - MetaShark Tech
  */
 
 import type { NextConfig } from 'next';
@@ -9,10 +13,13 @@ import { withNx } from '@nx/next/plugins/with-nx';
 import { withPayload } from '@payloadcms/next/withPayload';
 
 const nextConfig: NextConfig = {
-  // Sincronización de salida para evitar que Vercel busque en carpetas incorrectas
-  distDir: '.next', 
+  /**
+   * @pilar V: Adherencia arquitectónica.
+   * Eliminamos 'distDir' para permitir que Nx gestione los outputs.
+   * Vercel detectará el build basándose en nuestro 'outputDirectory' definido en vercel.json.
+   */
 
-  transpilePackages:[
+  transpilePackages: [
     '@metashark/cms-core',
     '@metashark/cms-ui',
     '@metashark/protocol-33',
@@ -20,7 +27,7 @@ const nextConfig: NextConfig = {
   ],
 
   images: {
-    remotePatterns:[
+    remotePatterns: [
       { protocol: 'https', hostname: 'flagcdn.com' },
       { protocol: 'https', hostname: '*.supabase.co' }
     ],
@@ -34,8 +41,7 @@ const nextConfig: NextConfig = {
 
   experimental: {
     typedRoutes: true,
-    cpus: 1,
-    workerThreads: false,
+    // Eliminado 'turbopack' de aquí, ya que no es una opción de NextConfig
   },
 };
 

@@ -4,16 +4,16 @@
  *              Orquesta el control de acceso perimetral y la gestión de perfiles.
  *              Implementa RBAC de 5 capas, integración relacional con la 
  *              Red de Alianzas B2B e integridad Multi-Tenant de grado industrial.
- * @version 9.0 - Enterprise Level 4.0 | Relational Integrity Sync
+ *              Refactorizado: Erradicación del campo 'id' manual para compatibilidad 
+ *              con UUID nativo de Payload 3.0.
+ * @version 10.0 - Payload Native ID Compliance
  * @author Staff Engineer - MetaShark Tech
  */
 
 import { type CollectionConfig } from 'payload';
-import { v4 as uuidv4 } from 'uuid';
 
 /**
  * IMPORTACIONES DE INFRAESTRUCTRURA (SSoT)
- * @pilar V: Adherencia arquitectónica.
  */
 import { multiTenantReadAccess } from './Access';
 import { ROLES_CONFIG } from './users/roles/config';
@@ -39,7 +39,7 @@ export const Users: CollectionConfig = {
   admin: {
     useAsTitle: 'email',
     defaultColumns: ['email', 'role', 'tenant', 'level'],
-    group: 'Identity & Access', // Nivelación Léxica
+    group: 'Identity & Access',
     description: 'Gestión centralizada de identidades corporativas y privilegios de acceso.',
   },
 
@@ -48,13 +48,13 @@ export const Users: CollectionConfig = {
    */
   access: {
     read: multiTenantReadAccess,
-    create: () => true, // El registro inicial es abierto, el Middleware gestiona el Gating
+    create: () => true, 
     update: ({ req: { user } }) => {
       if (!user) return false;
       if (user.role === 'developer' || user.role === 'admin') return true;
-      return { id: { equals: user.id } }; // Restricción de auto-edición
+      return { id: { equals: user.id } };
     },
-    delete: ({ req: { user } }) => user?.role === 'developer', // Privilegio exclusivo de Infraestructura
+    delete: ({ req: { user } }) => user?.role === 'developer',
   },
 
   /**
@@ -62,10 +62,15 @@ export const Users: CollectionConfig = {
    */
   hooks: {
     beforeChange: [
-      ({ data, operation }) => {
+      ({ data, operation, req }) => {
         if (operation === 'create') {
-          // 1. Garantía de Identidad Multi-Tenant
-          if (!data.tenant) data.tenant = uuidv4();
+          // 1. Garantía de Identidad Multi-Tenant (Relacional)
+          // Nota: Si el Seeder inyecta el tenant, lo respetamos.
+          if (req.user && !data.tenant) {
+            data.tenant = typeof req.user.tenant === 'object' && req.user.tenant !== null 
+              ? req.user.tenant.id 
+              : req.user.tenant;
+          }
           
           // 2. Protocolo de Rescate para Genesis Engine (Seeding)
           if (process.env.IS_SEEDING_MODE === 'true') {
@@ -78,11 +83,6 @@ export const Users: CollectionConfig = {
   },
 
   fields: [
-    {
-      name: 'id',
-      type: 'text',
-      admin: { position: 'sidebar', readOnly: true }
-    },
     {
       type: 'tabs',
       tabs: [
@@ -111,10 +111,6 @@ export const Users: CollectionConfig = {
               ],
             },
             {
-              /**
-               * @property tenant
-               * @description Relación inmutable con la propiedad propietaria.
-               */
               name: 'tenant',
               type: 'relationship',
               relationTo: 'tenants',
@@ -122,6 +118,7 @@ export const Users: CollectionConfig = {
               saveToJWT: true,
               index: true,
               admin: { 
+                position: 'sidebar',
                 readOnly: true, 
                 description: 'Perímetro físico/digital al que pertenece esta identidad.' 
               },
@@ -140,11 +137,6 @@ export const Users: CollectionConfig = {
               },
               fields: [
                 { 
-                  /**
-                   * @property agency
-                   * @fix: Sustituidos campos de texto por Relación Estricta.
-                   * Asegura que el usuario operador pertenezca a una agencia válida.
-                   */
                   name: 'agency', 
                   type: 'relationship', 
                   relationTo: 'agencies',

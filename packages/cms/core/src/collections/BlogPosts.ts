@@ -1,9 +1,10 @@
 /**
  * @file packages/cms/core/src/collections/BlogPosts.ts
  * @description Colección soberana para el motor editorial (The Concierge Journal).
- *              Refactorizado: Unificación relacional del campo 'tenant' para 
- *              integridad referencial y aislamiento Multi-Tenant.
- * @version 6.0 - Sovereign Tenant Sync & Relational Hardening
+ *              Refactorizado: Erradicación del campo 'id' manual para compatibilidad 
+ *              con UUID nativo de Payload 3.0, unificación relacional y 
+ *              blindaje de integridad Multi-Tenant.
+ * @version 6.1 - Payload Native ID Compliance
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -17,8 +18,7 @@ import {
 } from '@payloadcms/richtext-lexical';
 
 /**
- * IMPORTACIONES DE PERÍMETRO (Saneadas)
- * @pilar V: Adherencia arquitectónica.
+ * IMPORTACIONES DE PERÍMETRO
  */
 import { multiTenantReadAccess, multiTenantWriteAccess } from './Access';
 
@@ -32,9 +32,6 @@ export const BlogPosts: CollectionConfig = {
     description: 'Curaduría de artículos exclusivos para el Santuario Digital.',
   },
   
-  /**
-   * REGLAS DE ACCESO PERIMETRAL
-   */
   access: {
     read: multiTenantReadAccess,
     create: ({ req: { user } }) => !!user,
@@ -42,19 +39,16 @@ export const BlogPosts: CollectionConfig = {
     delete: multiTenantWriteAccess,
   },
 
-  /**
-   * GUARDIANES DE INTEGRIDAD (Hooks)
-   */
   hooks: {
     beforeChange: [
       ({ req: _req, data, operation: _operation }) => {
         // 1. Garantía de Identidad Multi-Tenant y Atribución
         if (_operation === 'create' && _req.user) {
-          /**
-           * @fix: Sincronización con el nuevo esquema 'tenant'.
-           * Aseguramos que el post pertenezca al perímetro del creador.
-           */
-          if (!data.tenant) data.tenant = _req.user.tenant;
+          if (!data.tenant) {
+            data.tenant = typeof _req.user.tenant === 'object' && _req.user.tenant !== null 
+              ? _req.user.tenant.id 
+              : _req.user.tenant;
+          }
           if (!data.author) data.author = _req.user.id;
         }
         
@@ -88,10 +82,7 @@ export const BlogPosts: CollectionConfig = {
     afterChange: [
       ({ doc, operation: _operation }) => {
         if (_operation === 'create' || _operation === 'update') {
-          /** @pilar IV: Protocolo Heimdall - Telemetría Editorial */
-          console.log(
-            `[HEIMDALL][EDITORIAL] Sync: "${doc.title}" | Status: ${doc.status} | Tenant: ${doc.tenant}`
-          );
+          console.log(`[HEIMDALL][EDITORIAL] Sync: "${doc.title}" | Status: ${doc.status} | Tenant: ${doc.tenant}`);
         }
       }
     ]
@@ -99,16 +90,9 @@ export const BlogPosts: CollectionConfig = {
 
   fields: [
     {
-      name: 'id',
-      type: 'text',
-      required: true,
-      admin: { position: 'sidebar' }
-    },
-    {
       /**
        * @property tenant
-       * @fix: Cambio de 'text' a 'relationship' para integridad referencial.
-       * Renombrado para evitar la columna fantasma 'tenant_id_id'.
+       * @description Vínculo relacional inmutable con la propiedad (Sovereign Perimeter).
        */
       name: 'tenant',
       type: 'relationship',

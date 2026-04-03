@@ -1,30 +1,21 @@
 /**
  * @file packages/cms/core/src/collections/Projects.ts
  * @description Colección soberana para la gestión de activos digitales de ingeniería.
- *              Refactorizado: Unificación relacional del campo 'tenant' y 
- *              normalización de integridad para el motor de hospitalidad.
- * @version 10.0 - Sovereign Tenant Sync & Relational Integrity
+ *              Refactorizado: Erradicación del campo 'id' manual para cumplimiento 
+ *              de UUID nativo de Payload 3.0, unificación relacional y 
+ *              blindaje de integridad Multi-Tenant.
+ * @version 10.1 - Payload Native ID Compliance
  * @author Raz Podestá - MetaShark Tech
  */
 
 import { type CollectionConfig } from 'payload';
-
-/**
- * IMPORTACIONES DE PERÍMETRO
- * @pilar V: Adherencia arquitectónica.
- */
 import { multiTenantReadAccess, multiTenantWriteAccess } from './Access';
 
 /**
  * @type ProjectLayoutStyleType
- * @description Contrato inmutable para los estilos de maquetación permitidos.
  */
 export type ProjectLayoutStyleType = 'minimal' | 'immersive' | 'editorial' | 'corporate' | 'brutalist';
 
-/**
- * CONFIGURACIÓN DE COLECCIÓN: Projects
- * @pilar III: Seguridad de Tipos Absoluta.
- */
 export const Projects: CollectionConfig = {
   slug: 'projects',
   admin: {
@@ -41,19 +32,16 @@ export const Projects: CollectionConfig = {
     delete: multiTenantWriteAccess,
   },
 
-  /**
-   * GUARDIANES DE INTEGRIDAD (Hooks)
-   */
   hooks: {
     beforeChange: [
       ({ req: _req, data, operation: _operation }) => {
         // 1. Garantía de Identidad Multi-Tenant (Relacional)
         if (_operation === 'create' && _req.user) {
-          /**
-           * @fix: Sincronización con el nuevo esquema 'tenant'.
-           * Heredamos la propiedad del contexto del usuario autenticado.
-           */
-          if (!data.tenant) data.tenant = _req.user.tenant;
+          if (!data.tenant) {
+            data.tenant = typeof _req.user.tenant === 'object' && _req.user.tenant !== null 
+              ? _req.user.tenant.id 
+              : _req.user.tenant;
+          }
         }
 
         // 2. Slugificación Automática Sanitizada
@@ -65,8 +53,7 @@ export const Projects: CollectionConfig = {
             .replace(/\s+/g, '-');
         }
 
-        // 3. Normalización "Mirror Sync" (Tags & Tech Stack)
-        // Permite que el Seeder envíe arrays de strings o de objetos
+        // 3. Normalización "Mirror Sync"
         if (Array.isArray(data.tags) && typeof data.tags[0] === 'string') {
           data.tags = data.tags.map((tag: string) => ({ tag }));
         }
@@ -75,7 +62,6 @@ export const Projects: CollectionConfig = {
           data.tech_stack = data.tech_stack.map((technology: string) => ({ technology }));
         }
 
-        // 4. Normalización Profunda de Arquitectura
         if (data.backend_architecture?.features && Array.isArray(data.backend_architecture.features)) {
           if (typeof data.backend_architecture.features[0] === 'string') {
             data.backend_architecture.features = data.backend_architecture.features.map((feature: string) => ({ feature }));
@@ -88,7 +74,6 @@ export const Projects: CollectionConfig = {
     afterChange: [
       ({ doc, operation: _operation }) => {
         if (_operation === 'create') {
-          /** @pilar IV: Protocolo Heimdall - Telemetría de Infraestructura */
           console.log(`[HEIMDALL][INFRASTRUCTURE] Digital Asset Ingested: ${doc.title} (Weight: ${doc.reputationWeight} RZB)`);
         }
       }
@@ -96,18 +81,7 @@ export const Projects: CollectionConfig = {
   },
 
   fields: [
-    {
-      name: 'id',
-      type: 'text',
-      required: true,
-      admin: { position: 'sidebar' }
-    },
     { 
-      /**
-       * @property tenant
-       * @fix: Cambio de 'text' a 'relationship' para integridad referencial.
-       * Renombrado para evitar la columna fantasma 'tenant_id_id'.
-       */
       name: 'tenant', 
       type: 'relationship', 
       relationTo: 'tenants',
@@ -218,7 +192,7 @@ export const Projects: CollectionConfig = {
                     { label: 'Inmersivo', value: 'immersive' },
                     { label: 'Editorial', value: 'editorial' },
                     { label: 'Corporativo', value: 'corporate' },
-                    { label: 'Brutalista', value: 'brutalist' }
+                    { label: 'Brutalista', value: 'brutalista' }
                   ]
                 }
               ]

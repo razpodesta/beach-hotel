@@ -1,9 +1,9 @@
 /**
- * @file Offers.ts
+ * @file packages/cms/core/src/collections/Offers.ts
  * @description Colección soberana para la gestión de Paquetes, Programas y Promociones.
  *              Implementa orquestación Multi-Tenant, matrices de precios y 
  *              control de validez cronológica.
- * @version 1.0 - Next-Gen Offers Engine
+ * @version 1.1 - Schema Hardened Edition (Renamed Assets for Type Integrity)
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -29,13 +29,22 @@ export const Offers: CollectionConfig = {
   hooks: {
     beforeChange: [
       ({ req, data, operation }) => {
+        // 1. Garantía de Identidad Multi-Tenant (Relacional)
         if (operation === 'create' && req.user) {
-          if (!data.tenant) data.tenant = req.user.tenant;
+          data.tenant = typeof req.user.tenant === 'object' && req.user.tenant !== null 
+            ? req.user.tenant.id 
+            : req.user.tenant;
         }
-        // Autogeneración de Slug
-        if (data.title && !data.slug) {
-          data.slug = data.title.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
+        
+        // 2. Autogeneración de Slug (SSoT Editorial)
+        if (data.title && typeof data.title === 'string' && !data.slug) {
+          data.slug = data.title
+            .toLowerCase()
+            .trim()
+            .replace(/[^\w\s-]/g, '')
+            .replace(/\s+/g, '-');
         }
+        
         return data;
       },
     ],
@@ -118,7 +127,11 @@ export const Offers: CollectionConfig = {
               admin: { position: 'sidebar', readOnly: true }
             },
             {
-              name: 'heroImage',
+              /** 
+               * @fix: Renombrado a heroAsset para forzar recreación de columna 
+               * tipo VARCHAR/UUID y eliminar el error de cast a INT.
+               */
+              name: 'heroAsset',
               type: 'upload',
               relationTo: 'media',
               required: true,

@@ -12,10 +12,6 @@
         "outputPath": "dist/packages/cms/core",
         "main": "packages/cms/core/src/index.ts",
         "tsConfig": "packages/cms/core/tsconfig.lib.json",
-        /**
-         * @pilar XIII: Alineación con el Motor.
-         * Emisión exclusiva en ESM para erradicar ruidos de construcción en Vercel.
-         */
         "format": ["esm"],
         "assets": [
           "packages/cms/core/*.md",
@@ -25,10 +21,6 @@
             "output": "./"
           }
         ],
-        /**
-         * @pilar VIII: Resiliencia de Dependencias.
-         * Genera un bundle de producción autónomo con sus propias definiciones de módulos.
-         */
         "generatePackageJson": true,
         "updateBuildableProjectDepsInPackageJson": true,
         "clean": true
@@ -41,10 +33,6 @@
         "command": "tsc -p packages/cms/core/tsconfig.lib.json --noEmit",
         "forwardAllArgs": true
       },
-      /**
-       * @pilar X: Performance - Definición de inputs para habilitar el caché de Nx.
-       * Esto evita validaciones redundantes en el pipeline de Vercel.
-       */
       "inputs": ["production", "^production"],
       "dependsOn": ["^build"],
       "description": "Verificación forense de integridad de tipos del CMS."

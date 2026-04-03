@@ -1,18 +1,13 @@
 /**
  * @file packages/cms/core/src/collections/Tenants.ts
  * @description Colección soberana para la gestión de propiedades (Multi-Tenancy).
- *              Orquesta las fronteras de datos para el Hotel, Festival y Journal.
- *              Nivelado para resolución nativa en Next.js 15 y observabilidad forense.
- * @version 3.0 - Pure Source Resolution (No Ext)
+ *              Refactorizado: Erradicación del campo 'id' manual para compatibilidad 
+ *              con UUID nativo de Payload 3.0.
+ * @version 3.1 - Payload Native ID Compliance
  * @author Raz Podestá - MetaShark Tech
  */
 
-import type { CollectionConfig } from 'payload';
-
-/**
- * IMPORTACIONES DE PERÍMETRO (Saneadas)
- * @nivelación: Extensión .js eliminada para alineación con Next.js 15 (Bundler Resolution).
- */
+import { type CollectionConfig } from 'payload';
 import { multiTenantReadAccess, multiTenantWriteAccess } from './Access';
 
 export const Tenants: CollectionConfig = {
@@ -39,7 +34,7 @@ export const Tenants: CollectionConfig = {
    */
   hooks: {
     beforeChange:[
-      ({ data }) => { // Eliminado parámetro 'operation' ya que no se utilizaba
+      ({ data }) => { 
         // 1. Slugificación Automática (Fail-Safe)
         if (data.name && typeof data.name === 'string' && !data.slug) {
           data.slug = data.name
@@ -53,7 +48,6 @@ export const Tenants: CollectionConfig = {
     ],
     afterChange:[
       ({ doc, operation }) => {
-        // Corrección de Linter: Usamos operation directamente o lo comparamos
         if (operation === 'create') {
           console.log(`[HEIMDALL][INFRASTRUCTURE] New Property Created: ${doc.name} (ID: ${doc.id})`);
         }
@@ -62,15 +56,6 @@ export const Tenants: CollectionConfig = {
   },
 
   fields:[
-    {
-      name: 'id',
-      type: 'text',
-      required: true,
-      admin: {
-        description: 'Identificador único de infraestructura (UUID).',
-        position: 'sidebar'
-      }
-    },
     {
       name: 'name',
       type: 'text',
