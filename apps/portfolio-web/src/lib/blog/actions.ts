@@ -1,10 +1,9 @@
 /**
  * @file apps/portfolio-web/src/lib/blog/actions.ts
  * @description Orquestador soberano de datos para el Concierge Journal.
- *              Refactorizado: Resolución de TS6307 vía tsconfig sync,
- *              blindaje de resiliencia con safeParse (Zero-Crash Protocol)
- *              y optimización de AST para el empaquetador de Next.js 15.
- * @version 37.0 - SafeParse Resilience & Build Integrity
+ *              Refactorizado: Resolución de error de compilación TS2339 (ZodError),
+ *              blindaje de resiliencia con safeParse y logueo forense robusto.
+ * @version 37.1 - Build Integrity Patch
  * @author Raz Podestá - Staff Engineer, MetaShark Tech
  */
 
@@ -99,7 +98,7 @@ class LexicalCompiler {
 class EditorialShaper {
   /**
    * @description Transmuta los datos crudos en la entidad final.
-   * @pilar VIII: Resiliencia - Retorna null si el contrato Zod falla, evitando Error 500.
+   * @pilar VIII: Resiliencia - Retorna null si el contrato Zod falla.
    */
   public static shape(entry: unknown, dict: Dictionary): PostWithSlug | null {
     const raw = entry as RawPayloadPost;
@@ -140,8 +139,9 @@ class EditorialShaper {
     });
 
     if (!shapeResult.success) {
-      console.warn(`[HEIMDALL][DATA-DROP] Post omitted due to contract violation: ${raw.slug || 'unknown'}`);
-      console.warn(shapeResult.error.errors);
+      console.warn(`[HEIMDALL][DATA-DROP] Post omitted: ${raw.slug || 'unknown'}`);
+      // FIX: Accedemos a shapeResult.error.issues para garantizar compatibilidad total
+      console.warn(JSON.stringify(shapeResult.error.issues, null, 2));
       return null;
     }
 
