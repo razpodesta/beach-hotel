@@ -3,7 +3,7 @@
   "framework": "nextjs",
   "installCommand": "pnpm install",
   "buildCommand": "pnpm run build",
-  "outputDirectory": "dist/apps/portfolio-web/.next",
+  "outputDirectory": "dist/apps/portfolio-web",
   "cleanUrls": true,
   "trailingSlash": false,
   "regions": [
