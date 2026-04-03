@@ -1,0 +1,409 @@
+{
+  "timestamp": "2026-04-03T15:07:52.812Z",
+  "clusterState": {
+    "offers": {
+      "rowCount": 0,
+      "sample": []
+    },
+    "flash_sales": {
+      "rowCount": 0,
+      "sample": []
+    },
+    "agencies": {
+      "rowCount": 0,
+      "sample": []
+    },
+    "agents": {
+      "rowCount": 0,
+      "sample": []
+    },
+    "business_metrics": {
+      "rowCount": 0,
+      "sample": []
+    },
+    "ingestions": {
+      "rowCount": 0,
+      "sample": []
+    },
+    "subscribers": {
+      "rowCount": 0,
+      "sample": []
+    },
+    "tenants": {
+      "rowCount": 1,
+      "sample": [
+        {
+          "id": "b11845fe-3276-4ad2-a1e4-bd9b1093e80d",
+          "name": "Beach Hotel Canasvieiras",
+          "slug": "beach-hotel-main",
+          "domain": "https://beach-hotel.vercel.app",
+          "updated_at": "2026-04-03T15:06:24.885Z",
+          "created_at": "2026-04-03T15:06:24.881Z"
+        }
+      ]
+    },
+    "users": {
+      "rowCount": 1,
+      "sample": [
+        {
+          "id": "21951da7-2675-4ee4-a085-2e039e9c6e34",
+          "email": "admin@metashark.tech",
+          "role": "developer",
+          "tenant_id": "b11845fe-3276-4ad2-a1e4-bd9b1093e80d",
+          "operator_metadata_agency_id": null,
+          "operator_metadata_access_level": "consultant",
+          "guest_metadata_loyalty_points": "0",
+          "guest_metadata_preferred_language": null,
+          "level": "99",
+          "experience_points": "3300",
+          "_verified": true,
+          "updated_at": "2026-04-03T15:06:25.595Z",
+          "created_at": "2026-04-03T15:06:25.595Z",
+          "enable_a_p_i_key": null,
+          "api_key": null,
+          "api_key_index": null,
+          "reset_password_token": null,
+          "reset_password_expiration": null,
+          "salt": "1aa552de0083a8f7eee1088275de102b3efca71556b60ee15e2095f41a140f75",
+          "hash": "27ec8b8d72f0aabf82b9fa0c8a7749c55e96259e498be459c06bfb46592174cad51d8ab03fb8d9a1a44eeb3c94f86a7783dba7e71ad603e0ddcc5cd0923ee75d247de737fd4ab1cfae779b0119df858a755c7cbd06031a638d9f5679a273dc49dd27c2e5002518ffe3aac317b5e039cbf4af6de957dee53409be400ab1bd67c5213f494bc1217092d2a9d6b960a178e50622aafd9be217800b857deb3d9bc4ef074660783ebe490a77a119368bae363570b0f6b4a032475be2e1f302d695ca12d309a45f09a96e4bfe4611f5619c1af364ea19f445134dd0badd6fc20221f7691dd68efc1a0453a10832f0ce0e85cd95cdfe1fcbd0e933268f76f464f1d115a716f7385937b764afe0b3ca234b055b4dd3d35e3fcfa555375b49b3364584acce9c1ac1d4552f70a2e830432045af2829c4a8f693bff5960efabd1fbf1fe5cb93f43db5271ab563a58124d7a29265f0a0a65c6de19c38b2bd0206b659ecdf62ccec37a0b028ca098a0ccad54807e4c87c9c7c6c5a2563ddb37f8ff956ebed1bd8a0d2f222c40269ed52c7ff3a5ad9188570ab192be581f49bbcb495f49ec381e09a9ef3cf8c9e8b4ec462c5c4196ba581c58954570adb0348d1a3a4e197c303f2dc08b079df2dd7a37720174697a65fa02503c8606ae50d1b495bee5532e39f73e27fd8ff15ecb514e880b73613409e6cf598cf4e05e9ff1ba20fa47635bfce6b",
+          "login_attempts": "0",
+          "lock_until": null
+        }
+      ]
+    },
+    "notifications": {
+      "rowCount": 0,
+      "sample": []
+    },
+    "dynamic_routes": {
+      "rowCount": 0,
+      "sample": []
+    },
+    "media": {
+      "rowCount": 1,
+      "sample": [
+        {
+          "id": "9d7b3d25-d5f3-47d7-b066-4e8ab8d3a7b7",
+          "tenant_id": "b11845fe-3276-4ad2-a1e4-bd9b1093e80d",
+          "alt": "Génesis Asset Placeholder",
+          "caption": null,
+          "updated_at": "2026-04-03T15:06:25.774Z",
+          "created_at": "2026-04-03T15:06:25.774Z",
+          "url": "/api/media/file/genesis-1.png",
+          "thumbnail_u_r_l": null,
+          "filename": "genesis-1.png",
+          "mime_type": "image/png",
+          "filesize": "70",
+          "width": "1",
+          "height": "1",
+          "focal_x": "50",
+          "focal_y": "50",
+          "sizes_thumbnail_url": null,
+          "sizes_thumbnail_width": null,
+          "sizes_thumbnail_height": null,
+          "sizes_thumbnail_mime_type": null,
+          "sizes_thumbnail_filesize": null,
+          "sizes_thumbnail_filename": null,
+          "sizes_card_url": null,
+          "sizes_card_width": null,
+          "sizes_card_height": null,
+          "sizes_card_mime_type": null,
+          "sizes_card_filesize": null,
+          "sizes_card_filename": null,
+          "sizes_hero_cinematic_url": null,
+          "sizes_hero_cinematic_width": null,
+          "sizes_hero_cinematic_height": null,
+          "sizes_hero_cinematic_mime_type": null,
+          "sizes_hero_cinematic_filesize": null,
+          "sizes_hero_cinematic_filename": null,
+          "sizes_mobile_optimized_url": null,
+          "sizes_mobile_optimized_width": null,
+          "sizes_mobile_optimized_height": null,
+          "sizes_mobile_optimized_mime_type": null,
+          "sizes_mobile_optimized_filesize": null,
+          "sizes_mobile_optimized_filename": null
+        }
+      ]
+    },
+    "blog_posts": {
+      "rowCount": 3,
+      "sample": [
+        {
+          "id": "3367bb63-4fed-4d54-9882-437b15e902d5",
+          "tenant_id": "b11845fe-3276-4ad2-a1e4-bd9b1093e80d",
+          "title": "The Ultimate Guide to Floripa Nightlife",
+          "slug": "guia-vida-nocturna-floripa",
+          "content": {
+            "root": {
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": "Florianópolis is known worldwide for its beaches, but when the sun goes down, the real magic begins.",
+                      "type": "text"
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          "description": "Discover the most exclusive clubs, boat parties, and best-kept secrets of the Island of Magic.",
+          "author_id": "21951da7-2675-4ee4-a085-2e039e9c6e34",
+          "published_date": "2026-01-15T12:00:00.000Z",
+          "status": "published",
+          "reading_time": "1",
+          "meta_title": null,
+          "og_image_id": "9d7b3d25-d5f3-47d7-b066-4e8ab8d3a7b7",
+          "updated_at": "2026-04-03T15:06:25.895Z",
+          "created_at": "2026-04-03T15:06:25.895Z"
+        },
+        {
+          "id": "6f332bfa-c3ab-4106-be9b-879ecaa69ed2",
+          "tenant_id": "b11845fe-3276-4ad2-a1e4-bd9b1093e80d",
+          "title": "Canasvieiras Secrets: The Boutique Escape",
+          "slug": "secretos-de-canasvieiras",
+          "content": {
+            "root": {
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": "Hidden in plain sight, the northern district has evolved into a boutique destination.",
+                      "type": "text"
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          "description": "Beyond the crowded beaches, Canasvieiras hides corners of peace and elite hospitality.",
+          "author_id": "21951da7-2675-4ee4-a085-2e039e9c6e34",
+          "published_date": "2026-02-02T10:30:00.000Z",
+          "status": "published",
+          "reading_time": "1",
+          "meta_title": null,
+          "og_image_id": "9d7b3d25-d5f3-47d7-b066-4e8ab8d3a7b7",
+          "updated_at": "2026-04-03T15:06:26.113Z",
+          "created_at": "2026-04-03T15:06:26.112Z"
+        },
+        {
+          "id": "4a1e422e-ce80-4658-b8e4-6f9ffe6acecf",
+          "tenant_id": "b11845fe-3276-4ad2-a1e4-bd9b1093e80d",
+          "title": "Pride Escape 2026: Official Takeover Guide",
+          "slug": "pride-escape-2026-guia",
+          "content": {
+            "root": {
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": "Cold doesn't exist when the community takes control. 7 days of absolute freedom.",
+                      "type": "text"
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          "description": "Get ready for the largest boutique winter takeover in Brazil.",
+          "author_id": "21951da7-2675-4ee4-a085-2e039e9c6e34",
+          "published_date": "2026-03-10T18:45:00.000Z",
+          "status": "published",
+          "reading_time": "1",
+          "meta_title": null,
+          "og_image_id": "9d7b3d25-d5f3-47d7-b066-4e8ab8d3a7b7",
+          "updated_at": "2026-04-03T15:06:26.390Z",
+          "created_at": "2026-04-03T15:06:26.389Z"
+        }
+      ]
+    },
+    "projects_tags": {
+      "rowCount": 4,
+      "sample": [
+        {
+          "_order": 1,
+          "_parent_id": "8d7f8dd2-ddac-49b9-9f6a-b23304afdb88",
+          "id": "69cfd7725d49270498fecabc",
+          "tag": "Hospitality"
+        },
+        {
+          "_order": 2,
+          "_parent_id": "8d7f8dd2-ddac-49b9-9f6a-b23304afdb88",
+          "id": "69cfd7725d49270498fecabd",
+          "tag": "E-commerce"
+        },
+        {
+          "_order": 1,
+          "_parent_id": "9375d7d4-bf74-45c4-a10e-213d0309a818",
+          "id": "69cfd7725d49270498fecac4",
+          "tag": "Architecture"
+        }
+      ]
+    },
+    "projects_backend_architecture_features": {
+      "rowCount": 5,
+      "sample": [
+        {
+          "_order": 1,
+          "_parent_id": "8d7f8dd2-ddac-49b9-9f6a-b23304afdb88",
+          "id": "69cfd7725d49270498fecac2",
+          "feature": "Reservation Engine"
+        },
+        {
+          "_order": 2,
+          "_parent_id": "8d7f8dd2-ddac-49b9-9f6a-b23304afdb88",
+          "id": "69cfd7725d49270498fecac3",
+          "feature": "Auth Shield"
+        },
+        {
+          "_order": 1,
+          "_parent_id": "9375d7d4-bf74-45c4-a10e-213d0309a818",
+          "id": "69cfd7725d49270498fecac9",
+          "feature": "Telemetry Hub"
+        }
+      ]
+    },
+    "projects": {
+      "rowCount": 2,
+      "sample": [
+        {
+          "id": "8d7f8dd2-ddac-49b9-9f6a-b23304afdb88",
+          "tenant_id": "b11845fe-3276-4ad2-a1e4-bd9b1093e80d",
+          "status": "published",
+          "title": "Oh! Hostels Digital Hub",
+          "slug": "oh-hostels-platform",
+          "description": "Elite web platform for a hotel chain.",
+          "image_url": "/images/projects/oh-hostels.jpg",
+          "live_url": "https://oh-hostels.com",
+          "code_url": null,
+          "introduction_heading": "Hospitality Revolution",
+          "introduction_body": "We transformed a generic booking process into a high-fidelity user experience.",
+          "backend_architecture_title": "Monolith Core",
+          "backend_architecture_description": "Resilient booking engine.",
+          "branding_primary_color": "#3b82f6",
+          "branding_layout_style": "editorial",
+          "reputation_weight": "80",
+          "updated_at": "2026-04-03T15:06:26.611Z",
+          "created_at": "2026-04-03T15:06:26.609Z"
+        },
+        {
+          "id": "9375d7d4-bf74-45c4-a10e-213d0309a818",
+          "tenant_id": "b11845fe-3276-4ad2-a1e4-bd9b1093e80d",
+          "status": "published",
+          "title": "MetaShark Core Infrastructure",
+          "slug": "meta-shark-ecosystem",
+          "description": "Hyper-scalable monorepo.",
+          "image_url": "/images/projects/metashark.jpg",
+          "live_url": "#",
+          "code_url": "https://github.com/razpodesta/metashark-core",
+          "introduction_heading": "The Digital Brain",
+          "introduction_body": "The architectural foundation designed to support high concurrency loads.",
+          "backend_architecture_title": "Event-Driven Core",
+          "backend_architecture_description": "Microservices with low latency.",
+          "branding_primary_color": "#a855f7",
+          "branding_layout_style": "minimal",
+          "reputation_weight": "100",
+          "updated_at": "2026-04-03T15:06:26.860Z",
+          "created_at": "2026-04-03T15:06:26.859Z"
+        }
+      ]
+    },
+    "payload_kv": {
+      "rowCount": 0,
+      "sample": []
+    },
+    "payload_locked_documents": {
+      "rowCount": 0,
+      "sample": []
+    },
+    "payload_locked_documents_rels": {
+      "rowCount": 0,
+      "sample": []
+    },
+    "payload_preferences": {
+      "rowCount": 0,
+      "sample": []
+    },
+    "payload_preferences_rels": {
+      "rowCount": 0,
+      "sample": []
+    },
+    "payload_migrations": {
+      "rowCount": 1,
+      "sample": [
+        {
+          "id": "5b90cfaa-7a8a-42b1-9545-9fc88461dc34",
+          "name": "dev",
+          "batch": "-1",
+          "updated_at": "2026-04-03T15:06:22.380Z",
+          "created_at": "2026-04-03T00:43:02.782Z"
+        }
+      ]
+    },
+    "offers_inclusions": {
+      "rowCount": 0,
+      "sample": []
+    },
+    "agents_employment_history": {
+      "rowCount": 0,
+      "sample": []
+    },
+    "users_sessions": {
+      "rowCount": 0,
+      "sample": []
+    },
+    "dynamic_routes_conditional_rules": {
+      "rowCount": 0,
+      "sample": []
+    },
+    "blog_posts_tags": {
+      "rowCount": 9,
+      "sample": [
+        {
+          "_order": 1,
+          "_parent_id": "3367bb63-4fed-4d54-9882-437b15e902d5",
+          "id": "69cfd7715d49270498fecab3",
+          "tag": "nightlife"
+        },
+        {
+          "_order": 2,
+          "_parent_id": "3367bb63-4fed-4d54-9882-437b15e902d5",
+          "id": "69cfd7715d49270498fecab4",
+          "tag": "vip experience"
+        },
+        {
+          "_order": 3,
+          "_parent_id": "3367bb63-4fed-4d54-9882-437b15e902d5",
+          "id": "69cfd7715d49270498fecab5",
+          "tag": "florianopolis"
+        }
+      ]
+    },
+    "projects_tech_stack": {
+      "rowCount": 7,
+      "sample": [
+        {
+          "_order": 1,
+          "_parent_id": "8d7f8dd2-ddac-49b9-9f6a-b23304afdb88",
+          "id": "69cfd7725d49270498fecabe",
+          "technology": "Next.js 15"
+        },
+        {
+          "_order": 2,
+          "_parent_id": "8d7f8dd2-ddac-49b9-9f6a-b23304afdb88",
+          "id": "69cfd7725d49270498fecabf",
+          "technology": "TypeScript"
+        },
+        {
+          "_order": 3,
+          "_parent_id": "8d7f8dd2-ddac-49b9-9f6a-b23304afdb88",
+          "id": "69cfd7725d49270498fecac0",
+          "technology": "Tailwind v4"
+        }
+      ]
+    }
+  }
+}

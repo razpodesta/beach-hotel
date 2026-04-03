@@ -1,9 +1,9 @@
 /**
  * @file packages/cms/core/src/payload.config.ts
- * @version 40.4 - Enterprise Production Ready Engine
- * @description Configuración soberana de Payload 3.0. 
- *              Orquesta la sincronización relacional, UUIDs nativos y
- *              blindaje perimetral para Multi-Tenancy.
+ * @version 40.5 - Enterprise Production Ready Engine
+ * @description Orquestador de configuración Payload 3.0. 
+ *              Refactorizado: Blindaje SSL para entornos Serverless y
+ *              configuración de persistencia determinista.
  * @author Staff Engineer - MetaShark Tech
  */
 
@@ -27,7 +27,7 @@ import {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Determinación del entorno de ejecución
+// Determinación del entorno (Production Check)
 const isProduction = process.env.NODE_ENV === 'production';
 
 export default buildConfig({
@@ -42,17 +42,21 @@ export default buildConfig({
 
   /**
    * MOTOR DE BASE DE DATOS SOBERANO
-   * @pilar_XIII: Normalización de IDs.
+   * @pilar_XIII: Integridad de IDs y blindaje SSL.
    */
   db: postgresAdapter({
     pool: {
       connectionString: process.env.DATABASE_URL || '',
-      ssl: { rejectUnauthorized: false },
+      /** 
+       * @fix: Forzamos la desactivación de validación de certificados SSL 
+       * para evitar 'self-signed certificate in certificate chain' en Vercel.
+       */
+      ssl: { 
+        rejectUnauthorized: false 
+      },
     },
     idType: 'uuid',
-    // MODO DE EMERGENCIA: Si el build falla por cambios de esquema, 
-    // activamos push para forzar la sincronización en entornos de desarrollo/seeding.
-    // En producción (Vercel), Payload ignorará esto y preferirá migraciones.
+    // push: false en producción es MANDATORIO para evitar errores de migración en tiempo de build
     push: !isProduction,
   }),
 

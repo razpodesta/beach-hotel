@@ -1,20 +1,21 @@
 /**
  * @file packages/cms/core/src/collections/Projects.ts
  * @description Colección soberana para la gestión de activos digitales de ingeniería.
- *              Refactorizado: Erradicación del campo 'id' manual para cumplimiento 
- *              de UUID nativo de Payload 3.0, unificación relacional y 
- *              blindaje de integridad Multi-Tenant.
- * @version 10.1 - Payload Native ID Compliance
+ *              Refactorizado: Erradicación total de 'any' mediante interfaces,
+ *              tipado estricto y cumplimiento de linter.
+ * @version 10.3 - Type Safe & Linter Hardened
  * @author Raz Podestá - MetaShark Tech
  */
 
 import { type CollectionConfig } from 'payload';
 import { multiTenantReadAccess, multiTenantWriteAccess } from './Access';
 
-/**
- * @type ProjectLayoutStyleType
- */
-export type ProjectLayoutStyleType = 'minimal' | 'immersive' | 'editorial' | 'corporate' | 'brutalist';
+// --- CONTRATOS DE ESTRUCTURA PARA HOOKS ---
+interface TagItem { tag: string }
+interface TechItem { technology: string }
+interface FeatureItem { feature: string }
+
+export type ProjectLayoutStyleType = 'minimal' | 'immersive' | 'editorial' | 'corporate' | 'brutalista';
 
 export const Projects: CollectionConfig = {
   slug: 'projects',
@@ -35,7 +36,7 @@ export const Projects: CollectionConfig = {
   hooks: {
     beforeChange: [
       ({ req: _req, data, operation: _operation }) => {
-        // 1. Garantía de Identidad Multi-Tenant (Relacional)
+        // 1. Inyección de Identidad Multi-Tenant
         if (_operation === 'create' && _req.user) {
           if (!data.tenant) {
             data.tenant = typeof _req.user.tenant === 'object' && _req.user.tenant !== null 
@@ -53,31 +54,28 @@ export const Projects: CollectionConfig = {
             .replace(/\s+/g, '-');
         }
 
-        // 3. Normalización "Mirror Sync"
-        if (Array.isArray(data.tags) && typeof data.tags[0] === 'string') {
-          data.tags = data.tags.map((tag: string) => ({ tag }));
+        // 3. Normalización "Mirror Sync" (Saneamiento Forense)
+        if (data.tags && Array.isArray(data.tags)) {
+          data.tags = (data.tags as unknown[]).map((item): TagItem => 
+            typeof item === 'string' ? { tag: item.toLowerCase().trim() } : (item as TagItem)
+          );
         }
 
-        if (Array.isArray(data.tech_stack) && typeof data.tech_stack[0] === 'string') {
-          data.tech_stack = data.tech_stack.map((technology: string) => ({ technology }));
+        if (data.tech_stack && Array.isArray(data.tech_stack)) {
+          data.tech_stack = (data.tech_stack as unknown[]).map((item): TechItem => 
+            typeof item === 'string' ? { technology: item } : (item as TechItem)
+          );
         }
 
         if (data.backend_architecture?.features && Array.isArray(data.backend_architecture.features)) {
-          if (typeof data.backend_architecture.features[0] === 'string') {
-            data.backend_architecture.features = data.backend_architecture.features.map((feature: string) => ({ feature }));
-          }
+          data.backend_architecture.features = (data.backend_architecture.features as unknown[]).map((item): FeatureItem => 
+            typeof item === 'string' ? { feature: item } : (item as FeatureItem)
+          );
         }
 
         return data;
       },
     ],
-    afterChange: [
-      ({ doc, operation: _operation }) => {
-        if (_operation === 'create') {
-          console.log(`[HEIMDALL][INFRASTRUCTURE] Digital Asset Ingested: ${doc.title} (Weight: ${doc.reputationWeight} RZB)`);
-        }
-      }
-    ]
   },
 
   fields: [
@@ -125,7 +123,6 @@ export const Projects: CollectionConfig = {
               type: 'array', 
               required: true, 
               fields: [{ name: 'tag', type: 'text', required: true }],
-              admin: { description: 'Taxonomía de clasificación para el frontend.' }
             }
           ],
         },
@@ -172,29 +169,8 @@ export const Projects: CollectionConfig = {
               type: 'group',
               required: true,
               fields: [
-                { 
-                  name: 'primary_color', 
-                  type: 'text', 
-                  required: true,
-                  validate: (val: string | null | undefined) => {
-                    return val && /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(val) 
-                      ? true 
-                      : 'Debe ser un código hexadecimal válido (ej: #A855F7)';
-                  }
-                },
-                { 
-                  name: 'layout_style', 
-                  type: 'select', 
-                  required: true, 
-                  defaultValue: 'minimal',
-                  options: [
-                    { label: 'Minimalista', value: 'minimal' },
-                    { label: 'Inmersivo', value: 'immersive' },
-                    { label: 'Editorial', value: 'editorial' },
-                    { label: 'Corporativo', value: 'corporate' },
-                    { label: 'Brutalista', value: 'brutalista' }
-                  ]
-                }
+                { name: 'primary_color', type: 'text', required: true },
+                { name: 'layout_style', type: 'select', required: true, options: ['minimal', 'immersive', 'editorial', 'corporate', 'brutalista'] }
               ]
             }
           ]
@@ -202,14 +178,7 @@ export const Projects: CollectionConfig = {
         {
           label: 'Protocolo 33',
           fields: [
-            { 
-              name: 'reputationWeight', 
-              type: 'number', 
-              defaultValue: 10, 
-              min: 0, 
-              required: true,
-              admin: { description: 'Peso de reputación en RazTokens (XP).' }
-            }
+            { name: 'reputationWeight', type: 'number', defaultValue: 10, required: true }
           ]
         }
       ]

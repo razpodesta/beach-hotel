@@ -1,0 +1,184 @@
+{
+  "timestamp": "2026-04-03T15:07:40.734Z",
+  "summary": {
+    "totalTables": 28,
+    "totalPolicies": 0,
+    "tablesWithRlsDisabled": [
+      "offers",
+      "flash_sales",
+      "agencies",
+      "business_metrics",
+      "ingestions",
+      "agents",
+      "subscribers",
+      "tenants",
+      "users",
+      "notifications",
+      "dynamic_routes",
+      "projects_tags",
+      "media",
+      "blog_posts",
+      "payload_locked_documents",
+      "projects_backend_architecture_features",
+      "payload_kv",
+      "payload_preferences",
+      "payload_preferences_rels",
+      "projects",
+      "payload_locked_documents_rels",
+      "payload_migrations",
+      "offers_inclusions",
+      "agents_employment_history",
+      "users_sessions",
+      "dynamic_routes_conditional_rules",
+      "blog_posts_tags",
+      "projects_tech_stack"
+    ],
+    "isSecurityCompliant": false
+  },
+  "tables": [
+    "offers",
+    "flash_sales",
+    "agencies",
+    "agents",
+    "business_metrics",
+    "ingestions",
+    "subscribers",
+    "tenants",
+    "users",
+    "notifications",
+    "dynamic_routes",
+    "media",
+    "blog_posts",
+    "projects_tags",
+    "projects_backend_architecture_features",
+    "projects",
+    "payload_kv",
+    "payload_locked_documents",
+    "payload_locked_documents_rels",
+    "payload_preferences",
+    "payload_preferences_rels",
+    "payload_migrations",
+    "offers_inclusions",
+    "agents_employment_history",
+    "users_sessions",
+    "dynamic_routes_conditional_rules",
+    "blog_posts_tags",
+    "projects_tech_stack"
+  ],
+  "rlsStatus": [
+    {
+      "tablename": "offers",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "flash_sales",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "agencies",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "business_metrics",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "ingestions",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "agents",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "subscribers",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "tenants",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "users",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "notifications",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "dynamic_routes",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "projects_tags",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "media",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "blog_posts",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "payload_locked_documents",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "projects_backend_architecture_features",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "payload_kv",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "payload_preferences",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "payload_preferences_rels",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "projects",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "payload_locked_documents_rels",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "payload_migrations",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "offers_inclusions",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "agents_employment_history",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "users_sessions",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "dynamic_routes_conditional_rules",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "blog_posts_tags",
+      "rowsecurity": false
+    },
+    {
+      "tablename": "projects_tech_stack",
+      "rowsecurity": false
+    }
+  ],
+  "policies": [],
+  "error": null
+}

@@ -1,7 +1,7 @@
 /**
  * @file scripts/supabase/seed-database.ts
- * @version 31.1 - Genesis Engine: Final Linter Sanity
- * @description Inyección determinista final con tipado estricto y pureza de linter.
+ * @version 31.3 - Genesis Engine: Final Industrial Hardening
+ * @description Inyección determinista con guardas de resiliencia y normalización de esquemas.
  * @author Raz Podestá - Staff Engineer, MetaShark Tech
  */
 
@@ -25,11 +25,11 @@ const C = {
   yellow: '\x1b[33m', gray: '\x1b[90m' 
 };
 
-// PNG Transparente 1x1 (B64)
+// PNG Transparente 1x1 (Base64)
 const GENESIS_PNG_B64 = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
 
 (async () => {
-  console.log(`\n${C.magenta}=== GENESIS ENGINE V31.1: PROVISIONING ===${C.reset}`);
+  console.log(`\n${C.magenta}=== GENESIS ENGINE V31.3: PROVISIONING ===${C.reset}`);
 
   try {
     const { getPayload } = await import('payload');
@@ -39,7 +39,7 @@ const GENESIS_PNG_B64 = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR
 
     const payload = await getPayload({ config: await configPromise });
     
-    // 2. PURGA JERÁRQUICA (Idempotencia)
+    // 2. PURGA JERÁRQUICA
     console.log(`${C.blue}[1/4]${C.reset} Limpiando perímetros existentes...`);
     const purgeOrder: CollectionSlug[] = [
       'notifications', 'ingestions', 'flash-sales', 'offers', 
@@ -50,8 +50,7 @@ const GENESIS_PNG_B64 = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR
     for (const collection of purgeOrder) {
       try {
         await payload.delete({ collection, where: {} });
-      } catch (e) {
-        // @fix: variable renombrada a 'e' y tratada como ignorada para evitar ruido de linter
+      } catch (e: unknown) {
         const _ = e;
         console.warn(`   ${C.yellow}⚠ Colección '${collection}' inaccesible.${C.reset}`);
       }
@@ -103,7 +102,7 @@ const GENESIS_PNG_B64 = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR
           description: post.description,
           content: { root: { children: [{ type: 'paragraph', children: [{ type: 'text', text: post.content }] }] } },
           publishedDate: post.publishedDate,
-          tags: post.tags.map((t: string) => ({ tag: t })),
+          tags: (post.tags as string[]).map((t: string) => ({ tag: t })),
           tenant: tenant.id,
           author: admin.id,
           status: 'published',
@@ -113,17 +112,39 @@ const GENESIS_PNG_B64 = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR
     }
 
     for (const proj of MOCK_PROJECTS) {
-      // @fix: Destructuración segura. _id se ignora, el resto se expande.
-      const { id: _id, ...dataWithoutId } = proj as Record<string, unknown>;
-      
+      // Guardia de resiliencia: aseguramos que el objeto tenga las propiedades requeridas
+      const p = proj as any;
+      if (!p.introduction || !p.backend_architecture) {
+         console.warn(`   ${C.yellow}⚠ Saltando activo con estructura inválida: ${p.title}${C.reset}`);
+         continue;
+      }
+
       await payload.create({
         collection: 'projects',
         data: {
-          ...dataWithoutId,
+          title: p.title,
+          slug: p.slug,
+          description: p.description,
+          imageUrl: p.imageUrl,
+          liveUrl: p.liveUrl || '#',
+          codeUrl: p.codeUrl || null,
+          tags: (p.tags as string[]).map((t: string) => ({ tag: t })),
+          tech_stack: (p.tech_stack as string[]).map((t: string) => ({ technology: t })),
+          introduction: {
+            heading: p.introduction.heading,
+            body: p.introduction.body
+          },
+          backend_architecture: {
+            title: p.backend_architecture.title,
+            description: p.backend_architecture.description || '',
+            features: (p.backend_architecture.features as string[]).map((f: string) => ({ feature: f }))
+          },
+          branding: p.branding,
+          reputationWeight: p.reputationWeight,
           tenant: tenant.id,
           status: 'published',
           heroAsset: genesisMedia.id
-        } as Record<string, unknown> // Eliminado 'any', usamos Record<string, unknown>
+        }
       });
     }
 
