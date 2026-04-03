@@ -27,8 +27,7 @@
     "build": {
       "executor": "@nx/next:build",
       "outputs": [
-        "{options.outputPath}",
-        "{projectRoot}/.next"
+        "{options.outputPath}"
       ],
       "defaultConfiguration": "production",
       "options": {

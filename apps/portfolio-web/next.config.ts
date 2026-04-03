@@ -1,9 +1,10 @@
 /**
  * @file next.config.ts
  * @description Orquestador del Compilador Next.js 15 (The Artisan).
- *              Refactorizado: Simplificación Soberana. Se elimina distDir manual 
- *              para permitir la detección nativa de Vercel y se blindan fronteras.
- * @version 10.4 - Sovereign Standard Sync
+ *              Refactorizado: Restauración de Neutralidad de Salida. Se elimina 
+ *              distDir para permitir que Nx y Vercel coordinen la ubicación 
+ *              de los artefactos de forma nativa.
+ * @version 10.5 - Neutralized Build Standard
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -14,15 +15,15 @@ import { withPayload } from '@payloadcms/next/withPayload';
 const nextConfig: NextConfig = {
   /**
    * @pilar_XIII: Simplificación de Infraestructura.
-   * Eliminamos la propiedad 'distDir'. Next.js construirá en la carpeta 
-   * local '.next', permitiendo que Vercel localice los manifiestos de 
-   * forma nativa sin desajustes de rutas relativas.
+   * SE ELIMINA 'distDir'. Next.js usará su ubicación por defecto o la 
+   * inyectada por el executor de Nx, evitando que los artefactos 
+   * se "fuguen" a la raíz del monorepo durante el build de Vercel.
    */
 
   /**
    * @pilar_V: Arquitectura Source-First.
-   * Transpilación de dependencias internas para garantizar que el código vivo
-   * del monorepo sea procesado por el compilador de la aplicación.
+   * Mantenemos la transpilación directa de paquetes para asegurar
+   * la sincronía de tipos en el build.
    */
   transpilePackages: [
     '@metashark/cms-core',
@@ -40,25 +41,15 @@ const nextConfig: NextConfig = {
     minimumCacheTTL: 60,
   },
 
-  /**
-   * @pilar_XIII: Higiene de Infraestructura.
-   * Exclusión de binarios pesados para optimizar el tiempo de frío (Cold Start) 
-   * de las funciones Lambda en Vercel.
-   */
   serverExternalPackages: ['sharp', 'pg', 'bcryptjs'],
 
-  /**
-   * PROTOCOLO DE RESILIENCIA:
-   * Margen de seguridad para procesos pesados de pre-renderizado.
-   */
   staticPageGenerationTimeout: 300,
 
   webpack: (config, { isServer }) => {
     if (!isServer) {
       /**
        * BÓVEDA DE SEGURIDAD (Client Shield):
-       * Bloqueo físico de lógica de servidor. Previene errores de resolución 
-       * en el navegador y reduce el tamaño del bundle.
+       * Bloqueo físico de lógica de servidor en el bundle del cliente.
        */
       config.resolve.alias = {
         ...config.resolve.alias,
@@ -77,9 +68,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-/**
- * COMPOSICIÓN SOBERANA:
- * El orden de los wrappers es vital. Nx primero para resolver rutas, 
- * luego Payload para inyectar el entorno de datos.
- */
 export default withPayload(withNx(nextConfig));
