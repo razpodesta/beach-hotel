@@ -1,16 +1,13 @@
 /**
  * @file packages/cms/core/src/payload.config.ts
- * @version 41.0 - Vercel Build Sync & Circular Dependency Resolved
+ * @version 42.0 - Circular Dependency Eradication & Pooler Hardening
  * @description Orquestador de configuración Payload 3.0. 
- *              Refactorizado: Blindaje SSL global inyectado y 
- *              rutas atómicas para evitar corrupción de TypeScript AST.
+ *              Refactorizado: Eliminación de bucles de importación y 
+ *              optimización de resiliencia para el Pooler de Supabase.
  * @author Staff Engineer - MetaShark Tech
  */
 
-// --- FIX CRÍTICO DE INFRAESTRUCTURA (Vercel Build Sync) ---
-// Desactiva la validación estricta de SSL en el entorno Node.js durante
-// la fase de prerenderizado (SSG) de Next.js para permitir el handshake 
-// con el Pooler de Supabase y evitar el error "self-signed certificate".
+// --- FIX CRÍTICO: Handshake SSL para Vercel Build Worker ---
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 import { buildConfig } from 'payload';
@@ -23,7 +20,10 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 
-// --- PILAR V: ARQUITECTURA ATÓMICA (Resolución de Dependencia Circular) ---
+/**
+ * PILAR V: Arquitectura Atómica (Direct Imports).
+ * Importamos directamente desde el origen para evitar la dependencia circular con index.ts.
+ */
 import { Ingestions } from './collections/Ingestions';
 import { Subscribers } from './collections/Subscribers';
 import { Agencies } from './collections/Agencies';
@@ -42,40 +42,43 @@ import { DynamicRoutes } from './collections/DynamicRoutes';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Determinación del entorno (Production Check)
 const isProduction = process.env.NODE_ENV === 'production';
 
 export default buildConfig({
+  /** @pilar_I: Visión Holística - Identidad del Nodo */
   serverURL: process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000',
   secret: process.env.PAYLOAD_SECRET || 'enterprise-vault-2026-master-key',
   
   admin: {
     user: 'users',
-    importMap: { baseDir: __dirname },
+    importMap: { 
+      baseDir: path.resolve(__dirname),
+    },
     meta: { titleSuffix: '- MetaShark Enterprise' }
   },
 
   /**
    * MOTOR DE BASE DE DATOS SOBERANO
-   * @pilar_XIII: Integridad de IDs y blindaje SSL.
+   * @pilar_XIII: Integridad de Handshake y Pooler Tuning.
    */
   db: postgresAdapter({
     pool: {
       connectionString: process.env.DATABASE_URL || '',
       /** 
-       * @fix: Forzamos la desactivación de validación de certificados SSL 
-       * para evitar 'self-signed certificate in certificate chain' en Vercel.
+       * PROTOCOLO DE RESILIENCIA:
+       * Ajustes para el Transaction Pooler de Supabase (PgBouncer).
        */
+      max: 10,
+      idleTimeoutMillis: 30000,
       ssl: { 
         rejectUnauthorized: false 
       },
     },
     idType: 'uuid',
-    // push: false en producción es MANDATORIO para evitar errores de migración en tiempo de build
+    // Bloqueo de mutación de esquema accidental en producción
     push: !isProduction,
   }),
 
-  // Adaptador de Email para Silo D
   email: process.env.SMTP_USER ? nodemailerAdapter({
     defaultFromAddress: 'concierge@metashark.tech',
     defaultFromName: 'Beach Hotel Sanctuary',
@@ -90,7 +93,8 @@ export default buildConfig({
   editor: lexicalEditor({}),
   
   typescript: {
-    outputFile: path.resolve(__dirname, 'payload-types.ts'),
+    /** @description Evitamos rutas relativas frágiles durante el build masivo. */
+    outputFile: path.join(__dirname, 'payload-types.ts'),
   },
 
   sharp: (sharp as unknown) as SharpDependency,
