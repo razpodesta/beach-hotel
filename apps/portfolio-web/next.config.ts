@@ -1,9 +1,9 @@
 /**
  * @file next.config.ts
  * @description Orquestador del Compilador Next.js 15 (The Artisan).
- *              Refactorizado: Blindaje de fronteras Servidor/Cliente y 
- *              optimización de resolución para el entorno Serverless de Vercel.
- * @version 10.2 - Vercel Build Resilience Standard
+ *              Refactorizado: Anclaje de salida (distDir) para eliminar el 404
+ *              y sincronización de fronteras para el entorno Vercel.
+ * @version 10.3 - Sovereign Anchor Edition
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -13,9 +13,15 @@ import { withPayload } from '@payloadcms/next/withPayload';
 
 const nextConfig: NextConfig = {
   /**
+   * PILAR XIII: Soberanía de Artefactos.
+   * Forzamos al compilador a depositar el build (.next) en la carpeta dist.
+   * Esto asegura que Vercel localice el 'routes-manifest.json' y elimina el 404.
+   */
+  distDir: '../../dist/apps/portfolio-web/.next',
+
+  /**
    * PILAR V: Arquitectura Source-First.
-   * Obligamos a Next.js a procesar el código vivo de los paquetes del monorepo,
-   * eliminando la dependencia de artefactos pre-compilados en dist/.
+   * Transpilación directa de dependencias internas para máxima consistencia.
    */
   transpilePackages: [
     '@metashark/cms-core',
@@ -34,25 +40,22 @@ const nextConfig: NextConfig = {
   },
 
   /**
-   * PILAR XIII: Sincronización de Infraestructura.
-   * Excluimos binarios que no deben ser empaquetados en el bundle de la función Lambda.
+   * PILAR XIII: Higiene de Infraestructura.
+   * Evitamos que binarios nativos pesados contaminen la función Lambda.
    */
   serverExternalPackages: ['sharp', 'pg', 'bcryptjs'],
 
   /**
    * PROTOCOLO DE RESILIENCIA:
-   * Aumentamos el timeout para la generación estática de páginas (SSG) 
-   * debido a la alta densidad de datos del Journal y el Festival.
+   * Timeout extendido para el ensamblaje de diccionarios MACS y Journal.
    */
   staticPageGenerationTimeout: 300,
 
   webpack: (config, { isServer }) => {
-    // Optimización de resolución de módulos
     if (!isServer) {
       /**
        * BÓVEDA DE SEGURIDAD (Client Shield):
-       * Bloqueamos físicamente la inclusión de lógica de base de datos y 
-       * configuraciones sensibles en el bundle del navegador.
+       * Bloqueo físico de fuga de lógica de servidor hacia el cliente.
        */
       config.resolve.alias = {
         ...config.resolve.alias,
@@ -60,21 +63,20 @@ const nextConfig: NextConfig = {
         'payload': false,
         'sharp': false,
         'pg': false,
-        'canvas': false, // Evita errores de dependencias de visualización en el build
+        'canvas': false,
       };
     }
     return config;
   },
 
   experimental: {
-    /* PILAR III: Seguridad de Tipos en el Enrutamiento */
     typedRoutes: true,
   },
 };
 
 /**
  * COMPOSICIÓN SOBERANA:
- * Envolvemos la configuración con los plugins de Nx y Payload.
- * El orden es crítico para la correcta inyección de variables de entorno.
+ * El orden de los plugins garantiza que Nx maneje los alias y Payload 
+ * inyecte el motor de base de datos antes de la exportación final.
  */
 export default withPayload(withNx(nextConfig));
