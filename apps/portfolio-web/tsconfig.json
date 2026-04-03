@@ -1,40 +1,25 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "baseUrl": ".",
+    /* 
+       PILAR XIII: Sincronización con Vercel/Next.js 15
+       'ignoreDeprecations' debe ser "6.0" para silenciar el aviso de baseUrl.
+    */
+    "ignoreDeprecations": "6.0",
     
-    /**
-     * @pilar_V: Adherencia al Grafo Soberano.
-     * 'composite' requiere que todas las dependencias externas 
-     * sean rastreables mediante 'references'.
-     */
     "composite": true,
     "incremental": true,
     "tsBuildInfoFile": "../../dist/apps/portfolio-web/tsconfig.tsbuildinfo",
     
-    /**
-     * @pilar_XIII: Alineación con el Motor Next.js.
-     */
     "noEmit": true,
 
-    /**
-     * @fix_TS6305: Silenciado de aviso de deprecación (TypeScript 5.0+).
-     * Esto asegura que el compilador no reporte avisos innecesarios en el pipeline de CI/CD.
-     */
-    "ignoreDeprecations": "5.0",
-
-    /* CONFIGURACIÓN NEXT.JS 15 + REACT 19 STANDARDS */
-    "target": "es2022",
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "module": "esnext",
-    "moduleResolution": "bundler",
+    /* 
+       CONFIGURACIÓN ESPECÍFICA DE NEXT.JS 
+       Mantenemos solo las que no están en el base para evitar duplicidad.
+    */
     "jsx": "preserve",
-    "isolatedModules": true,
-    "resolveJsonModule": true,
     "plugins": [
-      {
-        "name": "next"
-      }
+      { "name": "next" }
     ]
   },
   "include": [
@@ -42,10 +27,6 @@
     ".next/types/**/*.ts",
     "src/**/*.ts", 
     "src/**/*.tsx",
-    /**
-     * @fix_TS6307: Globbing recursivo. 
-     * El uso de '**' permite alcanzar subcarpetas como 'packages/cms/core'.
-     */
     "../../packages/**/src/**/*.ts",
     "../../packages/**/src/**/*.tsx"
   ],
