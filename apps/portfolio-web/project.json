@@ -3,7 +3,11 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/portfolio-web/src",
   "projectType": "application",
-  "tags": ["platform:web", "scope:metashark", "type:app"],
+  "tags": [
+    "platform:web",
+    "scope:metashark",
+    "type:app"
+  ],
   "targets": {
     "prebuild": {
       "executor": "nx:run-commands",
@@ -11,17 +15,23 @@
         "command": "tsx scripts/prebuild-portfolio-web.ts",
         "color": true
       },
-      "inputs": ["{projectRoot}/src/messages/**/*.json"],
-      "outputs": ["{projectRoot}/src/dictionaries/*.json"],
+      "inputs": [
+        "{projectRoot}/src/messages/**/*.json"
+      ],
+      "outputs": [
+        "{projectRoot}/src/dictionaries/*.json"
+      ],
       "cache": true,
       "description": "Protocolo MACS: Ensamblaje y validación soberana."
     },
     "build": {
       "executor": "@nx/next:build",
-      "outputs": ["{workspaceRoot}/dist/apps/portfolio-web/.next"],
+      "outputs": [
+        "{workspaceRoot}/dist/apps/portfolio-web"
+      ],
       "defaultConfiguration": "production",
       "options": {
-        "outputPath": "dist/apps/portfolio-web/.next"
+        "outputPath": "dist/apps/portfolio-web"
       },
       "configurations": {
         "development": {
@@ -29,7 +39,10 @@
         },
         "production": {}
       },
-      "dependsOn": ["^build", "prebuild"],
+      "dependsOn": [
+        "^build",
+        "prebuild"
+      ],
       "cache": true
     },
     "serve": {
@@ -50,7 +63,9 @@
           "dev": false
         }
       },
-      "dependsOn": ["prebuild"]
+      "dependsOn": [
+        "prebuild"
+      ]
     },
     "typecheck": {
       "executor": "nx:run-commands",
@@ -59,12 +74,16 @@
         "forwardAllArgs": true
       },
       "cache": true,
-      "dependsOn": ["prebuild"],
+      "dependsOn": [
+        "prebuild"
+      ],
       "description": "Verificación estática de tipos de élite."
     },
     "test": {
       "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/apps/portfolio-web"],
+      "outputs": [
+        "{workspaceRoot}/coverage/apps/portfolio-web"
+      ],
       "options": {
         "jestConfig": "apps/portfolio-web/jest.config.ts",
         "passWithNoTests": true
@@ -73,10 +92,15 @@
     },
     "lint": {
       "executor": "@nx/eslint:lint",
-      "inputs": ["default", "{workspaceRoot}/eslint.config.mjs"],
+      "inputs": [
+        "default",
+        "{workspaceRoot}/eslint.config.mjs"
+      ],
       "cache": true,
       "options": {
-        "lintFilePatterns": ["apps/portfolio-web/**/*.{ts,tsx,js,jsx}"]
+        "lintFilePatterns": [
+          "apps/portfolio-web/**/*.{ts,tsx,js,jsx}"
+        ]
       }
     }
   }

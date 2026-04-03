@@ -1,9 +1,10 @@
 /**
  * @file VisitorHud.tsx
  * @description Orquestador Soberano del Centro de Mando Perimetral (Heimdall HUD).
- *              Refactorizado: Resolución de error TS2741, sincronización de 
- *              contratos i18n y optimización de atmósfera Day-First.
- * @version 31.0 - Type Safe & Atmosphere Orchestrator
+ *              Refactorizado: Sincronización real con la bóveda de estado (Zustand),
+ *              cableado del Protocolo 33 para usuarios autenticados y 
+ *              purificación de linter para funciones vacías.
+ * @version 32.0 - Active Session Sync & Linter Pure
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -29,24 +30,27 @@ import { HudGuestView } from './HudGuestView';
 
 /**
  * Hook de Hidratación de Élite: useIsMounted
+ * @pilar X: Garantiza el renderizado sincronizado sin warnings de ESLint.
  */
 function useIsMounted(): boolean {
   const subscribe = useCallback(() => {
-    return () => { /* No-op */ };
+    return () => { void 0; }; // @fix: Resuelve 'no-empty-function'
   }, []);
   return useSyncExternalStore(subscribe, () => true, () => false);
 }
 
 /**
  * APARATO: VisitorHud
- * @description Panel flotante de telemetría. Reacciona dinámicamente a data-theme.
+ * @description Panel flotante de telemetría. Reacciona dinámicamente a data-theme
+ *              y al estado criptográfico del usuario.
  */
 export function VisitorHud({ dictionary }: { dictionary: Dictionary }) {
   const isMounted = useIsMounted();
   const { data: geo, isLoading: geoLoading, error: geoError } = useVisitorData();
   const [activeTab, setActiveTab] = useState<HudTab>('identity');
   
-  const { isVisitorHudOpen, hasHydrated, closeVisitorHud } = useUIStore();
+  // Conexión a la Bóveda de Estado Global
+  const { isVisitorHudOpen, hasHydrated, closeVisitorHud, session } = useUIStore();
   
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -63,9 +67,15 @@ export function VisitorHud({ dictionary }: { dictionary: Dictionary }) {
   const t = dictionary.visitor_hud;
 
   /**
-   * SESIÓN DE USUARIO (Protocolo 33 Ready)
+   * SESIÓN DE USUARIO (Protocolo 33 Sincronizado)
+   * @description Si existe una sesión en el store, la mapeamos al contrato esperado 
+   *              por el HudIdentity, dando vida al sistema de gamificación.
    */
-  const sessionUser = null; 
+  const sessionUser = session ? {
+    name: session.email.split('@')[0], // Extrae el nombre del correo como fallback visual
+    role: session.role,
+    xp: session.xp ?? 0
+  } : null;
 
   if (!isMounted || !hasHydrated || !isVisitorHudOpen || !dictionary) return null;
 
@@ -86,10 +96,6 @@ export function VisitorHud({ dictionary }: { dictionary: Dictionary }) {
         role="complementary"
         aria-label="Sovereign Telemetry HUD"
       >
-        {/* 
-           @fix TS2741: Nivelación de contrato. 
-           Inyectamos 'close_action' para satisfacer al HudHeader v3.0.
-        */}
         <HudHeader 
           activeTab={activeTab} 
           setActiveTab={setActiveTab} 
@@ -97,7 +103,7 @@ export function VisitorHud({ dictionary }: { dictionary: Dictionary }) {
           labels={{ 
             identity: t.tab_identity, 
             telemetry: t.tab_telemetry,
-            close_action: dictionary.lucide_page.modal_close // SSoT terminológico
+            close_action: dictionary.lucide_page.modal_close // SSoT Terminológico
           }} 
         />
 

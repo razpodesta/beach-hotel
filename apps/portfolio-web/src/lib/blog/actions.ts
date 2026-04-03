@@ -2,10 +2,9 @@
  * @file apps/portfolio-web/src/lib/blog/actions.ts
  * @description Orquestador soberano de datos para el Concierge Journal.
  *              Refactorizado: Resolución de TS6307 vía tsconfig sync,
- *              eliminación de extensiones .js para compatibilidad nativa
- *              con el empaquetador de Next.js 15 (Bundler Resolution),
- *              y blindaje de tipos sin regresiones.
- * @version 36.1 - Build Integrity & SWC Resolution Sync
+ *              blindaje de resiliencia con safeParse (Zero-Crash Protocol)
+ *              y optimización de AST para el empaquetador de Next.js 15.
+ * @version 37.0 - SafeParse Resilience & Build Integrity
  * @author Raz Podestá - Staff Engineer, MetaShark Tech
  */
 
@@ -15,7 +14,6 @@ import configPromise from '@metashark/cms-core/config';
 /**
  * IMPORTACIONES DE INFRAESTRUCTRURA Y CONTRATO
  * @pilar_V: Adherencia arquitectónica.
- * @nivelacion: Purgadas extensiones .js para evitar 'Module not found' en el build.
  */
 import { postWithSlugSchema, type PostWithSlug } from '../schemas/blog.schema';
 import { i18n, type Locale } from '../../config/i18n.config';
@@ -99,7 +97,11 @@ class LexicalCompiler {
  * APARATO 2: SHAPER EDITORIAL (The Purifier)
  */
 class EditorialShaper {
-  public static shape(entry: unknown, dict: Dictionary): PostWithSlug {
+  /**
+   * @description Transmuta los datos crudos en la entidad final.
+   * @pilar VIII: Resiliencia - Retorna null si el contrato Zod falla, evitando Error 500.
+   */
+  public static shape(entry: unknown, dict: Dictionary): PostWithSlug | null {
     const raw = entry as RawPayloadPost;
     const t = dict.blog_page;
 
@@ -122,7 +124,7 @@ class EditorialShaper {
     const mdx = LexicalCompiler.compile(raw.content);
     const isNight = ['night', 'festival', 'party', 'techno', 'pride'].some(v => normalizedTags.includes(v));
 
-    return postWithSlugSchema.parse({
+    const shapeResult = postWithSlugSchema.safeParse({
       slug: raw.slug || `journal-fallback-${Date.now()}`,
       metadata: {
         title: raw.title || 'Untitled Sanctuary Entry',
@@ -136,6 +138,14 @@ class EditorialShaper {
       },
       content: mdx
     });
+
+    if (!shapeResult.success) {
+      console.warn(`[HEIMDALL][DATA-DROP] Post omitted due to contract violation: ${raw.slug || 'unknown'}`);
+      console.warn(shapeResult.error.errors);
+      return null;
+    }
+
+    return shapeResult.data;
   }
 }
 
@@ -169,16 +179,12 @@ class EditorialDataResolver {
     console.log(`[HEIMDALL][EDITORIAL] Source: ${sourceLabel} | Lang: ${options.lang}`);
 
     if (this.useMocks) {
-      const mocks = MOCK_POSTS.map(m => EditorialShaper.shape(this.adaptMockToRaw(m), dict));
+      const mocks = MOCK_POSTS
+        .map(m => EditorialShaper.shape(this.adaptMockToRaw(m), dict))
+        .filter((post): post is PostWithSlug => post !== null);
       
-      if (options.slug) {
-        return mocks.filter(m => m.slug === options.slug);
-      }
-      
-      if (options.tag) {
-        const targetTag = options.tag;
-        return mocks.filter(m => m.metadata.tags.includes(targetTag));
-      }
+      if (options.slug) return mocks.filter(m => m.slug === options.slug);
+      if (options.tag) return mocks.filter(m => m.metadata.tags.includes(options.tag!));
       
       return mocks;
     }
@@ -200,11 +206,17 @@ class EditorialDataResolver {
         throw new Error('EMPTY_COLLECTION');
       }
 
-      return docs.map(doc => EditorialShaper.shape(doc, dict));
+      return docs
+        .map(doc => EditorialShaper.shape(doc, dict))
+        .filter((post): post is PostWithSlug => post !== null);
+
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message : 'Link Interrupted';
       console.warn(`[HEIMDALL][RECOVERY] CMS Link Degraded: ${msg}. Activating Genesis Fallback.`);
-      return MOCK_POSTS.map(m => EditorialShaper.shape(this.adaptMockToRaw(m), dict));
+      
+      return MOCK_POSTS
+        .map(m => EditorialShaper.shape(this.adaptMockToRaw(m), dict))
+        .filter((post): post is PostWithSlug => post !== null);
     }
   }
 }

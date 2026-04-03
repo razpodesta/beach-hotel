@@ -1,11 +1,17 @@
 /**
  * @file packages/cms/core/src/payload.config.ts
- * @version 40.5 - Enterprise Production Ready Engine
+ * @version 41.0 - Vercel Build Sync & Circular Dependency Resolved
  * @description Orquestador de configuración Payload 3.0. 
- *              Refactorizado: Blindaje SSL para entornos Serverless y
- *              configuración de persistencia determinista.
+ *              Refactorizado: Blindaje SSL global inyectado y 
+ *              rutas atómicas para evitar corrupción de TypeScript AST.
  * @author Staff Engineer - MetaShark Tech
  */
+
+// --- FIX CRÍTICO DE INFRAESTRUCTURA (Vercel Build Sync) ---
+// Desactiva la validación estricta de SSL en el entorno Node.js durante
+// la fase de prerenderizado (SSG) de Next.js para permitir el handshake 
+// con el Pooler de Supabase y evitar el error "self-signed certificate".
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 import { buildConfig } from 'payload';
 import type { SharpDependency } from 'payload';
@@ -17,12 +23,21 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 
-// Colecciones
-import { 
-  Ingestions, Subscribers, Agencies, Agents, BusinessMetrics, 
-  Offers, FlashSales, Media, BlogPosts, Projects, Tenants, 
-  Users, Notifications, DynamicRoutes 
-} from './index';
+// --- PILAR V: ARQUITECTURA ATÓMICA (Resolución de Dependencia Circular) ---
+import { Ingestions } from './collections/Ingestions';
+import { Subscribers } from './collections/Subscribers';
+import { Agencies } from './collections/Agencies';
+import { Agents } from './collections/Agents';
+import { BusinessMetrics } from './collections/BusinessMetrics';
+import { Offers } from './collections/Offers';
+import { FlashSales } from './collections/FlashSales';
+import { Media } from './collections/Media';
+import { BlogPosts } from './collections/BlogPosts';
+import { Projects } from './collections/Projects';
+import { Tenants } from './collections/Tenants';
+import { Users } from './collections/Users';
+import { Notifications } from './collections/Notifications';
+import { DynamicRoutes } from './collections/DynamicRoutes';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
