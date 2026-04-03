@@ -12,7 +12,7 @@
   "private": true,
   "scripts": {
     "dev": "nx serve portfolio-web",
-    "build": "pnpm run prebuild:web && nx build portfolio-web --configuration=production",
+    "build": "node scripts/heimdall-build-audit.mjs",
     "build:audit": "node scripts/heimdall-build-audit.mjs",
     "build:web": "pnpm run build",
     "vercel-build": "pnpm run build",
