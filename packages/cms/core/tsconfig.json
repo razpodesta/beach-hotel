@@ -1,9 +1,9 @@
 /**
  * @file packages/cms/core/tsconfig.json
  * @description Orquestador soberano de tipos para el Núcleo CMS (DX Mode).
- *              Refactorizado: Mitigación de advertencia de obsolescencia 'baseUrl'
- *              mediante ignoreDeprecations flag, alineado con TS 5.0+.
- * @version 7.1 - TS Deprecation Mitigation Sync
+ *              Refactorizado: Sincronización absoluta de flags de infraestructura 
+ *              para garantizar paridad entre el IDE y el Build de Vercel.
+ * @version 7.3 - Perfect Synchrony Edition
  * @author Raz Podestá - MetaShark Tech
  */
 {
@@ -11,44 +11,42 @@
   "compilerOptions": {
     /**
      * @pilar XIII: Sincronización de Infraestructura.
-     * Silencia la advertencia de baseUrl obsoleta para mantener un log de build prístino.
+     * Se unifica en "5.0" para silenciar el aviso de 'baseUrl' en desuso.
+     * Este valor garantiza que el build en Vercel no falle por "Invalid value".
      */
     "ignoreDeprecations": "5.0",
     
     "baseUrl": ".",
+    
     /** 
      * PILAR V: ADHERENCIA AL GRAFO SOBERANO
-     * Mantenemos 'composite' para que la raíz reconozca este dominio,
-     * pero sin referencias locales para evitar el bloqueo TS6305.
+     * Mantenemos 'composite' para permitir que la raíz del monorepo 
+     * orqueste la validación de este paquete.
      */
     "composite": true,
     "rootDir": ".",
     
     /** 
      * PILAR XIII: PUREZA DE SOURCE (Blindaje Total)
-     * Se bloquea la emisión física en el entorno de desarrollo para evitar 
-     * contaminar 'src/' con basura compilada.
+     * En modo DX, TypeScript no debe emitir artefactos físicos para evitar
+     * colisiones con el proceso de construcción de Next.js.
      */
     "noEmit": true,
 
     /** 
-     * RESOLUCIÓN HÍBRIDA (DX Mode):
-     * @fix Resolución del conflicto de extensiones. Cambiamos 'nodenext' por 
-     * 'bundler' para permitir importaciones sin extensión en el IDE, 
-     * alineándonos con el motor SWC de Next.js 15.
+     * RESOLUCIÓN HÍBRIDA (Next.js 15 Standard):
+     * 'bundler' permite importaciones sin extensiones, alineándose con el
+     * comportamiento del motor SWC en producción.
      */
     "module": "esnext",
     "moduleResolution": "bundler",
 
     /**
      * @pilar III: Seguridad de Tipos Absoluta.
-     * Fuerza el estándar 'import type' para evitar fugas de código en producción.
+     * 'verbatimModuleSyntax' asegura un Tree-Shaking limpio y predecible.
      */
     "verbatimModuleSyntax": true,
 
-    /**
-     * @pilar VIII: Resiliencia de Transpilación.
-     */
     "isolatedModules": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
@@ -61,7 +59,7 @@
     "src/**/*.ts",
     /** 
      * @pilar I: Visión Holística.
-     * Sincronía total con el contrato generado por Payload.
+     * Sincronía con el contrato de tipos generado dinámicamente por Payload CMS.
      */
     "src/payload-types.ts"
   ],
