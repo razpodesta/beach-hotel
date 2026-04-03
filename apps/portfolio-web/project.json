@@ -27,7 +27,8 @@
     "build": {
       "executor": "@nx/next:build",
       "outputs": [
-        "{workspaceRoot}/dist/apps/portfolio-web"
+        "{options.outputPath}",
+        "{projectRoot}/.next"
       ],
       "defaultConfiguration": "production",
       "options": {
