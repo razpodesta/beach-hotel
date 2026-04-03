@@ -1,24 +1,9 @@
-/**
- * @file apps/portfolio-web/next.config.ts
- * @description Orquestador Soberano de Compilación.
- *              Refactorizado: Erradicación de colisiones de distDir y
- *              limpieza de opciones experimentales no reconocidas para
- *              garantizar la compatibilidad con Vercel/Nx.
- * @version 2.0 - Build Stable Edition
- * @author Staff Engineer - MetaShark Tech
- */
-
 import type { NextConfig } from 'next';
 import { withNx } from '@nx/next/plugins/with-nx';
 import { withPayload } from '@payloadcms/next/withPayload';
 
-const nextConfig: NextConfig = {
-  /**
-   * @pilar V: Adherencia arquitectónica.
-   * Eliminamos 'distDir' para permitir que Nx gestione los outputs.
-   * Vercel detectará el build basándose en nuestro 'outputDirectory' definido en vercel.json.
-   */
 
+const nextConfig: NextConfig = {
   transpilePackages: [
     '@metashark/cms-core',
     '@metashark/cms-ui',
@@ -39,9 +24,19 @@ const nextConfig: NextConfig = {
 
   staticPageGenerationTimeout: 300,
 
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      // Bóveda de Configuración: Impedir que el cliente intente empaquetar el CMS Core
+      config.resolve.alias['@metashark/cms-core/config'] = false;
+      config.resolve.alias['payload'] = false;
+      config.resolve.alias['sharp'] = false;
+      config.resolve.alias['pg'] = false;
+    }
+    return config;
+  },
+
   experimental: {
     typedRoutes: true,
-    // Eliminado 'turbopack' de aquí, ya que no es una opción de NextConfig
   },
 };
 

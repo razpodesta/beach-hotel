@@ -1,34 +1,24 @@
 /**
  * @file apps/portfolio-web/src/lib/blog/actions.ts
  * @description Orquestador soberano de datos para el Concierge Journal.
- *              Refactorizado: Resolución de error de compilación TS2339 (ZodError),
- *              blindaje de resiliencia con safeParse y logueo forense robusto.
- * @version 37.1 - Build Integrity Patch
+ *              Refactorizado: Inyección dinámica de configuración (Lazy Loading)
+ *              para garantizar la compatibilidad con el Build de Vercel.
+ * @version 37.4 - Build Integrity Fix
  * @author Raz Podestá - Staff Engineer, MetaShark Tech
  */
 
 import { getPayload, type Payload } from 'payload';
-import configPromise from '@metashark/cms-core/config';
+import type { Where } from 'payload';
 
-/**
- * IMPORTACIONES DE INFRAESTRUCTRURA Y CONTRATO
- * @pilar_V: Adherencia arquitectónica.
- */
 import { postWithSlugSchema, type PostWithSlug } from '../schemas/blog.schema';
 import { i18n, type Locale } from '../../config/i18n.config';
 import { getDictionary } from '../get-dictionary';
 import { MOCK_POSTS, type RawMockPost } from '../../data/mocks/cms.mocks';
 import type { Dictionary } from '../schemas/dictionary.schema';
 
-/**
- * CONSTANTES DE ENTORNO SOBERANAS
- */
 const IS_BUILD_ENV = process.env.NEXT_PHASE === 'phase-production-build' || process.env.VERCEL === '1';
 const DB_READY = Boolean(process.env.DATABASE_URL);
 
-/**
- * CONTRATOS TÉCNICOS: Frontera de Datos (Raw Payloads)
- */
 interface LexicalNode {
   type: string;
   text?: string;
@@ -41,7 +31,6 @@ interface LexicalRoot {
   root?: { children?: LexicalNode[] };
 }
 
-/** Contrato híbrido para soportar tanto la DB real como los Mocks en la extracción */
 interface RawPayloadPost {
   title?: string | null;
   slug?: string | null;
@@ -53,12 +42,8 @@ interface RawPayloadPost {
   ogImage?: string | { url: string } | null;
 }
 
-// Singleton de conexión para el motor de datos
 let cachedPayload: Payload | null = null;
 
-/**
- * APARATO 1: COMPILADOR LEXICAL (The Transmuter)
- */
 class LexicalCompiler {
   public static compile(contentNode: unknown): string {
     if (!contentNode) return '';
@@ -67,7 +52,6 @@ class LexicalCompiler {
     const processNodes = (nodes: LexicalNode[] = []): string => {
       return nodes.reduce((acc, node) => {
         const children = node.children ? processNodes(node.children) : '';
-        
         switch (node.type) {
           case 'text': return acc + (node.text || '');
           case 'paragraph': return acc + `${children}\n\n`;
@@ -85,21 +69,13 @@ class LexicalCompiler {
     try {
       return processNodes((contentNode as LexicalRoot).root?.children);
     } catch (error: unknown) {
-      const msg = error instanceof Error ? error.message : 'Unknown AST Anomaly';
-      console.warn(`[HEIMDALL][PARSER] AST Corruption detected: ${msg}`);
+      console.warn(`[HEIMDALL][PARSER] AST Corruption detected: ${error instanceof Error ? error.message : 'Unknown'}`);
       return '';
     }
   }
 }
 
-/**
- * APARATO 2: SHAPER EDITORIAL (The Purifier)
- */
 class EditorialShaper {
-  /**
-   * @description Transmuta los datos crudos en la entidad final.
-   * @pilar VIII: Resiliencia - Retorna null si el contrato Zod falla.
-   */
   public static shape(entry: unknown, dict: Dictionary): PostWithSlug | null {
     const raw = entry as RawPayloadPost;
     const t = dict.blog_page;
@@ -140,8 +116,6 @@ class EditorialShaper {
 
     if (!shapeResult.success) {
       console.warn(`[HEIMDALL][DATA-DROP] Post omitted: ${raw.slug || 'unknown'}`);
-      // FIX: Accedemos a shapeResult.error.issues para garantizar compatibilidad total
-      console.warn(JSON.stringify(shapeResult.error.issues, null, 2));
       return null;
     }
 
@@ -149,13 +123,14 @@ class EditorialShaper {
   }
 }
 
-/**
- * APARATO 3: DATA RESOLVER (The Orchestrator)
- */
 class EditorialDataResolver {
+  /**
+   * @description Carga dinámica de la configuración para evitar el error de resolución de módulos en el Build.
+   */
   private static async getPayloadInstance() {
     if (cachedPayload) return cachedPayload;
-    cachedPayload = await getPayload({ config: await configPromise });
+    const config = await import('@metashark/cms-core/config');
+    cachedPayload = await getPayload({ config: config.default });
     return cachedPayload;
   }
 
@@ -164,10 +139,7 @@ class EditorialDataResolver {
   }
 
   private static adaptMockToRaw(mock: RawMockPost): RawPayloadPost {
-    return {
-      ...mock,
-      ogImage: mock.ogImageLocal,
-    };
+    return { ...mock, ogImage: mock.ogImageLocal };
   }
 
   public static async fetch(options: { 
@@ -175,45 +147,42 @@ class EditorialDataResolver {
     tag?: string, 
     lang: Locale 
   }, dict: Dictionary): Promise<PostWithSlug[]> {
-    const sourceLabel = this.useMocks ? 'MOCKS' : 'CMS';
-    console.log(`[HEIMDALL][EDITORIAL] Source: ${sourceLabel} | Lang: ${options.lang}`);
-
     if (this.useMocks) {
       const mocks = MOCK_POSTS
         .map(m => EditorialShaper.shape(this.adaptMockToRaw(m), dict))
         .filter((post): post is PostWithSlug => post !== null);
       
       if (options.slug) return mocks.filter(m => m.slug === options.slug);
-      if (options.tag) return mocks.filter(m => m.metadata.tags.includes(options.tag!));
+      
+      if (options.tag) {
+        const targetTag = options.tag;
+        return mocks.filter(m => m.metadata.tags.includes(targetTag));
+      }
       
       return mocks;
     }
 
     try {
       const payload = await this.getPayloadInstance();
+      
+      const whereClause: Where = { status: { equals: 'published' } };
+      
+      if (options.slug) whereClause.slug = { equals: options.slug };
+      if (options.tag) whereClause['tags.tag'] = { equals: options.tag };
+
       const { docs } = await payload.find({
         collection: 'blog-posts',
-        where: {
-          status: { equals: 'published' },
-          ...(options.slug ? { slug: { equals: options.slug } } : {}),
-          ...(options.tag ? { 'tags.tag': { equals: options.tag } } : {})
-        },
+        where: whereClause,
         sort: '-publishedDate',
         locale: options.lang,
       });
-
-      if (docs.length === 0 && !options.slug && !options.tag) {
-        throw new Error('EMPTY_COLLECTION');
-      }
 
       return docs
         .map(doc => EditorialShaper.shape(doc, dict))
         .filter((post): post is PostWithSlug => post !== null);
 
     } catch (error: unknown) {
-      const msg = error instanceof Error ? error.message : 'Link Interrupted';
-      console.warn(`[HEIMDALL][RECOVERY] CMS Link Degraded: ${msg}. Activating Genesis Fallback.`);
-      
+      console.warn(`[HEIMDALL][RECOVERY] Editorial Link Degraded: ${error instanceof Error ? error.message : 'Unknown'}`);
       return MOCK_POSTS
         .map(m => EditorialShaper.shape(this.adaptMockToRaw(m), dict))
         .filter((post): post is PostWithSlug => post !== null);
@@ -221,9 +190,6 @@ class EditorialDataResolver {
   }
 }
 
-/**
- * ACCIONES PÚBLICAS SOBERANAS
- */
 export async function getAllPosts(lang: Locale = i18n.defaultLocale): Promise<PostWithSlug[]> {
   const dict = await getDictionary(lang);
   return EditorialDataResolver.fetch({ lang }, dict);

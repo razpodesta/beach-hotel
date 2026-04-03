@@ -1,10 +1,10 @@
 /**
  * @file apps/portfolio-web/src/app/api/payload/[[...slug]]/route.ts
  * @description Gateway Soberano de la API de Payload CMS 3.0.
- *              Refactorizado: Resolución de TS2345 mediante firma estricta
- *              de handlers Next.js 15 (params as Promise).
- * @version 8.2 - Next.js 15 Handler Compliance
- * @author Raz Podestá - MetaShark Tech
+ *              Refactorizado: Inyección dinámica de configuración para evitar
+ *              errores de resolución de módulos durante el Build de Vercel.
+ * @version 8.3 - Next.js 15 & Vercel Build Resilience
+ * @author Staff Engineer - MetaShark Tech
  */
 
 import { 
@@ -15,26 +15,19 @@ import {
   REST_DELETE, 
   REST_OPTIONS 
 } from '@payloadcms/next/routes';
-import configPromise from '@metashark/cms-core/config';
 
-/**
- * RESOLUCIÓN DE CONFIGURACIÓN
- */
-const config = await configPromise;
+// @fix: Importación dinámica para prevenir errores de compilación de Webpack
+// en entornos Serverless durante el build.
+const getPayloadConfig = async () => {
+  const config = await import('@metashark/cms-core/config');
+  return config.default;
+};
 
-/**
- * TIPO DE HANDLER SOBERANO (Next.js 15 Standard)
- * @description Firma que incluye explícitamente los parámetros de ruta asíncronos.
- */
 type PayloadHandler = (
   request: Request, 
   args: { params: Promise<{ slug?: string[] }> }
 ) => Promise<Response>;
 
-/**
- * PROTOCOLO HEIMDALL: Interceptor de Telemetría
- * @description Envuelve los handlers nativos preservando la firma de Next.js 15.
- */
 const withTelemetry = (handler: PayloadHandler, method: string) => {
   return async (
     request: Request, 
@@ -62,12 +55,22 @@ const withTelemetry = (handler: PayloadHandler, method: string) => {
   };
 };
 
-/**
- * EXPORTACIÓN DE HANDLERS SOBERANOS
- */
-export const GET = withTelemetry(REST_GET(config), 'GET');
-export const POST = withTelemetry(REST_POST(config), 'POST');
-export const PUT = withTelemetry(REST_PUT(config), 'PUT');
-export const PATCH = withTelemetry(REST_PATCH(config), 'PATCH');
-export const DELETE = withTelemetry(REST_DELETE(config), 'DELETE');
-export const OPTIONS = withTelemetry(REST_OPTIONS(config), 'OPTIONS');
+// --- HANDLERS NORMALIZADOS ---
+// Inyectamos la promesa de config mediante un wrapper de ejecución tardía
+export const GET = async (req: Request, args: { params: Promise<{ slug?: string[] }> }) => 
+  withTelemetry(REST_GET(await getPayloadConfig()), 'GET')(req, args);
+
+export const POST = async (req: Request, args: { params: Promise<{ slug?: string[] }> }) => 
+  withTelemetry(REST_POST(await getPayloadConfig()), 'POST')(req, args);
+
+export const PUT = async (req: Request, args: { params: Promise<{ slug?: string[] }> }) => 
+  withTelemetry(REST_PUT(await getPayloadConfig()), 'PUT')(req, args);
+
+export const PATCH = async (req: Request, args: { params: Promise<{ slug?: string[] }> }) => 
+  withTelemetry(REST_PATCH(await getPayloadConfig()), 'PATCH')(req, args);
+
+export const DELETE = async (req: Request, args: { params: Promise<{ slug?: string[] }> }) => 
+  withTelemetry(REST_DELETE(await getPayloadConfig()), 'DELETE')(req, args);
+
+export const OPTIONS = async (req: Request, args: { params: Promise<{ slug?: string[] }> }) => 
+  withTelemetry(REST_OPTIONS(await getPayloadConfig()), 'OPTIONS')(req, args);

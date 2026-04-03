@@ -1,18 +1,16 @@
 /**
  * @file apps/portfolio-web/src/lib/portal/actions/media.actions.ts
  * @description Motor de Ingesta y Purga Multimedia (Server Actions).
- *              Orquesta la carga y eliminación de binarios hacia el Clúster S3 de Supabase.
- *              Refactorizado: Resolución estricta de contratos TS2322 y blindaje
- *              perimetral con validación Zod (Pilar III).
- * @version 3.1 - Type Safe Response Edition
- * @author Raz Podestá - MetaShark Tech
+ *              Refactorizado: Inyección dinámica de configuración (Lazy Load) para 
+ *              erradicar el error 'Module not found' en el build de Vercel.
+ * @version 3.2 - Build-Safe Runtime Engine
+ * @author Raz Podestá - Staff Engineer, MetaShark Tech
  */
 
 'use server';
 
 import { z } from 'zod';
 import { getPayload } from 'payload';
-import configPromise from '@metashark/cms-core/config';
 import { revalidatePath } from 'next/cache';
 
 /**
@@ -24,12 +22,10 @@ import type { PayloadMediaDoc } from '@metashark/cms-core';
 
 /**
  * CONTRATOS DE VALIDACIÓN (SSoT)
- * @description Define la integridad requerida para interactuar con la Bóveda S3.
  */
 const uploadMediaSchema = z.object({
   alt: z.string().min(8, 'EDITORIAL_ERR: Alt text must be descriptive for SEO (min 8 chars)'),
   tenantId: z.string().uuid('SECURITY_ERR: Invalid Tenant Identifier'),
-  // El archivo se valida por su presencia y tipo básico
   file: z.instanceof(File, { message: 'INFRA_ERR: Payload must be a valid binary File' }),
 });
 
@@ -38,9 +34,6 @@ const deleteMediaSchema = z.object({
   tenantId: z.string().uuid('SECURITY_ERR: Invalid Tenant Identifier'),
 });
 
-/**
- * TIPO RESULTADO SOBERANO
- */
 type ActionResponse<T> = {
   success: boolean;
   data?: T;
@@ -49,17 +42,18 @@ type ActionResponse<T> = {
 };
 
 /**
- * ACCIÓN SOBERANA: uploadMediaAction
- * @description Procesa un archivo binario y lo persiste en la Bóveda Cloud.
- * @pilar IV: Observabilidad Heimdall.
- * @pilar VIII: Resiliencia de Operación.
+ * @description Obtención perezosa del config para evitar empaquetado estático en el build.
  */
+async function getPayloadConfig() {
+  const config = await import('@metashark/cms-core/config');
+  return config.default;
+}
+
 export async function uploadMediaAction(formData: FormData): Promise<ActionResponse<SovereignMedia>> {
   const traceId = `media_ingest_${Date.now()}`;
   console.group(`[HEIMDALL][ACTION] Media Ingestion: ${traceId}`);
 
   try {
-    // 1. EXTRACCIÓN Y VALIDACIÓN PERIMETRAL (Pilar III)
     const rawData = {
       file: formData.get('file'),
       alt: formData.get('alt'),
@@ -70,27 +64,23 @@ export async function uploadMediaAction(formData: FormData): Promise<ActionRespo
 
     if (!validation.success) {
       const issues = validation.error.issues.map(i => i.message);
-      console.warn(`[VALIDATION_FAIL] Ingestion rejected: ${issues.join(', ')}`);
       return { success: false, error: 'VALIDATION_FAILED', issues };
     }
 
     const { file, alt, tenantId } = validation.data;
-
-    // 2. PREPARACIÓN DE MOTOR CMS
-    const payload = await getPayload({ config: await configPromise });
     
-    // 3. TRANSMUTACIÓN BINARIA (Pilar X: Performance)
+    // Inyección dinámica de configuración
+    const config = await getPayloadConfig();
+    const payload = await getPayload({ config });
+    
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    console.log(`[STATUS] Transmitting binary to Cloud Cluster: ${file.name}`);
-
-    // 4. PERSISTENCIA ATÓMICA EN SUPABASE S3
     const result = await payload.create({
       collection: 'media',
       data: {
         alt,
-        tenantId, // Nota: el mapping del Seeder ahora usa el relacional en el CMS.
+        tenant: tenantId,
       },
       file: {
         data: buffer,
@@ -100,22 +90,15 @@ export async function uploadMediaAction(formData: FormData): Promise<ActionRespo
       },
     });
 
-    console.log(`[SUCCESS] Asset indexed in Cloud Vault: ${result.id}`);
-    
-    // 5. SINCRONIZACIÓN DE CACHÉ Y SHAPER (Type Integrity Sync)
     revalidatePath('/portal');
 
     const shapedAsset = shapeMediaEntity(result as unknown as PayloadMediaDoc, tenantId);
 
-    // Validación post-shaping para evitar inyecciones de 'null' en el contrato 'ActionResponse'
     if (!shapedAsset) {
       throw new Error('TENANT_BOUNDARY_BREACH_DETECTED_POST_INGESTION');
     }
 
-    return { 
-      success: true, 
-      data: shapedAsset 
-    };
+    return { success: true, data: shapedAsset };
 
   } catch (error: unknown) {
     const msg = error instanceof Error ? error.message : 'CLOUD_SYNC_FAILURE';
@@ -126,28 +109,20 @@ export async function uploadMediaAction(formData: FormData): Promise<ActionRespo
   }
 }
 
-/**
- * ACCIÓN SOBERANA: deleteMediaAction
- * @description Purga un activo de la bóveda S3 verificando estrictamente 
- *              el perímetro de propiedad (Tenant ID).
- * @pilar VIII: Aislamiento Multi-Tenant (Seguridad).
- */
 export async function deleteMediaAction(id: string, tenantId: string): Promise<ActionResponse<void>> {
   const traceId = `media_purge_${Date.now()}`;
   console.group(`[HEIMDALL][ACTION] Media Purge: ${traceId}`);
 
   try {
-    // 1. VALIDACIÓN DE IDENTIDAD TÉCNICA
     const validation = deleteMediaSchema.safeParse({ id, tenantId });
 
     if (!validation.success) {
-      console.warn('[SECURITY] Purge rejected: Illegal parameters detected.');
       return { success: false, error: 'INVALID_SECURITY_PARAMETERS' };
     }
 
-    const payload = await getPayload({ config: await configPromise });
+    const config = await getPayloadConfig();
+    const payload = await getPayload({ config });
 
-    // 2. ESCUDO DE PROPIEDAD (Tenant Boundary Shield)
     const asset = await payload.findByID({
       collection: 'media',
       id: id,
@@ -157,30 +132,20 @@ export async function deleteMediaAction(id: string, tenantId: string): Promise<A
       throw new Error('ASSET_NOT_FOUND');
     }
 
-    // Verificación de integridad referencial del Tenant
-    // Manejo de objetos poblados vs strings simples.
     const assetTenant = typeof asset.tenant === 'object' && asset.tenant !== null 
       ? asset.tenant.id 
       : asset.tenant;
 
     if (assetTenant !== tenantId) {
-      console.error(`[SECURITY_ALERT] Breach Attempt: Tenant ${tenantId} tried to purge asset ${id} owned by ${assetTenant}`);
       throw new Error('UNAUTHORIZED_PERIMETER_ACCESS');
     }
 
-    console.log(`[STATUS] Ownership verified. Eradicating asset...`);
-
-    // 3. DESTRUCCIÓN ATÓMICA
     await payload.delete({
       collection: 'media',
       id: id,
     });
 
-    console.log(`[SUCCESS] Asset purged from Cloud Vault and DB.`);
-
-    // 4. SINCRONIZACIÓN DE INTERFAZ
     revalidatePath('/portal');
-
     return { success: true };
 
   } catch (error: unknown) {

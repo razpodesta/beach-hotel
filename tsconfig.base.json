@@ -1,6 +1,13 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+    /**
+     * @pilar XIII: Sincronización de Infraestructura (Vercel & Next.js 15).
+     * Silencia la advertencia de 'baseUrl' obsoleta. Se establece en 5.0 para 
+     * compatibilidad total con el motor de resolución de Next.js 15.
+     */
+    "ignoreDeprecations": "5.0",
+    
     "rootDir": ".",
     "sourceMap": true,
     "declaration": true,
@@ -10,10 +17,11 @@
     "moduleDetection": "force",
     
     /**
-     * @pilar III: Seguridad de Tipos.
-     * Activamos verbatimModuleSyntax para forzar 'import type' y mejorar el Tree-Shaking.
+     * @pilar III: Seguridad de Tipos de Élite.
+     * Fuerza el estándar 'import type' para optimizar el Tree-Shaking en producción.
      */
     "verbatimModuleSyntax": true,
+    
     "lib": ["esnext", "dom", "dom.iterable"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
@@ -24,13 +32,7 @@
     "resolveJsonModule": true,
     "incremental": true,
 
-    /**
-     * @fix: Corrección TS6305
-     * Silencia la advertencia de deprecación de baseUrl sin perder funcionalidad.
-     */
-    "ignoreDeprecations": "5.0",
-
-    /* PILAR III: SEGURIDAD DE TIPOS ABSOLUTA */
+    /* PILAR III: SEGURIDAD DE TIPOS ABSOLUTA - MÁXIMO RIGOR */
     "strict": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
@@ -41,12 +43,16 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
 
-    /* PILAR V: ADHERENCIA ARQUITECTÓNICA */
+    /* PILAR V: ADHERENCIA ARQUITECTÓNICA (Grafo Soberano) */
     "composite": true,
     "declarationMap": true,
 
     "baseUrl": ".",
     "paths": {
+      /**
+       * @description Mapeo de Alias Soberanos. 
+       * Permite la resolución "Source-First" eliminando la dependencia de 'dist/'.
+       */
       "@/*": ["apps/portfolio-web/src/*"],
       "@metashark/cms-core": ["packages/cms/core/src/index.ts"],
       "@metashark/cms-core/config": ["packages/cms/core/src/payload.config.ts"],

@@ -1,14 +1,20 @@
 /**
  * @file packages/cms/core/tsconfig.json
  * @description Orquestador soberano de tipos para el Núcleo CMS (DX Mode).
- *              Implementa arquitectura Source-First alineada con Next.js 15,
- *              resolución dinámica para el IDE y blindaje de emisión.
- * @version 7.0 - Bundler Resolution Sync & DX Optimization
+ *              Refactorizado: Mitigación de advertencia de obsolescencia 'baseUrl'
+ *              mediante ignoreDeprecations flag, alineado con TS 5.0+.
+ * @version 7.1 - TS Deprecation Mitigation Sync
  * @author Raz Podestá - MetaShark Tech
  */
 {
   "extends": "../../../tsconfig.base.json",
   "compilerOptions": {
+    /**
+     * @pilar XIII: Sincronización de Infraestructura.
+     * Silencia la advertencia de baseUrl obsoleta para mantener un log de build prístino.
+     */
+    "ignoreDeprecations": "5.0",
+    
     "baseUrl": ".",
     /** 
      * PILAR V: ADHERENCIA AL GRAFO SOBERANO
