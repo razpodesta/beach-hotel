@@ -2,9 +2,10 @@
  * @file apps/portfolio-web/src/app/[lang]/portal/page.tsx
  * @description Enterprise Operations Portal (HopEx v24.1).
  *              Orquestador Soberano del Centro de Mando Administrativo.
- *              Refactorizado: Resolución de importaciones faltantes (Framer Motion),
- *              eliminación de código muerto y sincronización de tipos industriales.
- * @version 24.1 - Sync Visual Engine & Clean Imports
+ *              Refactorizado: Erradicación de Framer Motion en Server Component
+ *              (Violación de Frontera), sustituido por Animaciones CSS nativas 
+ *              mediante reconciliación de Keys para Zero-JS Overhead.
+ * @version 25.0 - Server/Client Boundary Hardened
  * @author Staff Engineer - MetaShark Tech
  */
 
@@ -16,7 +17,6 @@ import Link from 'next/link';
 import { getPayload, type CollectionSlug } from 'payload';
 import configPromise from '@metashark/cms-core/config';
 import { createServerClient } from '@supabase/ssr';
-import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Terminal, Hotel, Briefcase, User, Settings, LogOut, 
   Activity, LayoutGrid, type LucideIcon,
@@ -183,12 +183,15 @@ export default async function PortalPage(props: PageProps) {
              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-primary/10 border border-primary/20 text-primary text-[8px] font-bold uppercase tracking-widest animate-fade-in">
                 <ShieldCheck size={10} /> {session.role} LEVEL_S{session.xp > 1000 ? '0' : '4'}
              </div>
+             {/* Componente Cliente (Seguro de instanciar en Servidor) */}
              <BlurText text={currentBranding.title.toUpperCase()} className="font-display text-5xl md:text-6xl font-bold tracking-tighter text-foreground" delay={50} />
              <div className="flex items-center gap-4 text-sm font-light opacity-60 italic">
                 <span className="h-2 w-2 rounded-full bg-success animate-pulse" />
                 {session.email}
              </div>
            </div>
+           
+           {/* El botón es inerte en SSR. El logout real debe atarse vía un Client Component envolvente. */}
            <button className="flex items-center gap-4 px-10 py-5 rounded-full bg-red-500/10 border border-red-500/20 text-red-500 font-bold text-[10px] uppercase tracking-[0.3em] transition-all hover:bg-red-500 hover:text-white active:scale-95 shadow-xl">
              <LogOut size={16} /> {t.cta_logout}
            </button>
@@ -233,43 +236,44 @@ export default async function PortalPage(props: PageProps) {
 
           {/* --- VIEWPORT DE CONTENIDO (Polymorphic Content) --- */}
           <div className="lg:col-span-9 min-h-[600px]">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={activeView}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.4 }}
-              >
-                {activeView === 'overview' && (
-                  <ArtifactShowcase userXp={session.xp} ownedIds={session.artifacts} dictionary={dict.gamification} />
-                )}
-                {activeView === 'inventory' && (
-                  <AdminMediaPanel mediaLabels={dict.admin_media} />
-                )}
-                {(activeView === 'offers-revenue' || activeView === 'offers-enterprise') && (
-                  <OffersDashboard dictionary={dict} />
-                )}
-                {activeView === 'partner-hub' && (
-                  <PartnerNetworkManager agencies={partnerInventory} dictionary={dict.partner_network} />
-                )}
-                {activeView === 'data-pipeline' && (
-                  <IngestionManager dictionary={dict.ingestion_vault} />
-                )}
-                {activeView === 'marketing-cloud' && (
-                  <MarketingCloudManager dictionary={dict.marketing_cloud} />
-                )}
-                {activeView === 'comms-hub' && (
-                  <CommsHubManager dictionary={dict.comms_hub} />
-                )}
-                {activeView === 'settings' && (
-                  <div className="py-40 text-center rounded-[4rem] border border-dashed border-border bg-surface/20">
-                     <Settings size={48} className="mx-auto text-muted-foreground/20 mb-6" />
-                     <p className="text-sm font-mono text-muted-foreground uppercase tracking-[0.4em]">Configuration Node Under Maintenance</p>
-                  </div>
-                )}
-              </motion.div>
-            </AnimatePresence>
+            {/* 
+                @pilar_X: Animación nativa CSS.
+                Al asignar `key={activeView}`, React fuerza la recreación del nodo DOM.
+                Esto dispara automáticamente la clase `animate-in` de Tailwind, 
+                logrando un fade-in fluido sin la sobrecarga de JavaScript. 
+            */}
+            <div
+              key={activeView}
+              className="animate-in fade-in slide-in-from-bottom-4 duration-700 fill-mode-both"
+            >
+              {activeView === 'overview' && (
+                <ArtifactShowcase userXp={session.xp} ownedIds={session.artifacts} dictionary={dict.gamification} />
+              )}
+              {activeView === 'inventory' && (
+                <AdminMediaPanel mediaLabels={dict.admin_media} />
+              )}
+              {(activeView === 'offers-revenue' || activeView === 'offers-enterprise') && (
+                <OffersDashboard dictionary={dict} />
+              )}
+              {activeView === 'partner-hub' && (
+                <PartnerNetworkManager agencies={partnerInventory} dictionary={dict.partner_network} />
+              )}
+              {activeView === 'data-pipeline' && (
+                <IngestionManager dictionary={dict.ingestion_vault} />
+              )}
+              {activeView === 'marketing-cloud' && (
+                <MarketingCloudManager dictionary={dict.marketing_cloud} />
+              )}
+              {activeView === 'comms-hub' && (
+                <CommsHubManager dictionary={dict.comms_hub} />
+              )}
+              {activeView === 'settings' && (
+                <div className="py-40 text-center rounded-[4rem] border border-dashed border-border bg-surface/20">
+                   <Settings size={48} className="mx-auto text-muted-foreground/20 mb-6" />
+                   <p className="text-sm font-mono text-muted-foreground uppercase tracking-[0.4em]">Configuration Node Under Maintenance</p>
+                </div>
+              )}
+            </div>
           </div>
         </section>
       </div>
