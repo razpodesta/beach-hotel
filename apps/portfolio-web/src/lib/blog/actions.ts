@@ -1,9 +1,9 @@
 /**
  * @file apps/portfolio-web/src/lib/blog/actions.ts
- * @description Orquestador soberano de datos para el Concierge Journal.
- *              Refactorizado: Inyección dinámica de configuración (Lazy Loading)
- *              para garantizar la compatibilidad con el Build de Vercel.
- * @version 37.4 - Build Integrity Fix
+ * @description Orquestador soberano de datos para el Concierge Journal (Silo C).
+ *              Refactorizado: Protocolo de resiliencia Heimdall, optimización de 
+ *              conmutación por error y blindaje de tipos relacionales.
+ * @version 38.0 - Forensic Resilience & Failover Standard
  * @author Raz Podestá - Staff Engineer, MetaShark Tech
  */
 
@@ -16,6 +16,9 @@ import { getDictionary } from '../get-dictionary';
 import { MOCK_POSTS, type RawMockPost } from '../../data/mocks/cms.mocks';
 import type { Dictionary } from '../schemas/dictionary.schema';
 
+/**
+ * DETECTORES DE ESTADO DE INFRAESTRUCTRURA
+ */
 const IS_BUILD_ENV = process.env.NEXT_PHASE === 'phase-production-build' || process.env.VERCEL === '1';
 const DB_READY = Boolean(process.env.DATABASE_URL);
 
@@ -37,13 +40,17 @@ interface RawPayloadPost {
   description?: string | null;
   content?: LexicalRoot | string | null;
   publishedDate?: string | null;
-  author?: string | { username?: string; email?: string } | null;
+  author?: string | { username?: string; email?: string; id?: string } | null;
   tags?: Array<{ tag: string }> | string[] | null;
-  ogImage?: string | { url: string } | null;
+  ogImage?: string | { url: string; id?: string } | null;
 }
 
 let cachedPayload: Payload | null = null;
 
+/**
+ * CLASS: LexicalCompiler
+ * @description Transmuta el AST de Lexical a Markdown puro para el motor MDX.
+ */
 class LexicalCompiler {
   public static compile(contentNode: unknown): string {
     if (!contentNode) return '';
@@ -61,6 +68,8 @@ class LexicalCompiler {
           }
           case 'link': return acc + `[${children}](${node.url || '#'})`;
           case 'quote': return acc + `> ${children}\n\n`;
+          case 'list': return acc + `${children}\n`;
+          case 'listitem': return acc + `- ${children}\n`;
           default: return acc + children;
         }
       }, '');
@@ -69,17 +78,22 @@ class LexicalCompiler {
     try {
       return processNodes((contentNode as LexicalRoot).root?.children);
     } catch (error: unknown) {
-      console.warn(`[HEIMDALL][PARSER] AST Corruption detected: ${error instanceof Error ? error.message : 'Unknown'}`);
+      console.warn(`[HEIMDALL][PARSER] AST Corruption detected. Trace: ${Date.now()}`);
       return '';
     }
   }
 }
 
+/**
+ * CLASS: EditorialShaper
+ * @description Alquimia de datos: transforma el documento crudo en una entidad soberana.
+ */
 class EditorialShaper {
   public static shape(entry: unknown, dict: Dictionary): PostWithSlug | null {
     const raw = entry as RawPayloadPost;
     const t = dict.blog_page;
 
+    // 1. Resolución de Autor (Relationship Proxy)
     let author = t.hero_title;
     if (raw.author) {
       author = typeof raw.author === 'object' 
@@ -87,6 +101,7 @@ class EditorialShaper {
         : raw.author;
     }
 
+    // 2. Normalización de Taxonomía
     const rawTagsArray = Array.isArray(raw.tags) ? raw.tags : [];
     const normalizedTags = rawTagsArray.map(tagItem => {
       if (typeof tagItem === 'string') return tagItem.toLowerCase().trim();
@@ -97,8 +112,13 @@ class EditorialShaper {
     }).filter(Boolean) as string[];
 
     const mdx = LexicalCompiler.compile(raw.content);
-    const isNight = ['night', 'festival', 'party', 'techno', 'pride'].some(v => normalizedTags.includes(v));
+    
+    // 3. Detección Inteligente de Atmósfera (Pilar XII)
+    const isNight = ['night', 'festival', 'party', 'techno', 'pride', 'escape'].some(v => 
+      normalizedTags.includes(v) || raw.title?.toLowerCase().includes(v)
+    );
 
+    // 4. Validación de Contrato SSoT
     const shapeResult = postWithSlugSchema.safeParse({
       slug: raw.slug || `journal-fallback-${Date.now()}`,
       metadata: {
@@ -115,7 +135,7 @@ class EditorialShaper {
     });
 
     if (!shapeResult.success) {
-      console.warn(`[HEIMDALL][DATA-DROP] Post omitted: ${raw.slug || 'unknown'}`);
+      console.warn(`[HEIMDALL][DATA-DROP] Contract Violation in: ${raw.slug || 'unknown'}`);
       return null;
     }
 
@@ -123,18 +143,25 @@ class EditorialShaper {
   }
 }
 
+/**
+ * CLASS: EditorialDataResolver
+ * @description Orquestador de recuperación de datos con soporte para degradado elegante.
+ */
 class EditorialDataResolver {
-  /**
-   * @description Carga dinámica de la configuración para evitar el error de resolución de módulos en el Build.
-   */
   private static async getPayloadInstance() {
     if (cachedPayload) return cachedPayload;
-    const config = await import('@metashark/cms-core/config');
-    cachedPayload = await getPayload({ config: config.default });
-    return cachedPayload;
+    try {
+      const configModule = await import('@metashark/cms-core/config');
+      cachedPayload = await getPayload({ config: configModule.default });
+      return cachedPayload;
+    } catch (e) {
+      console.error('[HEIMDALL][CRITICAL] Payload Handshake Failed.');
+      throw e;
+    }
   }
 
-  private static get useMocks(): boolean {
+  private static get isMockMode(): boolean {
+    // Si estamos en build y no hay DB, o si se solicita explícitamente via env
     return (IS_BUILD_ENV && !DB_READY) || process.env.DATA_SOURCE === 'MOCKS';
   }
 
@@ -147,24 +174,21 @@ class EditorialDataResolver {
     tag?: string, 
     lang: Locale 
   }, dict: Dictionary): Promise<PostWithSlug[]> {
-    if (this.useMocks) {
+    const traceId = `journal_fetch_${Date.now()}`;
+    
+    if (this.isMockMode) {
+      console.log(`[HEIMDALL][${traceId}] Mode: LOCAL_SANCTUARY (Mocks Enabled)`);
       const mocks = MOCK_POSTS
         .map(m => EditorialShaper.shape(this.adaptMockToRaw(m), dict))
         .filter((post): post is PostWithSlug => post !== null);
       
       if (options.slug) return mocks.filter(m => m.slug === options.slug);
-      
-      if (options.tag) {
-        const targetTag = options.tag;
-        return mocks.filter(m => m.metadata.tags.includes(targetTag));
-      }
-      
+      if (options.tag) return mocks.filter(m => m.metadata.tags.includes(options.tag!));
       return mocks;
     }
 
     try {
       const payload = await this.getPayloadInstance();
-      
       const whereClause: Where = { status: { equals: 'published' } };
       
       if (options.slug) whereClause.slug = { equals: options.slug };
@@ -175,6 +199,7 @@ class EditorialDataResolver {
         where: whereClause,
         sort: '-publishedDate',
         locale: options.lang,
+        depth: 2, // Asegura resolución de autor e imagen sin fallos relacionales
       });
 
       return docs
@@ -182,13 +207,19 @@ class EditorialDataResolver {
         .filter((post): post is PostWithSlug => post !== null);
 
     } catch (error: unknown) {
-      console.warn(`[HEIMDALL][RECOVERY] Editorial Link Degraded: ${error instanceof Error ? error.message : 'Unknown'}`);
+      const msg = error instanceof Error ? error.message : 'UNEXPECTED_CLUSTER_DRIFT';
+      console.warn(`[HEIMDALL][${traceId}] Connection degraded: ${msg}. Activating Recovery Fallback.`);
+      
       return MOCK_POSTS
         .map(m => EditorialShaper.shape(this.adaptMockToRaw(m), dict))
         .filter((post): post is PostWithSlug => post !== null);
     }
   }
 }
+
+/**
+ * INTERFAZ PÚBLICA (Server Actions)
+ */
 
 export async function getAllPosts(lang: Locale = i18n.defaultLocale): Promise<PostWithSlug[]> {
   const dict = await getDictionary(lang);

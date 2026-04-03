@@ -2,9 +2,9 @@
  * @file apps/portfolio-web/src/lib/services/data-parser.ts
  * @description Enterprise Data Parser Engine (Silo C Infrastructure).
  *              Orquestador de procesamiento de buffers para la ingesta masiva.
- *              Refactorizado: Auditoría de errores por fila, saneamiento 
- *              proactivo y mapeo multilingüe de cabeceras.
- * @version 3.0 - Forensic Reporting & Multilingual Mapping
+ *              Refactorizado: Resolución de error ESLint no-control-regex,
+ *              normalización de printables vía Unicode y blindaje de tipos.
+ * @version 4.1 - Linter Pure & Modern Unicode Sync
  * @author Raz Podestá - Staff Engineer, MetaShark Tech
  */
 
@@ -13,7 +13,7 @@ import { z } from 'zod';
 
 /**
  * CONTRATO DE NORMALIZACIÓN (SSoT)
- * @description Define la estructura mínima requerida para un nodo de audiencia.
+ * @description Define la integridad mínima requerida para un nodo de audiencia.
  */
 const audienceNodeSchema = z.object({
   email: z.string().email('INVALID_EMAIL_FORMAT').toLowerCase().trim(),
@@ -22,11 +22,15 @@ const audienceNodeSchema = z.object({
   source: z.string().default('bulk_import'),
 });
 
+/**
+ * @type AudienceNode
+ * @description Inferencia obligatoria desde el contrato soberano.
+ */
 export type AudienceNode = z.infer<typeof audienceNodeSchema>;
 
 /**
  * @interface ParserIssue
- * @description Registro de anomalía detectada en una fila específica.
+ * @description Registro detallado de anomalía para el Ledger de Ingesta.
  */
 export interface ParserIssue {
   row: number;
@@ -34,10 +38,14 @@ export interface ParserIssue {
   data: unknown;
 }
 
+/**
+ * @interface ParserResult
+ * @description Contrato de salida del motor de transmutación.
+ */
 export interface ParserResult {
   success: boolean;
   data: AudienceNode[];
-  issues: ParserIssue[]; // Trazabilidad forense
+  issues: ParserIssue[];
   metrics: {
     totalRows: number;
     validNodes: number;
@@ -54,78 +62,102 @@ export interface ParserResult {
  */
 class DataParserEngine {
   /**
-   * HELPER: Extractor Tipado Multilingüe
-   * @description Busca llaves alternativas en el objeto (soporte para EN, ES, PT).
+   * HELPER: Deep Sanitize
+   * @description Purga caracteres de control y basura visual que corrompen la DB.
+   * @fix: Resolución de ESLint no-control-regex mediante Unicode Property Escapes.
    */
-  private extractAndSanitize(obj: Record<string, unknown>, keys: string[]): string | undefined {
-    for (const key of keys) {
-      const value = obj[key];
-      if (value !== undefined && value !== null) {
-        // Limpieza proactiva de ruido y espacios en blanco
-        const sanitized = String(value).trim().replace(/[\u200B-\u200D\uFEFF]/g, '');
-        if (sanitized !== '') return sanitized;
-      }
-    }
-    return undefined;
+  private sanitize(value: unknown): string | undefined {
+    if (typeof value !== 'string' && typeof value !== 'number') return undefined;
+    const str = String(value).trim();
+    
+    /**
+     * MOTOR DE LIMPIEZA UNICODE:
+     * \p{Cc}: Coincide con caracteres de control (equivalente a [\x00-\x1F\x7F-\x9F]).
+     * El flag 'u' es obligatorio para usar propiedades de caracteres Unicode.
+     */
+    return str
+      .replace(/\p{Cc}/gu, "") 
+      .replace(/[<>"{}$%]/g, '')
+      .substring(0, 255);
+  }
+
+  /**
+   * HELPER: Phone Normalizer
+   * @description Estandariza números para integración con Silos de Mensajería.
+   */
+  private normalizePhone(val: unknown): string | undefined {
+    const sanitized = this.sanitize(val);
+    if (!sanitized) return undefined;
+    // Conserva únicamente la estructura numérica y el prefijo internacional
+    return sanitized.replace(/[^\d+]/g, '');
+  }
+
+  /**
+   * HELPER: Extractor Tipado Multilingüe
+   * @description Mapea cabeceras dinámicas hacia el contrato canónico.
+   */
+  private extractField(obj: Record<string, unknown>, keys: string[]): string | undefined {
+    const matchedKey = keys.find(k => k.toLowerCase() in obj || k.toUpperCase() in obj || k in obj);
+    return matchedKey ? this.sanitize(obj[matchedKey]) : undefined;
   }
 
   /**
    * MODULE: parseExcelBuffer
    * @description Transmuta un buffer binario en un inventario de nodos de audiencia.
-   * @pilar_X: Performance O(n) con reporte de incidentes en tiempo real.
+   * @pilar_X: Performance - Optimizado para entornos Serverless (Zero Any Protocol).
    */
-  public async parseExcelBuffer(buffer: ArrayBuffer): Promise<ParserResult> {
+  public async parseExcelBuffer(buffer: ArrayBuffer, traceId?: string): Promise<ParserResult> {
     const startTime = performance.now();
-    const traceId = `parser_${Date.now()}`;
-    console.group(`[SYSTEM][PARSER] Data Transmutation Initiated: ${traceId}`);
+    const currentTrace = traceId || `parser_${Date.now()}`;
+    
+    console.group(`[HEIMDALL][PARSER] Data Transmutation: ${currentTrace}`);
 
     try {
-      // 1. HANDSHAKE BINARIO
+      // 1. HANDSHAKE BINARIO (Configuración de bajo consumo)
       const workbook = XLSX.read(buffer, { 
         type: 'array',
         cellDates: true,
+        cellNF: false,
         cellText: false 
       });
       
-      const firstSheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[firstSheetName];
+      const sheet = workbook.Sheets[workbook.SheetNames[0]];
+      if (!sheet) throw new Error('EMPTY_WORKBOOK_STRUCTURE');
 
-      // 2. EXTRACCIÓN SANEADA (Zero Any Protocol)
-      const rawData = XLSX.utils.sheet_to_json(worksheet) as Record<string, unknown>[];
+      // 2. EXTRACCIÓN SANEADA
+      const rawData = XLSX.utils.sheet_to_json(sheet, { defval: null }) as Record<string, unknown>[];
       const totalRows = rawData.length;
 
-      console.log(`[PARSER] Direct throughput: ${totalRows} entries detected.`);
-
-      // 3. PIPELINE DE NORMALIZACIÓN, VALIDACIÓN Y AUDITORÍA
+      // 3. PIPELINE DE NORMALIZACIÓN Y AUDITORÍA
       const seenEmails = new Set<string>();
       const validNodes: AudienceNode[] = [];
       const issues: ParserIssue[] = [];
       let duplicatesCount = 0;
 
-      // Mapeo exhaustivo de cabeceras comerciales
-      const EMAIL_KEYS = ['email', 'e-mail', 'mail', 'correo', 'contacto'];
-      const NAME_KEYS = ['name', 'nombre', 'nome', 'fullname', 'cliente'];
-      const PHONE_KEYS = ['phone', 'tel', 'whatsapp', 'celular', 'telefone'];
+      // Diccionario de cabeceras industriales mapeadas
+      const MAP = {
+        EMAIL: ['email', 'e-mail', 'mail', 'correo', 'contacto', 'contato'],
+        NAME: ['name', 'nombre', 'nome', 'fullname', 'cliente'],
+        PHONE: ['phone', 'tel', 'whatsapp', 'celular', 'telefone']
+      };
 
       rawData.forEach((entry, index) => {
-        const rowNumber = index + 2; // Offset para coincidir con el Excel (Header + 0-index)
+        const rowNumber = index + 2; // Offset (Header + 1)
         
         try {
           const rawNode = {
-            email: this.extractAndSanitize(entry, EMAIL_KEYS),
-            name: this.extractAndSanitize(entry, NAME_KEYS),
-            phone: this.extractAndSanitize(entry, PHONE_KEYS),
+            email: this.extractField(entry, MAP.EMAIL),
+            name: this.extractField(entry, MAP.NAME),
+            phone: this.normalizePhone(this.extractField(entry, MAP.PHONE)),
             source: 'enterprise_bulk_ingestion'
           };
 
-          if (!rawNode.email) {
-            throw new Error('MISSING_MANDATORY_EMAIL');
-          }
+          if (!rawNode.email) throw new Error('MISSING_MANDATORY_EMAIL_NODE');
 
           // Validación atómica Zod
           const validated = audienceNodeSchema.parse(rawNode);
 
-          // Deduplicación inteligente
+          // Deduplicación en buffer de memoria O(1)
           if (seenEmails.has(validated.email)) {
             duplicatesCount++;
             return;
@@ -136,7 +168,7 @@ class DataParserEngine {
 
         } catch (err: unknown) {
           const msg = err instanceof z.ZodError 
-            ? err.issues.map(i => i.message).join(', ') 
+            ? err.issues.map(i => `${i.path}: ${i.message}`).join(' | ') 
             : (err as Error).message;
             
           issues.push({
@@ -147,10 +179,8 @@ class DataParserEngine {
         }
       });
 
-      const endTime = performance.now();
-      const latency = (endTime - startTime).toFixed(2);
-
-      console.log(`[SUCCESS] Transmutation Concluded. Issues: ${issues.length}`);
+      const totalLatency = (performance.now() - startTime).toFixed(2);
+      console.log(`[SUCCESS] Pipeline Synchronized. Valid: ${validNodes.length} | Latency: ${totalLatency}ms`);
       
       return {
         success: true,
@@ -161,7 +191,7 @@ class DataParserEngine {
           validNodes: validNodes.length,
           duplicatesRemoved: duplicatesCount,
           failedRows: issues.length,
-          latencyMs: `${latency}ms`
+          latencyMs: `${totalLatency}ms`
         }
       };
 
@@ -179,15 +209,6 @@ class DataParserEngine {
     } finally {
       console.groupEnd();
     }
-  }
-
-  /**
-   * MODULE: sanitizeField
-   * @description Purga caracteres peligrosos de strings desconocidos.
-   */
-  public sanitize(value: unknown): string {
-    if (typeof value !== 'string') return '';
-    return value.trim().replace(/[<>"{}$%]/g, '');
   }
 }
 

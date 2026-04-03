@@ -1,9 +1,9 @@
 /**
  * @file next.config.ts
  * @description Orquestador del Compilador Next.js 15 (The Artisan).
- *              Refactorizado: Anclaje de salida (distDir) para eliminar el 404
- *              y sincronización de fronteras para el entorno Vercel.
- * @version 10.3 - Sovereign Anchor Edition
+ *              Refactorizado: Simplificación Soberana. Se elimina distDir manual 
+ *              para permitir la detección nativa de Vercel y se blindan fronteras.
+ * @version 10.4 - Sovereign Standard Sync
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -13,15 +13,16 @@ import { withPayload } from '@payloadcms/next/withPayload';
 
 const nextConfig: NextConfig = {
   /**
-   * PILAR XIII: Soberanía de Artefactos.
-   * Forzamos al compilador a depositar el build (.next) en la carpeta dist.
-   * Esto asegura que Vercel localice el 'routes-manifest.json' y elimina el 404.
+   * @pilar_XIII: Simplificación de Infraestructura.
+   * Eliminamos la propiedad 'distDir'. Next.js construirá en la carpeta 
+   * local '.next', permitiendo que Vercel localice los manifiestos de 
+   * forma nativa sin desajustes de rutas relativas.
    */
-  distDir: '../../dist/apps/portfolio-web/.next',
 
   /**
-   * PILAR V: Arquitectura Source-First.
-   * Transpilación directa de dependencias internas para máxima consistencia.
+   * @pilar_V: Arquitectura Source-First.
+   * Transpilación de dependencias internas para garantizar que el código vivo
+   * del monorepo sea procesado por el compilador de la aplicación.
    */
   transpilePackages: [
     '@metashark/cms-core',
@@ -40,14 +41,15 @@ const nextConfig: NextConfig = {
   },
 
   /**
-   * PILAR XIII: Higiene de Infraestructura.
-   * Evitamos que binarios nativos pesados contaminen la función Lambda.
+   * @pilar_XIII: Higiene de Infraestructura.
+   * Exclusión de binarios pesados para optimizar el tiempo de frío (Cold Start) 
+   * de las funciones Lambda en Vercel.
    */
   serverExternalPackages: ['sharp', 'pg', 'bcryptjs'],
 
   /**
    * PROTOCOLO DE RESILIENCIA:
-   * Timeout extendido para el ensamblaje de diccionarios MACS y Journal.
+   * Margen de seguridad para procesos pesados de pre-renderizado.
    */
   staticPageGenerationTimeout: 300,
 
@@ -55,7 +57,8 @@ const nextConfig: NextConfig = {
     if (!isServer) {
       /**
        * BÓVEDA DE SEGURIDAD (Client Shield):
-       * Bloqueo físico de fuga de lógica de servidor hacia el cliente.
+       * Bloqueo físico de lógica de servidor. Previene errores de resolución 
+       * en el navegador y reduce el tamaño del bundle.
        */
       config.resolve.alias = {
         ...config.resolve.alias,
@@ -76,7 +79,7 @@ const nextConfig: NextConfig = {
 
 /**
  * COMPOSICIÓN SOBERANA:
- * El orden de los plugins garantiza que Nx maneje los alias y Payload 
- * inyecte el motor de base de datos antes de la exportación final.
+ * El orden de los wrappers es vital. Nx primero para resolver rutas, 
+ * luego Payload para inyectar el entorno de datos.
  */
 export default withPayload(withNx(nextConfig));
