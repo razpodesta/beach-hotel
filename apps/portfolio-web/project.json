@@ -27,22 +27,23 @@
     "build": {
       "executor": "@nx/next:build",
       "outputs": [
-        "{options.outputPath}"
+        "{projectRoot}/.next"
       ],
       "defaultConfiguration": "production",
       "options": {
-        "outputPath": "dist/apps/portfolio-web"
+        "outputPath": "apps/portfolio-web"
       },
       "configurations": {
         "development": {
-          "outputPath": "dist/apps/portfolio-web/dev"
+          "outputPath": "apps/portfolio-web"
         },
         "production": {}
       },
       "dependsOn": [
         "prebuild"
       ],
-      "cache": true
+      "cache": true,
+      "description": "Compilación In-Place. Sincronizado nativamente con Vercel Next.js Preset."
     },
     "serve": {
       "executor": "@nx/next:server",
