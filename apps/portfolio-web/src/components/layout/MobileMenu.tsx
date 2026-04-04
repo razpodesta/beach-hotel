@@ -1,15 +1,15 @@
 /**
  * @file MobileMenu.tsx
  * @description Centro de Navegación Móvil de Élite (The Takeover).
- *              Refactorizado: Normalización de clases canónicas Tailwind v4,
- *              mantenimiento de higiene de linter y tipado soberano.
- * @version 8.2 - Tailwind Canonical Sync
+ *              Refactorizado: Resolución de error de Linter (no-unused-expressions),
+ *              estabilización de handlers y paridad de telemetría Heimdall.
+ * @version 10.0 - Linter Pure & AST Compliant
  * @author Raz Podestá - MetaShark Tech
  */
 
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence, type Variants } from 'framer-motion';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -33,7 +33,7 @@ import { useUIStore } from '../../lib/store/ui.store';
 import { mainNavStructure } from '../../lib/nav-links';
 import type { NavItem, NavLink as NavLinkType } from '../../lib/nav-links';
 import { getLocalizedHref } from '../../lib/utils/link-helpers';
-import { i18n } from '../../config/i18n.config';
+import { i18n, isValidLocale } from '../../config/i18n.config';
 import type { Locale } from '../../config/i18n.config';
 import { LanguageSwitcher } from '../ui/LanguageSwitcher';
 import { ThemeToggle } from '../ui/ThemeToggle';
@@ -77,14 +77,24 @@ const MobileAccordionItem = ({
   const hasChildren = !!(item.children && item.children.length > 0);
   const label = labels[item.labelKey] || item.labelKey;
 
-  const handleToggle = () => hasChildren ? setIsOpen(!isOpen) : onClose();
+  /**
+   * @fix: Resolución de 'no-unused-expressions'.
+   * Se sustituye el operador ternario por un bloque if explícito.
+   */
+  const handleToggle = useCallback(() => {
+    if (hasChildren) {
+      setIsOpen(!isOpen);
+    } else {
+      onClose();
+    }
+  }, [hasChildren, isOpen, onClose]);
 
   return (
     <motion.div variants={itemVariants} className="flex flex-col border-b border-border/30 last:border-0">
       {hasChildren ? (
         <button
           onClick={handleToggle}
-          className="flex items-center justify-between py-6 px-4 group outline-none"
+          className="flex items-center justify-between py-6 px-4 group outline-none focus-visible:bg-surface/50"
         >
           <div className="flex items-center gap-5">
             <div className="flex items-center justify-center h-10 w-10 rounded-xl bg-surface border border-border/50 text-muted-foreground group-active:text-primary transition-colors">
@@ -100,7 +110,7 @@ const MobileAccordionItem = ({
         <Link
           href={getLocalizedHref(item.href, currentLang)}
           onClick={onClose}
-          className="flex items-center justify-between py-6 px-4 group outline-none"
+          className="flex items-center justify-between py-6 px-4 group outline-none focus-visible:bg-surface/50"
         >
           <div className="flex items-center gap-5">
             <div className="flex items-center justify-center h-10 w-10 rounded-xl bg-surface border border-border/50 text-muted-foreground transition-colors">
@@ -118,7 +128,7 @@ const MobileAccordionItem = ({
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="overflow-hidden bg-foreground/2" // @fix: clase canónica
+            className="overflow-hidden bg-foreground/5"
           >
             <div className="pl-16 pr-4 pb-6 flex flex-col gap-4">
               {item.children?.map((child: NavLinkType) => {
@@ -146,18 +156,24 @@ const MobileAccordionItem = ({
   );
 };
 
+/**
+ * APARATO PRINCIPAL: MobileMenu
+ */
 export function MobileMenu({ dictionary }: { dictionary: Dictionary }) {
   const { isMobileMenuOpen, closeMobileMenu, session, hasHydrated, toggleAuthModal } = useUIStore();
   const pathname = usePathname();
   
-  const currentLang = useMemo(() => 
-    (pathname?.split('/')[1] as Locale) || i18n.defaultLocale, 
-  [pathname]);
+  const currentLang = useMemo(() => {
+    const segments = pathname?.split('/') ?? [];
+    return isValidLocale(segments[1]) ? (segments[1] as Locale) : i18n.defaultLocale;
+  }, [pathname]);
 
-  const labels = useMemo(() => ({ 
-    ...dictionary.header, 
-    ...dictionary['nav-links'].nav_links 
-  }), [dictionary]);
+  const labels: Record<string, string> = useMemo(() => {
+    return { 
+      ...dictionary.header, 
+      ...dictionary['nav-links'].nav_links 
+    } as Record<string, string>;
+  }, [dictionary]);
 
   useEffect(() => {
     if (isMobileMenuOpen) {
@@ -167,6 +183,12 @@ export function MobileMenu({ dictionary }: { dictionary: Dictionary }) {
     }
     return () => { document.body.style.overflow = 'unset'; };
   }, [isMobileMenuOpen]);
+
+  const handleAuthInteraction = useCallback((action: 'login' | 'join') => {
+    console.log(`[HEIMDALL][UX] Mobile Access Triggered: ${action.toUpperCase()}`);
+    closeMobileMenu();
+    toggleAuthModal();
+  }, [closeMobileMenu, toggleAuthModal]);
 
   if (!hasHydrated) return null;
 
@@ -200,7 +222,11 @@ export function MobileMenu({ dictionary }: { dictionary: Dictionary }) {
                   <div className="flex items-center gap-2">
                     <LanguageSwitcher dictionary={dictionary.language_switcher} />
                     <ThemeToggle dictionary={dictionary.language_switcher} />
-                    <button onClick={closeMobileMenu} className="p-3 rounded-full bg-background/50 text-foreground active:scale-90 ml-2">
+                    <button 
+                      onClick={closeMobileMenu} 
+                      className="p-3 rounded-full bg-background/50 text-foreground active:scale-90 ml-2 outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                      aria-label="Cerrar menú"
+                    >
                         <X size={24} />
                     </button>
                   </div>
@@ -211,7 +237,7 @@ export function MobileMenu({ dictionary }: { dictionary: Dictionary }) {
                     {session ? (
                       <motion.button
                         key="active-user" initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                        className="w-full flex items-center gap-4 p-4 rounded-2xl bg-primary text-white"
+                        className="w-full flex items-center gap-4 p-4 rounded-2xl bg-primary text-white outline-none focus-visible:ring-2 focus-visible:ring-accent"
                         onClick={closeMobileMenu}
                       >
                         <div className="h-10 w-10 rounded-full bg-white/20 flex items-center justify-center">
@@ -225,14 +251,14 @@ export function MobileMenu({ dictionary }: { dictionary: Dictionary }) {
                     ) : (
                       <motion.div key="guest-actions" className="grid grid-cols-2 gap-1" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                         <button 
-                          onClick={() => { closeMobileMenu(); toggleAuthModal(); }}
-                          className="flex items-center justify-center gap-2 py-4 text-[10px] font-bold uppercase tracking-widest text-muted-foreground"
+                          onClick={() => handleAuthInteraction('login')}
+                          className="flex items-center justify-center gap-2 py-4 text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors outline-none focus-visible:bg-surface"
                         >
                           <LogIn size={16} /> {labels.login}
                         </button>
                         <button 
-                          onClick={() => { closeMobileMenu(); toggleAuthModal(); }}
-                          className="flex items-center justify-center gap-2 py-4 rounded-2xl bg-foreground text-background text-[10px] font-bold uppercase tracking-widest shadow-xl"
+                          onClick={() => handleAuthInteraction('join')}
+                          className="flex items-center justify-center gap-2 py-4 rounded-2xl bg-foreground text-background text-[10px] font-bold uppercase tracking-widest shadow-xl hover:bg-primary hover:text-white transition-colors outline-none focus-visible:ring-2 focus-visible:ring-primary"
                         >
                           <UserPlus size={16} /> {labels.join}
                         </button>

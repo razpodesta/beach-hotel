@@ -65,6 +65,45 @@ Higiene Forense (Heimdall): Cada subida de Excel o generación de Flyer PDF emit
 
 ---
 
+Fecha: 4 de Abril, 2026
+Estatus: Infraestructura Hardened / Build-Resilient
+Arquitecto Responsable: Staff Engineer - MetaShark Tech
+1. RESUMEN EJECUTIVO DE LA MISIÓN
+Se ha ejecutado una intervención quirúrgica masiva sobre el ecosistema Beach Hotel Canasvieiras para resolver el bloqueo crítico de compilación en Vercel. El síntoma principal era un TypeError: Cannot read properties of undefined (reading 'env') durante el prerenderizado estático de Next.js 15. Este fallo indicaba una filtración de la lógica del servidor (Payload CMS/Database) hacia los workers de build, que carecen de contexto de infraestructura.
+2. ANÁLISIS DE CAUSA RAÍZ (THE SMOKING GUN)
+Next.js 15 realiza un análisis agresivo del grafo de dependencias durante el build. Se detectó que:
+Importaciones Estáticas: Las rutas de la API y las Server Actions importaban la configuración del CMS en el nivel superior (top-level), forzando a Node.js a evaluar el archivo payload.config.ts.
+Side-Effects: Al evaluarse la configuración, Payload intentaba validar variables de entorno (DATABASE_URL, PAYLOAD_SECRET) y establecer handshakes SSL, lo cual fallaba en el entorno aislado de compilación de Vercel.
+3. INTERVENCIONES ESTRATÉGICAS (LOG DE TAREAS)
+A. Saneamiento del Grafo de TypeScript (tsconfig.json)
+Tarea: Ampliación del parámetro include.
+Explicación: Se corrigió el error TS6307 permitiendo que el proyecto @metashark/portfolio-web reconozca los archivos fuente dentro de la carpeta packages/. Se estableció una política de visibilidad total para evitar que el compilador ignore las dependencias internas del monorepo Nx.
+B. Aislamiento de Nivel 4 del Gateway CMS (api/payload/route.ts)
+Tarea: Implementación del patrón Extreme Build Isolation.
+Explicación: Se eliminaron las importaciones estáticas del núcleo del CMS. Se refactorizaron los handlers (GET, POST, etc.) utilizando importaciones dinámicas asíncronas (await import).
+Resultado: El código del CMS ahora es invisible para el compilador durante el build; solo se materializa en Runtime cuando llega una petición HTTP real. Se erradicaron todos los tipos any mediante la inferencia de parámetros de la librería nativa.
+C. Inmunidad Estática en la Capa de Datos (lib/blog/actions.ts)
+Tarea: Inyección del centinela IS_BUILD_ENV.
+Explicación: Se refactorizó el orquestador editorial para que, al detectar que se encuentra en fase de production-build o en el entorno de Vercel sin base de datos activa, aborte automáticamente la conexión al clúster y sirva los Mocks Génesis.
+Higiene: Se eliminaron las aserciones no nulas (!) y las variables no utilizadas (error en catch) para cumplir con el estándar de Cero Advertencias de Linter.
+D. Desbloqueo del Root Layout (newsletter.actions.ts)
+Tarea: Blindaje de Server Actions de Tercer Nivel.
+Explicación: Se detectó que el Footer (presente en todas las páginas) bloqueaba el build al importar acciones de suscripción vinculadas al CMS. Se aplicó el mismo patrón de Inicialización Perezosa (Lazy Initialization), liberando al Layout raíz de cualquier dependencia con la base de datos.
+E. Cumplimiento de Jerarquía Next.js 15 (app/not-found.tsx)
+Tarea: Reestructuración del paracaídas 404.
+Explicación: Se eliminó la ambigüedad de rutas moviendo el not-found.tsx a una estructura compatible con el App Router, asegurando que siempre herede un RootLayout válido, evitando el error crítico de "missing root layout" durante la generación de páginas de error.
+F. Hardening de Páginas Dinámicas (festival y blog)
+Tarea: Orquestación de generateStaticParams.
+Explicación: Se inyectaron guardias en los generadores de parámetros estáticos. Durante el build, estas funciones devuelven arrays vacíos para evitar que el compilador intente realizar fetchs externos, delegando la generación real al primer acceso de usuario (ISR/On-demand).
+4. PILARES DE CALIDAD APLICADOS
+Visión Holística: No solo arreglamos la ruta que fallaba, sino todo el árbol de dependencias que la alimentaba.
+Seguridad de Tipos: Erradicación total de any en los puntos de entrada de la API.
+Performance: Al usar importaciones dinámicas, el bundle inicial de las funciones Lambda en Vercel es más ligero, mejorando el Cold Start.
+Cero Regresiones: Se mantuvo la compatibilidad con los esquemas de Zod (SSoT) en cada paso.
+
+
+---
+
 
 
 

@@ -1,9 +1,9 @@
 /**
- * @file festival/page.tsx
+ * @file apps/portfolio-web/src/app/[lang]/festival/page.tsx
  * @description Orquestador inmersivo para el Canasvieiras Fest 2026.
- *              Refactorizado: Erradicación total de 'any', tipado estricto
- *              del contrato del diccionario y cumplimiento Linter Pure.
- * @version 3.1 - Type Safe & Production Elite
+ *              Refactorizado: Implementación de generateStaticParams para 
+ *              estabilidad de build en Vercel y blindaje de metadatos.
+ * @version 3.2 - Build Stable & Production Elite
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -13,8 +13,9 @@ import { ChevronRight, CheckCircle2, Ship } from 'lucide-react';
 import Link from 'next/link';
 
 /** IMPORTACIONES DE INFRAESTRUCTRURA */
-import { getDictionary } from '../../../lib/get-dictionary';
+import { i18n } from '../../../config/i18n.config';
 import { type Locale } from '../../../config/i18n.config';
+import { getDictionary } from '../../../lib/get-dictionary';
 import { BlurText } from '../../../components/razBits/BlurText';
 import { ExperienceShowcase3D } from '../../../components/sections/homepage/ExperienceShowcase3D';
 import { FadeIn } from '../../../components/ui/FadeIn';
@@ -23,23 +24,51 @@ type FestivalPageProps = {
   params: Promise<{ lang: Locale }>;
 };
 
+/**
+ * GENERACIÓN DE RUTAS ESTÁTICAS
+ * @pilar VIII: Resiliencia de Build.
+ * Indica a Vercel/Next.js qué idiomas deben pre-renderizarse obligatoriamente.
+ */
+export async function generateStaticParams() {
+  return i18n.locales.map((lang) => ({ lang }));
+}
+
+/**
+ * METADATOS DINÁMICOS Y SEO (E-E-A-T)
+ */
 export async function generateMetadata(props: FestivalPageProps): Promise<Metadata> {
   const { lang } = await props.params;
   const dict = await getDictionary(lang);
   const f = dict.festival;
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://beachhotelcanasvieiras.com';
 
   return {
     title: `${f.hero.title} | ${f.hero.subtitle}`,
-    description: dict.festival.manifesto,
+    description: f.manifesto,
+    alternates: {
+      canonical: `${baseUrl}/${lang}/festival`,
+    },
     openGraph: {
       title: f.hero.title,
-      description: dict.festival.manifesto,
+      description: f.manifesto,
+      url: `${baseUrl}/${lang}/festival`,
       type: 'website',
-      images: ['/images/festival/og-festival.jpg']
-    }
+      images: [
+        {
+          url: `${baseUrl}/images/festival/og-festival.jpg`,
+          width: 1200,
+          height: 630,
+          alt: f.hero.title,
+        },
+      ],
+    },
   };
 }
 
+/**
+ * APARATO PRINCIPAL: FestivalPage
+ * @description Orquesta la narrativa inmersiva del evento insignia del hotel.
+ */
 export default async function FestivalPage(props: FestivalPageProps) {
   const { lang } = await props.params;
   const dict = await getDictionary(lang);
@@ -48,6 +77,7 @@ export default async function FestivalPage(props: FestivalPageProps) {
   return (
     <main className="min-h-screen bg-[#050505] text-white selection:bg-pink-500/30 overflow-x-hidden">
       
+      {/* SECCIÓN 1: IMPACTO CINEMÁTICO */}
       <section className="relative min-h-[90vh] flex flex-col items-center justify-center pt-32 pb-20 px-6">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(168,85,247,0.15),transparent_70%)]" />
         
@@ -75,6 +105,7 @@ export default async function FestivalPage(props: FestivalPageProps) {
         </FadeIn>
       </section>
 
+      {/* SECCIÓN 2: MANIFIESTO */}
       <section className="container mx-auto max-w-4xl px-6 py-24 text-center">
         <FadeIn>
           <div className="relative p-12 md:p-20 rounded-[4rem] bg-zinc-900/30 border border-white/5 backdrop-blur-xl">
@@ -85,10 +116,12 @@ export default async function FestivalPage(props: FestivalPageProps) {
         </FadeIn>
       </section>
 
+      {/* SECCIÓN 3: SHOWCASE 3D (WEBGL) */}
       <section id="lineup" className="py-24 border-y border-white/5 bg-zinc-950/20">
          <ExperienceShowcase3D dictionary={dict.festival} />
       </section>
 
+      {/* SECCIÓN 4: UPSELL VIP */}
       <section className="container mx-auto px-6 py-32">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
            <FadeIn yOffset={40}>
@@ -121,6 +154,7 @@ export default async function FestivalPage(props: FestivalPageProps) {
         </div>
       </section>
 
+      {/* SECCIÓN 5: MATRIZ DE PAQUETES */}
       <section id="booking" className="container mx-auto px-6 py-32 border-t border-white/5">
         <div className="text-center mb-20">
            <h2 className="font-display text-4xl md:text-6xl font-bold tracking-tighter mb-6">{f.packages_section.title}</h2>
@@ -128,8 +162,7 @@ export default async function FestivalPage(props: FestivalPageProps) {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-           {/* Inferencia de tipo explícita del esquema: FestivalDictionary['packages'][number] */}
-           {f.packages.map((pkg: typeof f.packages[number], i: number) => (
+           {f.packages.map((pkg, i: number) => (
              <FadeIn key={i} delay={i * 0.2}>
                <div className="group relative rounded-[4rem] bg-white/2 border border-white/5 p-12 hover:border-primary/40 transition-all duration-700">
                   <div className="flex justify-between items-start mb-12">

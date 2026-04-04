@@ -1,9 +1,9 @@
 /**
  * @file apps/portfolio-web/src/app/api/payload/[[...slug]]/route.ts
- * @description Gateway Soberano de la API de Payload CMS 3.0.
- *              Refactorizado: Inyección dinámica de configuración para evitar
- *              errores de resolución de módulos durante el Build de Vercel.
- * @version 8.3 - Next.js 15 & Vercel Build Resilience
+ * @description Gateway Soberano para Payload CMS 3.0.
+ *              Refactorizado: Aislamiento total Build-Time, corrección de sintaxis
+ *              en handlers y erradicación de referencias circulares de tipo.
+ * @version 8.13 - Absolute Production Standard
  * @author Staff Engineer - MetaShark Tech
  */
 
@@ -15,62 +15,96 @@ import {
   REST_DELETE, 
   REST_OPTIONS 
 } from '@payloadcms/next/routes';
+import { type NextRequest } from 'next/server';
 
-// @fix: Importación dinámica para prevenir errores de compilación de Webpack
-// en entornos Serverless durante el build.
-const getPayloadConfig = async () => {
-  const config = await import('@metashark/cms-core/config');
-  return config.default;
+/**
+ * CONTRATOS DE TIPO SOBERANOS
+ * @description Next.js 15 exige que 'params' sea una Promesa.
+ */
+type RouteArgs = { params: Promise<{ slug?: string[] }> };
+
+/** 
+ * @type PayloadRESTHandler
+ * @description Firma del handler interno que provee la librería de Payload.
+ */
+type PayloadRESTHandler = (req: Request, args: RouteArgs) => Promise<Response>;
+
+/**
+ * @type FactorySignature
+ * @description Firma de la factoría (REST_GET, etc.). 
+ *              Utilizamos 'unknown' para el config para romper la circularidad de tipos.
+ */
+type FactorySignature = (cfg: unknown) => PayloadRESTHandler;
+
+/**
+ * @description Orquestador de ejecución diferida.
+ * @pilar XIII: Build Isolation - Protege contra el crash 'reading env' en Vercel.
+ */
+const executeHandler = async (
+  method: string, 
+  req: NextRequest, 
+  args: RouteArgs,
+  handlerFactory: FactorySignature
+): Promise<Response> => {
+  const traceId = `api_${method}_${Date.now()}`;
+  console.group(`[HEIMDALL][GATEWAY] ${method}: ${req.nextUrl.pathname} | ID: ${traceId}`);
+  
+  const startTime = performance.now();
+  
+  try {
+    /**
+     * @pilar XIII: Dynamic Shield.
+     * Importamos la configuración local solo cuando hay tráfico real.
+     */
+    const configModule = await import('@metashark/cms-core/config');
+    const config = configModule.default;
+    
+    // Ejecución del handler de Payload
+    const handler = handlerFactory(config);
+    const response = await handler(req, args);
+    
+    const endTime = performance.now();
+    console.log(`[STATUS] Success | Latency: ${(endTime - startTime).toFixed(2)}ms`);
+    return response;
+    
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : 'Internal Engine Drift';
+    console.error(`[CRITICAL] Gateway Aborted: ${msg}`);
+    
+    return new Response(
+      JSON.stringify({ 
+        error: 'CMS_OFFLINE', 
+        message: 'El clúster de datos no respondió al handshake inicial.',
+        trace: traceId 
+      }), 
+      {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' }
+      }
+    );
+  } finally {
+    console.groupEnd();
+  }
 };
 
-type PayloadHandler = (
-  request: Request, 
-  args: { params: Promise<{ slug?: string[] }> }
-) => Promise<Response>;
+/**
+ * --- HANDLERS NORMALIZADOS ---
+ * Se eliminan castings innecesarios en la firma para evitar errores de sintaxis.
+ */
+export const GET = (req: NextRequest, args: RouteArgs) => 
+  executeHandler('GET', req, args, REST_GET as FactorySignature);
 
-const withTelemetry = (handler: PayloadHandler, method: string) => {
-  return async (
-    request: Request, 
-    args: { params: Promise<{ slug?: string[] }> }
-  ): Promise<Response> => {
-    const url = new URL(request.url);
-    const traceId = `api_${method}_${Date.now()}`;
-    
-    console.group(`[HEIMDALL][GATEWAY] ${method}: ${url.pathname} | ID: ${traceId}`);
-    
-    const startTime = performance.now();
-    try {
-      const response = await handler(request, args);
-      const endTime = performance.now();
-      
-      console.log(`[STATUS] Success | Latency: ${(endTime - startTime).toFixed(2)}ms`);
-      return response;
-    } catch (error: unknown) {
-      const msg = error instanceof Error ? error.message : 'Internal Engine Drift';
-      console.error(`[CRITICAL] Gateway Aborted: ${msg}`);
-      throw error;
-    } finally {
-      console.groupEnd();
-    }
-  };
-};
+export const POST = (req: NextRequest, args: RouteArgs) => 
+  executeHandler('POST', req, args, REST_POST as FactorySignature);
 
-// --- HANDLERS NORMALIZADOS ---
-// Inyectamos la promesa de config mediante un wrapper de ejecución tardía
-export const GET = async (req: Request, args: { params: Promise<{ slug?: string[] }> }) => 
-  withTelemetry(REST_GET(await getPayloadConfig()), 'GET')(req, args);
+export const PUT = (req: NextRequest, args: RouteArgs) => 
+  executeHandler('PUT', req, args, REST_PUT as FactorySignature);
 
-export const POST = async (req: Request, args: { params: Promise<{ slug?: string[] }> }) => 
-  withTelemetry(REST_POST(await getPayloadConfig()), 'POST')(req, args);
+export const PATCH = (req: NextRequest, args: RouteArgs) => 
+  executeHandler('PATCH', req, args, REST_PATCH as FactorySignature);
 
-export const PUT = async (req: Request, args: { params: Promise<{ slug?: string[] }> }) => 
-  withTelemetry(REST_PUT(await getPayloadConfig()), 'PUT')(req, args);
+export const DELETE = (req: NextRequest, args: RouteArgs) => 
+  executeHandler('DELETE', req, args, REST_DELETE as FactorySignature);
 
-export const PATCH = async (req: Request, args: { params: Promise<{ slug?: string[] }> }) => 
-  withTelemetry(REST_PATCH(await getPayloadConfig()), 'PATCH')(req, args);
-
-export const DELETE = async (req: Request, args: { params: Promise<{ slug?: string[] }> }) => 
-  withTelemetry(REST_DELETE(await getPayloadConfig()), 'DELETE')(req, args);
-
-export const OPTIONS = async (req: Request, args: { params: Promise<{ slug?: string[] }> }) => 
-  withTelemetry(REST_OPTIONS(await getPayloadConfig()), 'OPTIONS')(req, args);
+export const OPTIONS = (req: NextRequest, args: RouteArgs) => 
+  executeHandler('OPTIONS', req, args, REST_OPTIONS as FactorySignature);

@@ -2,9 +2,8 @@
   "compileOnSave": false,
   "compilerOptions": {
     /**
-     * @pilar XIII: Sincronización de Infraestructura (Vercel & Next.js 15).
-     * Silencia la advertencia de 'baseUrl' obsoleta. Se establece en 5.0 para 
-     * compatibilidad total con el motor de resolución de Next.js 15.
+     * @pilar XIII: Sincronización de Infraestructura.
+     * Versión 5.0 es el valor estándar para TypeScript 5.x.
      */
     "ignoreDeprecations": "5.0",
     
@@ -18,7 +17,7 @@
     
     /**
      * @pilar III: Seguridad de Tipos de Élite.
-     * Fuerza el estándar 'import type' para optimizar el Tree-Shaking en producción.
+     * Establece el estándar para importaciones claras y tree-shaking eficiente.
      */
     "verbatimModuleSyntax": true,
     
@@ -50,8 +49,8 @@
     "baseUrl": ".",
     "paths": {
       /**
-       * @description Mapeo de Alias Soberanos. 
-       * Permite la resolución "Source-First" eliminando la dependencia de 'dist/'.
+       * @description Mapeo de Alias Soberanos.
+       * Todas las rutas son relativas a la raíz del monorepo.
        */
       "@/*": ["apps/portfolio-web/src/*"],
       "@metashark/cms-core": ["packages/cms/core/src/index.ts"],
@@ -62,5 +61,5 @@
       "@metashark/testing-utils": ["packages/testing-utils/src/index.ts"]
     }
   },
-  "exclude": ["node_modules", "tmp", "dist"]
+  "exclude": ["node_modules", "tmp", "dist", ".nx"]
 }

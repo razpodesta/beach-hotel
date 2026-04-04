@@ -3,47 +3,34 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/portfolio-web/src",
   "projectType": "application",
-  "tags": [
-    "platform:web",
-    "scope:metashark",
-    "type:app"
-  ],
+  "tags": ["platform:web", "scope:metashark", "type:app"],
   "targets": {
     "prebuild": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "tsx scripts/prebuild-portfolio-web.ts",
+        "commands": [
+          "tsx scripts/prebuild-portfolio-web.ts",
+          "payload generate:importmap"
+        ],
+        "parallel": false,
         "color": true
       },
-      "inputs": [
-        "{projectRoot}/src/messages/**/*.json"
-      ],
-      "outputs": [
-        "{projectRoot}/src/dictionaries/*.json"
-      ],
-      "cache": true,
-      "description": "Protocolo MACS: Ensamblaje y validación soberana de diccionarios."
+      "inputs": ["{projectRoot}/src/messages/**/*.json"],
+      "outputs": ["{projectRoot}/src/dictionaries/*.json"],
+      "cache": true
     },
     "build": {
       "executor": "@nx/next:build",
-      "outputs": [
-        "{projectRoot}/.next"
-      ],
+      "outputs": ["{projectRoot}/.next"],
       "defaultConfiguration": "production",
       "options": {
         "outputPath": "apps/portfolio-web"
       },
       "configurations": {
-        "development": {
-          "outputPath": "apps/portfolio-web"
-        },
         "production": {}
       },
-      "dependsOn": [
-        "prebuild"
-      ],
-      "cache": true,
-      "description": "Compilación In-Place. Sincronizado nativamente con Vercel Next.js Preset."
+      "dependsOn": ["prebuild"],
+      "cache": true
     },
     "serve": {
       "executor": "@nx/next:server",
@@ -54,18 +41,10 @@
         "port": 4200
       },
       "configurations": {
-        "development": {
-          "buildTarget": "@metashark/portfolio-web:build:development",
-          "dev": true
-        },
-        "production": {
-          "buildTarget": "@metashark/portfolio-web:build:production",
-          "dev": false
-        }
+        "development": { "buildTarget": "@metashark/portfolio-web:build:development", "dev": true },
+        "production": { "buildTarget": "@metashark/portfolio-web:build:production", "dev": false }
       },
-      "dependsOn": [
-        "prebuild"
-      ]
+      "dependsOn": ["prebuild"]
     },
     "typecheck": {
       "executor": "nx:run-commands",
@@ -74,16 +53,11 @@
         "forwardAllArgs": true
       },
       "cache": true,
-      "dependsOn": [
-        "prebuild"
-      ],
-      "description": "Verificación estática de tipos de élite sobre el código vivo."
+      "dependsOn": ["prebuild"]
     },
     "test": {
       "executor": "@nx/jest:jest",
-      "outputs": [
-        "{workspaceRoot}/coverage/apps/portfolio-web"
-      ],
+      "outputs": ["{workspaceRoot}/coverage/apps/portfolio-web"],
       "options": {
         "jestConfig": "apps/portfolio-web/jest.config.ts",
         "passWithNoTests": true
@@ -92,15 +66,9 @@
     },
     "lint": {
       "executor": "@nx/eslint:lint",
-      "inputs": [
-        "default",
-        "{workspaceRoot}/eslint.config.mjs"
-      ],
       "cache": true,
       "options": {
-        "lintFilePatterns": [
-          "apps/portfolio-web/**/*.{ts,tsx,js,jsx}"
-        ]
+        "lintFilePatterns": ["apps/portfolio-web/**/*.{ts,tsx,js,jsx}"]
       }
     }
   }

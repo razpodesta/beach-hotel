@@ -1,9 +1,9 @@
 /**
  * @file page.tsx (Privacy Policy)
  * @description Orquestador de la Política de Privacidad del Santuario Digital.
- *              Implementa transparencia de datos, soporte para impresión física
- *              y cumplimiento estricto del contrato soberano v2.0.
- * @version 6.0 - Elite Compliance Standard
+ *              Refactorizado: Blindaje estático para Vercel Build y erradicación
+ *              de fallos por acceso a 'env' en el worker de pre-renderizado.
+ * @version 7.0 - Build Resilience Standard
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -22,27 +22,29 @@ import { PrintButton } from '../../../../components/ui/PrintButton';
 import { FadeIn } from '../../../../components/ui/FadeIn';
 
 /**
- * @interface PageProps
- * @description Parámetros asíncronos nativos de Next.js 15.
+ * @pilar VIII: Resiliencia de Build.
+ * Forzamos la naturaleza estática para que Vercel no intente acceder a runtime 'env'
+ * durante la generación de páginas.
  */
+export const dynamic = 'force-static';
+export const revalidate = false;
+
 type PageProps = {
   params: Promise<{ lang: Locale }>;
 };
 
-/**
- * GENERACIÓN DE RUTAS ESTÁTICAS (SSG)
- */
 export async function generateStaticParams() {
   return i18n.locales.map((locale) => ({ lang: locale }));
 }
 
-/**
- * GENERACIÓN DE METADATOS SOBERANOS
- * @pilar I: Visión Holística - SEO E-E-A-T.
- */
 export async function generateMetadata(props: PageProps): Promise<Metadata> {
   const { lang } = await props.params;
-  const dictionary = await getDictionary(lang);
+  
+  // Resiliencia en la recuperación de metadatos
+  const dictionary = await getDictionary(lang).catch(() => ({ 
+    legal: { privacy_policy: { meta_title: 'Privacidad', meta_description: '' } } 
+  }));
+  
   const t = dictionary.legal.privacy_policy;
 
   return { 
@@ -54,10 +56,6 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
   };
 }
 
-/**
- * APARATO: PrivacyPolicyPage
- * @description Renderiza el marco legal con tipografía editorial y herramientas de accesibilidad.
- */
 export default async function PrivacyPolicyPage(props: PageProps) {
   const { lang } = await props.params;
   const dictionary = await getDictionary(lang);
@@ -67,7 +65,6 @@ export default async function PrivacyPolicyPage(props: PageProps) {
     <main className="min-h-screen bg-[#050505] selection:bg-purple-500/30">
       <div className="container mx-auto max-w-4xl px-6 py-32 sm:py-48">
         
-        {/* 1. NAVEGACIÓN DE RETORNO */}
         <FadeIn delay={0.1} yOffset={-10}>
           <Link 
             href={`/${lang}`}
@@ -78,7 +75,6 @@ export default async function PrivacyPolicyPage(props: PageProps) {
           </Link>
         </FadeIn>
 
-        {/* 2. CABECERA NORMATIVA */}
         <header className="mb-16 border-b border-white/10 pb-12">
           <span className="text-[10px] font-bold tracking-[0.5em] text-primary uppercase mb-6 block">
             {t.badge_label}
@@ -96,7 +92,6 @@ export default async function PrivacyPolicyPage(props: PageProps) {
           </div>
         </header>
 
-        {/* 3. CUERPO LEGAL (Typography Optimized) */}
         <div className="prose prose-invert prose-lg max-w-none font-sans 
                         prose-headings:font-display prose-headings:font-bold prose-headings:text-zinc-100 prose-headings:tracking-tight
                         prose-p:text-zinc-400 prose-p:leading-relaxed prose-p:font-light
@@ -118,7 +113,6 @@ export default async function PrivacyPolicyPage(props: PageProps) {
           ))}
         </div>
 
-        {/* 4. ACCIONES DE ÉLITE (Paso Crítico .docs) */}
         <div className="mt-24 pt-12 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-12">
             <p className="text-[10px] font-mono text-zinc-800 uppercase tracking-[0.3em]">
                 {t.infrastructure_label}
@@ -127,7 +121,6 @@ export default async function PrivacyPolicyPage(props: PageProps) {
         </div>
       </div>
 
-      {/* Artefacto de atmósfera */}
       <div className="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_top_right,rgba(168,85,247,0.03),transparent_50%)] pointer-events-none" />
     </main>
   );

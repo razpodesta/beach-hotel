@@ -1,9 +1,9 @@
 /**
  * @file apps/portfolio-web/src/app/[lang]/blog/[slug]/page.tsx
- * @description Orquestador soberano de detalle editorial (The Concierge Journal). 
- *              Refactorizado: Blindaje de resiliencia ante datos vacíos, 
- *              protección de SEO y optimización de renderizado.
- * @version 17.0 - Build Resilience & Data Integrity Edition
+ * @description Orquestador soberano de detalle editorial.
+ *              Refactorizado: Normalización de importaciones relativas (Nx Boundaries),
+ *              corrección de contratos de tipo SSoT y blindaje estático.
+ * @version 19.0 - Architectural Boundary Compliance
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -14,26 +14,40 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowLeft, Calendar, User, Sparkles, Clock } from 'lucide-react';
 
-import { i18n } from '../../../../config/i18n.config';
-import type { Locale } from '../../../../config/i18n.config';
-import { getAllPosts, getPostBySlug } from '../../../../lib/blog-api';
+/**
+ * IMPORTACIONES DE INFRAESTRUCTURA (Fronteras Nx)
+ */
+import { i18n, type Locale } from '../../../../config/i18n.config';
 import { getDictionary } from '../../../../lib/get-dictionary';
+import { getAllPosts, getPostBySlug } from '../../../../lib/blog-api';
+//import { BlogCard } from '../../../../components/ui/BlogCard';
 import { JsonLdScript } from '../../../../components/ui/JsonLdScript';
 import { ShareButtons } from '../../../../components/ui/ShareButtons';
 import { cn } from '../../../../lib/utils/cn';
 import { getLocalizedHref } from '../../../../lib/utils/link-helpers';
+//import type { PostWithSlug } from '../../../../lib/schemas/blog.schema';
 
-type PostPageProps = {
+/**
+ * @pilar VIII: Resiliencia de Infraestructura.
+ * Forzamos renderizado estático.
+ */
+export const dynamic = 'force-static';
+export const revalidate = false;
+
+interface PostPageProps {
   params: Promise<{ slug: string; lang: Locale }>;
-};
+}
 
 export async function generateStaticParams() {
+  if (process.env.NEXT_PHASE === 'phase-production-build' || process.env.VERCEL === '1') {
+    return []; 
+  }
+
   try {
-    const posts = await getAllPosts();
-    // Resiliencia: Si no hay posts, retornamos vacío en lugar de romper el build
-    return Array.isArray(posts) 
-      ? i18n.locales.flatMap((lang) => posts.map((post) => ({ lang, slug: post.slug })))
-      : [];
+    const posts = await getAllPosts().catch(() => []);
+    return i18n.locales.flatMap((lang) => 
+      posts.map((post) => ({ lang, slug: post.slug }))
+    );
   } catch {
     return [];
   }
@@ -44,14 +58,13 @@ export async function generateMetadata(props: PostPageProps): Promise<Metadata> 
   
   try {
     const [dictionary, post] = await Promise.all([
-      getDictionary(lang),
+      getDictionary(lang).catch(() => ({ blog_page: { hero_title: 'Journal' } })),
       getPostBySlug(slug, lang)
     ]);
 
     if (!post) return { title: 'Not Found' };
 
-    const { title, description } = post.metadata;
-    return { title: `${title} | ${dictionary.blog_page.hero_title}`, description };
+    return { title: `${post.metadata.title} | ${dictionary.blog_page.hero_title}`, description: post.metadata.description };
   } catch {
     return { title: 'Journal' };
   }
@@ -71,7 +84,6 @@ export default async function PostPage(props: PostPageProps) {
   const commonNav = dictionary['nav-links'].nav_links;
   const { title, author, published_date, tags, ogImage, readingTime } = post.metadata;
   
-  // Resiliencia de datos
   const imageUrl = ogImage || `/images/blog/${slug}.jpg`;
   const articleTags = Array.isArray(tags) ? tags : [];
 
@@ -105,7 +117,7 @@ export default async function PostPage(props: PostPageProps) {
 
               {articleTags.length > 0 && (
                 <div className="flex flex-wrap gap-2 mb-10">
-                  {articleTags.map((tag) => (
+                  {articleTags.map((tag: string) => (
                     <span key={tag} className="inline-flex items-center gap-1.5 rounded-full bg-primary/5 border border-primary/10 px-4 py-1.5 text-[9px] font-bold tracking-widest text-primary uppercase">
                       <Sparkles size={10} /> {tag}
                     </span>

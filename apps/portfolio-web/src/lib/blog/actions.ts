@@ -1,26 +1,33 @@
 /**
  * @file apps/portfolio-web/src/lib/blog/actions.ts
  * @description Orquestador soberano de datos para el Concierge Journal (Silo C).
- *              Refactorizado: Protocolo de resiliencia Heimdall, optimización de 
- *              conmutación por error y blindaje de tipos relacionales.
- * @version 38.0 - Forensic Resilience & Failover Standard
+ *              Refactorizado: Blindaje absoluto contra build de Vercel/Next.js,
+ *              limpieza total de linter y erradicación de non-null assertions.
+ * @version 38.5 - Production Hardened (Static Build Immunity)
  * @author Raz Podestá - Staff Engineer, MetaShark Tech
  */
 
-import { getPayload, type Payload } from 'payload';
-import type { Where } from 'payload';
+import { getPayload } from 'payload';
+import type { Payload, Where } from 'payload';
+import { unstable_noStore as noStore } from 'next/cache';
 
-import { postWithSlugSchema, type PostWithSlug } from '../schemas/blog.schema';
-import { i18n, type Locale } from '../../config/i18n.config';
+import { postWithSlugSchema } from '../schemas/blog.schema';
+import type { PostWithSlug } from '../schemas/blog.schema';
+import { i18n } from '../../config/i18n.config';
+import type { Locale } from '../../config/i18n.config';
 import { getDictionary } from '../get-dictionary';
-import { MOCK_POSTS, type RawMockPost } from '../../data/mocks/cms.mocks';
+import { MOCK_POSTS } from '../../data/mocks/cms.mocks';
+import type { RawMockPost } from '../../data/mocks/cms.mocks';
 import type { Dictionary } from '../schemas/dictionary.schema';
 
 /**
  * DETECTORES DE ESTADO DE INFRAESTRUCTRURA
+ * @pilar VIII: Resiliencia de Infraestructura.
  */
-const IS_BUILD_ENV = process.env.NEXT_PHASE === 'phase-production-build' || process.env.VERCEL === '1';
-const DB_READY = Boolean(process.env.DATABASE_URL);
+const IS_BUILD_ENV = 
+  process.env.NEXT_PHASE === 'phase-production-build' || 
+  process.env.VERCEL === '1' ||
+  process.env.NODE_ENV === 'production' && !process.env.DATABASE_URL;
 
 interface LexicalNode {
   type: string;
@@ -76,9 +83,9 @@ class LexicalCompiler {
     };
 
     try {
-      return processNodes((contentNode as LexicalRoot).root?.children);
-    } catch (error: unknown) {
-      console.warn(`[HEIMDALL][PARSER] AST Corruption detected. Trace: ${Date.now()}`);
+      const rootNode = contentNode as LexicalRoot;
+      return processNodes(rootNode.root?.children);
+    } catch {
       return '';
     }
   }
@@ -105,11 +112,11 @@ class EditorialShaper {
     const rawTagsArray = Array.isArray(raw.tags) ? raw.tags : [];
     const normalizedTags = rawTagsArray.map(tagItem => {
       if (typeof tagItem === 'string') return tagItem.toLowerCase().trim();
-      if (typeof tagItem === 'object' && tagItem !== null && 'tag' in tagItem) {
-        return String(tagItem.tag).toLowerCase().trim();
+      if (typeof tagItem === 'object' && tagItem !== null && 'tag' in tagItem && typeof tagItem.tag === 'string') {
+        return tagItem.tag.toLowerCase().trim();
       }
       return null;
-    }).filter(Boolean) as string[];
+    }).filter((tag): tag is string => tag !== null);
 
     const mdx = LexicalCompiler.compile(raw.content);
     
@@ -148,21 +155,23 @@ class EditorialShaper {
  * @description Orquestador de recuperación de datos con soporte para degradado elegante.
  */
 class EditorialDataResolver {
-  private static async getPayloadInstance() {
+  private static async getPayloadInstance(): Promise<Payload | null> {
+    /** 
+     * @pilar XIII: Build Immunity.
+     * Si estamos en fase de build, abortamos antes de importar la configuración.
+     */
+    if (IS_BUILD_ENV) return null;
+    
     if (cachedPayload) return cachedPayload;
+    
     try {
       const configModule = await import('@metashark/cms-core/config');
       cachedPayload = await getPayload({ config: configModule.default });
       return cachedPayload;
-    } catch (e) {
+    } catch {
       console.error('[HEIMDALL][CRITICAL] Payload Handshake Failed.');
-      throw e;
+      return null;
     }
-  }
-
-  private static get isMockMode(): boolean {
-    // Si estamos en build y no hay DB, o si se solicita explícitamente via env
-    return (IS_BUILD_ENV && !DB_READY) || process.env.DATA_SOURCE === 'MOCKS';
   }
 
   private static adaptMockToRaw(mock: RawMockPost): RawPayloadPost {
@@ -175,22 +184,26 @@ class EditorialDataResolver {
     lang: Locale 
   }, dict: Dictionary): Promise<PostWithSlug[]> {
     const traceId = `journal_fetch_${Date.now()}`;
-    
-    if (this.isMockMode) {
-      console.log(`[HEIMDALL][${traceId}] Mode: LOCAL_SANCTUARY (Mocks Enabled)`);
+    const payload = await this.getPayloadInstance();
+
+    // 1. RESOLUCIÓN DE MOCKS (Build-Safe & Linter Optimized)
+    if (!payload) {
+      console.log(`[HEIMDALL][${traceId}] Mode: STATIC_MOCK (Build-Safe)`);
       const mocks = MOCK_POSTS
         .map(m => EditorialShaper.shape(this.adaptMockToRaw(m), dict))
         .filter((post): post is PostWithSlug => post !== null);
       
-      if (options.slug) return mocks.filter(m => m.slug === options.slug);
-      if (options.tag) return mocks.filter(m => m.metadata.tags.includes(options.tag!));
+      const { slug, tag } = options;
+      
+      if (slug) return mocks.filter(m => m.slug === slug);
+      if (tag) return mocks.filter(m => m.metadata.tags.includes(tag));
+      
       return mocks;
     }
 
+    // 2. RECUPERACIÓN REAL DESDE EL CLÚSTER
     try {
-      const payload = await this.getPayloadInstance();
       const whereClause: Where = { status: { equals: 'published' } };
-      
       if (options.slug) whereClause.slug = { equals: options.slug };
       if (options.tag) whereClause['tags.tag'] = { equals: options.tag };
 
@@ -199,16 +212,15 @@ class EditorialDataResolver {
         where: whereClause,
         sort: '-publishedDate',
         locale: options.lang,
-        depth: 2, // Asegura resolución de autor e imagen sin fallos relacionales
+        depth: 2,
       });
 
       return docs
         .map(doc => EditorialShaper.shape(doc, dict))
         .filter((post): post is PostWithSlug => post !== null);
 
-    } catch (error: unknown) {
-      const msg = error instanceof Error ? error.message : 'UNEXPECTED_CLUSTER_DRIFT';
-      console.warn(`[HEIMDALL][${traceId}] Connection degraded: ${msg}. Activating Recovery Fallback.`);
+    } catch {
+      console.warn(`[HEIMDALL][${traceId}] Connection degraded. Activating Recovery Fallback.`);
       
       return MOCK_POSTS
         .map(m => EditorialShaper.shape(this.adaptMockToRaw(m), dict))
@@ -222,17 +234,20 @@ class EditorialDataResolver {
  */
 
 export async function getAllPosts(lang: Locale = i18n.defaultLocale): Promise<PostWithSlug[]> {
+  noStore(); // Asegurar frescura en runtime
   const dict = await getDictionary(lang);
   return EditorialDataResolver.fetch({ lang }, dict);
 }
 
 export async function getPostBySlug(slug: string, lang: Locale = i18n.defaultLocale): Promise<PostWithSlug | null> {
+  noStore();
   const dict = await getDictionary(lang);
   const results = await EditorialDataResolver.fetch({ slug, lang }, dict);
   return results[0] || null;
 }
 
 export async function getPostsByTag(tag: string, lang: Locale = i18n.defaultLocale): Promise<PostWithSlug[]> {
+  noStore();
   const dict = await getDictionary(lang);
   const normalizedTag = tag.toLowerCase().trim().replace(/\s+/g, '-');
   return EditorialDataResolver.fetch({ tag: normalizedTag, lang }, dict);

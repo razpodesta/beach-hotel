@@ -1,9 +1,9 @@
 /**
  * @file apps/portfolio-web/src/app/[lang]/blog/page.tsx
  * @description Orquestador soberano del Hub Editorial (The Concierge Journal). 
- *              Refactorizado: Sincronización atmosférica Day-First, optimización
- *              de Core Web Vitals (LCP) y blindaje de tipos Next.js 15.
- * @version 15.0 - Atmosphere Responsive & LCP Optimized
+ *              Refactorizado: Blindaje de renderizado estático contra acceso a variables de entorno,
+ *              optimización de Core Web Vitals (LCP) y blindaje de tipos Next.js 15.
+ * @version 16.0 - Build Hardened & Atmosphere Responsive
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -12,7 +12,6 @@ import { Suspense } from 'react';
 
 /**
  * IMPORTACIONES DE INFRAESTRUCTRURA
- * @pilar V: Adherencia arquitectónica a las fronteras de Nx.
  */
 import { getDictionary } from '../../../lib/get-dictionary';
 import { getAllPosts } from '../../../lib/blog-api';
@@ -21,30 +20,28 @@ import { BlogCard } from '../../../components/ui/BlogCard';
 import { BlurText } from '../../../components/razBits/BlurText';
 import { JsonLdScript } from '../../../components/ui/JsonLdScript';
 import { type Locale, i18n } from '../../../config/i18n.config';
-//import { cn } from '../../../lib/utils/cn';
 
 /**
- * Contrato de propiedades con parámetros asíncronos (Next.js 15 Standard).
- * @pilar III: Seguridad de Tipos Absoluta.
+ * @pilar VIII: Resiliencia de Infraestructura.
+ * Forzamos la naturaleza estática para el Build de Vercel.
  */
+export const dynamic = 'force-static';
+export const revalidate = false;
+
 type BlogIndexProps = {
   params: Promise<{ lang: Locale }>;
 };
 
-/**
- * GENERACIÓN DE RUTAS ESTÁTICAS (SSG)
- */
 export async function generateStaticParams() {
   return i18n.locales.map((lang: Locale) => ({ lang }));
 }
 
-/**
- * ORQUESTADOR DE METADATOS SOBERANO
- * @pilar I: Visión Holística - SEO E-E-A-T.
- */
 export async function generateMetadata(props: BlogIndexProps): Promise<Metadata> {
   const { lang } = await props.params;
-  const dictionary = await getDictionary(lang);
+  const dictionary = await getDictionary(lang).catch(() => ({ 
+    blog_page: { page_title: 'Journal', page_description: '' },
+    header: { personal_portfolio: 'Beach Hotel' }
+  }));
   const t = dictionary.blog_page;
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://beachhotelcanasvieiras.com';
 
@@ -62,21 +59,21 @@ export async function generateMetadata(props: BlogIndexProps): Promise<Metadata>
   };
 }
 
-/**
- * APARATO PRINCIPAL: BlogIndexPage
- * @description Orquesta el Hub editorial garantizando carga paralela y transparencia atmosférica.
- */
 export default async function BlogIndexPage(props: BlogIndexProps) {
   const { lang } = await props.params;
 
   /**
-   * ORQUESTACIÓN PARALELA DE RECURSOS (Pilar X)
-   * Recupera diccionarios y posts de forma concurrente para minimizar el TTFB.
+   * ORQUESTACIÓN PARALELA DE RECURSOS
+   * @pilar X: TTFB Minimization.
    */
   const [dictionary, posts] = await Promise.all([
     getDictionary(lang),
+    /**
+     * @pilar VIII: Guardia de Resiliencia.
+     * getAllPosts ya contiene la lógica de fallback a Mocks si el clúster falla
+     * o si estamos en entorno de build.
+     */
     getAllPosts(lang).catch((error) => {
-      /** @pilar IV: Protocolo Heimdall - Registro de anomalía de sincronía */
       console.error('[HEIMDALL][CRITICAL] Editorial link failed. Entering Local Sanctuary mode.', error);
       return [] as PostWithSlug[]; 
     })
@@ -85,9 +82,6 @@ export default async function BlogIndexPage(props: BlogIndexProps) {
   const t = dictionary.blog_page;
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://beachhotelcanasvieiras.com';
 
-  /**
-   * ESTRUCTURA DE DATOS PARA GOOGLE (JSON-LD)
-   */
   const blogHubSchema = {
     "@context": "https://schema.org",
     "@type": "Blog",
@@ -112,15 +106,9 @@ export default async function BlogIndexPage(props: BlogIndexProps) {
     <>
       <JsonLdScript data={blogHubSchema} />
       
-      {/* 
-          MODO ATMOSFÉRICO ACTIVO:
-          Cambiamos bg-[#050505] por bg-background para permitir Modo Día/Noche.
-      */}
       <main className="min-h-screen bg-background text-foreground selection:bg-primary/30 transition-colors duration-1000">
         
-        {/* --- 1. SECCIÓN HERO (Editorial Awareness) --- */}
         <section className="relative overflow-hidden pt-40 pb-20 border-b border-border/50">
-          {/* Brillo adaptativo basado en el color primario de marca */}
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,var(--color-primary),transparent_60%)] pointer-events-none opacity-[0.05]" />
           
           <div className="container relative z-10 mx-auto px-6 text-center">
@@ -143,10 +131,8 @@ export default async function BlogIndexPage(props: BlogIndexProps) {
           </div>
         </section>
 
-        {/* --- 2. GRID EDITORIAL (Consideration & Engagement) --- */}
         <div className="container mx-auto px-6 py-24 sm:py-32">
           {!hasPosts ? (
-               /* ESTADO DE RESILIENCIA (Pilar VIII) */
                <div className="text-center py-48 border border-dashed border-border rounded-[4rem] bg-surface/30 backdrop-blur-sm animate-in fade-in zoom-in duration-1000">
                   <p className="text-muted-foreground font-mono text-[10px] uppercase tracking-[0.5em] animate-pulse">
                      {t.empty_state}
@@ -154,7 +140,6 @@ export default async function BlogIndexPage(props: BlogIndexProps) {
                </div>
           ) : (
             <>
-              {/* Artículo Destacado: Enfoque en Performance LCP */}
               {featuredPost && (
                 <section className="mb-32 animate-in fade-in slide-in-from-bottom-4 duration-1000">
                   <header className="flex items-center gap-4 text-[10px] font-bold text-muted-foreground uppercase tracking-[0.3em] mb-12 border-b border-border/50 pb-8">
@@ -167,12 +152,11 @@ export default async function BlogIndexPage(props: BlogIndexProps) {
                       slug={featuredPost.slug}
                       lang={lang}
                       ctaText={t.read_more_cta}
-                      priority={true} // Prioridad máxima de carga
+                      priority={true}
                   />
                 </section>
               )}
 
-              {/* Listado Secundario: Grid de Alta Fidelidad */}
               <section className="animate-in fade-in duration-1000 delay-300">
                 <header className="flex items-center justify-between mb-16 border-b border-border/50 pb-8">
                   <h2 className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.3em]">
@@ -197,7 +181,6 @@ export default async function BlogIndexPage(props: BlogIndexProps) {
           )}
         </div>
 
-        {/* Decoración Atmosférica adaptativa */}
         <div className="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_bottom_right,var(--color-accent),transparent_40%)] pointer-events-none opacity-[0.02]" />
       </main>
     </>

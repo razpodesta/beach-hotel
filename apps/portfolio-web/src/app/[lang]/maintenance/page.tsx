@@ -1,9 +1,8 @@
 /**
  * @file apps/portfolio-web/src/app/[lang]/maintenance/page.tsx
  * @description Página de Mantenimiento Programado.
- *              Refactorizado: Purga de generateStaticParams para evitar 
- *              colisiones de worker threads en Next.js 15.
- * @version 6.1 - Build-Ready
+ *              Refactorizado: Forzado de generación estática para máxima resiliencia.
+ * @version 6.2 - Build-Safe & Static Forced
  * @author Staff Engineer - MetaShark Tech
  */
 
@@ -14,13 +13,20 @@ import { getDictionary } from '../../../lib/get-dictionary';
 import { type Locale } from '../../../config/i18n.config';
 import { FadeIn } from '../../../components/ui/FadeIn';
 
+/**
+ * @pilar VIII: Resiliencia de Infraestructura.
+ * Forzamos que esta página sea estática para que no dependa de ningún worker de runtime.
+ */
+export const dynamic = 'force-static';
+export const revalidate = false;
+
 type MaintenancePageProps = {
   params: Promise<{ lang: Locale }>;
 };
 
 export async function generateMetadata(props: MaintenancePageProps): Promise<Metadata> {
-  const params = await props.params;
-  const dictionary = await getDictionary(params.lang);
+  const { lang } = await props.params;
+  const dictionary = await getDictionary(lang);
   const t = dictionary.maintenance;
 
   return { 
@@ -31,8 +37,8 @@ export async function generateMetadata(props: MaintenancePageProps): Promise<Met
 }
 
 export default async function MaintenancePage(props: MaintenancePageProps) {
-  const params = await props.params;
-  const dict = await getDictionary(params.lang);
+  const { lang } = await props.params;
+  const dict = await getDictionary(lang);
   const t = dict.maintenance;
 
   return (

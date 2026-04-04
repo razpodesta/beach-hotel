@@ -3,13 +3,15 @@
  * @description Orquestador Soberano de la Cabecera (NavDesk). 
  *              Implementa las Cápsulas de Identidad Boutique, conciencia de scroll
  *              y gatillos para el sistema de navegación móvil.
- * @version 19.0 - Responsive Identity & Visibility Orchestration
+ *              Refactorizado: Resolución de TS2322 (Index Signature Mismatch),
+ *              higiene de linter y erradicación de castings dinámicos de claves.
+ * @version 20.0 - Type-Safe Dictionary Sync & Linter Pure
  * @author Raz Podestá - MetaShark Tech
  */
 
 'use client';
 
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -17,12 +19,9 @@ import {
   Menu, 
   Globe, 
   ChevronDown, 
-  //UserPlus, 
-  //LogIn, 
   User,
   X
 } from 'lucide-react';
-//import type { LucideIcon } from 'lucide-react';
 
 /**
  * IMPORTACIONES DE INFRAESTRUCTRURA
@@ -35,15 +34,14 @@ import { ThemeToggle } from '../ui/ThemeToggle';
 import { ColorWaveBar } from '../ui/ColorWaveBar';
 import { DropdownMenu } from '../ui/DropdownMenu';
 import { NestedDropdownContent } from '../ui/NestedDropdownContent';
-import { mainNavStructure } from '../../lib/nav-links';
-import type { NavItem } from '../../lib/nav-links';
+import { mainNavStructure, type NavItem } from '../../lib/nav-links';
 import { getLocalizedHref } from '../../lib/utils/link-helpers';
-import { i18n, isValidLocale } from '../../config/i18n.config';
-import type { Locale } from '../../config/i18n.config';
+import { i18n, isValidLocale, type Locale } from '../../config/i18n.config';
 import type { Dictionary } from '../../lib/schemas/dictionary.schema';
 
 /**
  * @interface HeaderProps
+ * @pilar III: Seguridad de Tipos Absoluta.
  */
 interface HeaderProps {
   /** Diccionario maestro nivelado */
@@ -80,6 +78,7 @@ const HeaderBrand = ({ currentLang }: { currentLang: Locale }) => (
 
 /**
  * APARATO PRINCIPAL: Header
+ * @description Orquesta la navegación principal y los módulos de identidad.
  */
 export function Header({ dictionary, className }: HeaderProps) {
   const pathname = usePathname();
@@ -95,22 +94,42 @@ export function Header({ dictionary, className }: HeaderProps) {
     toggleAuthModal 
   } = useUIStore();
 
-  // Control de scroll optimizado (Pilar X)
+  /**
+   * MOTOR DE CONCIENCIA DE SCROLL (Pilar X)
+   */
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  /**
+   * RESOLUCIÓN SOBERANA DE IDIOMA
+   */
   const currentLang = useMemo(() => {
     const segments = pathname?.split('/') ?? [];
     return isValidLocale(segments[1]) ? (segments[1] as Locale) : i18n.defaultLocale;
   }, [pathname]);
 
-  const labels = useMemo(() => ({ 
-    ...dictionary.header, 
-    ...dictionary['nav-links'].nav_links 
-  }), [dictionary]);
+  /**
+   * FUSIÓN DE DICCIONARIOS (Resolución TS2322)
+   * @description Cast a Record<string, string> garantiza la compatibilidad
+   * con NestedDropdownContent sin romper la inferencia estricta.
+   */
+  const labels: Record<string, string> = useMemo(() => {
+    return { 
+      ...dictionary.header, 
+      ...dictionary['nav-links'].nav_links 
+    } as Record<string, string>;
+  }, [dictionary]);
+
+  /**
+   * PROTOCOLO HEIMDALL: Telemetría de Acción
+   */
+  const handleAuthInteraction = useCallback((action: 'login' | 'join') => {
+    console.log(`[HEIMDALL][UX] Access Gateway Triggered: ${action.toUpperCase()}`);
+    toggleAuthModal();
+  }, [toggleAuthModal]);
 
   return (
     <header 
@@ -133,12 +152,14 @@ export function Header({ dictionary, className }: HeaderProps) {
               {mainNavStructure.map((nav: NavItem) => {
                 const localizedHref = getLocalizedHref(nav.href ?? '/', currentLang);
                 const isActive = pathname === localizedHref;
-                const label = labels[nav.labelKey as keyof typeof labels] || nav.labelKey;
                 
-                if (nav.children?.length) {
+                // Extrae la etiqueta de forma segura gracias a Record<string, string>
+                const label = labels[nav.labelKey] || nav.labelKey;
+                
+                if (nav.children && nav.children.length > 0) {
                   return (
                     <DropdownMenu key={nav.labelKey} trigger={
-                      <button className="flex items-center gap-2 px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest text-foreground/60 hover:bg-surface hover:text-primary transition-all group">
+                      <button className="flex items-center gap-2 px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest text-foreground/60 hover:bg-surface hover:text-primary transition-all group outline-none focus-visible:ring-2 focus-visible:ring-primary">
                         {label}
                         <ChevronDown size={12} className="opacity-30 group-hover:translate-y-0.5 transition-transform" />
                       </button>
@@ -153,7 +174,7 @@ export function Header({ dictionary, className }: HeaderProps) {
                     key={nav.labelKey} 
                     href={localizedHref} 
                     className={cn(
-                      "relative flex items-center gap-2 px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all duration-500",
+                      "relative flex items-center gap-2 px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all duration-500 outline-none focus-visible:ring-2 focus-visible:ring-primary",
                       isActive ? "text-primary bg-primary/10" : "text-foreground/60 hover:bg-surface hover:text-primary"
                     )}
                   >
@@ -173,7 +194,8 @@ export function Header({ dictionary, className }: HeaderProps) {
                   <motion.button
                     key="auth-portal"
                     initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }}
-                    className="flex items-center gap-3 px-6 py-2 rounded-full bg-primary text-white text-[10px] font-bold uppercase tracking-widest shadow-lg"
+                    onClick={() => console.log('[HEIMDALL][UX] Accessing Sanctuary Portal')}
+                    className="flex items-center gap-3 px-6 py-2 rounded-full bg-primary text-white text-[10px] font-bold uppercase tracking-widest shadow-lg outline-none focus-visible:ring-2 focus-visible:ring-accent"
                   >
                     <User size={14} />
                     {labels.portal}
@@ -181,14 +203,14 @@ export function Header({ dictionary, className }: HeaderProps) {
                 ) : (
                   <motion.div key="auth-guest" className="flex items-center gap-1" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                     <button 
-                      onClick={toggleAuthModal}
-                      className="px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-foreground transition-all"
+                      onClick={() => handleAuthInteraction('login')}
+                      className="px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-foreground transition-all outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-full"
                     >
                       {labels.login}
                     </button>
                     <button 
-                      onClick={toggleAuthModal}
-                      className="px-6 py-2 rounded-full bg-foreground text-background text-[10px] font-bold uppercase tracking-widest hover:bg-primary hover:text-white transition-all shadow-xl"
+                      onClick={() => handleAuthInteraction('join')}
+                      className="px-6 py-2 rounded-full bg-foreground text-background text-[10px] font-bold uppercase tracking-widest hover:bg-primary hover:text-white transition-all shadow-xl outline-none focus-visible:ring-2 focus-visible:ring-primary"
                     >
                       {labels.join}
                     </button>
@@ -207,11 +229,12 @@ export function Header({ dictionary, className }: HeaderProps) {
                 onClick={toggleVisitorHud}
                 disabled={!hasHydrated}
                 className={cn(
-                  "p-2.5 rounded-full transition-all duration-500", 
+                  "p-2.5 rounded-full transition-all duration-500 outline-none focus-visible:ring-2 focus-visible:ring-primary", 
                   hasHydrated && isVisitorHudOpen 
                     ? "text-primary bg-primary/10 shadow-lg border border-primary/20" 
                     : "text-muted-foreground hover:bg-surface border border-transparent"
                 )}
+                aria-label="Toggle Telemetry HUD"
               >
                 <Globe size={20} className={cn(hasHydrated && isVisitorHudOpen && "animate-spin-slow")} />
               </button>
@@ -220,8 +243,8 @@ export function Header({ dictionary, className }: HeaderProps) {
             {/* TRIGGER MÓVIL (Takeover) */}
             <button 
               onClick={toggleMobileMenu} 
-              className="lg:hidden p-3 rounded-full hover:bg-surface transition-all active:scale-90 relative z-60"
-              aria-label={isMobileMenuOpen ? "Cerrar" : "Menú"}
+              className="lg:hidden p-3 rounded-full hover:bg-surface transition-all active:scale-90 relative z-60 outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              aria-label={isMobileMenuOpen ? "Cerrar menú" : "Abrir menú"}
             >
               <AnimatePresence mode="wait">
                 {isMobileMenuOpen ? (
@@ -239,6 +262,7 @@ export function Header({ dictionary, className }: HeaderProps) {
         </div>
       </div>
       
+      {/* SELLO DE MARCA (Wave Bar) */}
       <AnimatePresence>
         {!isScrolled && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>

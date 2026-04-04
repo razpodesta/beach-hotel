@@ -1,56 +1,36 @@
-/**
- * @file apps/portfolio-web/tsconfig.json
- * @description Orquestador de tipos para la aplicación Web.
- *              Refactorizado: Sincronización de flags de depreciación (v5.0) 
- *              para compatibilidad garantizada con el Build Worker de Vercel.
- * @version 7.3 - Build Success & IDE Sync Edition
- * @author Raz Podestá - MetaShark Tech
- */
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    /**
-     * @pilar XIII: Sincronización de Infraestructura.
-     * Se establece en "5.0" para silenciar el aviso de 'baseUrl' en desuso.
-     * Este valor es aceptado tanto por el IDE como por el motor de build de Vercel.
-     */
     "ignoreDeprecations": "5.0",
-    
     "composite": true,
     "incremental": true,
     "tsBuildInfoFile": "../../dist/apps/portfolio-web/tsconfig.tsbuildinfo",
-    
-    /** 
-     * PILAR XIII: PUREZA DE SOURCE
-     * Delegamos la emisión de archivos a Next.js (SWC).
-     */
     "noEmit": true,
-
     "jsx": "preserve",
     "plugins": [
-      {
-        "name": "next"
-      }
-    ]
+      { "name": "next" }
+    ],
+    "paths": {
+      "@/*": ["./src/*"],
+      "@payloadcms/next/importMap": ["./.next/types/payload-import-map.js"],
+      "@payloadcms/next/views/*": ["../../node_modules/@payloadcms/next/dist/views/*"]
+    }
   },
   "include": [
     "next-env.d.ts", 
     ".next/types/**/*.ts",
     "src/**/*.ts", 
     "src/**/*.tsx",
-    /** 
-     * PROTOCOLO SOURCE-FIRST:
-     * El Typechecker debe validar los paquetes compartidos directamente
-     * desde su origen para garantizar la integridad del ecosistema.
-     */
-    "../../packages/**/src/**/*.ts",
-    "../../packages/**/src/**/*.tsx"
+    "../../packages/**/*.ts",
+    "../../packages/**/*.tsx"
   ],
   "exclude": [
     "node_modules", 
-    "dist",
-    "../../dist",
-    ".next",
-    "out"
+    "dist", 
+    "../../dist", 
+    ".next", 
+    "out", 
+    "**/*.spec.ts",
+    "**/*.spec.tsx"
   ]
 }

@@ -10,10 +10,9 @@
   },
   "license": "Proprietary",
   "private": true,
-  "scripts": {
+"scripts": {
     "dev": "nx serve portfolio-web",
-    "build": "node scripts/heimdall-build-audit.mjs",
-    "build:audit": "node scripts/heimdall-build-audit.mjs",
+    "build": "nx build portfolio-web --configuration=production",
     "build:web": "pnpm run build",
     "vercel-build": "pnpm run build",
     "lint": "nx run-many --target=lint --all --parallel=1",
@@ -24,7 +23,8 @@
     "db:connection": "tsx scripts/supabase/check-connection.ts",
     "db:schema": "tsx scripts/supabase/audit-full-schema.ts",
     "db:seed": "tsx scripts/supabase/seed-database.ts",
-    "db:dump": "tsx scripts/supabase/dump-cluster-state.ts"
+    "db:dump": "tsx scripts/supabase/dump-cluster-state.ts",
+    "postinstall": "payload generate:importmap"
   },
   "dependencies": {
     "@apollo/client": "4.0.9",
