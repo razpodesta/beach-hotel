@@ -3,21 +3,28 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/portfolio-web/src",
   "projectType": "application",
-  "tags": ["platform:web", "scope:metashark", "type:app"],
+  "tags": [
+    "platform:web", 
+    "scope:metashark", 
+    "type:app"
+  ],
   "targets": {
     "prebuild": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": [
-          "tsx scripts/prebuild-portfolio-web.ts",
-          "payload generate:importmap"
-        ],
-        "parallel": false,
+        "command": "tsx scripts/generate-payload-artifacts.ts",
         "color": true
       },
-      "inputs": ["{projectRoot}/src/messages/**/*.json"],
-      "outputs": ["{projectRoot}/src/dictionaries/*.json"],
-      "cache": true
+      "inputs": [
+        "{projectRoot}/src/messages/**/*.json",
+        "{workspaceRoot}/packages/cms/core/src/payload.config.ts"
+      ],
+      "outputs": [
+        "{projectRoot}/src/dictionaries/*.json",
+        "{workspaceRoot}/packages/cms/core/src/payload-types.ts"
+      ],
+      "cache": true,
+      "description": "Sincronización del ecosistema: Ensamblaje de diccionarios e inyección de tipos del CMS."
     },
     "build": {
       "executor": "@nx/next:build",
@@ -30,7 +37,8 @@
         "production": {}
       },
       "dependsOn": ["prebuild"],
-      "cache": true
+      "cache": true,
+      "description": "Compilación del orquestador web (Next.js 15)."
     },
     "serve": {
       "executor": "@nx/next:server",

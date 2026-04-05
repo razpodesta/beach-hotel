@@ -1,13 +1,12 @@
 /**
  * @file packages/cms/core/src/payload.config.ts
- * @version 42.1 - Build-Safe ImportMap Resolution
- * @description Orquestador de configuración Payload 3.0. 
- *              Refactorizado para resolver conflictos de resolución de módulos en el monorepo Nx
- *              y garantizar la generación determinista de tipos e importMap.
+ * @version 43.1 - Enterprise Build-Safe Standard
+ * @description Orquestador central del Ecosistema MetaShark.
+ *              Optimizado para ciclos de vida de build, generación de tipos 
+ *              determinista y resiliencia de conexión.
  * @author Staff Engineer - MetaShark Tech
  */
 
-// --- FIX CRÍTICO: Handshake SSL para Vercel Build Worker ---
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 import { buildConfig } from 'payload';
@@ -20,9 +19,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 
-/**
- * IMPORTACIONES DE COLECCIONES (Arquitectura Atómica)
- */
+// Importación directa de colecciones
 import { Ingestions } from './collections/Ingestions';
 import { Subscribers } from './collections/Subscribers';
 import { Agencies } from './collections/Agencies';
@@ -41,7 +38,9 @@ import { DynamicRoutes } from './collections/DynamicRoutes';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// --- LÓGICA DE DETECCIÓN DE MODO ---
 const isProduction = process.env.NODE_ENV === 'production';
+const isGeneration = process.env.PAYLOAD_GENERATE === 'true';
 
 export default buildConfig({
   serverURL: process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000',
@@ -49,33 +48,31 @@ export default buildConfig({
   
   admin: {
     user: 'users',
-    /** 
-     * @fix Determinismo de ImportMap: 
-     * Apuntamos al directorio actual para asegurar que Payload 
-     * encuentre el contexto del monorepo.
-     */
     importMap: { 
       baseDir: path.resolve(__dirname),
     },
-    meta: { titleSuffix: '- MetaShark Enterprise' }
+    meta: { titleSuffix: '- MetaShark Enterprise Operations' }
   },
 
+  /**
+   * MOTOR DE BASE DE DATOS SOBERANO
+   * @fix TS2322: Se utiliza un adaptador PostgreSQL incluso en modo generación, 
+   * pero con la cadena de conexión vacía y 'push: false' para evitar cualquier 
+   * intento de conexión real o migración accidental.
+   */
   db: postgresAdapter({
     pool: {
-      connectionString: process.env.DATABASE_URL || '',
-      max: 10,
-      idleTimeoutMillis: 30000,
-      ssl: { 
-        rejectUnauthorized: false 
-      },
+      connectionString: isGeneration ? 'postgres://dummy:dummy@localhost:5432/dummy' : (process.env.DATABASE_URL || ''),
+      max: isGeneration ? 1 : 10,
+      ssl: { rejectUnauthorized: false },
     },
     idType: 'uuid',
-    push: !isProduction,
+    push: !isProduction && !isGeneration,
   }),
 
   email: process.env.SMTP_USER ? nodemailerAdapter({
     defaultFromAddress: 'concierge@metashark.tech',
-    defaultFromName: 'Beach Hotel Sanctuary',
+    defaultFromName: 'Enterprise Hospitality Concierge',
   }) : undefined,
 
   collections: [
@@ -98,11 +95,6 @@ export default buildConfig({
   editor: lexicalEditor({}),
   
   typescript: {
-    /** 
-     * @fix: Generación de tipos determinista. 
-     * Apuntar directamente al directorio raíz del paquete facilita 
-     * la resolución por parte del compilador global.
-     */
     outputFile: path.resolve(__dirname, 'payload-types.ts'),
   },
 
