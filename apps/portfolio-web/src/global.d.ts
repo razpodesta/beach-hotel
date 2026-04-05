@@ -1,44 +1,50 @@
 /**
  * @file apps/portfolio-web/src/global.d.ts
- * @description Declaraciones de tipos globales para módulos no-TS.
- *              Refactorizado: Erradicación total del tipo 'any' y de 
- *              bypasses del linter. Tipado estricto para SVG y CSS.
- * @version 3.0 - Zero-Any Compliance Standard
+ * @description Escudo de Infraestructura Global y Declaraciones Ambientales.
+ *              Refactorizado: Declaración pura de 'server-only' para erradicar 
+ *              el error TS2882/TS2664 y blindaje de entorno NodeJS.
+ * @version 4.1 - Master Infrastructure Shield
  * @author Staff Engineer - MetaShark Tech
  */
 
+/** 
+ * @fix TS2882 / TS2664: Definición ambiental pura.
+ * Al estar en un archivo de declaración global sin imports, 
+ * TypeScript lo registra en el ámbito global del compilador.
+ */
+declare module 'server-only' {}
+
 declare module '*.svg' {
   import type { FC, SVGProps } from 'react';
-  
-  /** 
-   * Representación estándar exportada para compatibilidad con Next/Image.
-   * Usualmente una URL en formato string.
-   */
   const content: string;
-  
-  /** 
-   * Representación como Componente React (vía SVGR plugin).
-   * Blindado con propiedades nativas de SVG para Intellisense.
-   */
   export const ReactComponent: FC<SVGProps<SVGSVGElement>>;
-  
   export default content;
 }
 
-/** 
- * @description Permite la importación de archivos CSS globales.
- *              Esto silencia el error TS2307 en layout.tsx durante procesos Nx.
- */
 declare module '*.css' {
   const content: Record<string, string>;
   export default content;
 }
 
-/** 
- * @description Soporte estricto para CSS Modules.
- *              Las clases inyectadas son inmutables (Readonly).
- */
 declare module '*.module.css' {
   const classes: Readonly<Record<string, string>>;
   export default classes;
+}
+
+declare namespace NodeJS {
+  interface ProcessEnv {
+    NODE_ENV: 'development' | 'production' | 'test';
+    NEXT_PHASE: string;
+    VERCEL: string;
+    DATABASE_URL: string;
+    PAYLOAD_SECRET: string;
+    NEXT_PUBLIC_BASE_URL: string;
+    PAYLOAD_GENERATE: 'true' | 'false' | undefined;
+    NEXT_PUBLIC_SUPABASE_URL: string;
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: string;
+    RESEND_API_KEY: string;
+    S3_ENDPOINT: string;
+    S3_BUCKET: string;
+    NEXT_PUBLIC_AUTH_BYPASS: 'true' | 'false' | undefined;
+  }
 }

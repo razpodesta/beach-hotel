@@ -104,6 +104,28 @@ Cero Regresiones: Se mantuvo la compatibilidad con los esquemas de Zod (SSoT) en
 
 ---
 
+Fecha: 05/04/2026
+Estado: Intervención concluida / Ecosistema estabilizado en entorno de Build
+
+1. Diagnóstico Forense (La Problemática)
+El proyecto enfrentaba una colisión arquitectónica fatal durante el proceso de prerendering de Next.js 15:
+Fuga de Contexto: El uso de not-found.tsx en la raíz absoluta sin un Shell HTML causaba un fallback a pages/_document.js (Legacy), que a su vez detonaba el error <Html> should not be imported outside of pages/_document al chocar con las dependencias de Payload 3.0.
+Bloqueo de Build: El compilador de TypeScript (Nx/TSC) y Webpack fallaban al intentar resolver tipos dinámicos de Payload (importMap, AdminView) que no existían físicamente antes de iniciar el build.
+Inconsistencias de Tipo: Conflictos entre NodeJS.ProcessEnv y las variables de entorno inyectadas durante la generación de artefactos, junto con violaciones de la regla no-explicit-any del Linter.
+
+2. Acciones Ejecutadas (Cirugía de Blindaje)
+Creación de Paracaídas Estáticos: Se inyectaron app/not-found.tsx y app/global-error.tsx con un Shell HTML soberano (<html>, <body>, fontVariables). Esto aísla el App Router y evita el fallback al Pages Router.
+Automatización Industrial (Pipeline): Se creó scripts/generate-payload-artifacts.ts para orquestar la generación de tipos e importMap de forma aislada, desactivando el adaptador de base de datos (db: undefined) para prevenir cuelgues durante la compilación.
+Sincronización de Nx: Refactorización de project.json para ejecutar la generación de artefactos de Payload antes de cada paso de build o typecheck.
+Blindaje de Tipos (Linter Pure): Se eliminaron todos los any explícitos en las declaraciones de módulos dinámicos (payload-types.d.ts) y se normalizaron los entornos de ejecución en scripts CLI para cumplir con VerbatimModuleSyntax.
+
+3. Justificación Arquitectónica
+Por qué not-found.tsx global: En Next.js 15, las rutas de error raíz requieren su propio layout para evitar la contaminación cruzada con el router antiguo.
+Por qué db: isGeneration ? undefined: Payload intenta inicializar el driver de Postgres al arrancar la configuración; esto es innecesario para generar tipos y es la causa principal de timeout en entornos de CI/CD sin acceso a base de datos.
+
+---
+
+
 
 
 

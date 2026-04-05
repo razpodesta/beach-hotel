@@ -1,60 +1,95 @@
 /**
  * @file packages/cms/core/src/collections/FlashSales.ts
  * @description Enterprise Revenue Catalyst Engine (Silo A).
- *              Orquesta la gestión de inventario promocional con lógica de
- *              agotamiento de stock y expiración cronológica automatizada.
- *              Implementa validación perimetral para evitar inconsistencias de inventario.
- * @version 4.1 - Strict Payload 3.0 Compliance (Fix TS2353)
+ *              Orquesta la gestión de inventario táctico con lógica de urgencia,
+ *              expiración cronológica y control de agotamiento automatizado.
+ *              Implementa telemetría Heimdall v2.0 para auditoría de conversión.
+ * @version 5.0 - Forensic Revenue Standard (Heimdall Injected)
  * @author Staff Engineer - MetaShark Tech
  */
 
-import { type CollectionConfig } from 'payload';
+import { 
+  type CollectionConfig, 
+  type CollectionBeforeChangeHook, 
+  type CollectionAfterChangeHook 
+} from 'payload';
 import { multiTenantReadAccess, multiTenantWriteAccess } from './Access';
 
+/**
+ * CONSTANTES DE TELEMETRÍA (Protocolo Heimdall)
+ */
+const C = {
+  reset: '\x1b[0m',
+  cyan: '\x1b[36m',
+  green: '\x1b[32m',
+  yellow: '\x1b[33m',
+  magenta: '\x1b[35m',
+  bold: '\x1b[1m',
+  blue: '\x1b[34m',
+  red: '\x1b[31m'
+};
+
+const collectionStart = performance.now();
+console.log(`${C.magenta}  [DNA][LOAD] Building Collection: FLASH SALES (Revenue Catalyst)...${C.reset}`);
+
+/**
+ * APARATO: FlashSales
+ * @description Gestión de ofertas de alta velocidad con gating por audiencia.
+ */
 export const FlashSales: CollectionConfig = {
   slug: 'flash-sales',
   admin: {
     useAsTitle: 'title',
     group: 'Revenue Operations',
-    defaultColumns: ['title', 'currentStock', 'status', 'expiresAt', 'tenant'],
-    description: 'Gestión automatizada de ofertas relámpago y catalizadores de conversión.',
+    defaultColumns: ['title', 'status', 'currentStock', 'audience', 'tenant'],
+    description: 'Gestão automatizada de ofertas de curta duração e alta conversão.',
   },
 
   /**
-   * REGLAS DE ACCESO SOBERANO
+   * REGLAS DE ACCESO (Sovereign Security)
+   * @pilar VIII: Resiliencia y Aislamiento Perimetral.
    */
   access: {
     read: multiTenantReadAccess,
-    create: ({ req: { user } }) => !!user,
+    create: ({ req: { user } }) => !!user && (user.role === 'admin' || user.role === 'developer'),
     update: multiTenantWriteAccess,
-    delete: multiTenantWriteAccess,
+    delete: ({ req: { user } }) => user?.role === 'developer', // Preservación de histórico de Revenue
   },
 
   /**
-   * GUARDIANES DE CICLO DE VIDA (Business Logic Hooks)
+   * GUARDIANES DE CICLO DE VIDA (Catalyst Hooks)
    */
   hooks: {
+    /**
+     * HOOK: beforeChange
+     * @description Orquesta la automatización de estados, trazabilidad y blindaje perimetral.
+     */
     beforeChange: [
-      ({ data, operation, req }) => {
-        // 1. Garantía de Perímetro (Tenant Inheritance segura)
+      (async ({ data, operation, req, originalDoc }) => {
+        const start = performance.now();
+        const traceId = `fls_${Date.now().toString(36)}`;
+        
+        console.log(`${C.blue}    [HEIMDALL][CATALYST][START] Evaluating Flash Strategy | ID: ${traceId}${C.reset}`);
+
+        // 1. Handshake de Perímetro Multi-Tenant
         if (operation === 'create' && req.user && !data.tenant) {
           data.tenant = typeof req.user.tenant === 'object' && req.user.tenant !== null 
             ? req.user.tenant.id 
             : req.user.tenant;
         }
 
-        // 2. Motor de Slugificación (UX Automation)
-        if (data.title && !data.slug) {
+        // 2. Inteligencia de Slugificación
+        if (data.title && typeof data.title === 'string' && !data.slug) {
           data.slug = data.title.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
         }
 
         // 3. Auditoría de Integridad de Inventario
         if (data.currentStock > data.totalInventory) {
-          console.warn(`[REVENUE-AUDIT] Correction applied: Stock cannot exceed total capacity.`);
+          console.warn(`       ${C.yellow}[CORRECTION]${C.reset} currentStock capped at totalInventory.`);
           data.currentStock = data.totalInventory;
         }
 
-        // 4. Motor de Estado Dinámico (Automated Status)
+        // 4. Motor de Estados Automatizado (Business Logic Pulse)
         const now = new Date();
         const expirationDate = new Date(data.expiresAt);
 
@@ -62,21 +97,34 @@ export const FlashSales: CollectionConfig = {
           data.status = 'expired';
         } else if (data.currentStock === 0) {
           data.status = 'sold_out';
-        } else if (!data.status || data.status === 'draft') {
-          // Si no es borrador, por defecto queda activo si hay stock y tiempo
-          data.status = 'active';
+        } else if (operation === 'update' && originalDoc?.status === 'draft' && data.status !== 'draft') {
+          // Registro de lanzamiento
+          console.log(`       ${C.green}[LIVE_DEPLOY]${C.reset} Offer ${data.slug} is now ON-AIR.`);
         }
 
+        const duration = performance.now() - start;
+        console.log(`${C.green}    [HEIMDALL][CATALYST][END] Logic Synchronized | Time: ${duration.toFixed(4)}ms${C.reset}`);
+        
         return data;
-      }
+      }) as CollectionBeforeChangeHook,
     ],
+
+    /**
+     * HOOK: afterChange
+     * @description Emite alertas de inventario crítico al log de infraestructura.
+     */
     afterChange: [
-      ({ doc, operation, previousDoc }) => {
-        // Telemetría de Rendimiento Comercial (Heimdall)
+      (async ({ doc, operation, previousDoc }) => {
         if (operation === 'update' && doc.currentStock !== previousDoc?.currentStock) {
-           console.log(`[REVENUE][INVENTORY] Item: ${doc.slug} | Sold: ${previousDoc?.currentStock - doc.currentStock} | Remaining: ${doc.currentStock}`);
+           const depletion = previousDoc?.currentStock - doc.currentStock;
+           console.log(`   ${C.cyan}→ [INVENTORY_PULSE]${C.reset} Asset: ${doc.slug} | Sold: ${depletion} | Left: ${doc.currentStock}`);
+           
+           // Alerta de Inventario Crítico
+           if (doc.currentStock <= 3 && doc.status === 'active') {
+             console.error(`${C.red}${C.bold}    [CRITICAL_STOCK] Low inventory detected in Catalyst Node: ${doc.title}${C.reset}`);
+           }
         }
-      }
+      }) as CollectionAfterChangeHook,
     ]
   },
 
@@ -85,7 +133,7 @@ export const FlashSales: CollectionConfig = {
       type: 'tabs',
       tabs: [
         {
-          label: 'Campaign Strategy',
+          label: 'Estratégia & Conversão',
           fields: [
             {
               type: 'row',
@@ -94,34 +142,31 @@ export const FlashSales: CollectionConfig = {
                   name: 'title', 
                   type: 'text', 
                   required: true, 
-                  admin: { width: '70%', placeholder: 'Ej: Madrugada_Explosiva_50_Off' } 
+                  admin: { width: '70%', placeholder: 'Ej: Madrugada Explosiva - 40% OFF' } 
                 },
                 { 
                   name: 'slug', 
                   type: 'text', 
                   unique: true, 
                   index: true, 
-                  admin: { width: '30%', description: 'ID Semántico para la URL.' } 
+                  admin: { width: '30%', description: 'ID Semântico para rumbos de alta conversão.' } 
                 },
               ]
             },
             {
               type: 'row',
               fields: [
-                { 
-                  name: 'basePrice', 
-                  type: 'number', 
-                  required: true, 
-                  admin: { width: '33%', description: 'Precio original sin descuento.' } 
-                },
-                { 
-                  name: 'discountValue', 
-                  type: 'number', 
-                  required: true, 
-                  min: 1, 
-                  max: 95, 
-                  // @fix TS2353: 'addonAfter' purgado. Intención delegada a la descripción.
-                  admin: { width: '33%', description: 'Descuento aplicado en porcentaje (%)' } 
+                {
+                  name: 'audience',
+                  type: 'select',
+                  required: true,
+                  defaultValue: 'public',
+                  options: [
+                    { label: 'Público Geral (B2C)', value: 'public' },
+                    { label: 'Agências B2B (Flash Wholesale)', value: 'agents' },
+                    { label: 'VIP Protocol 33 Only', value: 'vip' }
+                  ],
+                  admin: { width: '33%' }
                 },
                 {
                   name: 'status',
@@ -129,36 +174,44 @@ export const FlashSales: CollectionConfig = {
                   defaultValue: 'draft',
                   required: true,
                   options: [
-                    { label: 'Draft / Private', value: 'draft' },
+                    { label: 'Draft (Inativo)', value: 'draft' },
                     { label: 'Active (On Air)', value: 'active' },
-                    { label: 'Sold Out', value: 'sold_out' },
-                    { label: 'Expired', value: 'expired' }
+                    { label: 'Sold Out (Esgotado)', value: 'sold_out' },
+                    { label: 'Expired (Finalizado)', value: 'expired' }
                   ],
-                  admin: { width: '34%' }
+                  admin: { width: '33%' }
+                },
+                {
+                  name: 'priority',
+                  type: 'number',
+                  defaultValue: 1,
+                  admin: { width: '34%', description: 'Orden de visualización (1: Max).' }
                 }
               ]
             },
-            { name: 'description', type: 'textarea', required: true },
+            { 
+              name: 'description', 
+              type: 'textarea', 
+              required: true,
+              admin: { description: 'Micro-copy de impacto para gatilho de compra.' }
+            },
           ]
         },
         {
-          label: 'Inventory & Timeline',
+          label: 'Yield & Timeline',
           fields: [
             {
               type: 'row',
               fields: [
-                { 
-                  name: 'totalInventory', 
-                  type: 'number', 
-                  required: true, 
-                  admin: { width: '33%', description: 'Capacidad máxima de la campaña.' } 
-                },
-                { 
-                  name: 'currentStock', 
-                  type: 'number', 
-                  required: true, 
-                  admin: { width: '33%', description: 'Stock real disponible.' } 
-                },
+                { name: 'basePrice', type: 'number', required: true, admin: { width: '50%', description: 'Preço cheio.' } },
+                { name: 'discountValue', type: 'number', required: true, min: 1, max: 99, admin: { width: '50%', description: 'Desconto (%)' } }
+              ]
+            },
+            {
+              type: 'row',
+              fields: [
+                { name: 'totalInventory', type: 'number', required: true, admin: { width: '33%', description: 'Lote total.' } },
+                { name: 'currentStock', type: 'number', required: true, admin: { width: '33%', description: 'Disponível agora.' } },
                 { 
                   name: 'expiresAt', 
                   type: 'date', 
@@ -175,12 +228,12 @@ export const FlashSales: CollectionConfig = {
               type: 'upload', 
               relationTo: 'media', 
               required: true,
-              admin: { description: 'Imagen de alta fidelidad optimizada para la conversión.' }
+              admin: { description: 'Imagem de alta fidelidad para carrosséis de impacto.' }
             },
           ]
         },
         {
-          label: 'Infrastructure Context',
+          label: 'Infraestrutura',
           fields: [
             { 
               name: 'tenant', 
@@ -188,11 +241,19 @@ export const FlashSales: CollectionConfig = {
               relationTo: 'tenants', 
               required: true, 
               index: true,
-              admin: { position: 'sidebar', description: 'Perímetro de la propiedad.' } 
+              admin: { position: 'sidebar', readOnly: true } 
             },
+            {
+              name: 'internalNotes',
+              type: 'textarea',
+              admin: { description: 'Log interno de performance da campanha (Staff Only).' }
+            }
           ]
         }
       ]
     }
   ]
 };
+
+const collectionDuration = performance.now() - collectionStart;
+console.log(`   ${C.green}✓ [DNA][SUCCESS]${C.reset} Flash Sales Engine calibrated | Time: ${collectionDuration.toFixed(4)}ms\n`);

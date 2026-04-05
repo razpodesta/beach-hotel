@@ -1,15 +1,16 @@
 /**
- * @file config.ts
- * @description Definición inmutable de la Matriz de Roles Soberanos.
- *              Refactorizado: Implementación de constantes literales para 
- *              inferencia de tipos de élite y protección de jerarquía.
- * @version 1.1 - Immutable Logic & Type Inference
- * @author Raz Podestá - MetaShark Tech
+ * @file packages/cms/core/src/collections/users/roles/config.ts
+ * @description Matriz de Roles Soberanos con Instrumentación de Carga Atómica.
+ *              SSoT para la jerarquía de poder del ecosistema MetaShark.
+ * @version 1.3 - DNA Core Registry
+ * @author Staff Engineer - MetaShark Tech
  */
+
+const registryStart = performance.now();
 
 /**
  * @interface RoleConfig
- * @description Contrato para la definición de un rango dentro del ecosistema.
+ * @description Contrato de definición de rango.
  */
 export interface RoleConfig {
   label: string;
@@ -18,10 +19,8 @@ export interface RoleConfig {
 }
 
 /**
- * @description SSoT para la jerarquía de poder.
- *              Usa 'as const' para garantizar que los valores sean tratados
- *              como tipos literales inmutables.
- * @pilar III: Seguridad de Tipos Absoluta.
+ * @description Jerarquía de Poder Inmutable.
+ * @pilar III: Seguridad de Tipos Absoluta via 'as const'.
  */
 export const ROLES_CONFIG = [
   { label: 'Root Developer (S0)', value: 'developer', level: 99 },
@@ -33,6 +32,9 @@ export const ROLES_CONFIG = [
 
 /**
  * @type SovereignRoleType
- * @description Tipo inferido directamente de la configuración para uso transversal.
+ * @description Inferencia de tipo literal para el motor RBAC.
  */
 export type SovereignRoleType = typeof ROLES_CONFIG[number]['value'];
+
+const registryDuration = performance.now() - registryStart;
+console.log(`   ${'\x1b[35m'}● [DNA][REGISTRY]${'\x1b[0m'} Roles Matrix synthesized | Time: ${registryDuration.toFixed(4)}ms`);

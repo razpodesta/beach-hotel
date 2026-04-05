@@ -3,28 +3,18 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/portfolio-web/src",
   "projectType": "application",
-  "tags": [
-    "platform:web", 
-    "scope:metashark", 
-    "type:app"
-  ],
   "targets": {
     "prebuild": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "tsx scripts/generate-payload-artifacts.ts",
+        "command": "tsx scripts/sovereign-prebuild.ts",
         "color": true
       },
-      "inputs": [
-        "{projectRoot}/src/messages/**/*.json",
-        "{workspaceRoot}/packages/cms/core/src/payload.config.ts"
-      ],
       "outputs": [
         "{projectRoot}/src/dictionaries/*.json",
         "{workspaceRoot}/packages/cms/core/src/payload-types.ts"
       ],
-      "cache": true,
-      "description": "Sincronización del ecosistema: Ensamblaje de diccionarios e inyección de tipos del CMS."
+      "cache": true
     },
     "build": {
       "executor": "@nx/next:build",
@@ -33,51 +23,7 @@
       "options": {
         "outputPath": "apps/portfolio-web"
       },
-      "configurations": {
-        "production": {}
-      },
-      "dependsOn": ["prebuild"],
-      "cache": true,
-      "description": "Compilación del orquestador web (Next.js 15)."
-    },
-    "serve": {
-      "executor": "@nx/next:server",
-      "defaultConfiguration": "development",
-      "options": {
-        "buildTarget": "@metashark/portfolio-web:build",
-        "dev": true,
-        "port": 4200
-      },
-      "configurations": {
-        "development": { "buildTarget": "@metashark/portfolio-web:build:development", "dev": true },
-        "production": { "buildTarget": "@metashark/portfolio-web:build:production", "dev": false }
-      },
       "dependsOn": ["prebuild"]
-    },
-    "typecheck": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "tsc -p apps/portfolio-web/tsconfig.json --noEmit",
-        "forwardAllArgs": true
-      },
-      "cache": true,
-      "dependsOn": ["prebuild"]
-    },
-    "test": {
-      "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/apps/portfolio-web"],
-      "options": {
-        "jestConfig": "apps/portfolio-web/jest.config.ts",
-        "passWithNoTests": true
-      },
-      "cache": true
-    },
-    "lint": {
-      "executor": "@nx/eslint:lint",
-      "cache": true,
-      "options": {
-        "lintFilePatterns": ["apps/portfolio-web/**/*.{ts,tsx,js,jsx}"]
-      }
     }
   }
 }

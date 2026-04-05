@@ -13,18 +13,17 @@
 "scripts": {
     "dev": "nx serve portfolio-web",
     "build": "nx build portfolio-web --configuration=production",
-    "build:web": "pnpm run build",
     "vercel-build": "pnpm run build",
     "lint": "nx run-many --target=lint --all --parallel=1",
     "test": "nx run-many --target=test --all --parallel=1",
     "typecheck": "nx run-many --target=typecheck --all --parallel=1",
     "prebuild:web": "nx prebuild portfolio-web",
-    "clean": "rimraf dist .next apps/portfolio-web/.next",
+    "clean": "rimraf dist .next apps/portfolio-web/.next apps/portfolio-web/.payload",
     "db:connection": "tsx scripts/supabase/check-connection.ts",
     "db:schema": "tsx scripts/supabase/audit-full-schema.ts",
     "db:seed": "tsx scripts/supabase/seed-database.ts",
     "db:dump": "tsx scripts/supabase/dump-cluster-state.ts",
-    "postinstall": "cross-env DEBUG=payload:* PAYLOAD_GENERATE=true payload generate:importmap"
+    "postinstall": "nx run-many --target=prebuild --all"
   },
   "dependencies": {
     "@apollo/client": "4.0.9",

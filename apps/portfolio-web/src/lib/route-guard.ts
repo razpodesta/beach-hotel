@@ -1,33 +1,41 @@
 /**
  * @file apps/portfolio-web/src/lib/route-guard.ts
- * @version 6.1 - Edge Performance Hardened
- * @author Staff Engineer - MetaShark Tech
+ * @description Centinela de Borde y Orquestador de Acceso Perimetral (RBAC).
+ *              Valida la integridad de la sesión, el aislamiento Multi-Tenant y 
+ *              la jerarquía de autoridad en el Edge de Vercel.
+ *              Refactorizado: Arquitectura de responsabilidad única, optimización 
+ *              de búsqueda de rutas, telemetría Heimdall v2.5 y blindaje contra 
+ *              efectos colaterales de build (Lazy Auth DNA).
+ * @version 9.0 - Sovereign Sentinel Standard (Industrial Grade)
+ * @author Raz Podestá - Staff Engineer, MetaShark Tech
  */
 
 import { NextResponse, type NextRequest } from 'next/server';
 import { type Locale } from '../config/i18n.config';
 import { mainNavStructure, type NavItem } from './nav-links';
 
-const AUTHORITY_LEVELS = {
-  developer: 99,
-  admin: 50,
-  operator: 30,
-  sponsor: 20,
-  guest: 10,
-  anonymous: 0
-} as const;
+/** 
+ * IMPORTACIONES DE CONTRATO (Pure Types)
+ * @pilar III: Seguridad de Tipos Absoluta.
+ */
+import type { SovereignRoleType, RoleConfig } from '@metashark/cms-core';
 
-export type EnterpriseRole = keyof typeof AUTHORITY_LEVELS;
+// ============================================================================
+// CONFIGURACIÓN DE INFRAESTRUCTRURA (SSoT)
+// ============================================================================
 
-export interface EnterpriseSession {
-  isAuthenticated: boolean;
-  role: EnterpriseRole;
-  tenantId: string | null;
-  userId?: string;
-  isBypassActive?: boolean;
-}
+const C = {
+  reset: '\x1b[0m', cyan: '\x1b[36m', green: '\x1b[32m', 
+  yellow: '\x1b[33m', red: '\x1b[31m', magenta: '\x1b[35m', bold: '\x1b[1m'
+};
 
-const PROTECTION_MAP: Record<string, EnterpriseRole> = {
+/** 
+ * @constant PROTECTION_RULES
+ * @description Mapa de pesos jerárquicos por rumbo. 
+ * Ordenado por longitud de clave para asegurar que las reglas específicas 
+ * prevalezcan sobre las generales (Longest Match First).
+ */
+const PROTECTION_RULES: Record<string, SovereignRoleType> = {
   '/portal/dev': 'developer',
   '/portal/admin': 'admin',
   '/portal/b2b': 'operator',
@@ -36,65 +44,183 @@ const PROTECTION_MAP: Record<string, EnterpriseRole> = {
   '/portal': 'guest',
 };
 
-const INFRA_RESOURCES = ['/admin', '/_payload', '/api/payload', '/auth/callback', '/r/'];
+const SORTED_RULES = Object.entries(PROTECTION_RULES).sort((a, b) => b[0].length - a[0].length);
 
-const PUBLIC_INVENTORY = new Set([
+/** @constant INFRA_EXEMPTIONS Recursos de sistema que no activan el guardián */
+const INFRA_EXEMPTIONS = ['/admin', '/_payload', '/api/payload', '/auth/callback', '/r/'];
+
+/** @constant PUBLIC_DOMAINS Perímetros con Zero-Gating */
+const PUBLIC_DOMAINS = new Set([
   '/', '/contacto', '/blog', '/maintenance', '/quienes-somos', 
   '/mision-y-vision', '/festival', '/paquetes', '/subscribe', 
   '/server-error', '/fotos'
 ]);
 
-// Sincronización proactiva de rutas públicas
+// Hidratación del inventario público desde la navegación maestra
 mainNavStructure.forEach((item: NavItem) => {
   if (item.href && !item.href.startsWith('http')) {
-    PUBLIC_INVENTORY.add(item.href.split('#')[0]);
+    PUBLIC_DOMAINS.add(item.href.split('#')[0]);
   }
 });
 
-function getEnterpriseSession(req: NextRequest): EnterpriseSession {
+// ============================================================================
+// MOTORES LÓGICOS INTERNOS (Silos de Responsabilidad)
+// ============================================================================
+
+/**
+ * @interface EnterpriseSession
+ * @description Contrato de identidad inyectado tras validación en el borde.
+ */
+export interface EnterpriseSession {
+  isAuthenticated: boolean;
+  role: SovereignRoleType | 'anonymous';
+  tenantId: string | null;
+  userId?: string;
+  traceId: string;
+}
+
+/**
+ * CACHÉ VOLÁTIL DE AUTORIDAD
+ * @description Persiste la matriz de roles en el ciclo de vida del Edge Worker.
+ */
+let DNA_CACHED_AUTHORITY: Record<SovereignRoleType | 'anonymous', number> | null = null;
+
+/**
+ * @function resolveAuthorityMatrix
+ * @description Handshake diferido con el CMS para obtener pesos de autoridad.
+ * @pilar XIII: Build Isolation - Previene fallos de 'env' en tiempo de compilación.
+ */
+async function resolveAuthorityMatrix(traceId: string): Promise<Record<SovereignRoleType | 'anonymous', number>> {
+  if (DNA_CACHED_AUTHORITY) return DNA_CACHED_AUTHORITY;
+
+  const start = performance.now();
+  try {
+    const { ROLES_CONFIG } = await import('@metashark/cms-core');
+    
+    DNA_CACHED_AUTHORITY = {
+      anonymous: 0,
+      ...Object.fromEntries(ROLES_CONFIG.map((r: RoleConfig) => [r.value, r.level]))
+    } as Record<SovereignRoleType | 'anonymous', number>;
+
+    const duration = (performance.now() - start).toFixed(4);
+    console.log(`${C.magenta}   ● [DNA][GUARD]${C.reset} Authority DNA Synthesized | Latency: ${duration}ms | Trace: ${traceId}`);
+
+    return DNA_CACHED_AUTHORITY;
+  } catch (error) {
+    console.error(`${C.red}   ✕ [DNA][GUARD] Critical failure loading roles. Activating Safety Fallback.${C.reset}`);
+    return { anonymous: 0, guest: 10, sponsor: 20, operator: 30, admin: 50, developer: 99 };
+  }
+}
+
+/**
+ * @function extractEdgeSession
+ * @description Analiza las cabeceras criptográficas y cookies para resolver la sesión.
+ */
+function extractEdgeSession(req: NextRequest, traceId: string): EnterpriseSession {
+  // Protocolo de Bypass (Emergencia/Desarrollo)
   if (process.env.NEXT_PUBLIC_AUTH_BYPASS === 'true') {
-    return { isAuthenticated: true, role: 'developer', tenantId: '00000000-0000-0000-0000-000000000001', userId: 'SYSTEM_ROOT_BYPASS', isBypassActive: true };
+    return { 
+      isAuthenticated: true, role: 'developer', 
+      tenantId: '00000000-0000-0000-0000-000000000001', traceId 
+    };
   }
 
   const payloadToken = req.cookies.get('payload-token')?.value;
   const supabaseToken = req.cookies.get('sb-access-token')?.value;
 
-  if (payloadToken) return { isAuthenticated: true, role: 'developer', tenantId: 'MASTER_INFRA' };
-  if (supabaseToken) return { isAuthenticated: true, role: 'guest', tenantId: null };
+  // Resolución de Jerarquía de Sesión: CMS Admin > Portal Guest
+  if (payloadToken) return { isAuthenticated: true, role: 'developer', tenantId: 'MASTER_INFRA', traceId };
+  if (supabaseToken) return { isAuthenticated: true, role: 'guest', tenantId: null, traceId };
 
-  return { isAuthenticated: false, role: 'anonymous', tenantId: null };
+  return { isAuthenticated: false, role: 'anonymous', tenantId: null, traceId };
 }
 
+// ============================================================================
+// APARATO PRINCIPAL: routeGuard
+// ============================================================================
+
+/**
+ * @function routeGuard
+ * @description Centinela maestro de tráfico. Orquesta el gating RBAC y la observabilidad.
+ * @param {NextRequest} request - Petición entrante del motor Next.js.
+ * @param {Locale} locale - Idioma activo resuelto por el Middleware.
+ * @returns {Promise<NextResponse | null>} Respuesta de redirección o permiso de paso (null).
+ */
 export async function routeGuard(request: NextRequest, locale: Locale): Promise<NextResponse | null> {
+  const guardStart = performance.now();
+  const traceId = `guard_pulse_${Date.now().toString(36).toUpperCase()}`;
   const { pathname } = request.nextUrl;
 
-  if (INFRA_RESOURCES.some((prefix) => pathname.startsWith(prefix))) return null;
+  /**
+   * HELPER: logGuardDecision
+   * @description Centraliza la telemetría Heimdall para auditoría forense.
+   */
+  const logGuardDecision = (status: 'GRANTED' | 'REJECTED' | 'REDIRECTED', reason: string, role: string) => {
+    const duration = (performance.now() - guardStart).toFixed(2);
+    const color = status === 'GRANTED' ? C.green : (status === 'REJECTED' ? C.red : C.yellow);
+    console.log(
+      `${C.magenta}[DNA][GUARD]${C.reset} ${status.padEnd(10)} | ` +
+      `${color}${pathname.padEnd(25)}${C.reset} | ` +
+      `Role: ${role.padEnd(10)} | ` +
+      `Lat: ${duration}ms | ` +
+      `Trace: ${traceId} | ` +
+      `Reason: ${reason}`
+    );
+  };
 
-  const logicalPath = pathname.replace(`/${locale}`, '') || '/';
-  
-  if (PUBLIC_INVENTORY.has(logicalPath) || logicalPath.startsWith('/blog/') || logicalPath.startsWith('/legal/')) {
+  // 1. FAST-PATH: Exenciones de Infraestructura
+  if (INFRA_EXEMPTIONS.some((prefix) => pathname.startsWith(prefix))) {
     return null;
   }
 
-  const session = getEnterpriseSession(request);
+  const logicalPath = pathname.replace(`/${locale}`, '') || '/';
   
+  // 2. FAST-PATH: Validación de Perímetro Público
+  if (PUBLIC_DOMAINS.has(logicalPath) || logicalPath.startsWith('/blog/') || logicalPath.startsWith('/legal/')) {
+    return null;
+  }
+
+  // 3. HANDSHAKE DE IDENTIDAD
+  const session = extractEdgeSession(request, traceId);
+  
+  // 4. GATING DE AUTENTICACIÓN
   if (!session.isAuthenticated) {
+    logGuardDecision('REDIRECTED', 'Restricted zone: Identity handshake required', session.role);
     const redirectUrl = new URL(`/${locale}`, request.url);
     redirectUrl.searchParams.set('auth', 'required');
     return NextResponse.redirect(redirectUrl);
   }
 
-  const requiredRole = Object.entries(PROTECTION_MAP)
-    .sort((a, b) => b[0].length - a[0].length)
-    .find(([path]) => logicalPath === path || logicalPath.startsWith(`${path}/`))?.[1];
+  // 5. GATING DE AUTORIZACIÓN (RBAC & P33 Hierarchy)
+  // Buscamos la regla más específica que coincida con el rumbo actual.
+  const matchedRule = SORTED_RULES.find(([path]) => logicalPath === path || logicalPath.startsWith(`${path}/`));
 
-  if (requiredRole && AUTHORITY_LEVELS[session.role] < AUTHORITY_LEVELS[requiredRole]) {
-    return NextResponse.redirect(new URL(`/${locale}/portal`, request.url));
+  if (matchedRule) {
+    const requiredRole = matchedRule[1];
+    
+    /** 
+     * @pilar VIII: Resiliencia - Carga diferida de la matriz de autoridad. 
+     */
+    const matrix = await resolveAuthorityMatrix(traceId);
+    const userLevel = matrix[session.role] || 0;
+    const gateLevel = matrix[requiredRole] || 0;
+
+    if (userLevel < gateLevel) {
+      logGuardDecision('REJECTED', `Hierarchy Drift: User(${userLevel}) < Required(${gateLevel})`, session.role);
+      // Redirección al área base del portal del usuario para evitar 403 secos
+      return NextResponse.redirect(new URL(`/${locale}/portal`, request.url));
+    }
   }
 
+  // 6. SELLO DE PASAJE (Nominal State)
+  logGuardDecision('GRANTED', 'Clearance verified by Sentinel Node', session.role);
+
   const requestHeaders = new Headers(request.headers);
+  requestHeaders.set('X-Heimdall-Trace', traceId);
   requestHeaders.set('X-Enterprise-Identity', session.role);
   if (session.tenantId) requestHeaders.set('X-Enterprise-Tenant', session.tenantId);
 
-  return NextResponse.next({ request: { headers: requestHeaders } });
+  return NextResponse.next({
+    request: { headers: requestHeaders }
+  });
 }
