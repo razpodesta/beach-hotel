@@ -97,5 +97,6 @@ pnpm run dev
 # 4. Auditoría forense de configuración
 pnpm run lint
 
-© 2026 Beach Hotel Canasvieiras.
+© 2026 MetaShark Tech.
+
 Arquitectura y Estrategia forjada por Raz Podestá | MetaShark Tech.

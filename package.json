@@ -24,7 +24,7 @@
     "db:schema": "tsx scripts/supabase/audit-full-schema.ts",
     "db:seed": "tsx scripts/supabase/seed-database.ts",
     "db:dump": "tsx scripts/supabase/dump-cluster-state.ts",
-    "postinstall": "payload generate:importmap"
+    "postinstall": "cross-env DEBUG=payload:* PAYLOAD_GENERATE=true payload generate:importmap"
   },
   "dependencies": {
     "@apollo/client": "4.0.9",

@@ -1,10 +1,8 @@
 /**
  * @file packages/cms/core/src/payload.config.ts
- * @version 43.1 - Enterprise Build-Safe Standard
- * @description Orquestador central del Ecosistema MetaShark.
- *              Optimizado para ciclos de vida de build, generación de tipos 
- *              determinista y resiliencia de conexión.
- * @author Staff Engineer - MetaShark Tech
+ * @version 44.2 - Build-Safe Adaptive Configuration
+ * @description Orquestador central con adaptador de DB inyectado condicionalmente
+ *              para satisfacer el contrato de tipos de Payload 3.0.
  */
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
@@ -19,7 +17,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 
-// Importación directa de colecciones
+// ... (Importaciones de colecciones mantienen igual) ...
 import { Ingestions } from './collections/Ingestions';
 import { Subscribers } from './collections/Subscribers';
 import { Agencies } from './collections/Agencies';
@@ -38,9 +36,13 @@ import { DynamicRoutes } from './collections/DynamicRoutes';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// --- LÓGICA DE DETECCIÓN DE MODO ---
 const isProduction = process.env.NODE_ENV === 'production';
 const isGeneration = process.env.PAYLOAD_GENERATE === 'true';
+
+// Adaptador "No-Op" para cuando estamos generando tipos y no necesitamos DB real
+const dummyDb = postgresAdapter({
+  pool: { connectionString: 'postgres://dummy:dummy@localhost:5432/dummy' },
+});
 
 export default buildConfig({
   serverURL: process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000',
@@ -48,27 +50,27 @@ export default buildConfig({
   
   admin: {
     user: 'users',
-    importMap: { 
-      baseDir: path.resolve(__dirname),
-    },
+    importMap: { baseDir: path.resolve(__dirname) },
     meta: { titleSuffix: '- MetaShark Enterprise Operations' }
   },
 
   /**
    * MOTOR DE BASE DE DATOS SOBERANO
-   * @fix TS2322: Se utiliza un adaptador PostgreSQL incluso en modo generación, 
-   * pero con la cadena de conexión vacía y 'push: false' para evitar cualquier 
-   * intento de conexión real o migración accidental.
+   * @fix TS2322: Se utiliza un adaptador real (pero dummy) para satisfacer 
+   * el tipo 'DatabaseAdapterResult' requerido por Payload Config.
    */
-  db: postgresAdapter({
-    pool: {
-      connectionString: isGeneration ? 'postgres://dummy:dummy@localhost:5432/dummy' : (process.env.DATABASE_URL || ''),
-      max: isGeneration ? 1 : 10,
-      ssl: { rejectUnauthorized: false },
-    },
-    idType: 'uuid',
-    push: !isProduction && !isGeneration,
-  }),
+  db: isGeneration 
+    ? dummyDb
+    : postgresAdapter({
+        pool: {
+          connectionString: process.env.DATABASE_URL || '',
+          max: 10,
+          idleTimeoutMillis: 30000,
+          ssl: { rejectUnauthorized: false },
+        },
+        idType: 'uuid',
+        push: !isProduction,
+      }),
 
   email: process.env.SMTP_USER ? nodemailerAdapter({
     defaultFromAddress: 'concierge@metashark.tech',
@@ -76,20 +78,9 @@ export default buildConfig({
   }) : undefined,
 
   collections: [
-    Offers, 
-    FlashSales, 
-    Agencies, 
-    Agents, 
-    BusinessMetrics,
-    Ingestions, 
-    Subscribers, 
-    Tenants, 
-    Users, 
-    Notifications,
-    DynamicRoutes, 
-    Media, 
-    BlogPosts, 
-    Projects,
+    Offers, FlashSales, Agencies, Agents, BusinessMetrics,
+    Ingestions, Subscribers, Tenants, Users, Notifications,
+    DynamicRoutes, Media, BlogPosts, Projects,
   ],
   
   editor: lexicalEditor({}),
@@ -104,11 +95,8 @@ export default buildConfig({
     ...(process.env.S3_ENDPOINT ? [
       s3Storage({
         collections: { 
-          media: true, 
-          offers: true, 
-          'flash-sales': true, 
-          agencies: true, 
-          ingestions: true 
+          media: true, offers: true, 'flash-sales': true, 
+          agencies: true, ingestions: true 
         },
         bucket: process.env.S3_BUCKET || 'sanctuary-vault',
         config: {
