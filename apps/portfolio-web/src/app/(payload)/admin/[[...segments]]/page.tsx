@@ -1,31 +1,33 @@
 /**
  * @file apps/portfolio-web/src/app/(payload)/admin/[[...segments]]/page.tsx
- * @description Punto de montaje soberano para el panel administrativo.
- *              Refactorizado: Resolución dinámica mediante contratos SSoT.
- * @version 5.1 - Static Build Resilient
+ * @description Punto de montaje del panel administrativo (Silo de Gestión).
+ *              Refactorizado: Uso del componente Admin nativo de Payload v3+.
+ * @version 6.0 - Payload 3.x Native Entrypoint
+ * @author Staff Engineer - MetaShark Tech
  */
 
 import { AdminView } from '@payloadcms/next/views/Admin';
 import { importMap } from '@payloadcms/next/importMap';
-import configPromise from '@metashark/cms-core/config';
+import config from '@metashark/cms-core/config';
 
+// Tipado estricto para los parámetros del App Router
 type PageArgs = { 
   params: Promise<{ segments?: string[] }>;
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
 /**
- * @description AdminPage actúa como el contenedor de renderizado.
- *              La inyección de configPromise garantiza que el CMS solo arranque
- *              cuando el usuario accede a esta ruta (Lazy Handshake).
+ * @description El componente AdminView ya no se importa de 'payload' 
+ * sino desde el paquete de integración oficial.
  */
 export default async function AdminPage(props: PageArgs) {
   const { segments } = await props.params;
   const searchParams = await props.searchParams;
 
+  // Renderizado soberano del CMS
   return (
     <AdminView
-      config={configPromise}
+      config={config}
       importMap={importMap}
       params={segments || []}
       searchParams={await searchParams}
