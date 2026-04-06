@@ -2,10 +2,11 @@
  * @file packages/cms/core/src/payload.config.ts
  * @description Orquestador Maestro del Ecosistema de Datos MetaShark.
  *              Centraliza la inteligencia de colecciones, adaptadores de DB
- *              y almacenamiento en la nube (S3) con observabilidad Heimdall.
- *              Refactorizado: Resolución de TS2353 (MetaConfig alignment),
- *              blindaje total build-time y medición de latencia por sub-sistema.
- * @version 47.0 - Master SSoT & DNA Visibility (Payload 3.0 Strict)
+ *              y almacenamiento en la nube (S3) con observabilidad Heimdall v2.5.
+ *              Refactorizado: Optimización de resolución de plugins, blindaje
+ *              de secretos, telemetría DNA-Level y cumplimiento estricto de 
+ *              Payload 3.0 (Next.js Native).
+ * @version 48.0 - Master SSoT & DNA Integrity (Forensic Standard)
  * @author Staff Engineer - MetaShark Tech
  */
 
@@ -22,7 +23,7 @@ import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 
 /** 
- * 1. IMPORTACIÓN DE COLECCIONES (Inventory Load)
+ * 1. INVENTARIO DE COLECCIONES (SBU Matrix)
  * @pilar V: Adherencia Arquitectónica.
  */
 import { Ingestions } from './collections/Ingestions';
@@ -44,19 +45,20 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // ============================================================================
-// TELEMETRÍA HEIMDALL: DNA Core Pulse
+// TELEMETRÍA HEIMDALL: DNA Core Pulse v2.5
 // ============================================================================
 
 const configEvalStart = performance.now();
+const traceId = `cfg_dna_${Date.now().toString(36).toUpperCase()}`;
 const isGeneration = process.env.PAYLOAD_GENERATE === 'true';
 const isProduction = process.env.NODE_ENV === 'production';
 
 const C = {
   reset: '\x1b[0m', cyan: '\x1b[36m', green: '\x1b[32m', 
-  yellow: '\x1b[33m', magenta: '\x1b[35m', bold: '\x1b[1m'
+  yellow: '\x1b[33m', magenta: '\x1b[35m', bold: '\x1b[1m', red: '\x1b[31m'
 };
 
-console.log(`\n${C.magenta}${C.bold}[DNA][CONFIG]${C.reset} Iniciando secuencia de orquestación central...`);
+console.log(`\n${C.magenta}${C.bold}[DNA][CONFIG]${C.reset} Handshake de orquestación | Trace: ${C.cyan}${traceId}${C.reset}`);
 
 /**
  * HELPER: measureTask
@@ -67,11 +69,12 @@ const measureTask = <T>(name: string, task: () => T): T => {
   try {
     const result = task();
     const duration = (performance.now() - start).toFixed(2);
-    console.log(`   ${C.green}✓ [METRIC]${C.reset} ${name.padEnd(25)} | OK | ${duration}ms`);
+    console.log(`   ${C.green}✓ [METRIC]${C.reset} ${name.padEnd(25)} | OK | ${C.yellow}${duration.padStart(8)}ms${C.reset}`);
     return result;
-  } catch (error) {
+  } catch (error: unknown) {
     const duration = (performance.now() - start).toFixed(2);
-    console.error(`   ${C.yellow}✕ [METRIC]${C.reset} ${name.padEnd(25)} | FAIL | ${duration}ms`);
+    const msg = error instanceof Error ? error.message : 'Unknown drift';
+    console.error(`   ${C.red}✕ [METRIC]${C.reset} ${name.padEnd(25)} | FAIL | ${duration}ms | ${msg}`);
     throw error;
   }
 };
@@ -80,14 +83,15 @@ const measureTask = <T>(name: string, task: () => T): T => {
 // COMPONENTES DE INFRAESTRUCTRURA (Silos)
 // ============================================================================
 
-/** 2. MOTOR DE PERSISTENCIA (Silo de Datos) */
-const dbAdapter = measureTask('DB_ADAPTER_INIT', () => {
+/** 2. MOTOR DE PERSISTENCIA (Aislamiento de Build) */
+const dbAdapter = measureTask('INFRA_DB_ADAPTER', () => {
   if (isGeneration) {
-    console.log(`      ${C.cyan}→ Protocolo: Blindaje de Generación Activo.${C.reset}`);
+    // Protocolo de Blindaje: Evita intentos de red durante la síntesis de tipos.
     return postgresAdapter({
-      pool: { connectionString: 'postgres://dummy:dummy@localhost:5432/dummy' },
+      pool: { connectionString: 'postgres://dummy:dummy@127.0.0.1:5432/dummy' },
     });
   }
+  
   return postgresAdapter({
     pool: {
       connectionString: process.env.DATABASE_URL || '',
@@ -96,28 +100,25 @@ const dbAdapter = measureTask('DB_ADAPTER_INIT', () => {
       ssl: { rejectUnauthorized: false },
     },
     idType: 'uuid',
-    push: !isProduction,
+    push: !isProduction, // Solo permite push automático en desarrollo
   });
 });
 
-/** 3. INVENTARIO DE ENTIDADES (SBU Matrix) */
-const collectionInventory = measureTask('COLLECTION_SYNC', () => [
-  Offers, FlashSales, Agencies, Agents, BusinessMetrics,
-  Ingestions, Subscribers, Tenants, Users, Notifications,
-  DynamicRoutes, Media, BlogPosts, Projects,
-]);
-
-/** 4. BÓVEDA MULTIMEDIA (Vault Plugin) */
-const pluginStack = measureTask('CLOUD_PLUGINS_RESOLVE', () => {
-  // Desactivamos plugins pesados durante la generación de tipos para acelerar el build
+/** 3. RESOLUCIÓN DE PLUGINS (Bóveda Multimedia) */
+const pluginStack = measureTask('INFRA_CLOUD_PLUGINS', () => {
+  // Optimizamos: Si es fase de generación, no cargamos el SDK de S3.
   if (!process.env.S3_ENDPOINT || isGeneration) {
     return [];
   }
+  
   return [
     s3Storage({
       collections: { 
-        media: true, offers: true, 'flash-sales': true, 
-        agencies: true, ingestions: true 
+        media: true, 
+        offers: true, 
+        'flash-sales': true, 
+        agencies: true, 
+        ingestions: true 
       },
       bucket: process.env.S3_BUCKET || 'sanctuary-vault',
       config: {
@@ -139,18 +140,16 @@ const pluginStack = measureTask('CLOUD_PLUGINS_RESOLVE', () => {
 
 const config = buildConfig({
   serverURL: process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000',
-  secret: process.env.PAYLOAD_SECRET || 'enterprise-vault-2026-master-key',
+  
+  /** @pilar III: Seguridad de secretos con fallback de emergencia trazado */
+  secret: process.env.PAYLOAD_SECRET || 'emergency-dev-vault-key-33',
   
   admin: {
     user: 'users',
     importMap: { baseDir: path.resolve(__dirname) },
     meta: { 
-      /** 
-       * @fix TS2353: 'favicon' purgado del contrato MetaConfig.
-       * El favicon ahora se gestiona vía Next.js Metadata en el root layout
-       * o mediante el array 'admin.icons' si se requiere personalización.
-       */
       titleSuffix: '- MetaShark Enterprise Operations',
+      // @fix TS2353: favicon delegado al orquestador estático de Next.js 15
     },
   },
 
@@ -161,7 +160,11 @@ const config = buildConfig({
     defaultFromName: 'Enterprise Hospitality Concierge',
   }) : undefined,
 
-  collections: collectionInventory,
+  collections: [
+    Offers, FlashSales, Agencies, Agents, BusinessMetrics,
+    Ingestions, Subscribers, Tenants, Users, Notifications,
+    DynamicRoutes, Media, BlogPosts, Projects,
+  ],
   
   editor: lexicalEditor({}),
   
@@ -169,12 +172,16 @@ const config = buildConfig({
     outputFile: path.resolve(__dirname, 'payload-types.ts'),
   },
 
+  /** 
+   * @fix Pilar III: Compatibilidad de tipos para el motor Sharp
+   * Sincroniza el procesamiento de imágenes con el runtime de Next.js 15.
+   */
   sharp: (sharp as unknown) as SharpDependency,
 
   plugins: pluginStack,
 });
 
 const totalEval = (performance.now() - configEvalStart).toFixed(2);
-console.log(`${C.magenta}${C.bold}[DNA][SUMMARY]${C.reset} SSoT Config calibrada y exportada en ${totalEval}ms\n`);
+console.log(`${C.magenta}${C.bold}[DNA][SUCCESS]${C.reset} SSoT Orquestador calibrado en ${C.yellow}${totalEval}ms${C.reset}\n`);
 
 export default config;

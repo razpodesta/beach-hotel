@@ -22,8 +22,7 @@
     "db:connection": "tsx scripts/supabase/check-connection.ts",
     "db:schema": "tsx scripts/supabase/audit-full-schema.ts",
     "db:seed": "tsx scripts/supabase/seed-database.ts",
-    "db:dump": "tsx scripts/supabase/dump-cluster-state.ts",
-    "postinstall": "nx run-many --target=prebuild --all"
+    "db:dump": "tsx scripts/supabase/dump-cluster-state.ts"
   },
   "dependencies": {
     "@apollo/client": "4.0.9",

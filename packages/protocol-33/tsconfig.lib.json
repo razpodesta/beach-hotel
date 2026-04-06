@@ -1,33 +1,21 @@
+/**
+ * @file packages/protocol-33/tsconfig.lib.json
+ * @description Orquestador de build físico para el motor de reputación.
+ */
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    /* SOBERANÍA DE SALIDA: Directorio de distribución global */
     "outDir": "../../dist/packages/protocol-33",
-    
-    /* 
-       PROFILAXIS TS6305: 
-       Fijamos rootDir en 'src'. El compilador ignorará la jerarquía 
-       de carpetas superior, resultando en un artefacto limpio y plano.
-    */
     "rootDir": "src",
-    
     "composite": true,
-
-    /* 
-       PILAR XIII: FORZADO DE EMISIÓN (Override)
-       Anulamos el "noEmit": true del tsconfig.json base para que 
-       Nx genere los archivos físicos (.js, .d.ts) en el directorio dist/.
-    */
+    /** 
+     * @pilar XIII: Durante el build real, permitimos la emisión completa
+     * (JS + DTS) para que los scripts CLI puedan ejecutar la lógica.
+     */
     "noEmit": false,
-    "emitDeclarationOnly": false, 
-    
+    "emitDeclarationOnly": false,
     "tsBuildInfoFile": "../../dist/packages/protocol-33/tsconfig.lib.tsbuildinfo"
   },
-  "include": [
-    "src/**/*.ts"
-  ],
-  "exclude": [
-    "**/*.spec.ts", 
-    "**/*.test.ts"
-  ]
+  "include": ["src/**/*.ts"],
+  "exclude": ["**/*.spec.ts", "**/*.test.ts"]
 }

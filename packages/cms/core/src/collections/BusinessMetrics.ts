@@ -3,9 +3,9 @@
  * @description Ledger Forense y Motor de Propagación de Señales Comerciales (Silo B).
  *              Orquesta la persistencia de transacciones y dispara mutaciones en el 
  *              Protocolo 33 (XP) y el PRM (Trust Score) mediante ganchos atómicos.
- *              Refactorizado: Integración de Signal Hooks, trazabilidad cruzada 
- *              y normalización de Yield.
- * @version 3.0 - Sovereign Intelligence Engine (Heimdall Injected)
+ *              Refactorizado: Resolución de TS2307 via infra, optimización de 
+ *              queries (depth: 0) y telemetría Heimdall v2.5.
+ * @version 4.1 - Forensic Reactor Standard (Linter Pure)
  * @author Staff Engineer - MetaShark Tech
  */
 
@@ -15,6 +15,11 @@ import {
   type CollectionAfterChangeHook 
 } from 'payload';
 import { multiTenantReadAccess, multiTenantWriteAccess } from './Access';
+
+/** 
+ * IMPORTACIÓN DE MOTOR LÓGICO (SSoT)
+ * @fix TS2307: Sincronizado mediante referencias en tsconfig.json.
+ */
 import { calculateProgress } from '@metashark/protocol-33';
 
 /**
@@ -36,7 +41,7 @@ console.log(`${C.magenta}  [DNA][LOAD] Building Collection: BUSINESS METRICS (BI
 
 /**
  * APARATO: BusinessMetrics
- * @description Centro de mando para el análisis de conversión y fidelización.
+ * @description Centro de mando para el análisis de ROI y la gamificación operativa.
  */
 export const BusinessMetrics: CollectionConfig = {
   slug: 'business-metrics',
@@ -49,7 +54,7 @@ export const BusinessMetrics: CollectionConfig = {
 
   /**
    * REGLAS DE ACCESO (Sovereign Security)
-   * @pilar VIII: Inmutabilidad. La creación es operativa, el borrado es forense (Solo Developer).
+   * @pilar VIII: Inmutabilidad de Auditoría. Solo Developer purga el Ledger.
    */
   access: {
     read: multiTenantReadAccess,
@@ -59,23 +64,25 @@ export const BusinessMetrics: CollectionConfig = {
   },
 
   /**
-   * GUARDIANES DE SEÑAL Y REACCIÓN (Intelligence Hooks)
+   * GUARDIANES DE CICLO DE VIDA (Forensic Hooks)
    */
   hooks: {
     /**
      * HOOK: beforeChange
-     * @description Sella la transacción con un Trace ID único y ancla el perímetro.
+     * @description Sella la transacción con un Trace ID y ancla el perímetro Multi-Tenant.
      */
     beforeChange: [
       (async ({ data, operation, req }) => {
         const start = performance.now();
         
+        // 1. Generación de Trace ID Inmutable
         if (operation === 'create' && !data.traceId) {
           data.traceId = `trx_${Date.now().toString(36).toUpperCase()}`;
         }
 
         console.log(`${C.blue}    [HEIMDALL][BI][START] Sealing Transaction | Trace: ${data.traceId}${C.reset}`);
 
+        // 2. Garantía de Perímetro (Tenant Guard)
         if (operation === 'create' && req.user && !data.tenant) {
           data.tenant = typeof req.user.tenant === 'object' && req.user.tenant !== null 
             ? req.user.tenant.id 
@@ -83,71 +90,93 @@ export const BusinessMetrics: CollectionConfig = {
         }
 
         const duration = performance.now() - start;
-        console.log(`${C.green}    [HEIMDALL][BI][END] Logic Anchored | Time: ${duration.toFixed(4)}ms${C.reset}`);
+        console.log(`${C.green}    [HEIMDALL][BI][END] Metadata Anchored | Time: ${duration.toFixed(4)}ms${C.reset}`);
         
         return data;
       }) as CollectionBeforeChangeHook,
     ],
 
     /**
-     * HOOK: afterChange (The Reactor)
-     * @description Dispara la actualización de XP del usuario y el scoring de la agencia.
-     * @pilar IX: Desacoplamiento de lógica mediante señales.
+     * HOOK: afterChange (The Reputation Reactor)
+     * @description Dispara la actualización de XP y Trust Score en una sola fase atómica.
+     * @pilar IX: Desacoplamiento de lógica mediante señales reactivas.
      */
     afterChange: [
       (async ({ doc, operation, req }) => {
         if (operation !== 'create') return;
 
         const { payload } = req;
-        const startReactivity = performance.now();
-        console.log(`${C.cyan}   → [REACTOR] Signal detected: ${doc.type}. Triggering chain reactions...${C.reset}`);
+        const startReactor = performance.now();
+        const traceId = doc.traceId;
+
+        console.log(`${C.cyan}   → [REACTOR] Signal detected: ${doc.type}. Initializing chain reaction...${C.reset}`);
 
         try {
-          // 1. PROPAGACIÓN HACIA EL USUARIO (Protocolo 33 XP)
+          // --- 1. TRANSMUTACIÓN DE REPUTACIÓN (Usuario / Protocolo 33) ---
           if (doc.client && doc.type === 'booking_success') {
             const userId = typeof doc.client === 'object' ? doc.client.id : doc.client;
-            const user = await payload.findByID({ collection: 'users', id: userId });
+            
+            /** 
+             * @pilar X: Performance. 
+             * Query optimizada con depth: 0 para evitar carga de tenants/media 
+             * innecesaria durante el cálculo matemático.
+             */
+            const user = await payload.findByID({ 
+              collection: 'users', 
+              id: userId,
+              depth: 0 
+            });
             
             if (user) {
               const currentXp = Number(user.experiencePoints || 0);
-              // Calculamos XP basada en el valor de la transacción (1 XP por cada 10 BRL como base)
-              const xpGain = Math.floor(doc.value / 10);
+              // Lógica de recompensa: 1 XP por cada 10 unidades de valor (BRL/USD base)
+              const xpGain = Math.floor(Number(doc.value || 0) / 10);
               const newXp = currentXp + xpGain;
+              
+              // Handshake con el motor lógico del protocolo
               const { currentLevel } = calculateProgress(newXp);
 
               await payload.update({
                 collection: 'users',
                 id: userId,
-                data: { experiencePoints: newXp, level: currentLevel }
+                data: { experiencePoints: newXp, level: currentLevel },
+                depth: 0
               });
-              console.log(`      ${C.green}✓ [XP_SYNC]${C.reset} User ${user.email} reached Lvl ${currentLevel} (+${xpGain} XP)`);
+              console.log(`      ${C.green}✓ [XP_SYNC]${C.reset} Trace: ${traceId} | User Levelled Up to ${currentLevel} (+${xpGain} XP)`);
             }
           }
 
-          // 2. PROPAGACIÓN HACIA LA AGENCIA (PRM Trust Score)
+          // --- 2. TRANSMUTACIÓN DE CREDIBILIDAD (Agencia / PRM) ---
           if (doc.agency && doc.type === 'booking_success') {
             const agencyId = typeof doc.agency === 'object' ? doc.agency.id : doc.agency;
-            const agency = await payload.findByID({ collection: 'agencies', id: agencyId });
+            
+            const agency = await payload.findByID({ 
+              collection: 'agencies', 
+              id: agencyId,
+              depth: 0 
+            });
             
             if (agency) {
-              // Incremento de confianza por cada venta exitosa (Max 100)
+              // Incremento de Trust Score (Capped a 100) y actualización de Yield total
               const newScore = Math.min(100, Number(agency.trustScore || 50) + 1);
-              const currentYield = Number(agency.totalYield || 0) + doc.value;
+              const newYield = Number(agency.totalYield || 0) + Number(doc.value || 0);
 
               await payload.update({
                 collection: 'agencies',
                 id: agencyId,
-                data: { trustScore: newScore, totalYield: currentYield }
+                data: { trustScore: newScore, totalYield: newYield },
+                depth: 0
               });
-              console.log(`      ${C.green}✓ [PRM_SYNC]${C.reset} Agency ${agency.brandName} yield updated: ${currentYield}`);
+              console.log(`      ${C.green}✓ [PRM_SYNC]${C.reset} Trace: ${traceId} | Agency Yield Updated: ${newYield}`);
             }
           }
 
-          const reactorDuration = performance.now() - startReactivity;
-          console.log(`${C.green}   ✓ [DNA][REACTION] Chain reaction completed in ${reactorDuration.toFixed(4)}ms${C.reset}`);
+          const reactorLatency = (performance.now() - startReactor).toFixed(4);
+          console.log(`${C.green}   ✓ [DNA][REACTION] Chain reaction completed for ${traceId} in ${reactorLatency}ms${C.reset}`);
 
-        } catch (error) {
-          console.error(`${C.red}   ✕ [DNA][CRITICAL] Chain reaction aborted:`, error);
+        } catch (error: unknown) {
+          const msg = error instanceof Error ? error.message : 'Reactor Drift';
+          console.error(`${C.red}   ✕ [DNA][CRITICAL] Chain reaction failed for ${traceId}: ${msg}${C.reset}`);
         }
       }) as CollectionAfterChangeHook,
     ]
@@ -230,7 +259,7 @@ export const BusinessMetrics: CollectionConfig = {
                   relationTo: 'users', 
                   required: true, 
                   index: true,
-                  admin: { width: '50%', description: 'Destinatário dos pontos de reputação (XP).' } 
+                  admin: { width: '50%', description: 'Destinatário dos puntos de reputación (XP).' } 
                 }
               ]
             },
@@ -288,4 +317,4 @@ export const BusinessMetrics: CollectionConfig = {
 };
 
 const collectionDuration = performance.now() - collectionStart;
-console.log(`   ${C.green}✓ [DNA][SUCCESS]${C.reset} Metrics Engine calibrated | Time: ${collectionDuration.toFixed(4)}ms\n`);
+console.log(`   ${C.green}✓ [DNA][SUCCESS]${C.reset} Metrics Hub calibrated | Time: ${collectionDuration.toFixed(4)}ms\n`);

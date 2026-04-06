@@ -1,46 +1,38 @@
+/**
+ * @file packages/protocol-33/tsconfig.json
+ * @description Configuración base del motor de reputación.
+ *              Refactorizado: Resolución de TS 'cannot disable emission'
+ *              permitiendo la generación de declaraciones para consumidores.
+ * @version 2.1 - Project Reference Enabled
+ */
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    /** @fix Sincronización de infraestructura TS 5.x */
+    "ignoreDeprecations": "5.0",
     "baseUrl": ".",
-    /* 
-       PILAR V: ADHERENCIA AL GRAFO SOBERANO
-       'composite' permite que este proyecto sea referenciado por el orquestador 
-       de la raíz, garantizando Intellisense en todo el monorepo.
-    */
     "composite": true,
     "rootDir": ".",
     
-    /* 
-       PILAR XIII: PUREZA DE SOURCE (Blindaje Total)
-       Bloqueamos la emisión física para el IDE. La eliminación de 
-       'references' resuelve el error de sistema de forma definitiva.
-    */
-    "noEmit": true,
+    /** 
+     * @fix: Cambio de noEmit a false para permitir referencias de proyecto.
+     * Activamos 'emitDeclarationOnly' para que el IDE genere los tipos
+     * necesarios para el CMS sin ensuciar con archivos .js el source.
+     */
+    "noEmit": false,
+    "emitDeclarationOnly": true,
     
-    /* 
-       RESOLUCIÓN ISOMÓRFICA:
-       Optimizado para que Next.js realice un Tree-Shaking agresivo 
-       de la lógica de reputación en el frontend.
-    */
     "module": "esnext",
     "moduleResolution": "bundler",
-    
     "declaration": true,
     "declarationMap": true,
     "types": ["node"]
   },
-  "include": [
-    "src/**/*.ts"
-  ],
+  "include": ["src/**/*.ts"],
   "exclude": [
     "node_modules", 
     "dist", 
     "jest.config.ts", 
     "**/*.spec.ts"
   ]
-  /* 
-     ELIMINACIÓN ESTRATÉGICA: Array 'references' eliminado.
-     Desacoplamos la validación de tipos de la emisión física de artefactos
-     para evitar el bloqueo "cannot disable emission".
-  */
 }

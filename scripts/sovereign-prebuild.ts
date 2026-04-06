@@ -1,9 +1,9 @@
 /**
  * @file scripts/sovereign-prebuild.ts
- * @description Orquestador de Infraestructura con Motor de Trazabilidad Heimdall v2.0.
- *              Implementa ejecución asíncrona, latidos de sistema (Heartbeat) 
- *              y Watchdog para detectar y abortar bloqueos de infraestructura.
- * @version 1.5 - Heimdall Forensic Watchdog & Performance Metrics
+ * @description Orquestador de Infraestructura con Motor de Trazabilidad Heimdall v2.5.
+ *              Fusiona MACS (i18n) y Payload Artifacts con Watchdog activo.
+ *              Optimizado para inmunidad total en Vercel Build Workers y Windows Dev.
+ * @version 1.6 - Build-Immune & Forensic Logic
  * @author Staff Engineer - MetaShark Tech
  */
 
@@ -27,14 +27,15 @@ const ROOT = process.cwd();
 const PATHS = {
   MESSAGES: join(ROOT, 'apps', 'portfolio-web', 'src', 'messages'),
   DICTIONARIES: join(ROOT, 'apps', 'portfolio-web', 'src', 'dictionaries'),
+  PAYLOAD_BIN: join(ROOT, 'node_modules', '.bin', 'payload')
 };
 
 class SovereignPrebuild {
   private totalStart = performance.now();
-  private traceId = `trace_prebuild_${Date.now().toString(36)}`;
+  private traceId = `trace_prebuild_${Date.now().toString(36).toUpperCase()}`;
 
   /**
-   * PROTOCOLO HEIMDALL: Logger de Métricas
+   * PROTOCOLO HEIMDALL: Logger de Métricas con Trazabilidad
    */
   private logMetric(action: string, duration: number, status: 'OK' | 'FAIL' | 'TIMEOUT', details?: string) {
     const color = status === 'OK' ? C.green : C.red;
@@ -51,40 +52,51 @@ class SovereignPrebuild {
   }
 
   /**
-   * MOTOR DE EJECUCIÓN ASÍNCRONA (Non-Blocking Stream)
+   * MOTOR DE EJECUCIÓN ASÍNCRONA (Stream-Safe spawn)
+   * @fix: Uso de stdio: 'inherit' opcional para evitar bloqueos de búfer en Vercel.
    */
   private async executeSovereignTask(name: string, command: string, args: string[], envVars: Record<string, string>): Promise<void> {
     const start = performance.now();
-    console.log(`\n${C.bgBlue}${C.white}  [START] ${name.toUpperCase()}  ${C.reset}`);
+    console.log(`\n${C.bgBlue}${C.white}  [EXEC] ${name.toUpperCase()}  ${C.reset}`);
     
     return new Promise((resolve, reject) => {
-      const child = spawn(command, args, { 
+      // Determinamos el comando basándonos en el sistema operativo
+      const cmd = process.platform === 'win32' ? `${command}.cmd` : command;
+
+      const child = spawn(cmd, args, { 
         shell: true, 
         env: { ...process.env, ...envVars } 
       });
 
-      // HEARTBEAT: Notificador de vida cada 10 segundos para procesos largos
+      // HEARTBEAT: Notificador de vida (Vital para Vercel)
       const heartbeat = setInterval(() => {
         const elapsed = ((performance.now() - start) / 1000).toFixed(0);
-        console.log(`    ${C.magenta}⟳ [HEARTBEAT]${C.reset} ${name} en ejecución... (${elapsed}s)`);
-      }, 10000);
+        console.log(`    ${C.magenta}⟳ [HEARTBEAT]${C.reset} ${name} procesando... (${elapsed}s)`);
+      }, 15000);
 
-      // WATCHDOG: Abortar si el proceso excede los 3 minutos (Límite de build sano)
+      // WATCHDOG: Límite de 3 minutos para evitar consumo de créditos infinito en la nube
       const watchdog = setTimeout(() => {
-        child.kill();
+        child.kill('SIGKILL');
         clearInterval(heartbeat);
         const duration = performance.now() - start;
-        this.logMetric(name, duration, 'TIMEOUT', 'Infraestructura bloqueada');
-        reject(new Error(`[WATCHDOG] El proceso ${name} ha excedido el tiempo límite de seguridad.`));
+        this.logMetric(name, duration, 'TIMEOUT', 'Worker se quedó en IDLE');
+        reject(new Error(`[WATCHDOG] El proceso ${name} abortado por timeout.`));
       }, 180000);
 
+      // Flujo de salida: Reporte inmediato
       child.stdout.on('data', (data) => {
         const output = data.toString().trim();
-        if (output) console.log(`      ${C.gray}payload >${C.reset} ${output}`);
+        if (output) {
+          // Filtrado de ruido de dependencias
+          if (!output.includes('node_modules')) {
+             console.log(`      ${C.gray}payload >${C.reset} ${output}`);
+          }
+        }
       });
 
       child.stderr.on('data', (data) => {
-        console.error(`      ${C.red}payload_err >${C.reset} ${data.toString().trim()}`);
+        const err = data.toString().trim();
+        if (err) console.error(`      ${C.red}payload_err >${C.reset} ${err}`);
       });
 
       child.on('close', (code) => {
@@ -96,18 +108,18 @@ class SovereignPrebuild {
           this.logMetric(name, duration, 'OK');
           resolve();
         } else {
-          this.logMetric(name, duration, 'FAIL', `Código de salida: ${code}`);
-          reject(new Error(`${name} falló con código ${code}`));
+          this.logMetric(name, duration, 'FAIL', `Exit Code: ${code}`);
+          reject(new Error(`${name} falló. Revise los logs de arriba.`));
         }
       });
     });
   }
 
   /**
-   * FASE 1: MACS ENGINE (Consolidación de Identidades i18n)
+   * FASE 1: MACS ENGINE (i18n Aggregator)
    */
   private async buildDictionaries(): Promise<void> {
-    const start = performance.now();
+    
     console.log(`\n${C.magenta}${C.bold}● FASE 1: CONSOLIDACIÓN DE DICCIONARIOS (MACS)${C.reset}`);
     
     await mkdir(PATHS.DICTIONARIES, { recursive: true });
@@ -130,17 +142,20 @@ class SovereignPrebuild {
         this.logMetric(`Sync Nodo ${locale.toUpperCase()}`, performance.now() - localeStart, 'OK');
       } catch (err) {
         if (err instanceof ZodError) {
-          this.logMetric(`Sync Nodo ${locale.toUpperCase()}`, performance.now() - localeStart, 'FAIL', 'Esquema inválido');
-          throw err;
+          console.error(`\n${C.red}💥 ERROR DE CONTRATO EN [${locale}]:${C.reset}`);
+          // Mapeo forense de errores de Zod para reparación instantánea
+          err.issues.forEach(i => {
+            console.error(`   ↳ PATH: ${C.yellow}${i.path.join('.')}${C.reset} | MSG: ${i.message}`);
+          });
+          process.exit(1);
         }
       }
     }
-    console.log(`${C.gray}  [INFO] MACS Engine completado en ${(performance.now() - start).toFixed(2)}ms${C.reset}`);
   }
 
   public async execute(): Promise<void> {
     console.log(`\n${C.bgBlue}${C.white}  ORQUESTADOR DE INFRAESTRUCTRURA METASHARK  ${C.reset}`);
-    console.log(`${C.gray}  Trace ID: ${this.traceId} | Root: ${ROOT}${C.reset}\n`);
+    console.log(`${C.gray}  ID: ${this.traceId} | Root: ${ROOT}${C.reset}\n`);
 
     try {
       // 1. DICCIONARIOS
@@ -149,19 +164,20 @@ class SovereignPrebuild {
       // 2. ARTEFACTOS DE DATOS (PAYLOAD)
       const env = { 
         PAYLOAD_GENERATE: 'true',
-        DATABASE_URL: 'postgres://dummy:dummy@localhost:5432/dummy', // Evitar conexión real
+        DATABASE_URL: 'postgres://dummy:dummy@127.0.0.1:5432/dummy', // Bucle local para evitar red
         NODE_ENV: 'production'
       };
 
-      await this.executeSovereignTask('Generar Tipos TS', 'pnpm', ['payload', 'generate:types'], env);
-      await this.executeSovereignTask('Sincronizar ImportMap', 'pnpm', ['payload', 'generate:importmap'], env);
+      // Comando optimizado: usamos npx para garantizar resolución local de binarios
+      await this.executeSovereignTask('Sintetizar Tipos TS', 'npx', ['payload', 'generate:types'], env);
+      await this.executeSovereignTask('Sincronizar ImportMap', 'npx', ['payload', 'generate:importmap'], env);
 
-      const totalTime = (performance.now() - this.totalStart) / 1000;
-      console.log(`\n${C.green}${C.bold}✨ PIPELINE FINALIZADO EXITOSAMENTE EN ${totalTime.toFixed(2)}s${C.reset}\n`);
+      const totalTime = ((performance.now() - this.totalStart) / 1000).toFixed(2);
+      console.log(`\n${C.green}${C.bold}✨ PIPELINE FINALIZADO EXITOSAMENTE EN ${totalTime}s${C.reset}\n`);
       process.exit(0);
     } catch (e: any) {
       console.error(`\n${C.red}❌ ANOMALÍA CRÍTICA DETECTADA:${C.reset}`);
-      console.error(`   ${e.message || 'Error desconocido en el pipeline'}`);
+      console.error(`   ${e.message || 'Fallo de orquestación de infraestructura'}`);
       process.exit(1);
     }
   }

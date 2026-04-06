@@ -1,66 +1,31 @@
 /**
  * @file packages/cms/core/tsconfig.json
  * @description Orquestador soberano de tipos para el Núcleo CMS (DX Mode).
- *              Refactorizado: Sincronización absoluta de flags de infraestructura 
- *              para garantizar paridad entre el IDE y el Build de Vercel.
- * @version 7.3 - Perfect Synchrony Edition
- * @author Raz Podestá - MetaShark Tech
+ *              Refactorizado: Resolución de depreciación de baseUrl e inyección
+ *              de referencias atómicas hacia el protocolo.
+ * @version 7.5 - Pure Handshake Edition
  */
 {
   "extends": "../../../tsconfig.base.json",
   "compilerOptions": {
-    /**
-     * @pilar XIII: Sincronización de Infraestructura.
-     * Se unifica en "5.0" para silenciar el aviso de 'baseUrl' en desuso.
-     * Este valor garantiza que el build en Vercel no falle por "Invalid value".
-     */
+    /** @fix: Silenciamos aviso de depreciación según estándar TS 5.x */
     "ignoreDeprecations": "5.0",
-    
     "baseUrl": ".",
-    
-    /** 
-     * PILAR V: ADHERENCIA AL GRAFO SOBERANO
-     * Mantenemos 'composite' para permitir que la raíz del monorepo 
-     * orqueste la validación de este paquete.
-     */
     "composite": true,
     "rootDir": ".",
-    
-    /** 
-     * PILAR XIII: PUREZA DE SOURCE (Blindaje Total)
-     * En modo DX, TypeScript no debe emitir artefactos físicos para evitar
-     * colisiones con el proceso de construcción de Next.js.
-     */
     "noEmit": true,
-
-    /** 
-     * RESOLUCIÓN HÍBRIDA (Next.js 15 Standard):
-     * 'bundler' permite importaciones sin extensiones, alineándose con el
-     * comportamiento del motor SWC en producción.
-     */
     "module": "esnext",
     "moduleResolution": "bundler",
-
-    /**
-     * @pilar III: Seguridad de Tipos Absoluta.
-     * 'verbatimModuleSyntax' asegura un Tree-Shaking limpio y predecible.
-     */
     "verbatimModuleSyntax": true,
-
     "isolatedModules": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    
     "declaration": true,
     "declarationMap": true,
     "types": ["node"]
   },
   "include": [
     "src/**/*.ts",
-    /** 
-     * @pilar I: Visión Holística.
-     * Sincronía con el contrato de tipos generado dinámicamente por Payload CMS.
-     */
     "src/payload-types.ts"
   ],
   "exclude": [
@@ -68,5 +33,12 @@
     "dist", 
     "jest.config.ts", 
     "src/**/*.spec.ts"
+  ],
+  /**
+   * @pilar V: Adherencia al Grafo Soberano.
+   * Conexión certificada con el motor de reputación.
+   */
+  "references": [
+    { "path": "../../protocol-33" }
   ]
 }
