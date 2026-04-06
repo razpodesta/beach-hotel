@@ -14,7 +14,7 @@
     },
     "build": {
       "executor": "@nx/next:build",
-      "outputs": ["dist/apps/portfolio-web/.next"],
+      "outputs": ["{workspaceRoot}/dist/apps/portfolio-web/.next"],
       "options": {
         "outputPath": "dist/apps/portfolio-web"
       },
