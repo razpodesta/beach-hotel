@@ -1,50 +1,28 @@
 /**
  * @file apps/portfolio-web/src/app/api/payload/[[...slug]]/route.ts
  * @description Gateway Soberano para Payload CMS 3.0.
- *              Refactorizado: Aislamiento total Build-Time, corrección de sintaxis
- *              en handlers y erradicación de referencias circulares de tipo.
- * @version 8.13 - Absolute Production Standard
+ *              Refactorizado para Build-Time Isolation: Se utiliza importación 
+ *              dinámica dentro de los handlers para evitar colisiones de dependencias Nx.
+ * @version 8.14 - Production Hardened & Boundary Compliant
  * @author Staff Engineer - MetaShark Tech
  */
 
-import { 
-  REST_GET, 
-  REST_POST, 
-  REST_PUT, 
-  REST_PATCH, 
-  REST_DELETE, 
-  REST_OPTIONS 
-} from '@payloadcms/next/routes';
-import { type NextRequest } from 'next/server';
+import { NextRequest } from 'next/server';
 
 /**
  * CONTRATOS DE TIPO SOBERANOS
- * @description Next.js 15 exige que 'params' sea una Promesa.
  */
 type RouteArgs = { params: Promise<{ slug?: string[] }> };
 
-/** 
- * @type PayloadRESTHandler
- * @description Firma del handler interno que provee la librería de Payload.
- */
-type PayloadRESTHandler = (req: Request, args: RouteArgs) => Promise<Response>;
-
-/**
- * @type FactorySignature
- * @description Firma de la factoría (REST_GET, etc.). 
- *              Utilizamos 'unknown' para el config para romper la circularidad de tipos.
- */
-type FactorySignature = (cfg: unknown) => PayloadRESTHandler;
-
 /**
  * @description Orquestador de ejecución diferida.
- * @pilar XIII: Build Isolation - Protege contra el crash 'reading env' en Vercel.
+ * @pilar XIII: Build Isolation - Protege contra fugas de contexto durante el build.
  */
 const executeHandler = async (
   method: string, 
   req: NextRequest, 
   args: RouteArgs,
-  handlerFactory: FactorySignature
+  handlerName: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS'
 ): Promise<Response> => {
   const traceId = `api_${method}_${Date.now()}`;
   console.group(`[HEIMDALL][GATEWAY] ${method}: ${req.nextUrl.pathname} | ID: ${traceId}`);
@@ -52,16 +30,23 @@ const executeHandler = async (
   const startTime = performance.now();
   
   try {
-    /**
-     * @pilar XIII: Dynamic Shield.
-     * Importamos la configuración local solo cuando hay tráfico real.
-     */
+    // Importación dinámica "Lazy-Load" para romper el grafo de dependencias de Nx
+    const { REST_GET, REST_POST, REST_PUT, REST_PATCH, REST_DELETE, REST_OPTIONS } = await import('@payloadcms/next/routes');
     const configModule = await import('@metashark/cms-core/config');
-    const config = configModule.default;
+    const { importMap } = await import('@payloadcms/next/importMap');
     
-    // Ejecución del handler de Payload
-    const handler = handlerFactory(config);
-    const response = await handler(req, args);
+    const config = configModule.default;
+    const handlers = {
+        GET: REST_GET,
+        POST: REST_POST,
+        PUT: REST_PUT,
+        PATCH: REST_PATCH,
+        DELETE: REST_DELETE,
+        OPTIONS: REST_OPTIONS
+    };
+    
+    const handler = handlers[handlerName](config as any, importMap);
+    const response = await handler(req as any, args as any);
     
     const endTime = performance.now();
     console.log(`[STATUS] Success | Latency: ${(endTime - startTime).toFixed(2)}ms`);
@@ -89,22 +74,10 @@ const executeHandler = async (
 
 /**
  * --- HANDLERS NORMALIZADOS ---
- * Se eliminan castings innecesarios en la firma para evitar errores de sintaxis.
  */
-export const GET = (req: NextRequest, args: RouteArgs) => 
-  executeHandler('GET', req, args, REST_GET as FactorySignature);
-
-export const POST = (req: NextRequest, args: RouteArgs) => 
-  executeHandler('POST', req, args, REST_POST as FactorySignature);
-
-export const PUT = (req: NextRequest, args: RouteArgs) => 
-  executeHandler('PUT', req, args, REST_PUT as FactorySignature);
-
-export const PATCH = (req: NextRequest, args: RouteArgs) => 
-  executeHandler('PATCH', req, args, REST_PATCH as FactorySignature);
-
-export const DELETE = (req: NextRequest, args: RouteArgs) => 
-  executeHandler('DELETE', req, args, REST_DELETE as FactorySignature);
-
-export const OPTIONS = (req: NextRequest, args: RouteArgs) => 
-  executeHandler('OPTIONS', req, args, REST_OPTIONS as FactorySignature);
+export const GET = (req: NextRequest, args: RouteArgs) => executeHandler('GET', req, args, 'GET');
+export const POST = (req: NextRequest, args: RouteArgs) => executeHandler('POST', req, args, 'POST');
+export const PUT = (req: NextRequest, args: RouteArgs) => executeHandler('PUT', req, args, 'PUT');
+export const PATCH = (req: NextRequest, args: RouteArgs) => executeHandler('PATCH', req, args, 'PATCH');
+export const DELETE = (req: NextRequest, args: RouteArgs) => executeHandler('DELETE', req, args, 'DELETE');
+export const OPTIONS = (req: NextRequest, args: RouteArgs) => executeHandler('OPTIONS', req, args, 'OPTIONS');

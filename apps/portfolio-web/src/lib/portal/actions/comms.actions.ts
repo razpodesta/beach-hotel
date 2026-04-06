@@ -1,28 +1,37 @@
 /**
  * @file apps/portfolio-web/src/lib/portal/actions/comms.actions.ts
  * @description Enterprise Communication Dispatcher (Silo D Action).
- *              Orquesta la generación y persistencia de notificaciones internas,
- *              mensajería entre nodos y alertas de infraestructura.
- *              Implementa redundancia vía Webhooks para eventos críticos.
- * @version 1.0 - Enterprise Level 4.0 Standard
- * @author Staff Engineer - MetaShark Tech
+ *              Orquesta la inyección y recuperación de señales operativas.
+ *              Refactorizado: Extreme Build Isolation (Lazy Config Load),
+ *              alineación con Payload 3.0 nativo, telemetría Heimdall v2.0
+ *              y adición de orquestador de lectura para la UI (getCommsLedger).
+ * @version 3.0 - Build-Immune & Forensic Ready
+ * @author Raz Podestá - Staff Engineer, MetaShark Tech
  */
 
 'use server';
 
 import { z } from 'zod';
-import { getPayload, type CollectionSlug } from 'payload';
-import configPromise from '@metashark/cms-core/config';
 import { headers } from 'next/headers';
+import type { CollectionSlug } from 'payload';
 
 /**
- * CONTRATO DE DESPACHO (SSoT)
- * @description Define la integridad requerida para la mensajería interna.
+ * DETECTORES DE ESTADO DE INFRAESTRUCTURA
+ * @pilar XIII: Impide que el motor de Payload intente arrancar en workers de compilación.
+ */
+const IS_BUILD_ENV = 
+  process.env.NEXT_PHASE === 'phase-production-build' || 
+  process.env.VERCEL === '1';
+
+/**
+ * CONTRATOS DE INTEGRIDAD SSoT
+ * @description Alineados estrictamente con 'packages/cms/core/src/collections/Notifications.ts'.
  */
 const notificationSchema = z.object({
   subject: z.string().min(3).max(100),
   message: z.string().min(5),
   priority: z.enum(['low', 'high', 'critical']),
+  category: z.enum(['security', 'ops', 'revenue', 'comms', 'infra']).default('ops'),
   tenant: z.string().uuid('SECURITY_ERR: Invalid Tenant Perimeter'),
   source: z.string().default('SYSTEM_NODE'),
   metadata: z.record(z.string(), z.unknown()).optional(),
@@ -33,88 +42,188 @@ export type NotificationResponse = {
   notificationId?: string;
   externalDispatch: 'sent' | 'skipped' | 'failed';
   error?: string;
+  latencyMs?: string;
+};
+
+/**
+ * @interface Transmission
+ * @description Contrato de salida formateado específicamente para consumo en UI.
+ */
+export interface Transmission {
+  id: string;
+  priority: 'low' | 'high' | 'critical';
+  category: string;
+  sender: string;
+  subject: string;
+  body?: string;
+  timestamp: string;
+  traceId: string;
+  nodeSource: string;
+  isRead: boolean;
+}
+
+export type LedgerResponse = {
+  success: boolean;
+  data: Transmission[];
+  error?: string;
+  latencyMs?: string;
 };
 
 /**
  * MODULE: dispatchInternalNotification
- * @description Punto de entrada soberano para la inyección de señales en el Comms Hub.
- * @pilar IV: Observabilidad - Implementa Trace ID y auditoría de origen.
+ * @description Inyecta una nueva alerta en el Ledger de Infraestructura y dispara Webhooks si es crítica.
  */
 export async function dispatchInternalNotification(
   rawPayload: unknown
 ): Promise<NotificationResponse> {
-  const traceId = `ntf_${Date.now()}`;
-  console.group(`[ENTERPRISE][COMMS] Dispatching Signal: ${traceId}`);
+  const startTime = performance.now();
+  const traceId = `ntf_${Date.now().toString(36).toUpperCase()}`;
+  
+  if (IS_BUILD_ENV) {
+    return { success: true, externalDispatch: 'skipped' };
+  }
+
+  console.group(`[HEIMDALL][COMMS] Dispatching Signal | Trace: ${traceId}`);
 
   try {
-    // 1. VALIDACIÓN PERIMETRAL
     const contract = notificationSchema.parse(rawPayload);
-    const payload = await getPayload({ config: await configPromise });
+    
+    // Lazy Initialization (Build-Safe)
+    const { getPayload } = await import('payload');
+    const configModule = await import('@metashark/cms-core/config');
+    const payload = await getPayload({ config: configModule.default });
     
     const headerList = await headers();
     const originNode = headerList.get('x-forwarded-for')?.split(',')[0] ?? 'INTERNAL_CORE';
 
-    /** 
-     * 2. PERSISTENCIA EN EL REPOSITORY (Silo D)
-     * @pilar IX: Justificación de 'as'. 
-     * Se asume la existencia de la colección 'notifications' en el Core CMS.
-     */
-    const TARGET_COLLECTION = 'notifications' as CollectionSlug;
-
     const record = await payload.create({
-      collection: TARGET_COLLECTION,
+      collection: 'notifications' as CollectionSlug, 
       data: {
         subject: contract.subject,
         message: contract.message,
         priority: contract.priority,
+        category: contract.category,
         tenant: contract.tenant,
         source: contract.source,
         traceId: traceId,
         originNode: originNode,
         isRead: false,
-        metadata: contract.metadata,
+        metadata: contract.metadata as Record<string, unknown>,
       }
     });
 
-    console.log(`[SUCCESS] Signal indexed in Hub. ID: ${record.id}`);
-
-    // 3. PROTOCOLO DE ALERTA EXTERNA (Redundancia de Mando)
     let externalStatus: 'sent' | 'skipped' | 'failed' = 'skipped';
 
     if (contract.priority === 'critical') {
       const webhookUrl = process.env.CRITICAL_ALERTS_WEBHOOK;
-      
       if (webhookUrl) {
-        console.log(`[BRIDGE] Escalating to External Webhook...`);
         try {
           const response = await fetch(webhookUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              content: `🚨 **ENTERPRISE CRITICAL ALERT**\n**Subject:** ${contract.subject}\n**Node:** ${contract.source}\n**Trace:** \`${traceId}\`\n**Message:** ${contract.message}`
+              content: `🚨 **CRITICAL ALERT**\n**Trace:** \`${traceId}\`\n**Node:** \`${originNode}\`\n**Message:** ${contract.message}`
             })
           });
           externalStatus = response.ok ? 'sent' : 'failed';
-        } catch (webhookErr) {
-          console.error(`[ERROR][BRIDGE] External Dispatch Failed:`, webhookErr);
+        } catch {
           externalStatus = 'failed';
         }
       }
     }
 
+    const totalLatency = (performance.now() - startTime).toFixed(2);
+    console.log(`[SUCCESS] Signal Logged in Ledger | Latency: ${totalLatency}ms`);
+
     return {
       success: true,
       notificationId: String(record.id),
-      externalDispatch: externalStatus
+      externalDispatch: externalStatus,
+      latencyMs: totalLatency
     };
 
   } catch (error: unknown) {
     const msg = error instanceof Error ? error.message : 'UNEXPECTED_COMMS_DRIFT';
-    console.error(`[CRITICAL][COMMS] Dispatch Aborted: ${msg}`);
+    console.error(`[CRITICAL] Signal Dispatch Aborted: ${msg}`);
     
     return { 
       success: false, 
       externalDispatch: 'failed',
+      error: msg 
+    };
+  } finally {
+    console.groupEnd();
+  }
+}
+
+/**
+ * MODULE: getCommsLedger
+ * @description Orquestador de lectura para el Silo D. Recupera el historial 
+ *              de transmisiones validado y formateado para la UI.
+ */
+export async function getCommsLedger(tenantId: string): Promise<LedgerResponse> {
+  const startTime = performance.now();
+  const traceId = `ledger_sync_${Date.now().toString(36)}`;
+  
+  if (IS_BUILD_ENV) {
+    return { success: true, data: [] };
+  }
+
+  console.group(`[HEIMDALL][COMMS] Fetching Ledger | Tenant: ${tenantId}`);
+
+  try {
+    // Lazy Initialization (Build-Safe)
+    const { getPayload } = await import('payload');
+    const configModule = await import('@metashark/cms-core/config');
+    const payload = await getPayload({ config: configModule.default });
+
+    const { docs } = await payload.find({
+      collection: 'notifications' as CollectionSlug,
+      where: { tenant: { equals: tenantId } },
+      sort: '-createdAt', // Más recientes primero
+      limit: 50, // Paginación de seguridad
+      depth: 0,
+    });
+
+    const transmissions: Transmission[] = docs.map((doc: any) => {
+      // Formateador cronológico resiliente
+      let timeString = '--:--';
+      try {
+        timeString = new Intl.DateTimeFormat('pt-BR', { 
+          hour: '2-digit', minute: '2-digit', second: '2-digit' 
+        }).format(new Date(doc.createdAt));
+      } catch { /* silent fallback */ }
+
+      return {
+        id: String(doc.id),
+        priority: doc.priority || 'low',
+        category: doc.category || 'ops',
+        sender: doc.source || 'SYSTEM',
+        subject: doc.subject || 'Unknown Signal',
+        body: doc.message,
+        timestamp: timeString,
+        traceId: doc.traceId || 'N/A',
+        nodeSource: doc.originNode || 'UNKNOWN_NODE',
+        isRead: Boolean(doc.isRead)
+      };
+    });
+
+    const totalLatency = (performance.now() - startTime).toFixed(2);
+    console.log(`[SUCCESS] Ledger Synced. Nodes: ${transmissions.length} | Latency: ${totalLatency}ms`);
+
+    return {
+      success: true,
+      data: transmissions,
+      latencyMs: totalLatency
+    };
+
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : 'UNEXPECTED_LEDGER_DRIFT';
+    console.error(`[CRITICAL] Ledger Sync Failed: ${msg}`);
+    
+    return { 
+      success: false, 
+      data: [],
       error: msg 
     };
   } finally {

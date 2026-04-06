@@ -1,24 +1,35 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    /**
+     * @pilar XIII: Sincronización de Infraestructura.
+     * @fix TS5103: Valor normalizado a "5.0" para compatibilidad con TS 5.x.
+     */
     "ignoreDeprecations": "5.0",
+    
+    /* PILAR V: ADHERENCIA ARQUITECTÓNICA (Nx Composite Mode) */
     "composite": true,
     "incremental": true,
+    
+    /**
+     * @pilar XIII: Soberanía de Artefactos.
+     * Los metadatos de compilación residen exclusivamente en el directorio de infraestructura raíz.
+     */
     "tsBuildInfoFile": "../../dist/apps/portfolio-web/tsconfig.tsbuildinfo",
+    
+    /* PILAR IX: DELEGACIÓN DE COMPILACIÓN (Source-First) */
     "noEmit": true,
     "jsx": "preserve",
+    
     "plugins": [
-      { "name": "next" }
+      {
+        "name": "next"
+      }
     ],
     "paths": {
       "@/*": ["./src/*"],
       "@payloadcms/next/importMap": ["./.next/types/payload-import-map.js"],
-      "@payloadcms/next/views/*": ["../../node_modules/@payloadcms/next/dist/views/*"],
-      "@metashark/auth-shield": ["../../packages/auth-shield/src/index.ts"],
-      "@metashark/protocol-33": ["../../packages/protocol-33/src/index.ts"],
-      "@metashark/cms-core": ["../../packages/cms/core/src/index.ts"],
-      "@metashark/cms-core/config": ["../../packages/cms/core/src/payload.config.ts"],
-      "@metashark/cms-ui": ["../../packages/cms/ui/src/index.ts"]
+      "@payloadcms/next/views/*": ["../../node_modules/@payloadcms/next/dist/views/*"]
     }
   },
   "include": [
@@ -26,8 +37,14 @@
     ".next/types/**/*.ts",
     "src/**/*.ts", 
     "src/**/*.tsx",
-    "../../packages/**/*.ts",
-    "../../packages/**/*.tsx"
+    "payload-types.d.ts"
   ],
-  "exclude": ["node_modules", "dist", ".next", "out", "**/*.spec.ts"]
+  "exclude": [
+    "node_modules", 
+    "dist", 
+    ".next", 
+    "out", 
+    "**/*.spec.ts",
+    "**/*.test.ts"
+  ]
 }

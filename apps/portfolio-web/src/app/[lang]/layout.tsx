@@ -1,13 +1,15 @@
 /**
  * @file apps/portfolio-web/src/app/[lang]/layout.tsx
- * @description Layout localizado. Refactorizado para ser un Layout anidado 
- *              sin etiquetas html/body, evitando conflictos de hidratación.
- * @version 46.0 - Nested Layout Standard
- * @author Raz Podestá - MetaShark Tech
+ * @description Layout localizado. Refactorizado con importaciones relativas
+ *              estrictas para cumplir con la política de fronteras de Nx.
+ * @version 47.1 - Nx Boundary Compliant (Relative Imports)
+ * @author Staff Engineer - MetaShark Tech
  */
 
 import React, { Suspense } from 'react';
 import type { Metadata, Viewport } from 'next';
+
+// Rutas relativas para cumplir con @nx/enforce-module-boundaries
 import { i18n, type Locale } from '../../config/i18n.config';
 import { getDictionary } from '../../lib/get-dictionary';
 import { fontVariables } from '../../lib/fonts';

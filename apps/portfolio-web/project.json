@@ -3,11 +3,12 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/portfolio-web/src",
   "projectType": "application",
+  "tags": ["scope:metashark", "platform:web", "type:app"],
   "targets": {
     "prebuild": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm dlx tsx scripts/sovereign-prebuild.ts",
+        "command": "pnpm dlx tsx apps/portfolio-web/scripts/sovereign-prebuild.ts",
         "color": true
       },
       "outputs": ["{projectRoot}/src/dictionaries/*.json"]

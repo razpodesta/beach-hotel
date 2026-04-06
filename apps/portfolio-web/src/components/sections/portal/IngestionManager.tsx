@@ -2,11 +2,10 @@
  * @file apps/portfolio-web/src/components/sections/portal/IngestionManager.tsx
  * @description Enterprise Ingestion Console (Silo C Manager).
  *              Terminal de orquestación para la captura de datos multi-modal.
- *              Refactorizado: Resolución de TS2304 (Handlers missing),
- *              unificación de lógica de despacho, limpieza de variables huérfanas
- *              y nivelación de tokens Tailwind v4.
- * @version 4.1 - Handlers Synced & Linter Pure
- * @author Staff Engineer - MetaShark Tech
+ *              Refactorizado: Resolución de TS2304 (Missing className), 
+ *              estandarización de contratos de reporte e inyección Heimdall v2.0.
+ * @version 5.1 - Type Safe & Boundary Compliant
+ * @author Raz Podestá - Staff Engineer, MetaShark Tech
  */
 
 'use client';
@@ -15,13 +14,15 @@ import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   CloudUpload, FileSpreadsheet, Mic, MessageSquare, 
-  CheckCircle2, Loader2,
-  Database, Zap, Users, AlertCircle,
-  Trash2, ChevronDown, ChevronUp, XCircle,
-  Clock, Share2, Activity, Cpu
+  CheckCircle2, Loader2, Database, Zap, Users, 
+  AlertCircle, Trash2, ChevronDown, ChevronUp, 
+  XCircle, Clock, Share2, Activity, Cpu
 } from 'lucide-react';
 
-/** IMPORTACIONES DE INFRAESTRUCTRURA */
+/** 
+ * IMPORTACIONES DE INFRAESTRUCTRURA (Nx Boundary Safe)
+ * @pilar V: Adherencia Arquitectónica.
+ */
 import { cn } from '../../../lib/utils/cn';
 import { executeDataIngestion } from '../../../lib/portal/actions/ingest.actions';
 import { useUIStore } from '../../../lib/store/ui.store';
@@ -56,16 +57,25 @@ interface LocalIngestionReport {
 interface IngestionManagerProps {
   /** Diccionario de ingesta validado por el Master Schema v28.1 */
   dictionary: Dictionary['ingestion_vault'];
+  /** Clases adicionales para posicionamiento inyectadas por el orquestador */
+  className?: string;
 }
 
 type IngestType = 'document' | 'image' | 'audio' | 'text';
+
+const C = {
+  reset: '\x1b[0m', cyan: '\x1b[36m', green: '\x1b[32m', 
+  yellow: '\x1b[33m', magenta: '\x1b[35m', bold: '\x1b[1m'
+};
 
 /**
  * APARATO: IngestionManager
  * @description Orquestador de baja latencia para la ingesta de activos de inteligencia.
  */
-export function IngestionManager({ dictionary }: IngestionManagerProps) {
+export function IngestionManager({ dictionary, className }: IngestionManagerProps) {
   const { session } = useUIStore();
+  
+  // --- ESTADOS DE CONTROL ---
   const [file, setFile] = useState<File | null>(null);
   const [textInput, setTextInput] = useState('');
   const [ingestType, setIngestType] = useState<IngestType>('document');
@@ -80,8 +90,8 @@ export function IngestionManager({ dictionary }: IngestionManagerProps) {
    * PROTOCOLO HEIMDALL: Telemetría de Montaje
    */
   useEffect(() => {
-    const handshakeId = `hsk_${Date.now().toString(36)}`;
-    console.log(`%c🛡️ [DNA][INGEST] Node Active | ID: ${handshakeId}`, 'color: #a855f7; font-weight: bold');
+    const handshakeId = `hsk_ing_${Date.now().toString(36)}`;
+    console.log(`${C.magenta}${C.bold}[DNA][INGEST]${C.reset} Processing Node Active | ID: ${handshakeId}`);
     
     return () => {
       if (previewUrlRef.current) URL.revokeObjectURL(previewUrlRef.current);
@@ -89,7 +99,7 @@ export function IngestionManager({ dictionary }: IngestionManagerProps) {
   }, []);
 
   /**
-   * MEMOIZACIÓN SENSORIAL: TypeIcon Resolver
+   * RESOLVER SENSORIAL: Iconografía por Modalidad
    */
   const TypeIcon = useMemo(() => {
     const map = {
@@ -103,10 +113,13 @@ export function IngestionManager({ dictionary }: IngestionManagerProps) {
 
   /**
    * ACTION: handleClearSelection
-   * @fix TS2304: Definición de lógica de limpieza desaparecida.
+   * @description Purgado de memoria y reset de estados de ingesta.
    */
   const handleClearSelection = useCallback(() => {
-    if (previewUrlRef.current) URL.revokeObjectURL(previewUrlRef.current);
+    if (previewUrlRef.current) {
+      URL.revokeObjectURL(previewUrlRef.current);
+      previewUrlRef.current = null;
+    }
     setFile(null);
     setTextInput('');
     setStatus('idle');
@@ -140,8 +153,6 @@ export function IngestionManager({ dictionary }: IngestionManagerProps) {
 
   /**
    * ACTION: handleExecuteMission (The Sovereign Dispatch)
-   * @fix TS2304: Unificación de nombres. handleExecuteIngest -> handleExecuteMission.
-   * @description Orquesta la transmutación de datos con trazabilidad forense.
    */
   const handleExecuteMission = async () => {
     if ((!file && !textInput) || !session?.tenantId) return;
@@ -149,7 +160,7 @@ export function IngestionManager({ dictionary }: IngestionManagerProps) {
     const traceId = `trace_ingest_${Date.now().toString(36).toUpperCase()}`;
     const startTime = performance.now();
 
-    console.group(`%c🚀 [HEIMDALL][PIPELINE] Execution: ${traceId}`, 'color: #3b82f6; font-weight: bold');
+    console.group(`${C.cyan}${C.bold}[HEIMDALL][PIPELINE]${C.reset} Executing Mission: ${traceId}`);
     
     setStatus('processing');
     setProgress(15);
@@ -176,13 +187,13 @@ export function IngestionManager({ dictionary }: IngestionManagerProps) {
         setStatus('success');
         setPipelineReport({ ...result, traceId });
         
-        console.log(`%c✓ [SUCCESS] Injected: ${result.metrics?.nodesInjected} | Latency: ${latency}ms`, 'color: #22c55e');
+        console.log(`${C.green}   ✓ [SUCCESS]${C.reset} Injected: ${result.metrics?.nodesInjected} | Lat: ${latency}ms`);
       } else {
         throw new Error(result.error || 'PIPELINE_DRIFT');
       }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'UNEXPECTED_PIPELINE_CRASH';
-      console.error(`%c✕ [CRITICAL] Pipeline Aborted: ${msg}`, 'color: #ef4444');
+      console.error(`${C.bold}   ✕ [CRITICAL] Pipeline Aborted:${C.reset} ${msg}`);
       setStatus('error');
     } finally {
       console.groupEnd();
@@ -190,10 +201,10 @@ export function IngestionManager({ dictionary }: IngestionManagerProps) {
   };
 
   return (
-    <div className="max-w-6xl mx-auto space-y-12 animate-in fade-in duration-1000">
+    <div className={cn("max-w-6xl mx-auto space-y-12 animate-in fade-in duration-1000", className)}>
       
-      {/* --- 1. MODALITY NAV (Oxygen Glass Design) --- */}
-      <nav className="flex justify-center gap-4 p-2.5 rounded-4xl bg-surface/40 border border-border/50 w-max mx-auto backdrop-blur-2xl shadow-luxury">
+      {/* --- 1. MODALITY NAV --- */}
+      <nav className="mx-auto flex w-max justify-center gap-4 rounded-4xl border border-border/50 bg-surface/40 p-2.5 shadow-luxury backdrop-blur-2xl">
         {[
           { id: 'document', label: dictionary.label_excel_db, icon: FileSpreadsheet, color: 'text-primary' },
           { id: 'audio', label: dictionary.label_voice_note, icon: Mic, color: 'text-blue-400' },
@@ -205,10 +216,10 @@ export function IngestionManager({ dictionary }: IngestionManagerProps) {
               key={mode.id}
               onClick={() => { setIngestType(mode.id as IngestType); setPipelineReport(null); }}
               className={cn(
-                "group flex items-center gap-3 px-8 py-4 rounded-2xl text-[10px] font-bold uppercase tracking-[0.2em] transition-all outline-none",
+                "group flex items-center gap-3 rounded-2xl px-8 py-4 text-[10px] font-bold uppercase tracking-[0.2em] transition-all outline-none",
                 isActive 
                   ? "bg-foreground text-background shadow-2xl scale-[1.02]" 
-                  : "text-muted-foreground hover:text-foreground hover:bg-white/5"
+                  : "text-muted-foreground hover:bg-white/5 hover:text-foreground"
               )}
             >
               <mode.icon size={16} className={cn("transition-colors", isActive ? "text-background" : mode.color)} />
@@ -218,90 +229,88 @@ export function IngestionManager({ dictionary }: IngestionManagerProps) {
         })}
       </nav>
 
-      {/* --- 2. MULTI-MODAL DROPZONE & ANALYTICS SIDEBAR --- */}
-      <div className="grid grid-cols-1 xl:grid-cols-12 gap-10 items-stretch">
-        
+      {/* --- 2. MULTI-MODAL DROPZONE & ANALYTICS --- */}
+      <div className="grid grid-cols-1 gap-10 items-stretch xl:grid-cols-12">
         <div className="xl:col-span-8">
           <div className={cn(
-            "relative flex flex-col items-center justify-center h-[500px] rounded-[4rem] border-2 border-dashed transition-all duration-1000 overflow-hidden transform-gpu group",
-            file ? "border-primary/40 bg-primary/2 shadow-[inset_0_0_80px_oklch(65%_0.25_270/0.05)]" : "border-border/60 bg-surface/20 hover:border-primary/20"
+            "group relative flex h-[500px] flex-col items-center justify-center overflow-hidden rounded-[4rem] border-2 border-dashed transition-all duration-1000 transform-gpu",
+            file ? "border-primary/40 bg-primary/2 shadow-[inset_0_0_80px_var(--color-primary)]/5" : "border-border/60 bg-surface/20 hover:border-primary/20"
           )}>
             {!file ? (
-              <label className="absolute inset-0 z-20 cursor-pointer flex flex-col items-center justify-center p-16 text-center">
+              <label className="absolute inset-0 z-20 flex cursor-pointer flex-col items-center justify-center p-16 text-center">
                 <input type="file" onChange={onFileChange} className="hidden" />
                 <div className="relative mb-10">
-                   <div className="absolute -inset-8 bg-primary/10 blur-[60px] rounded-full group-hover:bg-primary/20 transition-all" />
-                   <div className="h-28 w-28 rounded-3xl bg-background border border-border shadow-2xl text-muted-foreground flex items-center justify-center relative transition-transform duration-700 group-hover:scale-110 group-hover:rotate-3">
+                   <div className="absolute -inset-8 rounded-full bg-primary/10 blur-[60px] transition-all group-hover:bg-primary/20" />
+                   <div className="relative flex h-28 w-28 items-center justify-center rounded-3xl border border-border bg-background text-muted-foreground shadow-2xl transition-transform duration-700 group-hover:rotate-3 group-hover:scale-110">
                       <TypeIcon size={48} strokeWidth={1.2} />
                    </div>
                 </div>
-                <h4 className="font-display text-3xl font-bold text-foreground tracking-tighter mb-4">
+                <h4 className="font-display text-3xl font-bold tracking-tighter text-foreground mb-4">
                   {dictionary.placeholder_dropzone}
                 </h4>
-                <p className="text-sm text-muted-foreground font-light italic max-w-sm leading-relaxed">
-                  Sincronía industrial para XLSX, CSV, WebP y registros de voz. <br /> 
-                  <span className="text-primary/60 font-mono text-[10px] uppercase tracking-widest mt-2 block">Boundary: Max 10MB</span>
+                <p className="max-w-sm font-sans text-sm font-light italic leading-relaxed text-muted-foreground">
+                  Sincronía industrial para XLSX, CSV y registros de voz. <br /> 
+                  <span className="mt-2 block font-mono text-[10px] uppercase tracking-widest text-primary/60">Boundary: Max 10MB</span>
                 </p>
               </label>
             ) : (
-              <div className="relative z-30 flex flex-col items-center text-center p-16 animate-in zoom-in duration-700">
-                 <div className="h-32 w-32 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center mb-10 shadow-[0_0_60px_oklch(65%_0.25_270/0.2)]">
+              <div className="relative z-30 flex flex-col items-center p-16 text-center animate-in zoom-in duration-700">
+                 <div className="mb-10 flex h-32 w-32 items-center justify-center rounded-full border border-primary/20 bg-primary/10 shadow-[0_0_60px_var(--color-primary)]/20">
                     <CheckCircle2 size={56} className="text-primary" />
                  </div>
-                 <h4 className="font-display text-3xl font-bold text-foreground tracking-tighter mb-3 truncate max-w-lg">
+                 <h4 className="max-w-lg truncate font-display text-3xl font-bold tracking-tighter text-foreground mb-3">
                     {file.name}
                  </h4>
-                 <div className="flex gap-4 mb-10">
-                    <span className="px-4 py-1.5 rounded-full bg-surface border border-border text-[9px] font-mono text-primary font-bold uppercase tracking-widest">
+                 <div className="mb-10 flex gap-4">
+                    <span className="rounded-full border border-border bg-surface px-4 py-1.5 font-mono text-[9px] font-bold uppercase tracking-widest text-primary">
                        Payload: {(file.size / 1024).toFixed(1)} KB
                     </span>
-                    <span className="px-4 py-1.5 rounded-full bg-surface border border-border text-[9px] font-mono text-muted-foreground font-bold uppercase tracking-widest">
+                    <span className="rounded-full border border-border bg-surface px-4 py-1.5 font-mono text-[9px] font-bold uppercase tracking-widest text-muted-foreground">
                        MIME: {file.type || 'RAW_BIN'}
                     </span>
                  </div>
                  <button 
                   onClick={handleClearSelection}
-                  className="group flex items-center gap-3 px-8 py-3.5 rounded-2xl bg-red-500/5 text-red-500/60 text-[10px] font-bold uppercase tracking-[0.3em] hover:bg-red-500 hover:text-white transition-all active:scale-95 shadow-xl"
+                  className="group flex items-center gap-3 rounded-2xl bg-red-500/5 px-8 py-3.5 text-[10px] font-bold uppercase tracking-[0.3em] text-red-500/60 shadow-xl transition-all hover:bg-red-500 hover:text-white active:scale-95"
                  >
-                    <Trash2 size={16} className="group-hover:rotate-12 transition-transform" /> 
+                    <Trash2 size={16} className="transition-transform group-hover:rotate-12" /> 
                     Descartar Nodo
                  </button>
               </div>
             )}
             
-            <div className="absolute inset-0 opacity-[0.03] pointer-events-none group-hover:opacity-[0.06] transition-opacity duration-1000">
+            <div className="pointer-events-none absolute inset-0 opacity-[0.03] transition-opacity duration-1000 group-hover:opacity-[0.06]">
                <Database size={500} className="absolute -bottom-32 -right-32 rotate-12" />
             </div>
           </div>
         </div>
 
-        <div className="xl:col-span-4 space-y-6">
-           <aside className="p-10 rounded-[3.5rem] bg-surface/60 border border-border/50 shadow-luxury h-full flex flex-col relative overflow-hidden group/sidebar">
-              
+        <div className="xl:col-span-4">
+           <aside className="group/sidebar relative flex h-full flex-col overflow-hidden rounded-[3.5rem] border border-border/50 bg-surface/60 p-10 shadow-luxury">
               <header className="mb-12 flex items-center justify-between">
                  <div className="flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-2xl bg-success/10 flex items-center justify-center text-success shadow-inner">
-                       <Zap size={24} className="fill-current animate-pulse" />
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-success/10 text-success shadow-inner">
+                       <Zap size={24} className="animate-pulse fill-current" />
                     </div>
                     <div className="flex flex-col">
-                       <span className="text-[10px] font-mono font-bold text-muted-foreground uppercase tracking-[0.4em]">Pipeline Guard</span>
+                       <span className="font-mono text-[10px] font-bold uppercase tracking-[0.4em] text-muted-foreground">Pipeline Guard</span>
                        <span className="text-xs font-bold text-foreground">Silo C Active</span>
                     </div>
                  </div>
                  <Activity size={18} className="text-muted-foreground/30" />
               </header>
 
-              <div className="space-y-12 grow">
+              <div className="grow space-y-12">
                 <div className="space-y-4">
-                   <div className="flex justify-between items-end">
-                      <span className="text-[10px] font-bold text-foreground uppercase tracking-widest">Sincronía de Nodo</span>
-                      <span className="text-xl font-display font-bold text-primary tracking-tighter">{progress}%</span>
+                   <div className="flex items-end justify-between">
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-foreground">Sincronía de Nodo</span>
+                      <span className="font-display text-xl font-bold tracking-tighter text-primary">{progress}%</span>
                    </div>
-                   <div className="h-2 w-full bg-foreground/5 rounded-full overflow-hidden p-0.5 border border-white/5">
+                   <div className="h-2 w-full overflow-hidden rounded-full border border-white/5 bg-foreground/5 p-0.5">
                       <motion.div 
                         initial={{ width: 0 }}
                         animate={{ width: `${progress}%` }} 
-                        className="h-full bg-linear-to-r from-primary to-accent rounded-full shadow-[0_0_15px_oklch(65%_0.25_270/0.3)]" 
+                        className="h-full rounded-full bg-linear-to-r from-primary to-accent shadow-[0_0_15px_var(--color-primary)]/30" 
                       />
                    </div>
                 </div>
@@ -309,13 +318,13 @@ export function IngestionManager({ dictionary }: IngestionManagerProps) {
                 <div className="space-y-4">
                    <div className="flex items-center gap-2">
                       <Share2 size={12} className="text-primary" />
-                      <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">Instrucciones de Lógica</span>
+                      <span className="font-bold font-mono text-[9px] uppercase tracking-widest text-muted-foreground">Log Context</span>
                    </div>
                    <textarea 
                      value={textInput}
                      onChange={(e) => setTextInput(e.target.value)}
-                     placeholder="Inyecte parámetros de procesamiento o logs adicionales de contexto..."
-                     className="w-full h-40 bg-background/40 border border-border/50 rounded-3xl p-6 text-xs font-sans font-light resize-none outline-none focus:border-primary/40 focus:bg-background/60 transition-all text-foreground shadow-inner custom-scrollbar"
+                     placeholder="Inyecte parámetros o logs adicionales..."
+                     className="h-40 w-full resize-none rounded-3xl border border-border/50 bg-background/40 p-6 font-sans text-xs font-light text-foreground outline-none transition-all focus:bg-background/60 focus:border-primary/40 shadow-inner custom-scrollbar"
                    />
                 </div>
               </div>
@@ -324,10 +333,10 @@ export function IngestionManager({ dictionary }: IngestionManagerProps) {
                 onClick={handleExecuteMission}
                 disabled={(!file && !textInput) || status === 'processing'}
                 className={cn(
-                  "w-full mt-10 relative overflow-hidden group/btn flex items-center justify-center gap-5 py-7 rounded-full font-bold text-[11px] uppercase tracking-[0.4em] transition-all active:scale-95 shadow-3xl",
+                  "group/btn relative mt-10 flex w-full items-center justify-center gap-5 rounded-full py-7 text-[11px] font-bold uppercase tracking-[0.4em] shadow-3xl transition-all active:scale-95",
                   (file || textInput) && status !== 'processing'
                     ? "bg-foreground text-background hover:bg-primary hover:text-white"
-                    : "bg-surface text-muted-foreground/30 border border-border cursor-not-allowed"
+                    : "cursor-not-allowed border border-border bg-surface text-muted-foreground/30"
                 )}
               >
                 {status === 'processing' ? (
@@ -337,7 +346,7 @@ export function IngestionManager({ dictionary }: IngestionManagerProps) {
                   </>
                 ) : (
                   <>
-                    <CloudUpload size={20} className="group-hover/btn:-translate-y-1 transition-transform" />
+                    <CloudUpload size={20} className="transition-transform group-hover/btn:-translate-y-1" />
                     <span>{dictionary.btn_upload_data}</span>
                   </>
                 )}
@@ -348,48 +357,48 @@ export function IngestionManager({ dictionary }: IngestionManagerProps) {
 
       <AnimatePresence mode="wait">
         {status === 'success' && pipelineReport && (
-          <motion.div 
-            initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }}
-            className="space-y-8"
-          >
-            <div className="p-12 rounded-[4rem] bg-success/5 border border-success/20 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center shadow-2xl relative overflow-hidden">
-              <div className="lg:col-span-7 flex items-center gap-10">
+          <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} className="space-y-8">
+            <div className="relative grid grid-cols-1 items-center gap-12 overflow-hidden rounded-[4rem] border border-success/20 bg-success/5 p-12 shadow-2xl lg:grid-cols-12">
+              <div className="flex items-center gap-10 lg:col-span-7">
                   <div className="relative">
-                    <div className="absolute inset-0 bg-success/20 blur-[50px] rounded-full animate-pulse" />
-                    <div className="h-24 w-24 rounded-full bg-success/20 border border-success/30 flex items-center justify-center text-success relative shadow-[0_0_60px_rgba(34,197,94,0.15)]">
+                    <div className="absolute inset-0 animate-pulse rounded-full bg-success/20 blur-[50px]" />
+                    <div className="relative flex h-24 w-24 items-center justify-center rounded-full border border-success/30 bg-success/20 text-success shadow-[0_0_60px_rgba(34,197,94,0.15)]">
                       <CheckCircle2 size={48} strokeWidth={1} />
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <h4 className="font-display font-bold text-foreground text-4xl tracking-tighter uppercase leading-none">Ingesta Sincronizada</h4>
-                    <p className="text-sm text-muted-foreground font-light italic">Handshake de datos verificado. Trace ID: <span className="font-mono text-foreground select-all">{pipelineReport.traceId}</span></p>
+                    <h4 className="font-display text-4xl font-bold uppercase leading-none tracking-tighter text-foreground">
+                      Ingesta Sincronizada
+                    </h4>
+                    <p className="font-sans text-sm font-light italic text-muted-foreground">
+                       Handshake verificado. Trace ID: <span className="font-mono text-foreground select-all">{pipelineReport.traceId}</span>
+                    </p>
                   </div>
               </div>
-
-              <div className="lg:col-span-5 grid grid-cols-3 gap-8 border-l border-success/10 pl-12">
+              <div className="grid grid-cols-3 gap-8 border-l border-success/10 pl-12 lg:col-span-5">
                   <div className="space-y-1">
-                    <span className="flex items-center gap-2 text-[8px] font-bold text-muted-foreground uppercase tracking-widest"><Users size={12} /> Indexados</span>
-                    <p className="text-3xl font-display font-bold text-foreground">{pipelineReport.metrics?.nodesInjected}</p>
+                    <span className="flex items-center gap-2 text-[8px] font-bold uppercase tracking-widest text-muted-foreground"><Users size={12} /> Indexados</span>
+                    <p className="font-display text-3xl font-bold text-foreground">{pipelineReport.metrics?.nodesInjected}</p>
                   </div>
                   <div className="space-y-1">
-                    <span className="flex items-center gap-2 text-[8px] font-bold text-red-500 uppercase tracking-widest"><XCircle size={12} /> Anómalos</span>
-                    <p className="text-3xl font-display font-bold text-red-500/80">{pipelineReport.metrics?.failedRows ?? 0}</p>
+                    <span className="flex items-center gap-2 text-[8px] font-bold uppercase tracking-widest text-red-500"><XCircle size={12} /> Anómalos</span>
+                    <p className="font-display text-3xl font-bold text-red-500/80">{pipelineReport.metrics?.failedRows ?? 0}</p>
                   </div>
                   <div className="space-y-1">
-                    <span className="flex items-center gap-2 text-[8px] font-bold text-primary uppercase tracking-widest"><Clock size={12} /> Latencia</span>
-                    <p className="text-xl font-mono font-bold text-foreground">{pipelineReport.metrics?.latencyMs}</p>
+                    <span className="flex items-center gap-2 text-[8px] font-bold uppercase tracking-widest text-primary"><Clock size={12} /> Latencia</span>
+                    <p className="font-mono text-xl font-bold text-foreground">{pipelineReport.metrics?.latencyMs}</p>
                   </div>
               </div>
             </div>
 
             {pipelineReport.issues && pipelineReport.issues.length > 0 && (
-              <div className="rounded-[3.5rem] border border-border bg-surface/40 overflow-hidden transition-all shadow-xl">
+              <div className="overflow-hidden rounded-[3.5rem] border border-border bg-surface/40 shadow-xl transition-all">
                 <button 
                   onClick={() => setShowIssues(!showIssues)}
-                  className="w-full flex items-center justify-between p-8 hover:bg-white/2 transition-colors group/audit"
+                  className="group/audit flex w-full items-center justify-between p-8 transition-colors hover:bg-white/2"
                 >
                    <div className="flex items-center gap-5">
-                      <div className="h-10 w-10 rounded-xl bg-yellow-500/10 flex items-center justify-center text-yellow-500">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-yellow-500/10 text-yellow-500">
                         <AlertCircle size={20} />
                       </div>
                       <div className="text-left">
@@ -397,23 +406,19 @@ export function IngestionManager({ dictionary }: IngestionManagerProps) {
                         <span className="text-sm font-bold text-foreground">{pipelineReport.issues.length} incidentes detectados</span>
                       </div>
                    </div>
-                   <div className="h-10 w-10 rounded-full border border-border flex items-center justify-center text-muted-foreground group-hover/audit:text-primary transition-all">
+                   <div className="flex h-10 w-10 items-center justify-center rounded-full border border-border text-muted-foreground transition-all">
                       {showIssues ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                    </div>
                 </button>
-                
                 <AnimatePresence>
                   {showIssues && (
-                    <motion.div 
-                      initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}
-                      className="overflow-hidden border-t border-border/50"
-                    >
-                       <div className="p-8 space-y-4 max-h-80 overflow-y-auto custom-scrollbar bg-background/10">
+                    <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden border-t border-border/50">
+                       <div className="max-h-80 space-y-4 overflow-y-auto bg-background/10 p-8 custom-scrollbar">
                           {pipelineReport.issues.map((issue: PipelineIssue, i: number) => (
-                            <div key={i} className="flex items-start gap-6 p-6 rounded-3xl bg-red-500/3 border border-red-500/10 group/row hover:bg-red-500/6 transition-colors">
-                               <span className="text-[10px] font-mono font-bold text-red-500/60 bg-red-500/10 px-3 py-1.5 rounded-lg">Fila {issue.row}</span>
-                               <div className="space-y-2 flex-1">
-                                  <p className="text-xs text-foreground font-mono font-bold leading-relaxed">{issue.error}</p>
+                            <div key={i} className="group/row flex items-start gap-6 rounded-3xl border border-red-500/10 bg-red-500/3 p-6 transition-colors hover:bg-red-500/6">
+                               <span className="rounded-lg bg-red-500/10 px-3 py-1.5 font-mono text-[10px] font-bold text-red-500/60">Fila {issue.row}</span>
+                               <div className="flex-1 space-y-2">
+                                  <p className="font-mono text-xs font-bold leading-relaxed text-foreground">{issue.error}</p>
                                </div>
                             </div>
                           ))}
@@ -428,26 +433,23 @@ export function IngestionManager({ dictionary }: IngestionManagerProps) {
       </AnimatePresence>
 
       {status === 'error' && (
-        <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="p-16 rounded-[4rem] bg-red-500/3 border border-red-500/20 text-center space-y-8 shadow-3xl">
-            <XCircle size={64} className="text-red-500 mx-auto" strokeWidth={1.5} />
-            <h4 className="font-display font-bold text-foreground text-3xl uppercase tracking-tighter">{dictionary.status_error}</h4>
-            <button 
-              onClick={() => setStatus('idle')}
-              className="px-10 py-4 rounded-full bg-red-500 text-white font-bold text-[10px] uppercase tracking-[0.4em] hover:bg-white hover:text-black transition-all shadow-xl"
-            >
+        <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="rounded-[4rem] border border-red-500/20 bg-red-500/3 p-16 text-center shadow-3xl space-y-8">
+            <XCircle size={64} className="mx-auto text-red-500" strokeWidth={1.5} />
+            <h4 className="font-display text-3xl font-bold uppercase tracking-tighter text-foreground">{dictionary.status_error}</h4>
+            <button onClick={() => setStatus('idle')} className="rounded-full bg-red-500 px-10 py-4 text-[10px] font-bold uppercase tracking-[0.4em] text-white shadow-xl transition-all hover:bg-white hover:text-black">
                Reinicializar Pipeline
             </button>
         </motion.div>
       )}
 
-      <footer className="pt-8 border-t border-border/40 flex flex-col sm:flex-row justify-between items-center gap-6 opacity-40 hover:opacity-100 transition-opacity duration-1000">
+      <footer className="flex flex-col items-center justify-between gap-6 border-t border-border/40 pt-8 opacity-40 transition-opacity duration-1000 hover:opacity-100 sm:flex-row">
          <div className="flex items-center gap-4">
-            <div className="h-10 w-10 rounded-xl bg-surface border border-border flex items-center justify-center text-primary">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-surface text-primary">
                <Cpu size={20} strokeWidth={1.5} />
             </div>
             <div className="flex flex-col">
-               <span className="text-[9px] font-mono font-bold uppercase tracking-widest">Silo C Processing Engine</span>
-               <span className="text-[10px] font-bold text-foreground">Standard v4.0 • MetaShark Cloud</span>
+               <span className="font-mono text-[9px] font-bold uppercase tracking-widest">Silo C Processing Engine</span>
+               <span className="text-[10px] font-bold text-foreground">Standard v5.1 • MetaShark Intelligence</span>
             </div>
          </div>
       </footer>

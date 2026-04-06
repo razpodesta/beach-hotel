@@ -1,98 +1,117 @@
 /**
- * @file SuiteGallery.tsx
+ * @file apps/portfolio-web/src/components/sections/suites/SuiteGallery.tsx
  * @description Orquestador interactivo del catálogo de activos habitacionales (Suites).
- *              Refactorizado: Resolución de error TS2304 (setSearchQuery), 
- *              optimización de filtrado por GPU, trazabilidad forense Heimdall
- *              y coreografía de entrada adaptativa.
- * @version 6.0 - Build Resilience & UX Performance
- * @author Raz Podestá - MetaShark Tech
+ *              Refactorizado: Resolución de infracciones de pureza (React 19),
+ *              eliminación de variables huérfanas, cumplimiento de fronteras Nx
+ *              y telemetría de búsqueda optimizada.
+ * @version 8.0 - Linter Pure & Architecture Ready
+ * @author Raz Podestá - Staff Engineer, MetaShark Tech
  */
 
 'use client';
 
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
-import { Search, BedDouble, Info, Sparkles, ArrowRight, X } from 'lucide-react';
+import { Search, BedDouble, Info, Sparkles, ArrowRight, X, LayoutGrid } from 'lucide-react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 
 /**
- * IMPORTACIONES DE INFRAESTRUCTRURA
- * @pilar V: Adherencia arquitectónica a fronteras Nx.
+ * IMPORTACIONES DE INFRAESTRUCTRURA (Rutas Relativas - Nx Boundary Compliance)
+ * @pilar V: Adherencia Arquitectónica.
  */
 import { cn } from '../../../lib/utils/cn';
+import { useUIStore } from '../../../lib/store/ui.store';
 import type { Dictionary } from '../../../lib/schemas/dictionary.schema';
-
-/**
- * @interface SuiteEntry
- * @description Contrato de datos para una unidad habitacional soberana.
- */
-export interface SuiteEntry {
-  id: string;
-  name: string;
-  category: 'Master' | 'Deluxe' | 'Standard';
-  imageUrl: string;
-  price: string;
-}
+import type { SuiteEntry } from '../../../lib/schemas/suite_gallery.schema';
 
 /**
  * @interface SuiteGalleryProps
- * @pilar III: Props explícitas y tipadas.
+ * @pilar III: Seguridad de Tipos Absoluta.
  */
 interface SuiteGalleryProps {
-  /** Listado de suites nivelado desde la fachada del CMS */
+  /** Colección de unidades habitacionales sincronizadas con el CMS */
   suites: SuiteEntry[];
-  /** Diccionario de interfaz validado por contrato SSoT */
+  /** Diccionario de interfaz validado por SSoT */
   dictionary: Dictionary['suite_gallery'];
   className?: string;
 }
 
+const C = {
+  reset: '\x1b[0m', 
+  cyan: '\x1b[36m', 
+  green: '\x1b[32m', 
+  yellow: '\x1b[33m', 
+  magenta: '\x1b[35m', 
+  bold: '\x1b[1m'
+};
+
 /**
  * APARATO: SuiteGallery
- * @description Gestiona la exhibición y búsqueda de activos habitacionales con adaptabilidad atmosférica.
+ * @description Centro de mando para la exhibición y reserva de suites de lujo.
  */
 export function SuiteGallery({ suites, dictionary, className }: SuiteGalleryProps) {
-  // --- ESTADO SOBERANO (Resolución TS2304) ---
+  // --- IDENTIDAD Y ESTADO ---
+  const { session } = useUIStore();
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [activeCategory, setActiveCategory] = useState<string>('All');
 
   /**
-   * PROTOCOLO HEIMDALL: Telemetría de Interacción
-   * @pilar IV: Trazabilidad forense del comportamiento del huésped.
+   * PROTOCOLO HEIMDALL: Telemetría de Montaje e Identidad
    */
   useEffect(() => {
-    if (searchQuery.length > 2) {
-      console.log(`[HEIMDALL][UX] Catalog Filter: "${searchQuery}" | Atmosphere: Active`);
-    }
-  }, [searchQuery]);
+    const traceId = `catalog_hsk_${Date.now().toString(36).toUpperCase()}`;
+    console.log(
+      `${C.magenta}${C.bold}[DNA][CATALOG]${C.reset} Node Synchronized | ` +
+      `Tenant: ${C.cyan}${session?.tenantId || 'MASTER_PERIMETER'}${C.reset} | ` +
+      `Items: ${suites.length} | Trace: ${traceId}`
+    );
+  }, [suites.length, session?.tenantId]);
 
   /**
    * MEMOIZACIÓN DE FILTROS (Pilar X)
    */
   const categoryFilters = useMemo(() => [
-    { id: 'All', label: dictionary.cat_all },
-    { id: 'Master', label: dictionary.cat_master },
-    { id: 'Deluxe', label: dictionary.cat_deluxe },
-    { id: 'Standard', label: dictionary.cat_standard }
+    { id: 'All', label: dictionary.cat_all, icon: LayoutGrid },
+    { id: 'Master', label: dictionary.cat_master, icon: Sparkles },
+    { id: 'Deluxe', label: dictionary.cat_deluxe, icon: BedDouble },
+    { id: 'Standard', label: dictionary.cat_standard, icon: BedDouble }
   ], [dictionary]);
 
   /**
-   * MOTOR DE FILTRADO SOBERANO
-   * @description Ejecuta el filtrado en memoria con complejidad O(n) y normalización.
+   * MOTOR DE FILTRADO SOBERANO (Pure Logic)
+   * @pilar III: Inferencia de tipos y transformación de datos.
    */
   const filteredSuites = useMemo(() => {
-    const list = suites || [];
-    return list.filter((suite: SuiteEntry) => {
-      const matchesSearch = suite.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const query = searchQuery.toLowerCase().trim();
+    
+    return suites.filter((suite) => {
+      const matchesSearch = 
+        suite.name.toLowerCase().includes(query) || 
+        suite.description.toLowerCase().includes(query);
       const matchesCategory = activeCategory === 'All' || suite.category === activeCategory;
       return matchesSearch && matchesCategory;
     });
   }, [searchQuery, activeCategory, suites]);
 
   /**
-   * ACCIONES DE INTERFAZ
+   * TELEMETRÍA DE RESULTADOS (Heimdall v2.1)
+   * @description Reporta cambios en el clúster de resultados fuera del ciclo de render.
    */
-  const clearSearch = useCallback(() => {
+  useEffect(() => {
+    if (searchQuery.length > 0 || activeCategory !== 'All') {
+      console.log(
+        `${C.cyan}   ✓ [FILTER_UPDATE]${C.reset} Query: "${searchQuery}" | ` +
+        `Category: ${activeCategory} | Nodes: ${filteredSuites.length}`
+      );
+    }
+  }, [searchQuery, activeCategory, filteredSuites.length]);
+
+  /**
+   * HANDLERS DE INTERFAZ
+   */
+  const handleClear = useCallback(() => {
     setSearchQuery('');
+    setActiveCategory('All');
   }, []);
 
   if (!dictionary) return null;
@@ -100,12 +119,11 @@ export function SuiteGallery({ suites, dictionary, className }: SuiteGalleryProp
   return (
     <div className={cn("space-y-12 transition-colors duration-1000", className)}>
       
-      {/* --- 1. CONSOLA DE CONTROL TÁCTICO (Atmosphere Aware) --- */}
+      {/* --- 1. CONSOLA DE CONTROL TÁCTICO (Accessible Dashboard) --- */}
       <header 
-        className="sticky top-24 z-30 bg-surface/80 backdrop-blur-2xl p-6 rounded-[2.5rem] border border-border shadow-3xl flex flex-col md:flex-row gap-6 items-center justify-between transition-all duration-700"
+        className="sticky top-24 z-30 bg-surface/80 backdrop-blur-3xl p-6 rounded-[3rem] border border-border shadow-3xl flex flex-col xl:flex-row gap-8 items-center justify-between transition-all duration-700"
       >
-        {/* Input de Búsqueda de Élite */}
-        <div className="relative w-full md:w-96 group">
+        <div className="relative w-full xl:w-96 group">
           <Search 
             className="absolute left-6 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors" 
             size={18} 
@@ -115,11 +133,11 @@ export function SuiteGallery({ suites, dictionary, className }: SuiteGalleryProp
             placeholder={dictionary.search_placeholder}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full rounded-full bg-background/50 border border-border/60 py-4 pl-14 pr-12 text-sm focus:border-primary focus:ring-4 focus:ring-primary/5 outline-none transition-all placeholder:text-muted-foreground/40 text-foreground font-sans"
+            className="w-full rounded-full bg-background/50 border border-border/60 py-4.5 pl-14 pr-12 text-sm focus:border-primary/40 focus:ring-4 focus:ring-primary/5 outline-none transition-all placeholder:text-muted-foreground/30 text-foreground font-sans shadow-inner"
           />
           {searchQuery && (
             <button 
-              onClick={clearSearch}
+              onClick={() => setSearchQuery('')}
               className="absolute right-4 top-1/2 -translate-y-1/2 p-2 text-muted-foreground hover:text-primary transition-colors"
               aria-label="Limpiar búsqueda"
             >
@@ -128,111 +146,142 @@ export function SuiteGallery({ suites, dictionary, className }: SuiteGalleryProp
           )}
         </div>
         
-        {/* Navegación de Categorías (Tab System) */}
-        <nav className="flex flex-wrap justify-center gap-2" aria-label="Filtros de categoría">
+        <nav 
+          className="flex flex-wrap justify-center gap-3 bg-background/20 p-2 rounded-2xl border border-border/40" 
+          role="tablist"
+        >
             {categoryFilters.map((cat) => {
               const isActive = activeCategory === cat.id;
+              const Icon = cat.icon;
               return (
                 <button
                   key={cat.id}
+                  role="tab"
+                  aria-selected={isActive}
                   onClick={() => setActiveCategory(cat.id)}
                   className={cn(
-                      "px-6 py-2.5 rounded-full text-[10px] font-bold transition-all border uppercase tracking-widest outline-none",
+                      "group flex items-center gap-3 px-6 py-3 rounded-xl text-[10px] font-bold transition-all uppercase tracking-widest outline-none",
                       isActive 
-                        ? "bg-foreground text-background border-foreground shadow-lg scale-105" 
-                        : "bg-background/20 border-border text-muted-foreground hover:border-primary/40 hover:text-primary"
+                        ? "bg-foreground text-background shadow-2xl scale-[1.05]" 
+                        : "text-muted-foreground hover:text-foreground hover:bg-surface/50"
                   )}
                 >
+                  <Icon size={14} className={cn("transition-colors", isActive ? "text-primary" : "group-hover:text-primary")} />
                   {cat.label}
                 </button>
               );
             })}
         </nav>
+
+        {(searchQuery || activeCategory !== 'All') && (
+           <button 
+            onClick={handleClear}
+            className="text-[9px] font-mono font-bold text-primary uppercase tracking-[0.2em] hover:underline transition-all outline-none"
+           >
+             Reset Filters
+           </button>
+        )}
       </header>
 
-      {/* --- 2. GRID DE ACTIVOS (Luxury Architecture) --- */}
+      {/* --- 2. GRID DE ACTIVOS (Aceleración GPU) --- */}
       <motion.div 
         layout 
-        className="relative min-h-[500px]"
+        className="relative min-h-[500px] transform-gpu"
+        aria-live="polite"
       >
         <AnimatePresence mode="popLayout">
           {filteredSuites.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
-              {filteredSuites.map((suite: SuiteEntry) => (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 xl:gap-12">
+              {filteredSuites.map((suite) => (
                 <motion.article 
                   key={suite.id}
                   layout
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
+                  initial={{ opacity: 0, scale: 0.98, y: 20 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                  className="group relative flex flex-col overflow-hidden rounded-[3rem] border border-border bg-surface/40 hover:border-primary/30 transition-all duration-700 hover:-translate-y-2 shadow-2xl transform-gpu"
+                  transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                  className="group relative flex flex-col overflow-hidden rounded-[3.5rem] border border-border bg-surface/40 hover:border-primary/40 transition-all duration-700 hover:-translate-y-2 shadow-2xl"
                 >
-                  <div className="relative h-72 w-full overflow-hidden">
+                  <div className="relative h-80 w-full overflow-hidden bg-background">
                       <Image 
                         src={suite.imageUrl} 
                         alt={suite.name} 
                         fill 
-                        className="object-cover transition-transform duration-1000 group-hover:scale-110 brightness-100 [data-theme='dark']:brightness-90"
-                        sizes="(max-width: 768px) 100vw, 400px"
+                        className="object-cover transition-transform duration-2000 group-hover:scale-105 brightness-100 [data-theme='dark']:brightness-90"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 400px"
                       />
-                      <div className="absolute inset-0 bg-linear-to-t from-background/90 via-transparent to-transparent opacity-90 transition-colors duration-1000" />
+                      <div className="absolute inset-0 bg-linear-to-t from-background/90 via-background/20 to-transparent opacity-90" />
                       
-                      <div className="absolute top-6 left-6">
-                        <span className="inline-flex items-center gap-2 rounded-full bg-background/60 backdrop-blur-xl border border-border/40 px-4 py-1.5 text-[8px] font-bold uppercase tracking-widest text-primary">
-                          <Sparkles size={10} className="animate-pulse" />
+                      <div className="absolute top-8 left-8">
+                        <span className="inline-flex items-center gap-2.5 rounded-full bg-background/60 backdrop-blur-2xl border border-border/40 px-5 py-2 text-[9px] font-bold uppercase tracking-[0.25em] text-primary shadow-xl">
+                          <Sparkles size={12} className="animate-pulse" />
                           {suite.category}
                         </span>
                       </div>
                   </div>
 
-                  <div className="p-10 relative z-10 flex flex-col grow">
-                      <div className="flex justify-between items-start mb-6">
-                          <h3 className="text-2xl font-display font-bold text-foreground tracking-tight group-hover:text-primary transition-colors duration-500 leading-none">
+                  <div className="p-12 relative z-10 flex flex-col grow">
+                      <div className="flex justify-between items-start mb-8">
+                          <h3 className="text-3xl font-display font-bold text-foreground tracking-tighter group-hover:text-primary transition-colors duration-500 leading-none">
                             {suite.name}
                           </h3>
                           <div className="text-right">
-                            <span className="block text-[8px] font-mono text-muted-foreground uppercase tracking-widest mb-1">
+                            <span className="block text-[9px] font-mono text-muted-foreground uppercase tracking-widest mb-1.5 font-bold">
                                {dictionary.label_from}
                             </span>
-                            <span className="text-xl font-display font-bold text-foreground">
+                            <span className="text-2xl font-display font-bold text-foreground bg-primary/5 border border-primary/10 px-4 py-1.5 rounded-xl">
                                {suite.price}
                             </span>
                           </div>
                       </div>
                       
-                      <footer className="mt-auto flex items-center justify-between border-t border-border/40 pt-6">
-                          <div className="flex items-center gap-3 text-[9px] uppercase tracking-widest font-bold text-muted-foreground transition-colors group-hover:text-foreground">
-                              <BedDouble size={16} className="text-primary" />
+                      <p className="text-muted-foreground text-sm font-sans font-light leading-relaxed mb-10 italic line-clamp-3">
+                         {suite.description}
+                      </p>
+                      
+                      <footer className="mt-auto flex items-center justify-between border-t border-border/40 pt-8">
+                          <div className="flex items-center gap-4 text-[10px] uppercase tracking-[0.3em] font-bold text-muted-foreground/60 transition-colors group-hover:text-foreground">
+                              <BedDouble size={18} className="text-primary opacity-40 group-hover:opacity-100" />
                               <span>{suite.category} {dictionary.label_suite_suffix}</span>
                           </div>
-                          <ArrowRight size={18} className="text-primary transition-transform group-hover:translate-x-1.5" />
+                          <div className="h-10 w-10 rounded-full border border-primary/20 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all shadow-lg active:scale-90">
+                             <ArrowRight size={20} className="transition-transform group-hover:translate-x-1" />
+                          </div>
                       </footer>
                   </div>
                 </motion.article>
               ))}
             </div>
           ) : (
-            /* ESTADO DE RESILIENCIA: Fallback i18n (Pilar VIII) */
+            /* ESTADO DE RESILIENCIA */
             <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="flex flex-col items-center justify-center py-40 rounded-[3.5rem] border border-dashed border-border bg-surface/10 text-center"
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="flex flex-col items-center justify-center py-48 rounded-[4rem] border-2 border-dashed border-border bg-surface/20 text-center"
             >
-                <div className="relative mb-6">
-                   <div className="absolute -inset-6 bg-primary/5 blur-3xl rounded-full" />
-                   <Info size={56} className="text-muted-foreground/30 relative" />
+                <div className="relative mb-8">
+                   <div className="absolute -inset-8 bg-primary/10 blur-3xl rounded-full" />
+                   <div className="h-24 w-24 rounded-full bg-background border border-border flex items-center justify-center text-muted-foreground/20 relative shadow-inner">
+                      <Info size={48} strokeWidth={1} />
+                   </div>
                 </div>
-                <p className="text-foreground font-display text-xl font-bold uppercase tracking-tight mb-2">
+                <h4 className="text-foreground font-display text-2xl font-bold uppercase tracking-tight mb-4">
                    {dictionary.empty_state_title}
-                </p>
-                <p className="text-muted-foreground font-mono text-[10px] uppercase tracking-[0.4em] animate-pulse">
+                </h4>
+                <p className="text-muted-foreground font-mono text-[9px] uppercase tracking-[0.5em] animate-pulse">
                    {dictionary.empty_state_signal}
                 </p>
             </motion.div>
           )}
         </AnimatePresence>
       </motion.div>
+
+      {/* FOOTER TELEMETRÍA */}
+      <div className="pt-8 opacity-20 hover:opacity-100 transition-opacity duration-1000">
+         <span className="font-mono text-[8px] uppercase tracking-[0.6em] text-muted-foreground">
+           MetaShark Hospitality Engine • Perimeter: {session?.tenantId || 'Sovereign_Root'}
+         </span>
+      </div>
     </div>
   );
 }

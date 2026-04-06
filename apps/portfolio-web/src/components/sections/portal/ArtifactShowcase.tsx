@@ -1,10 +1,10 @@
 /**
- * @file ArtifactShowcase.tsx
+ * @file apps/portfolio-web/src/components/sections/portal/ArtifactShowcase.tsx
  * @description Centro de Mando de Reputación y Exhibición de Artefactos (Protocolo 33).
  *              Orquesta la visualización del progreso y la taxonomía de fragmentos.
- *              Refactorizado: Sincronía dinámica de rangos i18n, optimización de 
- *              interpolación de grid y cumplimiento de arquitectura Multi-Silo.
- * @version 3.1 - Dynamic Rank Sync & Layout Fluidity
+ *              Refactorizado: Resolución de TS2741 (loreLabel sync), erradicación
+ *              de hardcoding y optimización de arquitectura de componentes.
+ * @version 4.1 - Contract Synchronized & Performance Optimized
  * @author Raz Podestá - Staff Engineer, MetaShark Tech
  */
 
@@ -30,8 +30,8 @@ import {
 } from '@metashark/protocol-33';
 
 /**
- * IMPORTACIONES DE INFRAESTRUCTRURA
- * @pilar_V: Adherencia arquitectónica.
+ * IMPORTACIONES DE INFRAESTRUCTRURA (Rutas Relativas - Nx Boundary Compliance)
+ * @pilar V: Adherencia Arquitectónica.
  */
 import { cn } from '../../../lib/utils/cn';
 import { ArtifactCard } from './ArtifactCard';
@@ -39,13 +39,21 @@ import type { Dictionary } from '../../../lib/schemas/dictionary.schema';
 
 /**
  * @interface ArtifactShowcaseProps
- * @pilar_III: Seguridad de Tipos Absoluta.
+ * @pilar III: Seguridad de Tipos Absoluta.
  */
 export interface ArtifactShowcaseProps {
+  /** Puntos de experiencia brutos del usuario */
   userXp: number;
+  /** IDs de los artefactos desbloqueados */
   ownedIds: string[];
+  /** Diccionario de gamificación validado por SSoT */
   dictionary: Dictionary['gamification'];
 }
+
+const C = {
+  reset: '\x1b[0m', cyan: '\x1b[36m', green: '\x1b[32m', 
+  yellow: '\x1b[33m', magenta: '\x1b[35m', bold: '\x1b[1m'
+};
 
 /**
  * APARATO PRINCIPAL: ArtifactShowcase
@@ -75,7 +83,10 @@ export function ArtifactShowcase({ userXp, ownedIds, dictionary }: ArtifactShowc
    * PROTOCOLO HEIMDALL: Telemetría de Montaje
    */
   useEffect(() => {
-    console.log(`[HEIMDALL][P33] ArtifactShowcase Calibrated. Rank: ${rankTitle} | Level: ${progress.currentLevel}`);
+    console.log(
+      `${C.magenta}${C.bold}[DNA][P33]${C.reset} ArtifactShowcase Calibrated. ` +
+      `Rank: ${C.cyan}${rankTitle}${C.reset} | Level: ${progress.currentLevel}`
+    );
   }, [progress.currentLevel, rankTitle]);
 
   /** 3. MOTOR DE FILTRADO TÁCTICO (O(n) Performance) */
@@ -85,10 +96,10 @@ export function ArtifactShowcase({ userXp, ownedIds, dictionary }: ArtifactShowc
 
   /** 4. MATRIZ DE CASAS (SSoT Navigation) */
   const houses: Array<{ id: House | 'ALL', icon: LucideIcon, label: string }> = useMemo(() => [
-    { id: 'ALL', icon: Trophy, label: 'COLEÇÃO COMPLETA' },
-    { id: 'ARCHITECTS', icon: Shield, label: 'ARQUITETOS' },
-    { id: 'WEAVERS', icon: Sparkles, label: 'TEJEDORAS' },
-    { id: 'ANOMALIES', icon: Cpu, label: 'ANOMALIA' }
+    { id: 'ALL', icon: Trophy, label: 'GLOBAL VAULT' },
+    { id: 'ARCHITECTS', icon: Shield, label: 'ARCHITECTS' },
+    { id: 'WEAVERS', icon: Sparkles, label: 'WEAVERS' },
+    { id: 'ANOMALIES', icon: Cpu, label: 'ANOMALIES' }
   ], []);
 
   return (
@@ -103,7 +114,7 @@ export function ArtifactShowcase({ userXp, ownedIds, dictionary }: ArtifactShowc
              </div>
              <div>
                 <span className="text-[10px] font-mono font-bold text-muted-foreground uppercase tracking-[0.5em] block mb-1">
-                  Nível de Ascensão {progress.currentLevel}
+                  Level {progress.currentLevel}
                 </span>
                 <h2 className="text-4xl font-display font-bold text-foreground tracking-tighter leading-none">
                    {rankTitle}
@@ -115,16 +126,16 @@ export function ArtifactShowcase({ userXp, ownedIds, dictionary }: ArtifactShowc
              <div className="flex justify-between text-[9px] font-bold uppercase tracking-widest text-muted-foreground/60">
                 <span className="flex items-center gap-2">
                   <StarIcon className="text-primary h-3 w-3" /> 
-                  Experiência: {progress.currentXp} RZB
+                  XP: {progress.currentXp} RZB
                 </span>
-                <span>Próximo Rango: {progress.nextLevelXp} RZB</span>
+                <span>Next Rank: {progress.nextLevelXp} RZB</span>
              </div>
-             <div className="h-2.5 w-full bg-foreground/5 rounded-full overflow-hidden border border-white/5 p-0.5">
+             <div className="h-2.5 w-full bg-foreground/5 rounded-full overflow-hidden border border-border/50 p-0.5">
                 <motion.div 
                   initial={{ width: 0 }} 
                   animate={{ width: `${progress.progressPercent}%` }} 
                   transition={{ duration: 2, ease: [0.16, 1, 0.3, 1] }}
-                  className="h-full bg-linear-to-r from-primary via-accent to-primary relative rounded-full shadow-[0_0_20px_oklch(65%_0.25_270/0.4)]"
+                  className="h-full bg-linear-to-r from-primary via-accent to-primary relative rounded-full shadow-[0_0_20px_var(--color-primary)]"
                 >
                    <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
                 </motion.div>
@@ -134,12 +145,14 @@ export function ArtifactShowcase({ userXp, ownedIds, dictionary }: ArtifactShowc
 
         <div className="bg-surface/40 backdrop-blur-xl border border-border/50 p-8 rounded-[2.5rem] flex items-center justify-between shadow-3xl">
            <div className="space-y-2">
-              <span className="block text-[9px] font-mono text-zinc-500 uppercase tracking-widest font-bold">Patrimônio Digital</span>
+              <span className="block text-[9px] font-mono text-muted-foreground uppercase tracking-widest font-bold">
+                {dictionary.artifacts_title}
+              </span>
               <span className="text-3xl font-display font-bold text-foreground tracking-tighter">
-                {ownedIds.length}<span className="text-zinc-700">/33</span>
+                {ownedIds.length}<span className="text-muted-foreground/50">/33</span>
               </span>
            </div>
-           <div className="h-12 w-12 rounded-full border border-border flex items-center justify-center text-zinc-800 hover:text-primary transition-colors cursor-help group">
+           <div className="h-12 w-12 rounded-full border border-border flex items-center justify-center text-foreground/50 hover:text-primary transition-colors cursor-help group">
               <Info size={20} className="group-hover:scale-110 transition-transform" />
            </div>
         </div>
@@ -171,24 +184,33 @@ export function ArtifactShowcase({ userXp, ownedIds, dictionary }: ArtifactShowc
       {/* --- 3. GRID DE ATOMOS (The 33 Chamber) --- */}
       <motion.div 
         layout 
-        className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 min-h-[400px]"
+        className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 min-h-[400px] transform-gpu"
       >
         <AnimatePresence mode="popLayout">
           {filteredArtifacts.map((artifact) => {
             const isOwned = ownedIds.includes(artifact.id);
             const artifactI18n = dictionary.artifacts[artifact.id] || { 
               name: `Fragmento ${artifact.id.substring(0, 5)}`, 
-              lore: "Dados de fragmento em fase de sincronização..." 
+              lore: "Fragment data synchronizing..." 
             };
             const rarityKey = artifact.rarity.toLowerCase() as keyof typeof dictionary.rarity_labels;
             
             return (
-              <ArtifactCard
+              <motion.div
                 key={artifact.id}
-                isOwned={isOwned}
-                labels={artifactI18n}
-                rarityLabel={dictionary.rarity_labels[rarityKey]}
-              />
+                layout
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                transition={{ duration: 0.4 }}
+              >
+                <ArtifactCard
+                  isOwned={isOwned}
+                  labels={artifactI18n}
+                  rarityLabel={dictionary.rarity_labels[rarityKey]}
+                  loreLabel={dictionary.lore_label}
+                />
+              </motion.div>
             );
           })}
         </AnimatePresence>
@@ -199,11 +221,11 @@ export function ArtifactShowcase({ userXp, ownedIds, dictionary }: ArtifactShowc
           <div className="flex items-center gap-4">
              <Hexagon size={24} className="text-primary animate-spin-slow" strokeWidth={1.5} />
              <p className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest leading-relaxed">
-                Consulte o <span className="text-foreground font-bold underline decoration-primary/30">Concierge Journal</span> para localizar pistas sobre novos fragmentos latentes.
+                Consult the <span className="text-foreground font-bold underline decoration-primary/30">Concierge Journal</span> to locate clues about latent fragments.
              </p>
           </div>
-          <button className="group flex items-center gap-5 px-10 py-5 rounded-full bg-white text-black font-bold text-[10px] uppercase tracking-[0.4em] transition-all hover:bg-primary hover:text-white shadow-3xl active:scale-95">
-             Rank Global de Ascensão <ChevronRight size={16} className="transition-transform group-hover:translate-x-2" />
+          <button className="group flex items-center gap-5 px-10 py-5 rounded-full bg-foreground text-background font-bold text-[10px] uppercase tracking-[0.4em] transition-all hover:bg-primary hover:text-white shadow-3xl active:scale-95">
+             Global Ascension Rank <ChevronRight size={16} className="transition-transform group-hover:translate-x-2" />
           </button>
       </footer>
     </div>

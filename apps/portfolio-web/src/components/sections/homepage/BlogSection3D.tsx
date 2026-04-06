@@ -1,21 +1,21 @@
 /**
  * @file BlogSection3D.tsx
  * @description Orquestador de visualización editorial con profundidad cinemática.
- *              Implementa carrusel 3D con inercia, detección de atmósfera dinámica
- *              y motor de autoplay inteligente de bajo consumo.
- * @version 21.0 - Energy Aware Autoplay & OKLCH Atmosphere Sync
- * @author Raz Podestá - MetaShark Tech
+ *              Refactorizado: Sincronización atmosférica OKLCH v2.0, 
+ *              autoplay con conciencia de visibilidad (Energy-Aware), 
+ *              telemetría Heimdall v2.0 y cumplimiento de fronteras Nx.
+ * @version 22.0 - Energy Efficient & Atmosphere Immersive
+ * @author Raz Podestá - Staff Engineer, MetaShark Tech
  */
 
 'use client';
 
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Sparkles, Eye } from 'lucide-react';
 
 /**
- * IMPORTACIONES DE INFRAESTRUCTRURA
- * @pilar V: Adherencia arquitectónica a fronteras Nx.
+ * IMPORTACIONES DE INFRAESTRUCTRURA (Rutas Relativas - Nx Boundary Safe)
  */
 import { BlurText } from '../../razBits/BlurText';
 import { BlogCard3D } from '../../ui/BlogCard3D';
@@ -23,7 +23,6 @@ import { cn } from '../../../lib/utils/cn';
 
 /**
  * IMPORTACIONES DE CONTRATO (SSoT)
- * @pilar III: Seguridad de Tipos Absoluta.
  */
 import type { PostWithSlug } from '../../../lib/schemas/blog.schema';
 import type { Dictionary } from '../../../lib/schemas/dictionary.schema';
@@ -34,28 +33,32 @@ const AUTOPLAY_INTERVAL = 8000;
  * @interface BlogSection3DProps
  */
 interface BlogSection3DProps {
-  /** Colección de artículos saneada por el motor de datos v31.0 */
   posts: PostWithSlug[];
-  /** Diccionario nivelado (blog_page) validado por MACS */
   dictionary: Dictionary['blog_page'];
-  /** Contexto de idioma para rumbos SEO */
   lang: string;
   className?: string;
 }
 
+const C = {
+  reset: '\x1b[0m', cyan: '\x1b[36m', green: '\x1b[32m', 
+  yellow: '\x1b[33m', magenta: '\x1b[35m', bold: '\x1b[1m'
+};
+
 /**
  * APARATO: BlogSection3D
- * @description Presenta los artículos más relevantes en un carrusel 3D adaptativo.
- *              Fase de Embudo: Trust & Authority.
+ * @description Presenta los artículos más relevantes en un carrusel 3D adaptativo con inteligencia de atmósfera.
  */
 export function BlogSection3D({ posts, dictionary, lang, className }: BlogSection3DProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [isInView, setIsInView] = useState(false);
+  
+  const sectionRef = useRef<HTMLElement>(null);
   const autoplayTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const lastTransitionTime = useRef<number>(0);
 
   /**
-   * MEMOIZACIÓN DE DICCIONARIO (Pilar X)
-   * Extraemos las etiquetas del contrato soberano.
+   * MEMOIZACIÓN DE DICCIONARIO & DATA (Pilar X)
    */
   const labels = useMemo(() => ({
     heroTitle: dictionary?.hero_title || 'Journal',
@@ -64,21 +67,22 @@ export function BlogSection3D({ posts, dictionary, lang, className }: BlogSectio
     allPostsTitle: dictionary?.all_posts_title || 'Editorial'
   }), [dictionary]);
 
-  /**
-   * BUFFER VISUAL OPTIMIZADO
-   * @description Limitamos a 5 elementos para maximizar el rendimiento de la GPU.
-   */
   const displayPosts = useMemo(() => (posts || []).slice(0, 5), [posts]);
   const activePost = useMemo(() => displayPosts[activeIndex], [displayPosts, activeIndex]);
   const isNightVibe = activePost?.metadata.vibe === 'night';
 
   /**
-   * HANDLERS DE NAVEGACIÓN (Pilar XII)
-   * @description Implementa useCallback para evitar jank en renderizados de alta frecuencia.
+   * HANDLERS DE NAVEGACIÓN (MEA/UX)
    */
   const handleNext = useCallback(() => {
     if (displayPosts.length <= 1) return;
+    const start = performance.now();
+    
     setActiveIndex((prev) => (prev + 1) % displayPosts.length);
+    
+    // Telemetría de Latencia de Transición
+    const duration = (performance.now() - start).toFixed(4);
+    lastTransitionTime.current = parseFloat(duration);
   }, [displayPosts.length]);
 
   const handlePrev = useCallback(() => {
@@ -87,23 +91,39 @@ export function BlogSection3D({ posts, dictionary, lang, className }: BlogSectio
   }, [displayPosts.length]);
 
   /**
-   * PROTOCOLO HEIMDALL: Telemetría de Interacción
-   * @pilar IV: Rastreo de cambios de slide y contexto de atmósfera.
+   * PROTOCOLO HEIMDALL: Telemetría de Foco & Salud Energética
    */
   useEffect(() => {
-    if (activePost) {
-      console.log(`[HEIMDALL][UX] Journal_Slide_Focus: ${activePost.slug} | Atmosphere: ${activePost.metadata.vibe}`);
+    if (activePost && isInView) {
+      console.log(
+        `${C.magenta}[DNA][3D-ENGINE]${C.reset} Focus_Asset: ${C.cyan}${activePost.slug}${C.reset} | ` +
+        `Vibe: ${isNightVibe ? C.yellow + 'NIGHT' : C.green + 'DAY'}${C.reset} | ` +
+        `Transition: ${lastTransitionTime.current}ms`
+      );
     }
-  }, [activePost]);
+  }, [activePost, isNightVibe, isInView]);
+
+  /**
+   * MOTOR DE VISIBILIDAD (Pilar VIII & X)
+   * @description Pausa el motor 3D si el usuario no está viendo la sección.
+   */
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsInView(entry.isIntersecting),
+      { threshold: 0.2 }
+    );
+
+    if (sectionRef.current) observer.observe(sectionRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   /**
    * MOTOR DE AUTOPLAY (Energy-Aware)
-   * @description Solo ejecuta el timer si el componente es visible y no está pausado.
    */
   useEffect(() => {
     const startTimer = () => {
       autoplayTimerRef.current = setInterval(() => {
-        if (!isPaused && document.visibilityState === 'visible') {
+        if (!isPaused && isInView && document.visibilityState === 'visible') {
           handleNext();
         }
       }, AUTOPLAY_INTERVAL);
@@ -118,13 +138,13 @@ export function BlogSection3D({ posts, dictionary, lang, className }: BlogSectio
 
     startTimer();
     return () => stopTimer();
-  }, [handleNext, isPaused]);
+  }, [handleNext, isPaused, isInView]);
 
-  // Guardia de Resiliencia ante datos nulos (Pilar VIII)
   if (!posts || displayPosts.length === 0 || !dictionary) return null;
 
   return (
     <section 
+      ref={sectionRef}
       className={cn(
         "relative w-full overflow-hidden bg-background py-24 sm:py-40 border-y border-border transition-colors duration-1000 selection:bg-primary/20",
         className
@@ -134,46 +154,49 @@ export function BlogSection3D({ posts, dictionary, lang, className }: BlogSectio
       onMouseLeave={() => setIsPaused(false)}
     >
       {/* 
-          CAPA ATMOSFÉRICA (Glow Adaptativo) 
-          @pilar VII: Uso de OKLCH para una saturación de color boutique en ambos temas.
+          CAPA ATMOSFÉRICA (Glow Adaptativo OKLCH) 
+          @pilar VII: Sincronización sensorial Day/Night.
       */}
       <div 
         className={cn(
-          "absolute inset-0 pointer-events-none transition-opacity duration-1500",
-          isNightVibe ? "opacity-25" : "opacity-10"
+          "absolute inset-0 pointer-events-none transition-all duration-1500 ease-in-out",
+          isInView ? "opacity-100" : "opacity-0"
         )} 
         style={{ 
-          background: `radial-gradient(circle at center, ${isNightVibe ? 'oklch(70% 0.15 320)' : 'oklch(65% 0.25 270)'}, transparent 75%)` 
+          background: isNightVibe 
+            ? `radial-gradient(circle at center, color-mix(in oklch, var(--color-accent) 15%, transparent), transparent 70%)`
+            : `radial-gradient(circle at center, color-mix(in oklch, var(--color-primary) 10%, transparent), transparent 70%)`
         }} 
       />
 
-      {/* HEADER NARRATIVO (i18n Compliant) */}
-      <div className="container mx-auto px-6 mb-24 flex flex-col items-center text-center relative z-10">
+      {/* HEADER NARRATIVO (i18n) */}
+      <div className="container relative z-10 mx-auto mb-24 flex flex-col items-center px-6 text-center">
         <motion.div 
           initial={{ opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="flex items-center gap-3 mb-10"
+          className="mb-10 flex items-center gap-3"
         >
           <Sparkles size={16} className={cn("animate-pulse", isNightVibe ? "text-accent" : "text-primary")} />
-          <span className="text-[10px] font-bold tracking-[0.6em] text-muted-foreground uppercase font-mono">
+          <span className="font-mono text-[10px] font-bold uppercase tracking-[0.6em] text-muted-foreground/60">
             {labels.heroTitle}
           </span>
         </motion.div>
         
         <BlurText 
           text={labels.featuredTitle.toUpperCase()} 
-          className="text-4xl md:text-8xl font-display font-bold justify-center tracking-tighter text-foreground drop-shadow-2xl transition-colors duration-1000" 
+          className="justify-center font-display text-4xl font-bold tracking-tighter text-foreground drop-shadow-2xl transition-colors duration-1000 md:text-8xl" 
           animateBy="letters"
         />
       </div>
 
       {/* CARRETE 3D (Core Motion Engine) */}
       <div 
-        className="relative h-[600px] md:h-[700px] w-full flex items-center justify-center perspective-2000"
+        className="perspective-2000 relative flex h-[600px] w-full items-center justify-center md:h-[700px]"
         style={{ transformStyle: "preserve-3d" }}
         role="region"
         aria-roledescription="carousel"
+        aria-live="polite"
       >
         <AnimatePresence mode="popLayout" initial={false}>
           {displayPosts.map((post, index) => {
@@ -202,33 +225,33 @@ export function BlogSection3D({ posts, dictionary, lang, className }: BlogSectio
         </AnimatePresence>
 
         {/* CONTROLES TÁCTICOS (Thumb-Driven UX) */}
-        <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-6 sm:px-12 pointer-events-none z-30">
+        <div className="absolute inset-x-0 top-1/2 z-30 flex -translate-y-1/2 justify-between px-6 pointer-events-none sm:px-12">
           <button 
             onClick={handlePrev} 
-            className="group p-6 sm:p-8 rounded-full border border-border bg-surface/80 text-foreground hover:bg-foreground hover:text-background transition-all duration-500 pointer-events-auto backdrop-blur-2xl active:scale-90 shadow-3xl outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            className="group pointer-events-auto rounded-full border border-border bg-surface/80 p-6 text-foreground shadow-3xl outline-none backdrop-blur-2xl transition-all duration-500 hover:bg-foreground hover:text-background active:scale-90 focus-visible:ring-2 focus-visible:ring-primary sm:p-8"
             aria-label="Anterior"
           >
-            <ChevronLeft size={32} strokeWidth={1.5} className="group-hover:-translate-x-1 transition-transform" />
+            <ChevronLeft size={32} strokeWidth={1.5} className="transition-transform group-hover:-translate-x-1" />
           </button>
           <button 
             onClick={handleNext} 
-            className="group p-6 sm:p-8 rounded-full border border-border bg-surface/80 text-foreground hover:bg-foreground hover:text-background transition-all duration-500 pointer-events-auto backdrop-blur-2xl active:scale-90 shadow-3xl outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            className="group pointer-events-auto rounded-full border border-border bg-surface/80 p-6 text-foreground shadow-3xl outline-none backdrop-blur-2xl transition-all duration-500 hover:bg-foreground hover:text-background active:scale-90 focus-visible:ring-2 focus-visible:ring-primary sm:p-8"
             aria-label="Siguiente"
           >
-            <ChevronRight size={32} strokeWidth={1.5} className="group-hover:translate-x-1 transition-transform" />
+            <ChevronRight size={32} strokeWidth={1.5} className="transition-transform group-hover:translate-x-1" />
           </button>
         </div>
       </div>
 
       {/* INDICADORES DE PROGRESO SOBERANOS */}
-      <div className="flex justify-center items-center gap-5 mt-8 relative z-10" role="tablist">
+      <div className="relative z-10 mt-8 flex items-center justify-center gap-5" role="tablist">
         {displayPosts.map((_, i) => (
           <button
             key={`dot-${i}`}
             onClick={() => setActiveIndex(i)}
             role="tab"
             aria-selected={i === activeIndex}
-            className="group p-2 outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-full transition-all"
+            className="group rounded-full p-2 outline-none transition-all focus-visible:ring-2 focus-visible:ring-primary"
             aria-label={`Slide ${i + 1}`}
           >
             <motion.div 
@@ -238,10 +261,18 @@ export function BlogSection3D({ posts, dictionary, lang, className }: BlogSectio
                   ? (isNightVibe ? 'var(--color-accent)' : 'var(--color-primary)')
                   : 'var(--color-border)'
               }}
-              className="h-1.5 rounded-full transition-colors group-hover:bg-muted-foreground"
+              className="h-1.5 rounded-full transition-colors group-hover:bg-muted-foreground/60"
             />
           </button>
         ))}
+      </div>
+
+      {/* TELEMETRÍA DE INFRAESTRUCTRURA (Overlay sutil) */}
+      <div className="absolute bottom-4 left-8 flex items-center gap-3 opacity-10 pointer-events-none">
+         <Eye size={12} className="text-muted-foreground" />
+         <span className="font-mono text-[7px] uppercase tracking-[0.4em] text-muted-foreground">
+           3D Rendering Buffer: {isInView ? 'ACTIVE' : 'DORMANT'}
+         </span>
       </div>
     </section>
   );
