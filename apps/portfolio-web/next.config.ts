@@ -1,11 +1,12 @@
 /**
  * @file apps/portfolio-web/next.config.ts
- * @description Configuración soberana del orquestador Next.js.
- *              Refactorizado: Resolución de Webpack mediante externals para
- *              evitar errores de empaquetado en el cliente sin bloquear tipos.
- * @version 4.2 - Build-Safe & Webpack-Optimized
+ * @description Orquestador soberano Next.js.
+ *              Refactorizado: Eliminación de 'configPath' redundante para 
+ *              erradicar TS2353 y asegurar compatibilidad con Payload 3.80.0.
+ * @version 5.1 - Clean Plugin Standard
  * @author Raz Podestá - MetaShark Tech
  */
+
 import type { NextConfig } from 'next';
 import { withNx } from '@nx/next/plugins/with-nx';
 import { withPayload } from '@payloadcms/next/withPayload';
@@ -36,23 +37,14 @@ const nextConfig: NextConfig = {
 
   webpack: (config, { isServer }) => {
     if (!isServer) {
-      /**
-       * @fix: En lugar de forzar el alias a 'false' (que rompe el build),
-       * usamos 'externals' o definimos alias vacíos de forma controlada.
-       * Esto permite que los tipos de Payload sean leídos, pero bloquea 
-       * la ejecución de código pesado en el navegador.
-       */
       config.resolve.alias = {
         ...config.resolve.alias,
         'sharp': false,
         'pg': false,
         'canvas': false,
       };
+      config.externals = [...(config.externals || []), 'sharp', 'pg'];
     }
-    
-    // Configuramos 'externals' para módulos de Node.js en el cliente
-    config.externals = [...(config.externals || []), 'sharp', 'pg'];
-
     return config;
   },
 
@@ -61,4 +53,9 @@ const nextConfig: NextConfig = {
   },
 };
 
+/**
+ * @pilar IX: Desacoplamiento.
+ * Ejecutamos withPayload y withNx sin configurar manualmente el configPath,
+ * dejando que la magia de Payload encuentre la configuración por convención.
+ */
 export default withPayload(withNx(nextConfig));
