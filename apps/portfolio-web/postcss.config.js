@@ -1,10 +1,10 @@
-// RUTA: apps/portfolio-web/postcss.config.js
-// VERSIÓN: 4.0 - Definitiva y Forzada
-// DESCRIPCIÓN: Esta configuración utiliza 'module.exports' y el plugin correcto
-//              '@tailwindcss/postcss'. Esta es la única configuración que el
-//              proceso de build debe leer.
+/**
+ * @file apps/portfolio-web/postcss.config.js
+ * @version 4.1 - ESM Pure Standard
+ * @description Configuración del motor PostCSS adaptada a "type": "module".
+ */
 
-module.exports = {
+export default {
   plugins: {
     '@tailwindcss/postcss': {},
     autoprefixer: {},
