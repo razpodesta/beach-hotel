@@ -12,9 +12,10 @@
     "@metashark/cms-ui": "workspace:*",
     "@metashark/protocol-33": "workspace:*",
     "next": "15.2.9",
+    "payload": "3.80.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
-    "payload": "3.80.0",
+    "xlsx": "^0.18.5",
     "zod": "^4.1.12",
     "zustand": "^5.0.8"
   }
