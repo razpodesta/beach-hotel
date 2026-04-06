@@ -1,27 +1,257 @@
 {
-  "header": {
-    "talk": "BOOK NOW",
-    "tagline": "Your Boutique Experience in Canasvieiras",
-    "personal_portfolio": "BEACH HOTEL CANASVIEIRAS",
-    "job_title": "Boutique Hotel & Pride Escape 2026 Headquarters",
-    "mobile_title": "Beach Hotel",
-    "mobile_subtitle": "Canasvieiras",
-    "login": "Sign In",
-    "join": "Join Now",
-    "portal": "My Sanctuary"
+  "about": {
+    "title": "A Sanctuary of Elite Hospitality.",
+    "badge_label": "Boutique Sanctuary",
+    "paragraphs": [
+      {
+        "text": "Located in the heart of Canasvieiras, our hotel offers a unique blend of sophisticated luxury and the vibrant energy of Florianópolis.",
+        "highlight": "Exclusivity in every detail."
+      },
+      {
+        "text": "Our commitment is to transform every stay into a curated experience. With smart technology and a personalized concierge service, we ensure that every guest finds their perfect refuge.",
+        "highlight": "Your perfect refuge."
+      }
+    ],
+    "cta_button": "Discover our Story"
   },
-  "nav-links": {
-    "nav_links": {
-      "hotel": "The Hotel",
-      "habitaciones": "Luxury Suites",
-      "paquetes": "Packages & Programs",
-      "historia": "Our Story",
-      "ubicacion": "Location",
-      "contacto": "Contact",
-      "reservas": "Online Booking",
-      "politica_privacidad": "Privacy",
-      "terminos_servicio": "Terms of Use"
+  "admin_media": {
+    "title": "Multimedia Asset Management",
+    "dropzone_prompt": "Link new asset",
+    "dropzone_subtext": "Optimized for LCP: WebP, AVIF, PNG. Max 5MB.",
+    "label_alt_text": "SEO Metadata",
+    "placeholder_alt_text": "Describe the image for accessibility...",
+    "btn_upload": "Ingest into Vault",
+    "status_uploading": "SYNCHRONIZING...",
+    "status_success": "Cloud Active (S3 OK)",
+    "status_error": "Cluster Sync Failed",
+    "label_dimensions": "Resolution Target",
+    "label_file_size": "Payload Size",
+    "label_sync_cloud": "S3 Protocol Active"
+  },
+  "ai_gallery_section": {
+    "badge": "Ideogram 3.0 Powered",
+    "title": "AI Visual Synth",
+    "subtitle": "Explore a curated collection of algorithmically generated assets. Photorealism, perfect typography, and stylistic consistency, orchestrated by our sovereign CMS.",
+    "overlay_indicator": "LIVE RENDER • WEBGL 2.0",
+    "drag_label": "DRAG TO ORBIT",
+    "item_prefix": "ASSET",
+    "error_fallback": "VISUAL ENGINE NOT SUPPORTED ON THIS BROWSER",
+    "footer_prompt": "Advanced Prompt Engineering",
+    "footer_upscaling": "8K Upscaling & Optimization",
+    "items": {
+      "neon-typography": {
+        "title": "Neon Glass",
+        "description": "3D neon tubes rendering."
+      },
+      "editorial-fashion": {
+        "title": "High Fashion",
+        "description": "Photorealistic textile synthesis."
+      },
+      "tech-badge": {
+        "title": "Titanium Tech",
+        "description": "Macro product visualization."
+      },
+      "transparent-gadget": {
+        "title": "Glass Hardware",
+        "description": "Futuristic device engineering."
+      },
+      "luxury-perfume": {
+        "title": "Gold Scent",
+        "description": "Commercial product photography."
+      },
+      "concept-car": {
+        "title": "Auto Concept",
+        "description": "Abstract carbon fiber details."
+      },
+      "concrete-workspace": {
+        "title": "Raw Workspace",
+        "description": "Minimalist interior design."
+      },
+      "cyberpunk-street": {
+        "title": "Night City",
+        "description": "Volumetric lighting atmosphere."
+      },
+      "abstract-geometry": {
+        "title": "Parametric Form",
+        "description": "Algorithmic architecture."
+      },
+      "fluid-shapes": {
+        "title": "Iridescent Flux",
+        "description": "Liquid metal 3D simulation."
+      },
+      "mechanical-insect": {
+        "title": "Clockwork Life",
+        "description": "Precision steampunk macro."
+      },
+      "neural-network": {
+        "title": "Data Stream",
+        "description": "Abstract neural visualization."
+      }
     }
+  },
+  "auth_portal": {
+    "title_join": "Become a Sovereign Guest",
+    "title_login": "Return to the Sanctuary",
+    "subtitle": "Access exclusive experiences and start your digital legacy.",
+    "apple_label": "Continue with Apple",
+    "google_label": "Continue with Google",
+    "facebook_label": "Continue with Facebook",
+    "email_divider": "or use your email",
+    "email_placeholder": "name@example.com",
+    "email_cta": "Access with Email",
+    "footer_trust": "Private Infrastructure • Zero Trackers",
+    "privacy_notice": "By entering, you accept our Sanctuary Rules."
+  },
+  "blog_page": {
+    "page_title": "Concierge Journal | Beach Hotel Canasvieiras",
+    "page_description": "Discover the island's best-kept secrets, exclusive nightlife guides, and Pride Escape news.",
+    "hero_title": "The Concierge Journal",
+    "featured_title": "Featured Read",
+    "all_posts_title": "Latest Updates",
+    "read_more_cta": "Read Article",
+    "empty_state": "No articles available at this time. Stay connected.",
+    "tag_results_singular": "One article available curated under",
+    "tag_results_plural": "Articles selected curated under"
+  },
+  "cocreation_page": {
+    "page_title": "Co-creation | Raz Podestá",
+    "page_description": "Discover my collaborative framework for transforming ideas into high-performance digital assets.",
+    "title": "Co-creation Framework",
+    "subtitle": "My process for collaborating with you, from idea conception to deployment and continuous optimization.",
+    "construction_notice": "This section is currently under construction. Here I will detail my work methodology, project phases, and how we will partner to ensure the success of your vision."
+  },
+  "comms_hub": {
+    "title": "Operational Comms Hub",
+    "subtitle": "Real-Time Intelligence & Notification Dispatch",
+    "tab_notifications": "Activity Stream",
+    "tab_direct_messages": "Node Communication",
+    "tab_system_logs": "Infrastructure Events",
+    "label_priority_low": "NORMAL",
+    "label_priority_high": "ELEVATED",
+    "label_priority_critical": "CRITICAL",
+    "label_sender_node": "Origin Node",
+    "label_dispatch_time": "Dispatch Time",
+    "label_trace_id": "Trace Identifier",
+    "btn_mark_read": "Acknowledge All",
+    "btn_broadcast": "Initialize Broadcast",
+    "status_online": "COMM_LINK_ACTIVE",
+    "empty_inbox": "No pending transmissions in the current perimeter."
+  },
+  "contact": {
+    "title": "GET IN TOUCH",
+    "form_cta": "Have an idea or project in mind? I'd love to hear about it. Fill out the form and I'll get back to you shortly.",
+    "form_placeholder_name": "* Name",
+    "form_placeholder_email": "* Email",
+    "form_placeholder_message": "* Your message...",
+    "form_button_submit": "Send Message",
+    "form_button_loading": "Processing...",
+    "success_title": "Request Received",
+    "success_subtitle": "Our concierge will contact you shortly to refine the details of your stay or project.",
+    "error_submit": "Submission failed. Please try again or contact us directly via email.",
+    "validation": {
+      "name_required": "Name is required",
+      "email_required": "Email is required",
+      "email_invalid": "Please enter a valid email",
+      "message_too_short": "Message must be at least 10 characters"
+    }
+  },
+  "contact_page": {
+    "page_title": "Contact | Raz Podestá",
+    "page_description": "Get in touch to discuss your next project. Let's talk about how we can build high-performance digital assets together.",
+    "title": "GET IN TOUCH",
+    "subtitle": "Have an idea or project in mind? I'd love to hear about it. Fill out the form and I'll get back to you shortly."
+  },
+  "design_system_page": {
+    "page_title": "Design System | Raz Podestá",
+    "page_description": "Explore the components, design tokens, and visual philosophy that build this portfolio's interface.",
+    "title": "Design System",
+    "subtitle": "A transparent look at the visual and functional building blocks of this digital ecosystem.",
+    "construction_notice": "This section is currently under construction. Soon you will be able to explore the color palette, typographic hierarchy, and the React component library that bring this site to life."
+  },
+  "festival": {
+    "hero": {
+      "title": "PRIDE ESCAPE 2026",
+      "subtitle": "The Boutique Takeover of Canasvieiras",
+      "video_url": "https://cdn.pixabay.com/video/2023/10/24/186358-877995180_large.mp4",
+      "countdown_target": "2026-06-15T20:00:00Z",
+      "cta_label": "SECURE MY SPOT"
+    },
+    "manifesto": "A week designed to meet, connect and enjoy in community. Escape the cold and live a unique experience in the heart of the Magic Island. 7 days of absolute freedom, exclusive parties and the finest boutique hospitality.",
+    "vip_upsell": {
+      "title": "VIP Diamond Experience",
+      "price_addon": "+U$ 125",
+      "per_guest_label": "per guest",
+      "benefits": [
+        "Front-row ocean view room",
+        "Priority Access (Fast Pass) to all events",
+        "Limited Edition Welcome Kit",
+        "Exclusive dinner with the International Line-up",
+        "Premium Open Bar at all Boat Parties"
+      ],
+      "cta_label": "UPGRADE TO VIP"
+    },
+    "events": [
+      {
+        "id": "sunset-welcome",
+        "day": 1,
+        "title": "HQ SUNSET",
+        "location": "Beach Hotel Pool",
+        "startTime": "4:00 PM",
+        "description": "Official opening party with welcome cocktails and melodic DJ sets.",
+        "vibe": "Chill",
+        "isVipOnly": false,
+        "image": "/images/festival/hq-sunset.jpg",
+        "neon_color": "#3B82F6"
+      },
+      {
+        "id": "main-boat-party",
+        "day": 3,
+        "title": "BOAT PARTY: THE NEW WAVE",
+        "location": "North Bay / Private Yacht",
+        "startTime": "2:00 PM",
+        "description": "Sunset cruise with hi-fi sound system and strategic swim stops.",
+        "vibe": "House",
+        "isVipOnly": true,
+        "image": "/images/festival/boat-party-main.jpg",
+        "neon_color": "#A855F7"
+      },
+      {
+        "id": "techno-sanctuary",
+        "day": 5,
+        "title": "THE SANCTUARY NIGHT",
+        "location": "The Cave / Underground Club",
+        "startTime": "11:00 PM",
+        "description": "A visual and sonic immersion with the best of European Techno.",
+        "vibe": "Techno",
+        "isVipOnly": false,
+        "image": "/images/festival/techno-night.jpg",
+        "neon_color": "#EC4899"
+      }
+    ],
+    "packages_section": {
+      "title": "Takeover Packages",
+      "subtitle": "Select your level of immersion in the Sanctuary",
+      "label_5_nights": "5 Nights Experience",
+      "label_7_nights": "7 Nights Full Takeover",
+      "cta": "Book Package"
+    },
+    "packages": [
+      {
+        "category": "Experience Base",
+        "price_5_nights": "U$ 465",
+        "price_7_nights": "U$ 595",
+        "hotel_name": "Beach Hotel Principal",
+        "availability_label": "LAST CALL"
+      },
+      {
+        "category": "Luxury Elite",
+        "price_5_nights": "U$ 810",
+        "price_7_nights": "U$ 1,050",
+        "hotel_name": "Beach Hotel Suites",
+        "availability_label": "EXCLUSIVE BOOKING"
+      }
+    ],
+    "footer_credits": "Canasvieiras Fest 2026 • Private Infrastructure • MetaShark Tech"
   },
   "footer": {
     "brand_description": "Your boutique refuge in the heart of Florianópolis. Luxury, diversity, and hospitality engineering.",
@@ -39,123 +269,6 @@
     "rights_reserved": "© 2026 Beach Hotel Canasvieiras.",
     "made_by": "Infrastructure by MetaShark Tech"
   },
-  "system_status": {
-    "items": [
-      {
-        "category": "PRIDE FEST",
-        "message": "90% Master Suites occupied for the Boat Party.",
-        "iconKey": "Ticket",
-        "colorKey": "purple"
-      },
-      {
-        "category": "METEOROLOGY",
-        "message": "25°C in Canasvieiras. Perfect for the beach.",
-        "iconKey": "ThermometerSun",
-        "colorKey": "yellow"
-      },
-      {
-        "category": "SECURITY",
-        "message": "Private guest-only access monitored 24/7.",
-        "iconKey": "ShieldCheck",
-        "colorKey": "green"
-      },
-      {
-        "category": "LOUNGE",
-        "message": "Sunset Sessions daily at the Headquarters pool.",
-        "iconKey": "Music",
-        "colorKey": "pink"
-      }
-    ],
-    "aria_label": "Live Hospitality Status Updates"
-  },
-  "visitor_hud": {
-    "tab_identity": "IDENTITY",
-    "tab_telemetry": "TELEMETRY",
-    "guest_title": "Identity Not Linked",
-    "guest_description": "Sign in to activate Protocol 33 and collect exclusive artifacts within the Sanctuary.",
-    "guest_cta": "Link Identity",
-    "label_visitor_info": "GUEST INFORMATION",
-    "label_ip_visitor": "SOURCE I.P.",
-    "label_location": "LOCATION",
-    "label_weather": "CANASVIEIRAS WEATHER",
-    "label_time": "LOCAL TIME",
-    "status_calibrating": "CALIBRATING INSTRUMENTS...",
-    "status_error": "SIGNAL LOST",
-    "weather_sunny": "SUNNY",
-    "weather_rainy": "RAINY",
-    "weather_cloudy": "CLOUDY",
-    "roaming_label": "ROAMING",
-    "precision_sync_label": "Heimdall Protocol: Precision Sync Active",
-    "stat_artifacts": "Artifacts",
-    "stat_streak": "Streak",
-    "xp_next_label": "Next",
-    "footer_credits": "MetaShark Tech Infrastructure",
-    "cta_explore": "Explore"
-  },
-  "language_switcher": {
-    "label": "Language",
-    "label_regions": "Select your region",
-    "label_search": "Search language...",
-    "label_implemented": "Current Sanctuary Support",
-    "label_future": "Global Expansion",
-    "label_toggle": "Change atmosphere",
-    "mode_light": "Day",
-    "mode_dark": "Night",
-    "mode_system": "System",
-    "en-US": "English",
-    "es-ES": "Español",
-    "pt-BR": "Português"
-  },
-  "auth_portal": {
-    "title_join": "Become a Sovereign Guest",
-    "title_login": "Return to the Sanctuary",
-    "subtitle": "Access exclusive experiences and start your digital legacy.",
-    "apple_label": "Continue with Apple",
-    "google_label": "Continue with Google",
-    "facebook_label": "Continue with Facebook",
-    "email_divider": "or use your email",
-    "email_placeholder": "name@example.com",
-    "email_cta": "Access with Email",
-    "footer_trust": "Private Infrastructure • Zero Trackers",
-    "privacy_notice": "By entering, you accept our Sanctuary Rules."
-  },
-  "portal": {
-    "welcome_developer": "Sovereign Engineering Console",
-    "welcome_admin": "Hospitality Management Panel",
-    "welcome_operator": "B2B Operations Portal",
-    "welcome_guest": "Welcome to your Sanctuary",
-    "nav_overview": "Overview",
-    "nav_reservations": "Reservations",
-    "nav_inventory": "Suites & Assets",
-    "nav_telemetry": "Telemetry L0",
-    "nav_b2b_rates": "Net Rates",
-    "label_server_health": "Infrastructure Health",
-    "label_active_connections": "Active Sockets",
-    "label_loyalty_points": "Sanctuary XP",
-    "label_upcoming_stays": "Your Next Stays",
-    "label_metric_nominal": "NOMINAL",
-    "label_metric_warning": "DEGRADED",
-    "label_metric_critical": "ANOMALY",
-    "status_active_session": "Identity Linked",
-    "last_sync_label": "Last sync",
-    "empty_data_label": "No data detected in perimeter",
-    "cta_logout": "End Session",
-    "cta_settings": "Settings"
-  },
-  "admin_media": {
-    "title": "Multimedia Asset Management",
-    "dropzone_prompt": "Link new asset",
-    "dropzone_subtext": "Optimized for LCP: WebP, AVIF, PNG. Max 5MB.",
-    "label_alt_text": "SEO Metadata",
-    "placeholder_alt_text": "Describe the image for accessibility...",
-    "btn_upload": "Ingest into Vault",
-    "status_uploading": "SYNCHRONIZING...",
-    "status_success": "Cloud Active (S3 OK)",
-    "status_error": "Cluster Sync Failed",
-    "label_dimensions": "Resolution Target",
-    "label_file_size": "Payload Size",
-    "label_sync_cloud": "S3 Protocol Active"
-  },
   "gamification": {
     "artifacts_title": "Artifact Inventory",
     "lore_label": "Fragment Lore",
@@ -165,6 +278,13 @@
       "legendary": "Legendary",
       "mythic": "Mythic",
       "unique": "Unique"
+    },
+    "ranks": {
+      "initiates": "Sanctuary Initiate",
+      "advanced": "Ascending Engineer",
+      "masters": "Hospitality Master",
+      "sovereigns": "Protocol Guardian",
+      "oracle": "Oracle Level 33"
     },
     "artifacts": {
       "monolito-obsidiana": {
@@ -299,148 +419,18 @@
         "name": "AI Entity",
         "lore": "Intelligence that learned to create. The final link between logic and intuition."
       }
-    },
-    "ranks": {
-      "initiates": "Sanctuary Initiate",
-      "advanced": "Ascending Engineer",
-      "masters": "Hospitality Master",
-      "sovereigns": "Protocol Guardian",
-      "oracle": "Oracle Level 33"
     }
   },
-  "newsletter_form": {
-    "title": "Acesso Soberano",
-    "description": "Junte-se à elite do Beach Hotel e receba atualizações exclusivas do Santuário e do Festival.",
-    "placeholder": "Seu e-mail profissional",
-    "button": "Solicitar Ingresso",
-    "loading": "Processando Identidade...",
-    "success_title": "Identidade Vinculada",
-    "success_subtitle": "Seu acesso foi validado. Você agora faz parte do núcleo digital do Beach Hotel.",
-    "reward_label": "CONCEDIDOS",
-    "legal_notice": "Infraestrutura Privada • Criptografia de Ponta a Ponta",
-    "validation_email_required": "O e-mail é obrigatório para o handshake",
-    "validation_email_invalid": "Formato de e-mail não reconhecido pelo protocolo"
-  },
-  "offers_flash": {
-    "title": "Flash Offers",
-    "subtitle": "Limited Inventory | High Priority Access",
-    "cta_label": "Secure Booking Now",
-    "label_stock_available": "Units Remaining",
-    "label_stock_total": "Total Capacity",
-    "label_expires_in": "Offer Expiring In",
-    "status_active": "ACTIVE PIPELINE",
-    "status_sold_out": "INVENTORY DEPLETED",
-    "status_expired": "OFFER CONCLUDED",
-    "badge_limited": "EXCLUSIVE OPPORTUNITY"
-  },
-  "offers": {
-    "page_title": "Travel Packages & Programs | Beach Hotel Canasvieiras",
-    "page_description": "Explore our exclusive accommodation offers and curated travel programs in Florianópolis.",
-    "hero_title": "Sanctuary Offers",
-    "hero_subtitle": "Experiences designed to transform your stay into unforgettable memories.",
-    "filter_all": "All",
-    "filter_packages": "Packages",
-    "filter_programs": "Programs",
-    "filter_promos": "Promotions",
-    "cta_book": "Book Now",
-    "cta_details": "View Details",
-    "label_nights": "Nights",
-    "label_from": "From",
-    "label_inclusions": "Inclusions",
-    "empty_state": "There are no offers available for this filter at the moment.",
-    "loading_state": "Synchronizing with booking engine..."
-  },
-  "partner_network": {
-    "title": "B2B Partner Network",
-    "subtitle": "High-Fidelity Wholesale Operations",
-    "label_trust_score": "Trust Credibility Index",
-    "label_iata": "IATA / Regulatory Code",
-    "btn_onboarding": "Initialize Onboarding",
-    "metrics": {
-      "label_bookings": "Total Confirmed Bookings",
-      "label_conversion": "Conversion Yield",
-      "label_commissions": "Pending Accruals"
-    },
-    "agent_management": {
-      "title": "Agent Directory",
-      "add_agent": "Authorize New Consultant",
-      "history": "Transaction Ledger"
-    }
-  },
-  "partner_form": {
-    "title": "B2B Agency Onboarding",
-    "section_corporate": "Corporate Identity",
-    "section_legal": "Legal Representative (KYB)",
-    "label_brand_name": "Trading Name",
-    "label_legal_name": "Registered Company Name",
-    "label_tax_id": "Tax ID / VAT Number",
-    "placeholder_tax_id": "US-123456789",
-    "label_website": "Corporate Web Portal",
-    "label_iata": "IATA / Regulatory Code",
-    "label_representative_name": "Full Name of Authorized Signatory",
-    "label_representative_email": "Corporate Email Address",
-    "label_representative_birth": "Date of Birth",
-    "label_representative_phone": "Direct Contact Mobile",
-    "btn_submit": "Request Enterprise Access",
-    "success_msg": "Onboarding initiated. Document verification process in progress (24h).",
-    "validation": {
-      "tax_id_invalid": "Invalid Tax ID or VAT Number",
-      "birth_date_required": "Birth date is mandatory for KYB protocols",
-      "email_invalid": "Invalid email protocol",
-      "phone_invalid": "Phone number not recognized"
-    }
-  },
-  "ingestion_vault": {
-    "title": "Universal Ingestion Vault",
-    "subtitle": "Intelligent data capture via Excel, Voice, WhatsApp, and Email.",
-    "channel_web": "Admin Portal",
-    "channel_whatsapp": "WhatsApp Sync",
-    "channel_email": "Email Ingestion",
-    "status_pending": "Awaiting Processing",
-    "status_processing": "Analyzing Structure...",
-    "status_success": "Data Indexed Successfully",
-    "status_error": "Protocol Validation Failed",
-    "status_ai_analysis": "AI Analysis in Progress",
-    "btn_upload_data": "Ingest New Assets",
-    "btn_cancel_ingest": "Abort Sync",
-    "label_voice_note": "Voice Transcription",
-    "label_excel_db": "Structured Database",
-    "label_chat_log": "Conversation Log",
-    "placeholder_dropzone": "Drop Excel sheets, photos, or audio notes here for automated processing.",
-    "success_msg": "Data handshake complete. The intelligence cluster is now processing the input."
-  },
-  "marketing_cloud": {
-    "title": "Enterprise Marketing Cloud",
-    "subtitle": "High-Volume Transactional & Mass Communication",
-    "tab_audience": "Audience Inventory",
-    "tab_campaigns": "Active Campaigns",
-    "tab_templates": "Fidelity Templates",
-    "label_recipients": "Target Nodes",
-    "label_subject": "Protocol Subject",
-    "label_status_sent": "DISPATCHED",
-    "label_open_rate": "Engagement Yield",
-    "btn_new_campaign": "Initialize Campaign",
-    "btn_send_now": "Execute Dispatch",
-    "btn_import_vault": "Sync from Ingestion Pipeline",
-    "success_dispatch": "Communication successfully broadcasted to the network.",
-    "error_quota": "Infrastructure alert: SMTP quota limit reached."
-  },
-  "comms_hub": {
-    "title": "Operational Comms Hub",
-    "subtitle": "Real-Time Intelligence & Notification Dispatch",
-    "tab_notifications": "Activity Stream",
-    "tab_direct_messages": "Node Communication",
-    "tab_system_logs": "Infrastructure Events",
-    "label_priority_low": "NORMAL",
-    "label_priority_high": "ELEVATED",
-    "label_priority_critical": "CRITICAL",
-    "label_sender_node": "Origin Node",
-    "label_dispatch_time": "Dispatch Time",
-    "label_trace_id": "Trace Identifier",
-    "btn_mark_read": "Acknowledge All",
-    "btn_broadcast": "Initialize Broadcast",
-    "status_online": "COMM_LINK_ACTIVE",
-    "empty_inbox": "No pending transmissions in the current perimeter."
+  "header": {
+    "talk": "BOOK NOW",
+    "tagline": "Your Boutique Experience in Canasvieiras",
+    "personal_portfolio": "BEACH HOTEL CANASVIEIRAS",
+    "job_title": "Boutique Hotel & Pride Escape 2026 Headquarters",
+    "mobile_title": "Beach Hotel",
+    "mobile_subtitle": "Canasvieiras",
+    "login": "Sign In",
+    "join": "Join Now",
+    "portal": "My Sanctuary"
   },
   "hero": {
     "page_title": "Beach Hotel Canasvieiras | Florianópolis",
@@ -467,20 +457,401 @@
       }
     }
   },
-  "about": {
-    "title": "A Sanctuary of Elite Hospitality.",
-    "badge_label": "Boutique Sanctuary",
-    "paragraphs": [
+  "history": {
+    "badge_label": "The Legacy",
+    "title": "Forged in Code",
+    "subtitle": "Discover the fusion of two decades of systems engineering with a creative vision obsessed with results. This is not just a portfolio; it is the legacy of an architecture built to last."
+  },
+  "homepage": {
+    "hero": {
+      "page_title": "Beach Hotel Canasvieiras | Florianópolis",
+      "page_description": "Boutique accommodation and official headquarters of the Pride Escape 2026 festival.",
+      "SUITES_SUBTITLE": "Where luxury meets the sea.",
+      "SUITES_TITLE": "BOUTIQUE SUITES",
+      "SUITES_FEATURES": "Panoramic Views · Gourmet Breakfast",
+      "FESTIVAL_SUBTITLE": "The new wave of Florianópolis.",
+      "FESTIVAL_TITLE": "PRIDE ESCAPE 2026",
+      "FESTIVAL_FEATURES": "Boat Party · VIP Club Nights · 7 Days of Takeover",
+      "CTA_BUTTON": "CHECK AVAILABILITY"
+    },
+    "about_section": {
+      "title": "A Sanctuary of Elite Hospitality.",
+      "paragraphs": [
+        {
+          "text": "Located in the heart of Canasvieiras, our hotel offers a unique blend of sophisticated luxury and the vibrant energy of Florianópolis.",
+          "highlight": "We redefine the beach experience."
+        }
+      ],
+      "cta_button": "Discover our Story"
+    },
+    "ai_gallery_section": {
+      "badge": "Ideogram 3.0 Powered",
+      "title": "AI Visual Synth",
+      "subtitle": "Explore a curated collection of algorithmically generated assets.",
+      "overlay_indicator": "LIVE RENDER • WEBGL 2.0",
+      "drag_label": "DRAG TO ORBIT",
+      "item_prefix": "ASSET",
+      "error_fallback": "VISUAL ENGINE NOT SUPPORTED",
+      "footer_prompt": "Advanced Prompt Engineering",
+      "footer_upscaling": "8K Upscaling & Optimization",
+      "items": {}
+    }
+  },
+  "ingestion_vault": {
+    "title": "Universal Ingestion Vault",
+    "subtitle": "Intelligent data capture via Excel, Voice, WhatsApp, and Email.",
+    "channel_web": "Admin Portal",
+    "channel_whatsapp": "WhatsApp Sync",
+    "channel_email": "Email Ingestion",
+    "status_pending": "Awaiting Processing",
+    "status_processing": "Analyzing Structure...",
+    "status_success": "Data Indexed Successfully",
+    "status_error": "Protocol Validation Failed",
+    "status_ai_analysis": "AI Analysis in Progress",
+    "btn_upload_data": "Ingest New Assets",
+    "btn_cancel_ingest": "Abort Sync",
+    "label_voice_note": "Voice Transcription",
+    "label_excel_db": "Structured Database",
+    "label_chat_log": "Conversation Log",
+    "placeholder_dropzone": "Drop Excel sheets, photos, or audio notes here for automated processing.",
+    "success_msg": "Data handshake complete. The intelligence cluster is now processing the input."
+  },
+  "language_switcher": {
+    "label": "Language",
+    "label_regions": "Select your region",
+    "label_search": "Search language...",
+    "label_implemented": "Current Sanctuary Support",
+    "label_future": "Global Expansion",
+    "label_toggle": "Change atmosphere",
+    "mode_light": "Day",
+    "mode_dark": "Night",
+    "mode_system": "System",
+    "en-US": "English",
+    "es-ES": "Español",
+    "pt-BR": "Português"
+  },
+  "legal": {
+    "privacy_policy": {
+      "meta_title": "Privacy Policy | Beach Hotel Canasvieiras",
+      "meta_description": "Understand our commitment to data protection and digital sovereignty within the Sanctuary.",
+      "title": "Privacy Policy",
+      "badge_label": "COMPLIANCE & TRANSPARENCY",
+      "last_updated_prefix": "Last updated:",
+      "last_updated_date": "March 23, 2026",
+      "back_button_label": "Return to Reception",
+      "print_button_label": "Print Document",
+      "content": [
+        {
+          "heading": "1. Introduction",
+          "body": "At Beach Hotel Canasvieiras, the privacy of our guests and visitors is a non-negotiable priority. This policy outlines how we collect, safeguard, and utilize your information."
+        },
+        {
+          "heading": "2. Telemetry & Geolocation",
+          "body": "Our platform employs the <strong>Heimdall Protocol</strong> to anonymize geolocation data, enabling real-time weather and timezone synchronization in the Visitor HUD. We do not store physical IP addresses in permanent databases."
+        },
+        {
+          "heading": "3. Data Sovereignty",
+          "body": "Through our private infrastructure, we ensure that guest data remains encrypted and isolated, preventing unauthorized third-party access."
+        }
+      ],
+      "infrastructure_label": "Sovereign Digital Infrastructure • MetaShark Tech"
+    },
+    "terms_of_service": {
+      "meta_title": "Terms of Service | Beach Hotel Canasvieiras",
+      "meta_description": "Usage conditions and booking terms for our boutique platform and festival.",
+      "title": "Terms of Service",
+      "badge_label": "USAGE GUIDELINES",
+      "last_updated_prefix": "Last updated:",
+      "last_updated_date": "March 23, 2026",
+      "back_button_label": "Return to Reception",
+      "print_button_label": "Download PDF",
+      "content": [
+        {
+          "heading": "1. Acceptance of Terms",
+          "body": "By accessing this digital ecosystem, you agree to comply with these terms. Our services are designed for elite hospitality management and event promotion."
+        },
+        {
+          "heading": "2. Digital Assets",
+          "body": "All software components, 3D models, and AI-generated content displayed are protected intellectual property. Misuse or attempted security breaches will be handled by our automated sentinels."
+        }
+      ],
+      "infrastructure_label": "Sovereign Digital Infrastructure • MetaShark Tech"
+    }
+  },
+  "lucide_page": {
+    "page_title": "Lucide Iconography | Raz Podestá",
+    "page_description": "Explore the complete collection of Lucide icons available in the design system.",
+    "header_title": "Lucide Universe",
+    "header_subtitle": "A collection of beautiful and consistent SVG icons for modern interfaces.",
+    "search_placeholder": "Search icon by name...",
+    "load_more_button": "Load More Icons",
+    "showing_results": "Showing {count} of {total} icons",
+    "visit_official": "View Documentation",
+    "copy_import": "Copy JSX",
+    "category_all": "All",
+    "view_details": "View Details",
+    "modal_install_title": "Library Installation",
+    "modal_usage_title": "Implementation",
+    "modal_close": "Close",
+    "scroll_top": "Scroll Up",
+    "scroll_bottom": "Scroll Down",
+    "library_help_btn": "Library Help",
+    "library_help_title": "Architecture Resource",
+    "library_help_desc": "This centralized index facilitates icon selection for new projects.",
+    "btn_docs": "Icon Documentation",
+    "btn_repo": "GitHub Repository"
+  },
+  "maintenance": {
+    "title": "System Upgrade in Progress",
+    "description": "We are currently deploying architectural improvements to the ecosystem. Access is temporarily restricted to ensure data integrity.",
+    "estimated_return": "Expected uptime: Shortly."
+  },
+  "marketing_cloud": {
+    "title": "Enterprise Marketing Cloud",
+    "subtitle": "High-Volume Transactional & Mass Communication",
+    "tab_audience": "Audience Inventory",
+    "tab_campaigns": "Active Campaigns",
+    "tab_templates": "Fidelity Templates",
+    "label_recipients": "Target Nodes",
+    "label_subject": "Protocol Subject",
+    "label_status_sent": "DISPATCHED",
+    "label_open_rate": "Engagement Yield",
+    "btn_new_campaign": "Initialize Campaign",
+    "btn_send_now": "Execute Dispatch",
+    "btn_import_vault": "Sync from Ingestion Pipeline",
+    "success_dispatch": "Communication successfully broadcasted to the network.",
+    "error_quota": "Infrastructure alert: SMTP quota limit reached."
+  },
+  "mission_vision": {
+    "mission_title": "Our Mission",
+    "mission_description": "To orchestrate the entire digital conversion lifecycle. We forge intelligent, sovereign ecosystems that unify brand strategy, experience creation, and continuous optimization, transforming marketing from a game of guesswork into a science of predictable growth.",
+    "vision_title": "Our Vision: The Growth Flywheel",
+    "vision_subtitle": "Our vision is to be the driving force behind a new paradigm: the web as a living, self-optimizing ecosystem, where every interaction fuels a perpetual growth flywheel.",
+    "vision_pillars": [
       {
-        "text": "Located in the heart of Canasvieiras, our hotel offers a unique blend of sophisticated luxury and the vibrant energy of Florianópolis.",
-        "highlight": "Exclusivity in every detail."
+        "title": "Understand",
+        "description": "We don't just capture metrics; we achieve holistic observability. We integrate qualitative and quantitative data to build a dynamic visitor profile, understanding the 'why' behind every 'what'."
       },
       {
-        "text": "Our commitment is to transform every stay into a curated experience. With smart technology and a personalized concierge service, we ensure that every guest finds their perfect refuge.",
-        "highlight": "Your perfect refuge."
+        "title": "Adapt",
+        "description": "The platforms we build are not static. They are living entities that use artificial intelligence to adapt and evolve harmoniously, personalizing the experience in real-time to meet each user's needs."
+      },
+      {
+        "title": "Maximize",
+        "description": "Conversion is not an event, it's a science. Our ecosystem uses the insights generated to fuel a cycle of continuous optimization, ensuring that every asset and every campaign becomes inherently more effective over time, maximizing business objectives."
       }
-    ],
-    "cta_button": "Discover our Story"
+    ]
+  },
+  "nav-links": {
+    "nav_links": {
+      "hotel": "The Hotel",
+      "habitaciones": "Luxury Suites",
+      "paquetes": "Packages & Programs",
+      "historia": "Our Story",
+      "ubicacion": "Location",
+      "contacto": "Contact",
+      "reservas": "Online Booking",
+      "politica_privacidad": "Privacy",
+      "terminos_servicio": "Terms of Use"
+    }
+  },
+  "newsletter_form": {
+    "title": "Acesso Soberano",
+    "description": "Junte-se à elite do Beach Hotel e receba atualizações exclusivas do Santuário e do Festival.",
+    "placeholder": "Seu e-mail profissional",
+    "button": "Solicitar Ingresso",
+    "loading": "Processando Identidade...",
+    "success_title": "Identidade Vinculada",
+    "success_subtitle": "Seu acesso foi validado. Você agora faz parte do núcleo digital do Beach Hotel.",
+    "reward_label": "CONCEDIDOS",
+    "legal_notice": "Infraestrutura Privada • Criptografia de Ponta a Ponta",
+    "validation_email_required": "O e-mail é obrigatório para o handshake",
+    "validation_email_invalid": "Formato de e-mail não reconhecido pelo protocolo"
+  },
+  "not_found": {
+    "title": "Page Not Found",
+    "description": "It seems you've ventured into undefined territory. The route you are looking for does not exist in this version of the matrix.",
+    "cta_button": "Return to Base",
+    "error_code": "ERR_ROUTE_MISSING • SYSTEM_ID_404"
+  },
+  "offers": {
+    "page_title": "Travel Packages & Programs | Beach Hotel Canasvieiras",
+    "page_description": "Explore our exclusive accommodation offers and curated travel programs in Florianópolis.",
+    "hero_title": "Sanctuary Offers",
+    "hero_subtitle": "Experiences designed to transform your stay into unforgettable memories.",
+    "filter_all": "All",
+    "filter_packages": "Packages",
+    "filter_programs": "Programs",
+    "filter_promos": "Promotions",
+    "cta_book": "Book Now",
+    "cta_details": "View Details",
+    "label_nights": "Nights",
+    "label_from": "From",
+    "label_inclusions": "Inclusions",
+    "empty_state": "There are no offers available for this filter at the moment.",
+    "loading_state": "Synchronizing with booking engine..."
+  },
+  "offers_flash": {
+    "title": "Flash Offers",
+    "subtitle": "Limited Inventory | High Priority Access",
+    "cta_label": "Secure Booking Now",
+    "label_stock_available": "Units Remaining",
+    "label_stock_total": "Total Capacity",
+    "label_expires_in": "Offer Expiring In",
+    "status_active": "ACTIVE PIPELINE",
+    "status_sold_out": "INVENTORY DEPLETED",
+    "status_expired": "OFFER CONCLUDED",
+    "badge_limited": "EXCLUSIVE OPPORTUNITY"
+  },
+  "partner_form": {
+    "title": "B2B Agency Onboarding",
+    "section_corporate": "Corporate Identity",
+    "section_legal": "Legal Representative (KYB)",
+    "label_brand_name": "Trading Name",
+    "label_legal_name": "Registered Company Name",
+    "label_tax_id": "Tax ID / VAT Number",
+    "placeholder_tax_id": "US-123456789",
+    "label_website": "Corporate Web Portal",
+    "label_iata": "IATA / Regulatory Code",
+    "label_representative_name": "Full Name of Authorized Signatory",
+    "label_representative_email": "Corporate Email Address",
+    "label_representative_birth": "Date of Birth",
+    "label_representative_phone": "Direct Contact Mobile",
+    "btn_submit": "Request Enterprise Access",
+    "success_msg": "Onboarding initiated. Document verification process in progress (24h).",
+    "validation": {
+      "tax_id_invalid": "Invalid Tax ID or VAT Number",
+      "birth_date_required": "Birth date is mandatory for KYB protocols",
+      "email_invalid": "Invalid email protocol",
+      "phone_invalid": "Phone number not recognized"
+    }
+  },
+  "partner_network": {
+    "title": "B2B Partner Network",
+    "subtitle": "High-Fidelity Wholesale Operations",
+    "label_trust_score": "Trust Credibility Index",
+    "label_iata": "IATA / Regulatory Code",
+    "btn_onboarding": "Initialize Onboarding",
+    "metrics": {
+      "label_bookings": "Total Confirmed Bookings",
+      "label_conversion": "Conversion Yield",
+      "label_commissions": "Pending Accruals"
+    },
+    "agent_management": {
+      "title": "Agent Directory",
+      "add_agent": "Authorize New Consultant",
+      "history": "Transaction Ledger"
+    }
+  },
+  "portal": {
+    "welcome_developer": "Sovereign Engineering Console",
+    "welcome_admin": "Hospitality Management Panel",
+    "welcome_operator": "B2B Operations Portal",
+    "welcome_guest": "Welcome to your Sanctuary",
+    "nav_overview": "Overview",
+    "nav_reservations": "Reservations",
+    "nav_inventory": "Suites & Assets",
+    "nav_telemetry": "Telemetry L0",
+    "nav_b2b_rates": "Net Rates",
+    "label_server_health": "Infrastructure Health",
+    "label_active_connections": "Active Sockets",
+    "label_loyalty_points": "Sanctuary XP",
+    "label_upcoming_stays": "Your Next Stays",
+    "label_metric_nominal": "NOMINAL",
+    "label_metric_warning": "DEGRADED",
+    "label_metric_critical": "ANOMALY",
+    "status_active_session": "Identity Linked",
+    "last_sync_label": "Last sync",
+    "empty_data_label": "No data detected in perimeter",
+    "cta_logout": "End Session",
+    "cta_settings": "Settings"
+  },
+  "profile_page": {
+    "page_title": "My Profile | Raz Podestá",
+    "welcome_title": "Digital Sanctuary",
+    "level_label": "Current Level",
+    "xp_label": "Experience",
+    "inventory_title": "Artifact Inventory",
+    "empty_inventory_message": "Your inventory is empty. Explore the ecosystem to discover artifacts."
+  },
+  "project_details": {
+    "section_title": "Elite Engineering",
+    "section_subtitle": "A showcase of high-performance digital assets.",
+    "label_live_demo": "Live Demo",
+    "label_source_code": "Source Code",
+    "label_tech_stack": "Tech Stack",
+    "label_backend_arch": "Backend Architecture",
+    "label_elite_options": "Elite Options",
+    "label_objective": "System Objective",
+    "label_close_modal": "Close Specifications",
+    "empty_state": "No projects available at this moment."
+  },
+  "quienes_somos": {
+    "page_title": "Our History | Beach Hotel Canasvieiras",
+    "page_description": "Discover the legacy and vision behind the sanctuary of elite hospitality in Florianópolis.",
+    "hero_title": "The Sanctuary Legacy",
+    "hero_subtitle": "Founded on the pillars of exclusivity and the vibrant energy of the sea, our hotel is more than a destination; it is a curated refuge for the global traveler.",
+    "luxury_pillar": {
+      "title": "Boutique Luxury",
+      "description": "A sophisticated atmosphere designed to celebrate diversity and high-end comfort in every detail."
+    },
+    "comfort_pillar": {
+      "title": "Absolute Refuge",
+      "description": "Modern suites integrated with smart technology to ensure peace and rest in the heart of Canasvieiras."
+    },
+    "service_pillar": {
+      "title": "Elite Concierge",
+      "description": "Our dedicated team anticipates your needs, ensuring an impeccable and personalized stay 24/7."
+    },
+    "cta_title": "Experience the Unforgettable",
+    "cta_button": "Book your Experience"
+  },
+  "server_error": {
+    "title": "System Malfunction",
+    "description": "A critical anomaly has been detected in the core. Our automated sentinels have been notified and recovery protocols are engaging.",
+    "retry_button": "Retry Connection",
+    "home_button": "Emergency Evac (Home)"
+  },
+  "suite_gallery": {
+    "title": "Luxury Suites",
+    "search_placeholder": "Search for your sanctuary...",
+    "cat_all": "All Suites",
+    "cat_master": "Master Sanctuary",
+    "cat_deluxe": "Deluxe Room",
+    "cat_standard": "Standard Comfort",
+    "label_from": "Starting at",
+    "label_suite_suffix": "Boutique Suite",
+    "empty_state_title": "No results in the Sanctuary",
+    "empty_state_signal": "SUITE SIGNAL NOT FOUND"
+  },
+  "system_status": {
+    "aria_label": "Live Hospitality Status Updates",
+    "items": [
+      {
+        "category": "PRIDE FEST",
+        "message": "90% Master Suites occupied for the Boat Party.",
+        "iconKey": "Ticket",
+        "colorKey": "purple"
+      },
+      {
+        "category": "METEOROLOGY",
+        "message": "25°C in Canasvieiras. Perfect for the beach.",
+        "iconKey": "ThermometerSun",
+        "colorKey": "yellow"
+      },
+      {
+        "category": "SECURITY",
+        "message": "Private guest-only access monitored 24/7.",
+        "iconKey": "ShieldCheck",
+        "colorKey": "green"
+      },
+      {
+        "category": "LOUNGE",
+        "message": "Sunset Sessions daily at the Headquarters pool.",
+        "iconKey": "Music",
+        "colorKey": "pink"
+      }
+    ]
   },
   "value_proposition": {
     "badge_label": "Hospitality Standards",
@@ -545,399 +916,28 @@
       "avatar_url": "/images/testimonials/james-sterling.jpg"
     }
   },
-  "ai_gallery_section": {
-    "badge": "Ideogram 3.0 Powered",
-    "title": "AI Visual Synth",
-    "subtitle": "Explore a curated collection of algorithmically generated assets. Photorealism, perfect typography, and stylistic consistency, orchestrated by our sovereign CMS.",
-    "overlay_indicator": "LIVE RENDER • WEBGL 2.0",
-    "drag_label": "DRAG TO ORBIT",
-    "item_prefix": "ASSET",
-    "error_fallback": "VISUAL ENGINE NOT SUPPORTED ON THIS BROWSER",
-    "footer_prompt": "Advanced Prompt Engineering",
-    "footer_upscaling": "8K Upscaling & Optimization",
-    "items": {
-      "neon-typography": {
-        "title": "Neon Glass",
-        "description": "3D neon tubes rendering."
-      },
-      "editorial-fashion": {
-        "title": "High Fashion",
-        "description": "Photorealistic textile synthesis."
-      },
-      "tech-badge": {
-        "title": "Titanium Tech",
-        "description": "Macro product visualization."
-      },
-      "transparent-gadget": {
-        "title": "Glass Hardware",
-        "description": "Futuristic device engineering."
-      },
-      "luxury-perfume": {
-        "title": "Gold Scent",
-        "description": "Commercial product photography."
-      },
-      "concept-car": {
-        "title": "Auto Concept",
-        "description": "Abstract carbon fiber details."
-      },
-      "concrete-workspace": {
-        "title": "Raw Workspace",
-        "description": "Minimalist interior design."
-      },
-      "cyberpunk-street": {
-        "title": "Night City",
-        "description": "Volumetric lighting atmosphere."
-      },
-      "abstract-geometry": {
-        "title": "Parametric Form",
-        "description": "Algorithmic architecture."
-      },
-      "fluid-shapes": {
-        "title": "Iridescent Flux",
-        "description": "Liquid metal 3D simulation."
-      },
-      "mechanical-insect": {
-        "title": "Clockwork Life",
-        "description": "Precision steampunk macro."
-      },
-      "neural-network": {
-        "title": "Data Stream",
-        "description": "Abstract neural visualization."
-      }
-    }
-  },
-  "history": {
-    "badge_label": "The Legacy",
-    "title": "Forged in Code",
-    "subtitle": "Discover the fusion of two decades of systems engineering with a creative vision obsessed with results. This is not just a portfolio; it is the legacy of an architecture built to last."
-  },
-  "festival": {
-    "hero": {
-      "title": "PRIDE ESCAPE 2026",
-      "subtitle": "The Boutique Takeover of Canasvieiras",
-      "video_url": "https://cdn.pixabay.com/video/2023/10/24/186358-877995180_large.mp4",
-      "countdown_target": "2026-06-15T20:00:00Z",
-      "cta_label": "SECURE MY SPOT"
-    },
-    "manifesto": "A week designed to meet, connect and enjoy in community. Escape the cold and live a unique experience in the heart of the Magic Island. 7 days of absolute freedom, exclusive parties and the finest boutique hospitality.",
-    "vip_upsell": {
-      "title": "VIP Diamond Experience",
-      "price_addon": "+U$ 125",
-      "per_guest_label": "per guest",
-      "benefits": [
-        "Front-row ocean view room",
-        "Priority Access (Fast Pass) to all events",
-        "Limited Edition Welcome Kit",
-        "Exclusive dinner with the International Line-up",
-        "Premium Open Bar at all Boat Parties"
-      ],
-      "cta_label": "UPGRADE TO VIP"
-    },
-    "events": [
-      {
-        "id": "sunset-welcome",
-        "day": 1,
-        "title": "HQ SUNSET",
-        "location": "Beach Hotel Pool",
-        "startTime": "4:00 PM",
-        "description": "Official opening party with welcome cocktails and melodic DJ sets.",
-        "vibe": "Chill",
-        "isVipOnly": false,
-        "image": "/images/festival/hq-sunset.jpg",
-        "neon_color": "#3B82F6"
-      },
-      {
-        "id": "main-boat-party",
-        "day": 3,
-        "title": "BOAT PARTY: THE NEW WAVE",
-        "location": "North Bay / Private Yacht",
-        "startTime": "2:00 PM",
-        "description": "Sunset cruise with hi-fi sound system and strategic swim stops.",
-        "vibe": "House",
-        "isVipOnly": true,
-        "image": "/images/festival/boat-party-main.jpg",
-        "neon_color": "#A855F7"
-      },
-      {
-        "id": "techno-sanctuary",
-        "day": 5,
-        "title": "THE SANCTUARY NIGHT",
-        "location": "The Cave / Underground Club",
-        "startTime": "11:00 PM",
-        "description": "A visual and sonic immersion with the best of European Techno.",
-        "vibe": "Techno",
-        "isVipOnly": false,
-        "image": "/images/festival/techno-night.jpg",
-        "neon_color": "#EC4899"
-      }
-    ],
-    "packages_section": {
-      "title": "Takeover Packages",
-      "subtitle": "Select your level of immersion in the Sanctuary",
-      "label_5_nights": "5 Nights Experience",
-      "label_7_nights": "7 Nights Full Takeover",
-      "cta": "Book Package"
-    },
-    "packages": [
-      {
-        "category": "Experience Base",
-        "price_5_nights": "U$ 465",
-        "price_7_nights": "U$ 595",
-        "hotel_name": "Beach Hotel Principal",
-        "availability_label": "LAST CALL"
-      },
-      {
-        "category": "Luxury Elite",
-        "price_5_nights": "U$ 810",
-        "price_7_nights": "U$ 1,050",
-        "hotel_name": "Beach Hotel Suites",
-        "availability_label": "EXCLUSIVE BOOKING"
-      }
-    ],
-    "footer_credits": "Canasvieiras Fest 2026 • Private Infrastructure • MetaShark Tech"
-  },
-  "quienes_somos": {
-    "page_title": "Our History | Beach Hotel Canasvieiras",
-    "page_description": "Discover the legacy and vision behind the sanctuary of elite hospitality in Florianópolis.",
-    "hero_title": "The Sanctuary Legacy",
-    "hero_subtitle": "Founded on the pillars of exclusivity and the vibrant energy of the sea, our hotel is more than a destination; it is a curated refuge for the global traveler.",
-    "luxury_pillar": {
-      "title": "Boutique Luxury",
-      "description": "A sophisticated atmosphere designed to celebrate diversity and high-end comfort in every detail."
-    },
-    "comfort_pillar": {
-      "title": "Absolute Refuge",
-      "description": "Modern suites integrated with smart technology to ensure peace and rest in the heart of Canasvieiras."
-    },
-    "service_pillar": {
-      "title": "Elite Concierge",
-      "description": "Our dedicated team anticipates your needs, ensuring an impeccable and personalized stay 24/7."
-    },
-    "cta_title": "Experience the Unforgettable",
-    "cta_button": "Book your Experience"
-  },
-  "mission_vision": {
-    "mission_title": "Our Mission",
-    "mission_description": "To orchestrate the entire digital conversion lifecycle. We forge intelligent, sovereign ecosystems that unify brand strategy, experience creation, and continuous optimization, transforming marketing from a game of guesswork into a science of predictable growth.",
-    "vision_title": "Our Vision: The Growth Flywheel",
-    "vision_subtitle": "Our vision is to be the driving force behind a new paradigm: the web as a living, self-optimizing ecosystem, where every interaction fuels a perpetual growth flywheel.",
-    "vision_pillars": [
-      {
-        "title": "Understand",
-        "description": "We don't just capture metrics; we achieve holistic observability. We integrate qualitative and quantitative data to build a dynamic visitor profile, understanding the 'why' behind every 'what'."
-      },
-      {
-        "title": "Adapt",
-        "description": "The platforms we build are not static. They are living entities that use artificial intelligence to adapt and evolve harmoniously, personalizing the experience in real-time to meet each user's needs."
-      },
-      {
-        "title": "Maximize",
-        "description": "Conversion is not an event, it's a science. Our ecosystem uses the insights generated to fuel a cycle of continuous optimization, ensuring that every asset and every campaign becomes inherently more effective over time, maximizing business objectives."
-      }
-    ]
-  },
-  "contact": {
-    "title": "GET IN TOUCH",
-    "form_cta": "Have an idea or project in mind? I'd love to hear about it. Fill out the form and I'll get back to you shortly.",
-    "form_placeholder_name": "* Name",
-    "form_placeholder_email": "* Email",
-    "form_placeholder_message": "* Your message...",
-    "form_button_submit": "Send Message",
-    "form_button_loading": "Processing...",
-    "success_title": "Request Received",
-    "success_subtitle": "Our concierge will contact you shortly to refine the details of your stay or project.",
-    "error_submit": "Submission failed. Please try again or contact us directly via email.",
-    "validation": {
-      "name_required": "Name is required",
-      "email_required": "Email is required",
-      "email_invalid": "Please enter a valid email",
-      "message_too_short": "Message must be at least 10 characters"
-    }
-  },
-  "contact_page": {
-    "page_title": "Contact | Raz Podestá",
-    "page_description": "Get in touch to discuss your next project. Let's talk about how we can build high-performance digital assets together.",
-    "title": "GET IN TOUCH",
-    "subtitle": "Have an idea or project in mind? I'd love to hear about it. Fill out the form and I'll get back to you shortly."
-  },
-  "blog_page": {
-    "page_title": "Concierge Journal | Beach Hotel Canasvieiras",
-    "page_description": "Discover the island's best-kept secrets, exclusive nightlife guides, and Pride Escape news.",
-    "hero_title": "The Concierge Journal",
-    "featured_title": "Featured Read",
-    "all_posts_title": "Latest Updates",
-    "read_more_cta": "Read Article",
-    "empty_state": "No articles available at this time. Stay connected.",
-    "tag_results_singular": "One article available curated under",
-    "tag_results_plural": "Articles selected curated under"
-  },
-  "suite_gallery": {
-    "title": "Luxury Suites",
-    "search_placeholder": "Search for your sanctuary...",
-    "cat_all": "All Suites",
-    "cat_master": "Master Sanctuary",
-    "cat_deluxe": "Deluxe Room",
-    "cat_standard": "Standard Comfort",
-    "label_from": "Starting at",
-    "label_suite_suffix": "Boutique Suite",
-    "empty_state_title": "No results in the Sanctuary",
-    "empty_state_signal": "SUITE SIGNAL NOT FOUND"
-  },
-  "profile_page": {
-    "page_title": "My Profile | Raz Podestá",
-    "welcome_title": "Digital Sanctuary",
-    "level_label": "Current Level",
-    "xp_label": "Experience",
-    "inventory_title": "Artifact Inventory",
-    "empty_inventory_message": "Your inventory is empty. Explore the ecosystem to discover artifacts."
-  },
-  "lucide_page": {
-    "page_title": "Lucide Iconography | Raz Podestá",
-    "page_description": "Explore the complete collection of Lucide icons available in the design system.",
-    "header_title": "Lucide Universe",
-    "header_subtitle": "A collection of beautiful and consistent SVG icons for modern interfaces.",
-    "search_placeholder": "Search icon by name...",
-    "load_more_button": "Load More Icons",
-    "showing_results": "Showing {count} of {total} icons",
-    "visit_official": "View Documentation",
-    "copy_import": "Copy JSX",
-    "view_details": "View Details",
-    "modal_install_title": "Library Installation",
-    "modal_usage_title": "Implementation",
-    "modal_close": "Close",
-    "scroll_top": "Scroll Up",
-    "scroll_bottom": "Scroll Down",
-    "library_help_btn": "Library Help",
-    "library_help_title": "Architecture Resource",
-    "library_help_desc": "This centralized index facilitates icon selection for new projects.",
-    "btn_docs": "Icon Documentation",
-    "btn_repo": "GitHub Repository",
-    "category_all": "All"
-  },
-  "project_details": {
-    "section_title": "Elite Engineering",
-    "section_subtitle": "A showcase of high-performance digital assets.",
-    "label_live_demo": "Live Demo",
-    "label_source_code": "Source Code",
-    "label_tech_stack": "Tech Stack",
-    "label_backend_arch": "Backend Architecture",
-    "label_elite_options": "Elite Options",
-    "label_objective": "System Objective",
-    "label_close_modal": "Close Specifications",
-    "empty_state": "No projects available at this moment."
-  },
-  "legal": {
-    "privacy_policy": {
-      "meta_title": "Privacy Policy | Beach Hotel Canasvieiras",
-      "meta_description": "Understand our commitment to data protection and digital sovereignty within the Sanctuary.",
-      "title": "Privacy Policy",
-      "badge_label": "COMPLIANCE & TRANSPARENCY",
-      "last_updated_prefix": "Last updated:",
-      "last_updated_date": "March 23, 2026",
-      "back_button_label": "Return to Reception",
-      "print_button_label": "Print Document",
-      "content": [
-        {
-          "heading": "1. Introduction",
-          "body": "At Beach Hotel Canasvieiras, the privacy of our guests and visitors is a non-negotiable priority. This policy outlines how we collect, safeguard, and utilize your information."
-        },
-        {
-          "heading": "2. Telemetry & Geolocation",
-          "body": "Our platform employs the <strong>Heimdall Protocol</strong> to anonymize geolocation data, enabling real-time weather and timezone synchronization in the Visitor HUD. We do not store physical IP addresses in permanent databases."
-        },
-        {
-          "heading": "3. Data Sovereignty",
-          "body": "Through our private infrastructure, we ensure that guest data remains encrypted and isolated, preventing unauthorized third-party access."
-        }
-      ],
-      "infrastructure_label": "Sovereign Digital Infrastructure • MetaShark Tech"
-    },
-    "terms_of_service": {
-      "meta_title": "Terms of Service | Beach Hotel Canasvieiras",
-      "meta_description": "Usage conditions and booking terms for our boutique platform and festival.",
-      "title": "Terms of Service",
-      "badge_label": "USAGE GUIDELINES",
-      "last_updated_prefix": "Last updated:",
-      "last_updated_date": "March 23, 2026",
-      "back_button_label": "Return to Reception",
-      "print_button_label": "Download PDF",
-      "content": [
-        {
-          "heading": "1. Acceptance of Terms",
-          "body": "By accessing this digital ecosystem, you agree to comply with these terms. Our services are designed for elite hospitality management and event promotion."
-        },
-        {
-          "heading": "2. Digital Assets",
-          "body": "All software components, 3D models, and AI-generated content displayed are protected intellectual property. Misuse or attempted security breaches will be handled by our automated sentinels."
-        }
-      ],
-      "infrastructure_label": "Sovereign Digital Infrastructure • MetaShark Tech"
-    }
-  },
-  "not_found": {
-    "title": "Page Not Found",
-    "description": "It seems you've ventured into undefined territory. The route you are looking for does not exist in this version of the matrix.",
-    "cta_button": "Return to Base",
-    "error_code": "ERR_ROUTE_MISSING • SYSTEM_ID_404"
-  },
-  "maintenance": {
-    "title": "System Upgrade in Progress",
-    "description": "We are currently deploying architectural improvements to the ecosystem. Access is temporarily restricted to ensure data integrity.",
-    "estimated_return": "Expected uptime: Shortly."
-  },
-  "server_error": {
-    "title": "System Malfunction",
-    "description": "A critical anomaly has been detected in the core. Our automated sentinels have been notified and recovery protocols are engaging.",
-    "retry_button": "Retry Connection",
-    "home_button": "Emergency Evac (Home)"
-  },
-  "homepage": {
-    "hero": {
-      "page_title": "Beach Hotel Canasvieiras | Florianópolis",
-      "page_description": "Boutique accommodation and official headquarters of the Pride Escape 2026 festival.",
-      "SUITES_SUBTITLE": "Where luxury meets the sea.",
-      "SUITES_TITLE": "BOUTIQUE SUITES",
-      "SUITES_FEATURES": "Panoramic Views · Gourmet Breakfast",
-      "FESTIVAL_SUBTITLE": "The new wave of Florianópolis.",
-      "FESTIVAL_TITLE": "PRIDE ESCAPE 2026",
-      "FESTIVAL_FEATURES": "Boat Party · VIP Club Nights · 7 Days of Takeover",
-      "CTA_BUTTON": "CHECK AVAILABILITY"
-    },
-    "about_section": {
-      "title": "A Sanctuary of Elite Hospitality.",
-      "paragraphs": [
-        {
-          "text": "Located in the heart of Canasvieiras, our hotel offers a unique blend of sophisticated luxury and the vibrant energy of Florianópolis.",
-          "highlight": "We redefine the beach experience."
-        }
-      ],
-      "cta_button": "Discover our Story"
-    },
-    "ai_gallery_section": {
-      "badge": "Ideogram 3.0 Powered",
-      "title": "AI Visual Synth",
-      "subtitle": "Explore a curated collection of algorithmically generated assets.",
-      "overlay_indicator": "LIVE RENDER • WEBGL 2.0",
-      "drag_label": "DRAG TO ORBIT",
-      "item_prefix": "ASSET",
-      "error_fallback": "VISUAL ENGINE NOT SUPPORTED",
-      "footer_prompt": "Advanced Prompt Engineering",
-      "footer_upscaling": "8K Upscaling & Optimization",
-      "items": {}
-    }
-  },
-  "design_system_page": {
-    "page_title": "Design System | Raz Podestá",
-    "page_description": "Explore the components, design tokens, and visual philosophy that build this portfolio's interface.",
-    "title": "Design System",
-    "subtitle": "A transparent look at the visual and functional building blocks of this digital ecosystem.",
-    "construction_notice": "This section is currently under construction. Soon you will be able to explore the color palette, typographic hierarchy, and the React component library that bring this site to life."
-  },
-  "cocreation_page": {
-    "page_title": "Co-creation | Raz Podestá",
-    "page_description": "Discover my collaborative framework for transforming ideas into high-performance digital assets.",
-    "title": "Co-creation Framework",
-    "subtitle": "My process for collaborating with you, from idea conception to deployment and continuous optimization.",
-    "construction_notice": "This section is currently under construction. Here I will detail my work methodology, project phases, and how we will partner to ensure the success of your vision."
+  "visitor_hud": {
+    "tab_identity": "IDENTITY",
+    "tab_telemetry": "TELEMETRY",
+    "guest_title": "Identity Not Linked",
+    "guest_description": "Sign in to activate Protocol 33 and collect exclusive artifacts within the Sanctuary.",
+    "guest_cta": "Link Identity",
+    "label_visitor_info": "GUEST INFORMATION",
+    "label_ip_visitor": "SOURCE I.P.",
+    "label_location": "LOCATION",
+    "label_weather": "CANASVIEIRAS WEATHER",
+    "label_time": "LOCAL TIME",
+    "status_calibrating": "CALIBRATING INSTRUMENTS...",
+    "status_error": "SIGNAL LOST",
+    "weather_sunny": "SUNNY",
+    "weather_rainy": "RAINY",
+    "weather_cloudy": "CLOUDY",
+    "roaming_label": "ROAMING",
+    "stat_artifacts": "Artifacts",
+    "stat_streak": "Streak",
+    "xp_next_label": "Next",
+    "footer_credits": "MetaShark Tech Infrastructure",
+    "cta_explore": "Explore",
+    "precision_sync_label": "Heimdall Protocol: Precision Sync Active"
   }
 }

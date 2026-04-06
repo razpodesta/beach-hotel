@@ -2,52 +2,19 @@
   "extends": "../../../tsconfig.base.json",
   "compilerOptions": {
     "baseUrl": ".",
-    /* 
-       PILAR V: ADHERENCIA AL GRAFO SOBERANO
-       Mantenemos 'composite' para permitir que el orquestador de la raíz
-       y la suite de pruebas reconozcan este paquete como parte del monorepo.
-    */
     "composite": true,
     "rootDir": ".",
-    
-    /* 
-       PILAR XIII: PUREZA DE SOURCE (Blindaje Total)
-       Bloqueamos la emisión física para evitar que el IDE genere archivos .js/.d.ts
-       dentro de 'src/'. La eliminación de 'references' al final de este archivo 
-       es lo que resuelve el error "cannot disable emission".
-    */
     "noEmit": true,
-
-    /* 
-       RESOLUCIÓN PARA UI (React 19 Standards):
-       Optimizado para el empaquetado moderno de Next.js 15 y el motor de 
-       estilos CSS Modules.
-    */
     "module": "esnext",
     "moduleResolution": "bundler",
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
     "jsx": "react-jsx",
-    
     "declaration": true,
     "declarationMap": true,
-    
-    /* Tipos globales para el desarrollo de componentes */
     "types": ["node", "react", "react-dom"]
   },
-  "include": [
-    "src/**/*.ts", 
-    "src/**/*.tsx", 
-    "src/global.d.ts"
-  ],
-  "exclude": [
-    "node_modules", 
-    "dist", 
-    "jest.config.ts", 
-    "**/*.spec.ts", 
-    "**/*.spec.tsx"
-  ]
-  /* 
-     ELIMINACIÓN ESTRATÉGICA: Array 'references' eliminado.
-     Se rompe la cadena de dependencia circular local para garantizar
-     estabilidad en el IDE y limpieza absoluta en el source.
-  */
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/global.d.ts"],
+  "exclude": ["node_modules", "dist", "jest.config.ts", "**/*.spec.ts", "**/*.spec.tsx"]
 }

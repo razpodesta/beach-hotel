@@ -13,7 +13,6 @@
         "main": "packages/protocol-33/src/index.ts",
         "tsConfig": "packages/protocol-33/tsconfig.lib.json",
         "assets": ["packages/protocol-33/*.md"],
-        "updateBuildableProjectDepsInPackageJson": true,
         "clean": true
       }
     },
@@ -22,9 +21,12 @@
       "options": {
         "command": "tsc -p packages/protocol-33/tsconfig.lib.json --noEmit",
         "forwardAllArgs": true
-      }
+      },
+      "dependsOn": ["^typecheck"]
     },
-    "lint": { "executor": "@nx/eslint:lint" },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
     "test": {
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/packages/protocol-33"],

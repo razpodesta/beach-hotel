@@ -13,7 +13,12 @@
     "paths": {
       "@/*": ["./src/*"],
       "@payloadcms/next/importMap": ["./.next/types/payload-import-map.js"],
-      "@payloadcms/next/views/*": ["../../node_modules/@payloadcms/next/dist/views/*"]
+      "@payloadcms/next/views/*": ["../../node_modules/@payloadcms/next/dist/views/*"],
+      "@metashark/auth-shield": ["../../packages/auth-shield/src/index.ts"],
+      "@metashark/protocol-33": ["../../packages/protocol-33/src/index.ts"],
+      "@metashark/cms-core": ["../../packages/cms/core/src/index.ts"],
+      "@metashark/cms-core/config": ["../../packages/cms/core/src/payload.config.ts"],
+      "@metashark/cms-ui": ["../../packages/cms/ui/src/index.ts"]
     }
   },
   "include": [
@@ -24,13 +29,5 @@
     "../../packages/**/*.ts",
     "../../packages/**/*.tsx"
   ],
-  "exclude": [
-    "node_modules", 
-    "dist", 
-    "../../dist", 
-    ".next", 
-    "out", 
-    "**/*.spec.ts",
-    "**/*.spec.tsx"
-  ]
+  "exclude": ["node_modules", "dist", ".next", "out", "**/*.spec.ts"]
 }

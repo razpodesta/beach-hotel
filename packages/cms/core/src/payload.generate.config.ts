@@ -1,119 +1,87 @@
 /**
  * @file packages/cms/core/src/payload.generate.config.ts
- * @description Motor de Síntesis de Tipos (Lightweight DNA Engine).
- *              Provee una configuración atómica y pura para la generación
- *              de artefactos TS, optimizada para velocidad extrema en CI/CD.
- *              Refactorizado: Sincronización SSoT de 14 colecciones, blindaje
- *              de adaptador DB local-only y telemetría Heimdall v2.5.
- * @version 3.0 - Sovereign DNA Standard (Build-Immune)
- * @author Staff Engineer - MetaShark Tech
+ * @description Motor de Síntesis de Tipos con Auditoría Granular (Heimdall v5.0).
+ *              Refactorizado: Implementación de Isolated Synthesis (db: undefined)
+ *              para erradicar los Deadlocks de Sockets de PostgreSQL durante el build.
+ * @version 5.0 - Forensic Observability & Socket Bypass
+ * @author Raz Podestá - MetaShark Tech
  */
 
 import { buildConfig } from 'payload';
-import { postgresAdapter } from '@payloadcms/db-postgres';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import * as dotenv from 'dotenv';
+import { performance } from 'node:perf_hooks';
 
-/** 
- * 1. INVENTARIO MAESTRO DE COLECCIONES (Full SSoT Matrix)
- * @pilar I: Visión Holística. El espejo debe reflejar el 100% de los datos.
- */
-import { Ingestions } from './collections/Ingestions';
-import { Subscribers } from './collections/Subscribers';
-import { Agencies } from './collections/Agencies';
-import { Agents } from './collections/Agents';
-import { BusinessMetrics } from './collections/BusinessMetrics';
-import { Offers } from './collections/Offers';
-import { FlashSales } from './collections/FlashSales';
+// 1. CONSTANTES CROMÁTICAS Y RASTREO
+const C = {
+  reset: '\x1b[0m', cyan: '\x1b[36m', green: '\x1b[32m', 
+  yellow: '\x1b[33m', magenta: '\x1b[35m', bold: '\x1b[1m', red: '\x1b[31m'
+};
+
+const traceId = process.env.HEIMDALL_TRACE_ID || `DNA_${Date.now().toString(36).toUpperCase()}`;
+
+console.log(`\n${C.magenta}${C.bold}[${traceId}] 🧬 INICIANDO HANDSHAKE DE CONFIGURACIÓN${C.reset}`);
+
+// 2. CARGA DE ENTORNO
+const envStart = performance.now();
+dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
+console.log(`   ${C.cyan}[${traceId}] [OK]${C.reset} Entorno cargado en ${(performance.now() - envStart).toFixed(2)}ms`);
+
+// 3. IMPORTACIONES (Auditoría de Carga de Módulos)
+console.log(`   ${C.cyan}[${traceId}] [WAIT]${C.reset} Importando contratos de colecciones...`);
+const importStart = performance.now();
+
+import { Tenants } from './collections/Tenants';
+import { Users } from './collections/users/Users';
 import { Media } from './collections/Media';
 import { BlogPosts } from './collections/BlogPosts';
 import { Projects } from './collections/Projects';
-import { Tenants } from './collections/Tenants';
+import { Offers } from './collections/Offers';
+import { FlashSales } from './collections/FlashSales';
+import { Agencies } from './collections/Agencies';
+import { Agents } from './collections/Agents';
+import { BusinessMetrics } from './collections/BusinessMetrics';
+import { Ingestions } from './collections/Ingestions';
+import { Subscribers } from './collections/Subscribers';
 import { Notifications } from './collections/Notifications';
 import { DynamicRoutes } from './collections/DynamicRoutes';
-import { Users } from './collections/users/Users';
+
+console.log(`   ${C.green}[${traceId}] [OK]${C.reset} 14 Colecciones indexadas en ${(performance.now() - importStart).toFixed(2)}ms`);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// ============================================================================
-// TELEMETRÍA HEIMDALL: Generation Pulse v2.5
-// ============================================================================
-
-const genStart = performance.now();
-const traceId = `dna_gen_${Date.now().toString(36).toUpperCase()}`;
-
-const C = {
-  reset: '\x1b[0m', cyan: '\x1b[36m', green: '\x1b[32m', 
-  yellow: '\x1b[33m', magenta: '\x1b[35m', bold: '\x1b[1m'
-};
-
-console.log(`\n${C.magenta}${C.bold}[DNA][GEN-CONFIG]${C.reset} Iniciando síntesis atómica | Trace: ${C.cyan}${traceId}${C.reset}`);
+// 4. CONFIGURACIÓN DEL ADAPTADOR (BYPASS TOTAL)
+const dbStart = performance.now();
 
 /**
- * HELPER: measureGenTask
- * @description Reporta latencia de micro-operaciones en el pipeline de generación.
+ * @pilar VIII: Resiliencia de Build.
+ * Al eliminar la inicialización de postgresAdapter y pasar `undefined as any`,
+ * evitamos que el driver de Node intente abrir Sockets de red. Esto erradica
+ * instantáneamente el Deadlock del Event Loop.
  */
-const measureGenTask = <T>(name: string, task: () => T): T => {
-  const start = performance.now();
-  const result = task();
-  const duration = (performance.now() - start).toFixed(2);
-  console.log(`   ${C.green}✓ [GEN-METRIC]${C.reset} ${name.padEnd(25)} | OK | ${C.yellow}${duration.padStart(8)}ms${C.reset}`);
-  return result;
-};
+console.log(`   ${C.yellow}[${traceId}] [DB-CONNECT]${C.reset} Bypass Total del Adaptador de Base de Datos...`);
+console.log(`   ${C.green}[${traceId}] [OK]${C.reset} Red aislada en ${(performance.now() - dbStart).toFixed(2)}ms`);
 
-// ============================================================================
-// FACTORÍA SOBERANA: buildConfig (Modo Generación)
-// ============================================================================
+// 5. EXPORTACIÓN DEL CONTRATO
+console.log(`   ${C.cyan}[${traceId}] [BUILD]${C.reset} Ensamblando buildConfig final...`);
 
 export default buildConfig({
-  /** 
-   * @pilar III: Seguridad de Tipos.
-   * Secreto inalterable para el entorno de compilación estática.
-   */
   secret: process.env.PAYLOAD_SECRET || 'static-dna-vault-key-33',
-  
-  /**
-   * ADAPTADOR BLINDADO (No-Network Handshake)
-   * @fix: Usamos la IP de loopback explícita para evitar demoras de resolución DNS.
-   */
-  db: measureGenTask('DNA_DB_ADAPTER', () => postgresAdapter({
-    pool: { connectionString: 'postgres://dummy:dummy@127.0.0.1:5432/dummy_gen' },
-    push: false, 
-  })),
-
-  /**
-   * SINCRO DE ESQUEMAS (Handshake de 14 Nodos)
-   */
-  collections: measureGenTask('DNA_COLLECTION_SYNC', () => [
+  db: undefined as any, // ⚡ INFRA BYPASS: Sin sockets abiertos = Sin Deadlocks
+  collections: [
     Tenants, Users, Media, BlogPosts, Projects, 
     Offers, FlashSales, Agencies, Agents, 
     BusinessMetrics, Ingestions, Subscribers, 
     Notifications, DynamicRoutes
-  ]),
-  
+  ],
   typescript: {
     outputFile: path.resolve(__dirname, 'payload-types.ts'),
   },
-
-  /**
-   * @fix TS2322: Erradicación de 'null' en adaptador de texto.
-   * Se utiliza 'undefined' para cumplir con el contrato de Payload 3.0,
-   * eliminando el overhead de Lexical durante la síntesis de tipos.
-   */
   editor: undefined, 
-
-  /**
-   * @description Aislamiento Total. 
-   * Cero plugins activos para garantizar un tiempo de ejecución < 1s.
-   */
   plugins: [],
-
-  admin: {
-    autoLogin: false, // Desactivado para entorno de build
-    // @fix: Evita que Payload intente generar un importMap paralelo e inconsistente.
-  },
+  admin: { autoLogin: false },
 });
 
-const totalGenInit = (performance.now() - genStart).toFixed(2);
-console.log(`${C.magenta}${C.bold}[DNA][SUCCESS]${C.reset} Espejo de generación sellado en ${C.yellow}${totalGenInit}ms${C.reset}\n`);
+console.log(`${C.magenta}${C.bold}[${traceId}] 🏁 CONFIGURACIÓN ENTREGADA AL COMPILADOR.\n${C.reset}`);

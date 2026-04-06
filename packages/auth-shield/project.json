@@ -13,7 +13,6 @@
         "main": "packages/auth-shield/src/index.ts",
         "tsConfig": "packages/auth-shield/tsconfig.lib.json",
         "assets": ["packages/auth-shield/*.md"],
-        "updateBuildableProjectDepsInPackageJson": true,
         "clean": true
       }
     },
@@ -22,9 +21,12 @@
       "options": {
         "command": "tsc -p packages/auth-shield/tsconfig.lib.json --noEmit",
         "forwardAllArgs": true
-      }
+      },
+      "dependsOn": ["^typecheck"]
     },
-    "lint": { "executor": "@nx/eslint:lint" },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
     "test": {
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/packages/auth-shield"],

@@ -1,43 +1,23 @@
-/**
- * @file packages/cms/core/tsconfig.json
- * @description Orquestador soberano de tipos para el Núcleo CMS (DX Mode).
- *              Refactorizado: Resolución de depreciación de baseUrl e inyección
- *              de referencias atómicas hacia el protocolo.
- * @version 7.5 - Pure Handshake Edition
- */
 {
   "extends": "../../../tsconfig.base.json",
   "compilerOptions": {
-    /** @fix: Silenciamos aviso de depreciación según estándar TS 5.x */
+    /* RESOLUCIÓN DE DEPRECIACIÓN TS 7.0 */
     "ignoreDeprecations": "5.0",
     "baseUrl": ".",
     "composite": true,
-    "rootDir": ".",
     "noEmit": true,
+    
     "module": "esnext",
     "moduleResolution": "bundler",
     "verbatimModuleSyntax": true,
     "isolatedModules": true,
     "esModuleInterop": true,
-    "skipLibCheck": true,
     "declaration": true,
     "declarationMap": true,
     "types": ["node"]
   },
-  "include": [
-    "src/**/*.ts",
-    "src/payload-types.ts"
-  ],
-  "exclude": [
-    "node_modules", 
-    "dist", 
-    "jest.config.ts", 
-    "src/**/*.spec.ts"
-  ],
-  /**
-   * @pilar V: Adherencia al Grafo Soberano.
-   * Conexión certificada con el motor de reputación.
-   */
+  "include": ["src/**/*.ts", "src/payload-types.ts"],
+  "exclude": ["node_modules", "dist", "jest.config.ts", "src/**/*.spec.ts"],
   "references": [
     { "path": "../../protocol-33" }
   ]

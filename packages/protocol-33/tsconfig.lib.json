@@ -1,17 +1,9 @@
-/**
- * @file packages/protocol-33/tsconfig.lib.json
- * @description Orquestador de build físico para el motor de reputación.
- */
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "../../dist/packages/protocol-33",
     "rootDir": "src",
     "composite": true,
-    /** 
-     * @pilar XIII: Durante el build real, permitimos la emisión completa
-     * (JS + DTS) para que los scripts CLI puedan ejecutar la lógica.
-     */
     "noEmit": false,
     "emitDeclarationOnly": false,
     "tsBuildInfoFile": "../../dist/packages/protocol-33/tsconfig.lib.tsbuildinfo"

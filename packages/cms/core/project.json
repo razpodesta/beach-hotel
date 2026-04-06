@@ -12,20 +12,8 @@
         "outputPath": "dist/packages/cms/core",
         "main": "packages/cms/core/src/index.ts",
         "tsConfig": "packages/cms/core/tsconfig.lib.json",
-        "format": ["esm"],
-        "assets": [
-          "packages/cms/core/*.md",
-          {
-            "input": "packages/cms/core/src",
-            "glob": "**/*.!(ts|tsx)",
-            "output": "./"
-          }
-        ],
-        "generatePackageJson": true,
-        "updateBuildableProjectDepsInPackageJson": true,
         "clean": true
-      },
-      "description": "Compilación soberana del núcleo de datos MetaShark."
+      }
     },
     "typecheck": {
       "executor": "nx:run-commands",
@@ -33,14 +21,10 @@
         "command": "tsc -p packages/cms/core/tsconfig.lib.json --noEmit",
         "forwardAllArgs": true
       },
-      "inputs": ["production", "^production"],
-      "dependsOn": ["^build"],
-      "description": "Verificación forense de integridad de tipos del CMS."
+      "dependsOn": ["^typecheck"]
     },
-    "lint": { 
-      "executor": "@nx/eslint:lint",
-      "inputs": ["default", "{workspaceRoot}/eslint.config.mjs"],
-      "description": "Auditoría estática de calidad y fronteras de módulo."
+    "lint": {
+      "executor": "@nx/eslint:lint"
     },
     "test": {
       "executor": "@nx/jest:jest",
@@ -48,8 +32,7 @@
       "options": {
         "jestConfig": "packages/cms/core/jest.config.ts",
         "passWithNoTests": true
-      },
-      "description": "Ejecución de validaciones de lógica en el Espejo de Calidad."
+      }
     }
   }
 }

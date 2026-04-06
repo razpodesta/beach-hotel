@@ -7,21 +7,37 @@
     "prebuild": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "tsx scripts/sovereign-prebuild.ts",
+        "command": "pnpm dlx tsx scripts/sovereign-prebuild.ts",
         "color": true
       },
-      "outputs": [
-        "{projectRoot}/src/dictionaries/*.json",
-        "{workspaceRoot}/packages/cms/core/src/payload-types.ts"
-      ],
-      "cache": true
+      "outputs": ["{projectRoot}/src/dictionaries/*.json"]
     },
     "build": {
       "executor": "@nx/next:build",
       "outputs": ["{projectRoot}/.next"],
-      "defaultConfiguration": "production",
       "options": {
         "outputPath": "apps/portfolio-web"
+      },
+      "dependsOn": ["prebuild"],
+      "configurations": {
+        "production": {
+          "generateSourcemaps": false
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/next:server",
+      "options": {
+        "buildTarget": "@metashark/portfolio-web:build",
+        "dev": true,
+        "port": 4200
+      },
+      "dependsOn": ["prebuild"]
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc -p apps/portfolio-web/tsconfig.json --noEmit"
       },
       "dependsOn": ["prebuild"]
     }

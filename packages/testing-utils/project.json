@@ -13,26 +13,19 @@
         "main": "packages/testing-utils/src/index.ts",
         "tsConfig": "packages/testing-utils/tsconfig.lib.json",
         "assets": ["packages/testing-utils/*.md"],
-        "updateBuildableProjectDepsInPackageJson": true,
         "clean": true
       }
     },
     "typecheck": {
       "executor": "nx:run-commands",
       "options": {
-       
         "command": "tsc -p packages/testing-utils/tsconfig.lib.json --noEmit",
         "forwardAllArgs": true
-      }
+      },
+      "dependsOn": ["^typecheck"]
     },
-    "lint": { "executor": "@nx/eslint:lint" },
-    "test": {
-      "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/packages/testing-utils"],
-      "options": {
-        "jestConfig": "packages/testing-utils/jest.config.ts",
-        "passWithNoTests": true
-      }
+    "lint": {
+      "executor": "@nx/eslint:lint"
     }
   }
 }

@@ -1,43 +1,13 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    /* 
-       SOBERANÍA DE SALIDA:
-       Redirigimos al dist global del monorepo. 
-    */
     "outDir": "../../dist/packages/testing-utils",
-    
-    /* 
-       ESCUDO ANTI-6305:
-       Fijamos rootDir en 'src'. TS ignorará la jerarquía de carpetas superior
-       y el archivo 'src/index.ts' se convertirá en 'dist/index.js' directamente.
-    */
     "rootDir": "src",
-    
-    /* 
-       PILAR V: COMPOSITE SYNC
-       Activamos composite aquí para que el proyecto 'tests' pueda 
-       validar el código a través del build físico si fuera necesario.
-    */
     "composite": true,
-
-    /* 
-       PILAR XIII: FORZADO DE EMISIÓN (Override)
-       Anulamos el "noEmit": true heredado del tsconfig.json padre.
-       Permite al empaquetador generar los artefactos físicos (.js y .d.ts) 
-       en el directorio dist/ para ser consumidos por el pipeline de pruebas.
-    */
     "noEmit": false,
     "emitDeclarationOnly": false,
-    
     "tsBuildInfoFile": "../../dist/packages/testing-utils/tsconfig.lib.tsbuildinfo"
   },
-  "include":[
-    "src/**/*.ts", 
-    "src/**/*.tsx"
-  ],
-  "exclude":[
-    "**/*.spec.ts", 
-    "**/*.test.ts"
-  ]
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "exclude": ["**/*.spec.ts", "**/*.test.ts"]
 }
