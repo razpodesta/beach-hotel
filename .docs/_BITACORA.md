@@ -201,11 +201,7 @@ B. Blindaje Estático del Sitemap (Build Environment Guard)
 *   Aparato: `apps/portfolio-web/src/lib/blog/actions.ts`
 *   Resolución: Se condicionó la ejecución de `noStore()` utilizando el centinela de infraestructura `IS_BUILD_ENV`. Durante el build, el motor de datos opera en modo estático (consumiendo Mocks); en producción, opera en modo dinámico, garantizando la frescura del SSR.
 
-C. Purificación del Orquestador de Next.js (Zero Warnings Policy)
-*   Aparato: `apps/portfolio-web/next.config.ts`
-*   Resolución: 
-    1. Se erradicó la directiva `output: 'standalone'`, alineando la arquitectura con el motor nativo Serverless de Vercel.
-    2. Se interceptó el objeto de configuración devuelto por los plugins (`withNx`, `withPayload`) y se eliminó quirúrgicamente la clave `turbopack` no soportada por el modo estricto de Next.js 15.2.x.
+
 
 
 3. VEREDICTO DE ARQUITECTURA
