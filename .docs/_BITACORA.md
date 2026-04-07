@@ -207,11 +207,8 @@ C. Purificación del Orquestador de Next.js (Zero Warnings Policy)
     1. Se erradicó la directiva `output: 'standalone'`, alineando la arquitectura con el motor nativo Serverless de Vercel.
     2. Se interceptó el objeto de configuración devuelto por los plugins (`withNx`, `withPayload`) y se eliminó quirúrgicamente la clave `turbopack` no soportada por el modo estricto de Next.js 15.2.x.
 
-D. Sincronización Geométrica (Vercel Dashboard)
-*   Aparato: Consola de Vercel (Build & Development Settings)
-*   Resolución: Se recalibró el `Output Directory` a `dist/apps/portfolio-web/` y el `Build Command` a `pnpm nx build portfolio-web --prod`. Al eliminar el sufijo `/.next`, Vercel pudo finalmente localizar y procesar los artefactos estáticos emitidos por Nx.
 
-4. VEREDICTO DE ARQUITECTURA
+3. VEREDICTO DE ARQUITECTURA
 El ecosistema MetaShark ahora cuenta con un pipeline de CI/CD inquebrantable. Se alcanzó un estado de 100% de pureza en el Linter y de inmutabilidad total en el renderizado estático de Vercel. La fricción entre el Monorepo y el Edge Serverless ha sido erradicada.
 ---
 
