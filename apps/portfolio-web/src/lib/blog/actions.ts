@@ -1,9 +1,9 @@
 /**
  * @file apps/portfolio-web/src/lib/blog/actions.ts
  * @description Orquestador soberano de datos para el Concierge Journal (Silo C).
- *              Refactorizado: Blindaje absoluto contra build de Vercel/Next.js,
- *              limpieza total de linter y erradicación de non-null assertions.
- * @version 38.5 - Production Hardened (Static Build Immunity)
+ *              Refactorizado: Blindaje absoluto de 'noStore' durante el build
+ *              para permitir la generación estática del sitemap y rutas.
+ * @version 39.0 - Sitemap Build Immunity (noStore Guard)
  * @author Raz Podestá - Staff Engineer, MetaShark Tech
  */
 
@@ -27,7 +27,7 @@ import type { Dictionary } from '../schemas/dictionary.schema';
 const IS_BUILD_ENV = 
   process.env.NEXT_PHASE === 'phase-production-build' || 
   process.env.VERCEL === '1' ||
-  process.env.NODE_ENV === 'production' && !process.env.DATABASE_URL;
+  (process.env.NODE_ENV === 'production' && !process.env.DATABASE_URL);
 
 interface LexicalNode {
   type: string;
@@ -231,23 +231,26 @@ class EditorialDataResolver {
 
 /**
  * INTERFAZ PÚBLICA (Server Actions)
+ * @pilar VIII: Resiliencia del Build
+ * Evitamos ejecutar noStore() durante el proceso de compilación para que Next.js
+ * pueda generar páginas estáticas y el sitemap sin penalización por CSR Bailout.
  */
 
 export async function getAllPosts(lang: Locale = i18n.defaultLocale): Promise<PostWithSlug[]> {
-  noStore(); // Asegurar frescura en runtime
+  if (!IS_BUILD_ENV) noStore();
   const dict = await getDictionary(lang);
   return EditorialDataResolver.fetch({ lang }, dict);
 }
 
 export async function getPostBySlug(slug: string, lang: Locale = i18n.defaultLocale): Promise<PostWithSlug | null> {
-  noStore();
+  if (!IS_BUILD_ENV) noStore();
   const dict = await getDictionary(lang);
   const results = await EditorialDataResolver.fetch({ slug, lang }, dict);
   return results[0] || null;
 }
 
 export async function getPostsByTag(tag: string, lang: Locale = i18n.defaultLocale): Promise<PostWithSlug[]> {
-  noStore();
+  if (!IS_BUILD_ENV) noStore();
   const dict = await getDictionary(lang);
   const normalizedTag = tag.toLowerCase().trim().replace(/\s+/g, '-');
   return EditorialDataResolver.fetch({ tag: normalizedTag, lang }, dict);

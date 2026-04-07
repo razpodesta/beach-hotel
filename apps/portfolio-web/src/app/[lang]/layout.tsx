@@ -3,8 +3,9 @@
  * @description Layout Localizado Soberano (Sovereign Localized Root).
  *              Refactorizado: Al erradicar app/layout.tsx, este componente asume 
  *              el trono como Root Layout absoluto para todas las rutas.
- *              Restaura la inyección de <html>, <body> y global.css.
- * @version 50.0 - Sovereign Root Layout (Build Ready)
+ *              Nivelado: Inyección de Suspense Boundary para NavigationTracker
+ *              para erradicar el CSR Bailout y blindar el pre-renderizado de Next.js 15.
+ * @version 51.0 - Suspense Boundary Hardened (CSR Bailout Fix)
  * @author Staff Engineer - MetaShark Tech
  */
 
@@ -114,8 +115,14 @@ export default async function LocalizedLayout({
         "selection:bg-primary/30 transition-colors duration-1000"
       )}>
         <Providers>
-          {/* TRACKING & NAVIGATION */}
-          <NavigationTracker />
+          {/* 
+              TRACKING & NAVIGATION 
+              @pilar XIII: Build Isolation.
+              Envuelto en Suspense para evitar CSR Bailout detonado por useSearchParams.
+          */}
+          <Suspense fallback={null}>
+            <NavigationTracker />
+          </Suspense>
           
           {/* CABECERA OPERATIVA */}
           <Header dictionary={dictionary} />

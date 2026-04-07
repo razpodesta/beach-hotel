@@ -2,9 +2,11 @@
  * @file apps/portfolio-web/next.config.ts
  * @description Orquestador Soberano Next.js 15.
  *              Refactorizado: Migración del parche cliente a Webpack 5 Fallbacks
- *              (evitando colisiones con config.externals como función) y
- *              aislamiento total de binarios nativos (sharp, pg).
- * @version 5.2 - Webpack 5 Fallback Standard
+ *              (evitando colisiones con config.externals como función),
+ *              aislamiento total de binarios nativos (sharp, pg) y purga
+ *              de la propiedad 'turbopack' inyectada por Nx para silenciar 
+ *              advertencias en la consola de Vercel.
+ * @version 6.0 - Webpack 5 Fallback & Zero Warnings Standard
  * @author Raz Podestá - Staff Engineer, MetaShark Tech
  */
 
@@ -76,5 +78,19 @@ const nextConfig: NextConfig = {
  * @pilar IX: Desacoplamiento de Infraestructura.
  * El plugin de Payload inyecta alias y rutas para el Admin UI basándose
  * en la convención del archivo payload.config.ts en la raíz.
+ * 
+ * @fix Zero Warnings Policy (Linter Pure):
+ * El plugin de Nx inyecta configuraciones de Turbopack que Next.js 15
+ * rechaza en modo estricto. Interceptamos la configuración generada y 
+ * purgamos la clave no deseada antes de la exportación.
  */
-export default withPayload(withNx(nextConfig));
+const nxConfig = withNx(nextConfig);
+const payloadNxConfig = withPayload(nxConfig);
+
+// Mapeamos a unknown y luego al tipo de diccionario para poder eliminar la clave conflictiva.
+const finalConfig = payloadNxConfig as Record<string, unknown>;
+if ('turbopack' in finalConfig) {
+  delete finalConfig.turbopack;
+}
+
+export default finalConfig as NextConfig;
