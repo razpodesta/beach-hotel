@@ -1,12 +1,10 @@
 /**
  * @file apps/portfolio-web/next.config.ts
  * @description Orquestador Soberano Next.js 15.
- *              Refactorizado: Migración del parche cliente a Webpack 5 Fallbacks
- *              (evitando colisiones con config.externals como función),
- *              aislamiento total de binarios nativos (sharp, pg) y purga
- *              de la propiedad 'turbopack' inyectada por Nx para silenciar 
- *              advertencias en la consola de Vercel.
- * @version 6.0 - Webpack 5 Fallback & Zero Warnings Standard
+ *              Refactorizado: Erradicación de `output: 'standalone'` para 
+ *              garantizar compatibilidad nativa con la Build Output API de Vercel.
+ *              Mantiene el Webpack 5 Fallback y la purga de Warnings de Nx.
+ * @version 7.0 - Vercel Serverless Ready & Zero Warnings Standard
  * @author Raz Podestá - Staff Engineer, MetaShark Tech
  */
 
@@ -15,7 +13,7 @@ import { withNx } from '@nx/next/plugins/with-nx';
 import { withPayload } from '@payloadcms/next/withPayload';
 
 const nextConfig: NextConfig = {
-  output: 'standalone',
+  // @fix: Eliminado output: 'standalone' para orquestación Serverless pura en Vercel.
   reactStrictMode: true,
 
   /**
@@ -61,10 +59,6 @@ const nextConfig: NextConfig = {
         fs: false,
         crypto: false,
       };
-
-      // Nota: Se erradicó la mutación de `config.externals` en el cliente, 
-      // ya que en Next.js 15 `externals` puede ser una función asíncrona, 
-      // y mutarla como array causaría un Fatal Build Error.
     }
     return config;
   },
