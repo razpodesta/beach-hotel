@@ -1,9 +1,9 @@
 /**
  * @file apps/portfolio-web/src/app/sitemap.ts
  * @description Generador soberano del mapa del sitio (Sitemap Engine).
- *              Refactorizado: Auditoría forense completa, eliminación de linter 
- *              warnings y normalización de URLs.
- * @version 8.3 - Production Hardened & Forensic Ready
+ *              Refactorizado: Erradicación de 'unstable_noStore' durante el build,
+ *              normalización de rutas absoluta y blindaje de ejecución determinista.
+ * @version 8.4 - Build-Safe Deterministic Standard
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -26,7 +26,7 @@ interface SitemapRoute {
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://beach-hotel.vercel.app';
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://beachhotelcanasvieiras.com';
 
   const staticRoutes: SitemapRoute[] = [
     { slug: '', type: 'home' },
@@ -43,6 +43,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   let blogEntries: SitemapRoute[] = [];
   
   try {
+    // La función getAllPosts ya tiene protección contra el entorno de build (IS_BUILD_ENV)
+    // Esto asegura que devuelva Mocks y no intente conectar a DB durante la compilación.
     const posts = await getAllPosts();
     if (Array.isArray(posts)) {
       blogEntries = posts
@@ -54,11 +56,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         }));
     }
   } catch (err: unknown) {
-    // RESOLUCIÓN LINTER: Usamos el error para telemetría forense
     const errorMessage = err instanceof Error ? err.message : 'Unknown sync failure';
-    console.warn(`[HEIMDALL][SITEMAP] Editorial sync degraded: ${errorMessage}. Skipping dynamic posts.`);
+    console.warn(`[HEIMDALL][SITEMAP] Editorial sync skipped during build: ${errorMessage}.`);
   }
 
+  // Generación determinista sin depender de cookies o estados de servidor
   return [...staticRoutes, ...blogEntries].flatMap((route) =>
     i18n.locales.map((locale) => {
       const cleanSlug = route.slug.startsWith('/') ? route.slug : `/${route.slug}`;
@@ -67,7 +69,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       return {
         url,
         lastModified: route.lastModified ? new Date(route.lastModified).toISOString() : new Date().toISOString(),
-        changeFrequency: 'daily' as const,
+        changeFrequency: 'daily',
         priority: PRIORITY_MAP[route.type] ?? PRIORITY_MAP.default,
       };
     })

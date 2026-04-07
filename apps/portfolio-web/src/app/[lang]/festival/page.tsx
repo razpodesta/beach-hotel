@@ -1,18 +1,18 @@
 /**
  * @file apps/portfolio-web/src/app/[lang]/festival/page.tsx
  * @description Orquestador inmersivo para el Canasvieiras Fest 2026.
- *              Refactorizado: Implementación de generateStaticParams para 
+ *              Refactorizado: Envoltura de Suspense para componentes cliente con hooks,
  *              estabilidad de build en Vercel y blindaje de metadatos.
- * @version 3.2 - Build Stable & Production Elite
+ * @version 3.3 - Suspense Boundary & Build Stable
  * @author Raz Podestá - MetaShark Tech
  */
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import type { Metadata } from 'next';
 import { ChevronRight, CheckCircle2, Ship } from 'lucide-react';
 import Link from 'next/link';
 
-/** IMPORTACIONES DE INFRAESTRUCTRURA */
+/** IMPORTACIONES DE INFRAESTRUCTURA */
 import { i18n } from '../../../config/i18n.config';
 import { type Locale } from '../../../config/i18n.config';
 import { getDictionary } from '../../../lib/get-dictionary';
@@ -26,8 +26,6 @@ type FestivalPageProps = {
 
 /**
  * GENERACIÓN DE RUTAS ESTÁTICAS
- * @pilar VIII: Resiliencia de Build.
- * Indica a Vercel/Next.js qué idiomas deben pre-renderizarse obligatoriamente.
  */
 export async function generateStaticParams() {
   return i18n.locales.map((lang) => ({ lang }));
@@ -67,7 +65,6 @@ export async function generateMetadata(props: FestivalPageProps): Promise<Metada
 
 /**
  * APARATO PRINCIPAL: FestivalPage
- * @description Orquesta la narrativa inmersiva del evento insignia del hotel.
  */
 export default async function FestivalPage(props: FestivalPageProps) {
   const { lang } = await props.params;
@@ -118,7 +115,14 @@ export default async function FestivalPage(props: FestivalPageProps) {
 
       {/* SECCIÓN 3: SHOWCASE 3D (WEBGL) */}
       <section id="lineup" className="py-24 border-y border-white/5 bg-zinc-950/20">
-         <ExperienceShowcase3D dictionary={dict.festival} />
+         {/* 
+            @pilar VIII: Resiliencia de Build.
+            Envolvemos en Suspense para evitar el error de Suspense Boundary al 
+            usar hooks de cliente (useSearchParams, etc.) en componentes hijos.
+         */}
+         <Suspense fallback={<div className="h-[500px] w-full flex items-center justify-center text-zinc-700">Loading Experience...</div>}>
+            <ExperienceShowcase3D dictionary={dict.festival} />
+         </Suspense>
       </section>
 
       {/* SECCIÓN 4: UPSELL VIP */}
