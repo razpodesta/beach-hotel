@@ -1,14 +1,19 @@
 /**
  * @file apps/portfolio-web/src/lib/portal/actions.ts
  * @description Orquestador de datos soberanos para el Portal.
- *              Refactorizado: Purga de código muerto (variable payload) y
- *              blindaje de tipos SSoT.
- * @version 2.3 - Clean Infrastructure Standard
+ *              Refactorizado: Sincronización con el contrato de roles del CMS,
+ *              purga de código muerto y blindaje de tipos SSoT.
+ * @version 2.4 - Sovereign Identity Sync (Zero Error)
  * @author Staff Engineer - MetaShark Tech
  */
 
 import { portalDataSchema, type PortalData } from '../schemas/portal_data.schema';
-import type { EnterpriseRole } from '../route-guard';
+
+/**
+ * IMPORTACIONES DE CONTRATO (Pure Types)
+ * @pilar III: Seguridad de Tipos. Resolución de TS2305 importando desde el SSoT central.
+ */
+import type { SovereignRoleType } from '@metashark/cms-core';
 
 /**
  * @interface TelemetryStatus
@@ -30,9 +35,12 @@ const isTelemetryStatus = (data: unknown): data is TelemetryStatus => {
 /**
  * @description Recupera el conjunto de datos específico para el rol activo 
  *              conectando con el clúster de infraestructura.
+ * @param {SovereignRoleType} role - Nivel de autoridad del usuario.
+ * @param {string} userId - Identificador único de identidad.
+ * @returns {Promise<PortalData>} Datos validados por esquema de portal.
  * @pilar VIII: Resiliencia - Fallbacks automáticos si la DB está en mantenimiento.
  */
-export async function getPortalData(role: EnterpriseRole, userId: string): Promise<PortalData> {
+export async function getPortalData(role: SovereignRoleType, userId: string): Promise<PortalData> {
   console.group(`[HEIMDALL][PORTAL-API] Fetching Data for User: ${userId} | Role: ${role}`);
   
   try {
@@ -71,7 +79,8 @@ export async function getPortalData(role: EnterpriseRole, userId: string): Promi
     return portalDataSchema.parse(portalPayload);
 
   } catch (error) {
-    console.error(`[HEIMDALL][CRITICAL] Portal data sync failed:`, error);
+    const msg = error instanceof Error ? error.message : 'Unknown Data Drift';
+    console.error(`[HEIMDALL][CRITICAL] Portal data sync failed:`, msg);
     console.groupEnd();
     
     // Fallback de Emergencia (Pilar VIII)

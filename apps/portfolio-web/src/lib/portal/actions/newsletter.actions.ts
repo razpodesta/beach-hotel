@@ -1,17 +1,16 @@
 /**
  * @file apps/portfolio-web/src/lib/portal/actions/newsletter.actions.ts
  * @description Enterprise Data Pipeline for Audience Ingestion (Silo C).
- *              Refactorizado para Build-Time Isolation: Se utiliza importación 
- *              dinámica y guardias de entorno para evitar el crash de 'env' en Vercel.
- * @version 5.1 - Extreme Build Isolation (Dynamic Config)
+ *              Refactorizado: Resolución estricta de promesas de configuración
+ *              (TS2352) y blindaje de tipos para el motor de Payload.
+ * @version 5.2 - Build-Safe & Type-Safe Pipeline
  * @author Staff Engineer - MetaShark Tech
  */
 
 'use server';
 
 import { z } from 'zod';
-import { getPayload } from 'payload';
-import type { CollectionSlug } from 'payload';
+import { getPayload, type CollectionSlug, type SanitizedConfig } from 'payload';
 import { headers } from 'next/headers';
 
 /** IMPORTACIONES DE INFRAESTRUCTRURA */
@@ -19,7 +18,7 @@ import { mailCloud } from '../../services/mail-cloud';
 
 /**
  * DETECTORES DE ESTADO DE INFRAESTRUCTRURA
- * @pilar XIII: Impide que el motor de Payload intente arrancar en workers de compilación.
+ * @pilar XIII: Build Isolation.
  */
 const IS_BUILD_ENV = 
   process.env.NEXT_PHASE === 'phase-production-build' || 
@@ -45,6 +44,14 @@ export type IngestionResponse = {
 };
 
 /**
+ * @description Obtención dinámica de configuración (Soberana).
+ */
+async function getPayloadConfig(): Promise<SanitizedConfig> {
+  const configModule = await import('@metashark/cms-core/config');
+  return (await configModule.default) as SanitizedConfig;
+}
+
+/**
  * MODULE: subscribeAction
  * @description Orquestador de Sincronización de Identidad y Comunicación Transaccional.
  */
@@ -52,11 +59,6 @@ export async function subscribeAction(rawData: unknown): Promise<IngestionRespon
   const startTime = performance.now();
   const traceId = `ingest_aud_${Date.now()}`;
   
-  /**
-   * @pilar XIII: Build-Time Bypass.
-   * Si Next.js intenta evaluar esta acción durante la generación estática, 
-   * devolvemos un éxito simulado para no bloquear el hilo del compilador.
-   */
   if (IS_BUILD_ENV) {
     return { success: true, code: 'BUILD_BYPASS' };
   }
@@ -64,21 +66,18 @@ export async function subscribeAction(rawData: unknown): Promise<IngestionRespon
   console.group(`[ENTERPRISE][PIPELINE] Identity & Dispatch Workflow: ${traceId}`);
 
   try {
-    // 1. VALIDACIÓN PERIMETRAL
     const validation = audienceIngestionSchema.parse(rawData);
     const { email, tenant: tenantId } = validation;
 
-    // 2. EXTRACCIÓN DE TELEMETRÍA
     const headerList = await headers();
     const userAgent = headerList.get('user-agent') ?? 'unknown_client';
     const ipOrigin = headerList.get('x-forwarded-for')?.split(',')[0] ?? '127.0.0.1';
 
-    // 3. CONEXIÓN AL CORE ENGINE (Importación Dinámica)
-    // Evita que la configuración se cargue en el nivel superior del módulo.
-    const configModule = await import('@metashark/cms-core/config');
-    const payload = await getPayload({ config: configModule.default });
+    // 1. CARGA DINÁMICA DE CONFIGURACIÓN (Build-Safe)
+    const payloadConfig = await getPayloadConfig();
+    const payload = await getPayload({ config: payloadConfig });
 
-    // 4. AUDITORÍA DE TENANT
+    // 2. AUDITORÍA DE TENANT
     const tenantDoc = await payload.findByID({
       collection: 'tenants',
       id: tenantId,
@@ -88,7 +87,7 @@ export async function subscribeAction(rawData: unknown): Promise<IngestionRespon
 
     const TARGET_COLLECTION = 'subscribers' as CollectionSlug;
 
-    // 5. DETECCIÓN DE COLISIONES
+    // 3. DETECCIÓN DE COLISIONES
     const existing = await payload.find({
       collection: TARGET_COLLECTION,
       where: {
@@ -101,7 +100,7 @@ export async function subscribeAction(rawData: unknown): Promise<IngestionRespon
       return { success: false, error: 'IDENTITY_ALREADY_EXISTS', code: 'IDENTITY_COLLISION' };
     }
 
-    // 6. PERSISTENCIA EN CORE CRM
+    // 4. PERSISTENCIA EN CORE CRM
     await payload.create({
       collection: TARGET_COLLECTION,
       data: {
@@ -119,7 +118,7 @@ export async function subscribeAction(rawData: unknown): Promise<IngestionRespon
       }
     });
 
-    // 7. DISPACHO DE BIENVENIDA (MailCloud Handshake)
+    // 5. DISPACHO DE BIENVENIDA
     const emailResult = await mailCloud.send({
       to: [email],
       subject: `Sovereign Access Granted | ${tenantDoc.name}`,

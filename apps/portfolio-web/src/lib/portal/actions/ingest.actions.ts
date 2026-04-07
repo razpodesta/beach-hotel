@@ -1,19 +1,26 @@
 /**
  * @file apps/portfolio-web/src/lib/portal/actions/ingest.actions.ts
  * @description Enterprise Data Ingestion Pipeline (Silo C).
- *              Orquestador de lógica de servidor para la ingesta masiva.
- *              Refactorizado: Sincronización con DataParser v3.0, reporte 
- *              de fallos granulares e integridad de métricas industriales.
- * @version 7.0 - Forensic Reporting & Pipeline Sync
+ *              Refactorizado: Build-Time Isolation absoluto. Erradicada la importación
+ *              estática de configPromise. Implementada lógica de carga dinámica 
+ *              para prevenir el envenenamiento de los trabajadores de build.
+ * @version 7.1 - Static Build Immunity
  * @author Raz Podestá - Staff Engineer, MetaShark Tech
  */
 
 'use server';
 
 import { z } from 'zod';
-import { getPayload, type CollectionSlug } from 'payload';
-import configPromise from '@metashark/cms-core/config';
+import { getPayload, type CollectionSlug, type SanitizedConfig } from 'payload';
 import { dataParser, type AudienceNode, type ParserIssue } from '../../services/data-parser';
+
+/** 
+ * DETECTOR DE ENTORNO DE CONSTRUCCIÓN
+ * @pilar XIII: Build Isolation - Previene fugas de lógica de servidor al frontend.
+ */
+const IS_BUILD_ENV = 
+  process.env.NEXT_PHASE === 'phase-production-build' || 
+  process.env.VERCEL === '1';
 
 /**
  * CONTRATO DE INTEGRIDAD DE INGESTA (SSoT)
@@ -27,10 +34,6 @@ const dataIngestionSchema = z.object({
   sender: z.record(z.string(), z.unknown()).optional(),
 });
 
-/**
- * @interface IngestionResponse
- * @description Contrato de salida para la UI con soporte para éxito parcial.
- */
 export type IngestionResponse = {
   success: boolean;
   ingestionId?: string;
@@ -47,13 +50,16 @@ export type IngestionResponse = {
 /**
  * MODULE: executeDataIngestion
  * @description Orquesta la ingesta con trazabilidad forense total y persistencia en CMS.
- * @pilar_III: Seguridad de Tipos - Validación Zod de entrada.
- * @pilar_IV: Observabilidad - Implementación de Trace ID para seguimiento S3/DB.
  */
 export async function executeDataIngestion(
   formData: FormData, 
   rawMetadata: unknown
 ): Promise<IngestionResponse> {
+  // Guardia contra build estático
+  if (IS_BUILD_ENV) {
+    return { success: false, error: 'BUILD_BYPASS' };
+  }
+
   const startTime = performance.now();
   const traceId = `ingest_${Date.now()}`;
   
@@ -62,7 +68,12 @@ export async function executeDataIngestion(
   try {
     // 1. VALIDACIÓN PERIMETRAL
     const metadata = dataIngestionSchema.parse(rawMetadata);
-    const payload = await getPayload({ config: await configPromise });
+    
+    // 2. CARGA DINÁMICA DE CONFIGURACIÓN (Build-Safe)
+    const configModule = await import('@metashark/cms-core/config');
+    const payloadConfig = (await configModule.default) as SanitizedConfig;
+    const payload = await getPayload({ config: payloadConfig });
+    
     const SUBSCRIBER_COLL = 'subscribers' as CollectionSlug;
     
     let linkedMediaId: string | undefined;
@@ -77,7 +88,7 @@ export async function executeDataIngestion(
 
     const file = formData.get('file') as File | null;
 
-    // 2. PROCESAMIENTO DE ACTIVO BINARIO (S3 Sync)
+    // 3. PROCESAMIENTO DE ACTIVO BINARIO (S3 Sync)
     if (file && file.size > 0) {
       console.log(`[${traceId}] Handshaking with S3 Cluster: ${file.name}`);
       const buffer = Buffer.from(await file.arrayBuffer());
@@ -97,7 +108,7 @@ export async function executeDataIngestion(
       });
       linkedMediaId = String(mediaRecord.id);
 
-      // 3. PROCESAMIENTO LÓGICO DE DATOS (Excel/CSV Parser)
+      // 4. PROCESAMIENTO LÓGICO DE DATOS (Excel/CSV Parser)
       if (metadata.type === 'document') {
         const parserResult = await dataParser.parseExcelBuffer(buffer.buffer);
         
@@ -106,7 +117,7 @@ export async function executeDataIngestion(
           parserIssues = parserResult.issues;
           finalMetrics.failedRows = parserResult.metrics.failedRows;
 
-          // 4. DEDUPLICACIÓN DE IDENTIDAD CROSS-DATABASE
+          // 5. DEDUPLICACIÓN DE IDENTIDAD
           const emails = processedJsonData.map(n => n.email);
           const existing = await payload.find({
             collection: SUBSCRIBER_COLL,
@@ -124,7 +135,7 @@ export async function executeDataIngestion(
           
           finalMetrics.duplicatesSkipped = processedJsonData.length - validNodes.length;
 
-          // 5. INYECCIÓN ATÓMICA EN CRM (Subscribers)
+          // 6. INYECCIÓN ATÓMICA EN CRM (Subscribers)
           await Promise.all(validNodes.map(node => 
             payload.create({
               collection: SUBSCRIBER_COLL,
@@ -142,27 +153,24 @@ export async function executeDataIngestion(
       }
     }
 
-    // 6. PERSISTENCIA DE MISION (Audit Trail en Ingestions)
+    // 7. PERSISTENCIA DE MISION
     const ingestionResult = await payload.create({
       collection: 'ingestions' as CollectionSlug,
       data: {
         ...metadata,
         asset: linkedMediaId,
         processedData: processedJsonData,
-        // Almacenamos los fallos específicos para consulta histórica
         pipelineMetrics: { 
           ...finalMetrics, 
           executionTimeMs: Math.round(performance.now() - startTime) 
         },
         status: parserIssues.length > 0 && finalMetrics.nodesInjected > 0 
-          ? 'processed' // Éxito parcial es éxito en el pipeline
+          ? 'processed' 
           : (parserIssues.length > 0 && finalMetrics.nodesInjected === 0 ? 'error' : 'processed')
       }
     });
 
     const totalLatency = (performance.now() - startTime).toFixed(2);
-    console.log(`[${traceId}] Ingestion Sequence Concluded. Injected: ${finalMetrics.nodesInjected} | Failed: ${finalMetrics.failedRows}`);
-
     return { 
       success: true, 
       ingestionId: String(ingestionResult.id),

@@ -4,7 +4,8 @@
  *              Implementa el Protocolo "Day-First" con persistencia de atmósfera,
  *              inyección vía data-attributes, blindaje de hidratación React 19,
  *              y el Nuevo Guardián de Identidad (Supabase Sync).
- * @version 6.0 - Sovereign Identity & Day-First Edition
+ *              Nivelado: Integración de SovereignRoleType y Protocolo 33 (XP/Level).
+ * @version 6.1 - Sovereign Identity & P33 Sync Edition
  * @author Raz Podestá - Staff Engineer, MetaShark Tech
  */
 
@@ -20,7 +21,12 @@ import { ThemeProvider } from 'next-themes';
  */
 import { supabase } from '../../lib/supabase/client';
 import { useUIStore } from '../../lib/store/ui.store';
-import type { EnterpriseRole } from '../../lib/route-guard';
+
+/**
+ * IMPORTACIONES DE CONTRATO (Pure Types)
+ * @pilar III: Resolución de TS2305 extrayendo el tipo desde el SSoT del CMS.
+ */
+import type { SovereignRoleType } from '@metashark/cms-core';
 
 /**
  * @interface ProvidersProps
@@ -64,9 +70,12 @@ function IdentityGuard() {
         setSession({
           userId: session.user.id,
           email: session.user.email ?? '',
-          role: (session.user.app_metadata?.role as EnterpriseRole) || 'guest',
+          role: (session.user.app_metadata?.role as SovereignRoleType) || 'guest',
           tenantId: (session.user.app_metadata?.tenantId as string) || null,
           lastLogin: new Date().toISOString(),
+          // Resolución de TS2345: Inyección de telemetría P33 desde metadata
+          xp: Number(session.user.app_metadata?.xp) || 0,
+          level: Number(session.user.app_metadata?.level) || 1,
         });
       }
     });
@@ -81,9 +90,12 @@ function IdentityGuard() {
         setSession({
           userId: session.user.id,
           email: session.user.email ?? '',
-          role: (session.user.app_metadata?.role as EnterpriseRole) || 'guest',
+          role: (session.user.app_metadata?.role as SovereignRoleType) || 'guest',
           tenantId: (session.user.app_metadata?.tenantId as string) || null,
           lastLogin: new Date().toISOString(),
+          // Resolución de TS2345: Inyección de telemetría P33 desde metadata
+          xp: Number(session.user.app_metadata?.xp) || 0,
+          level: Number(session.user.app_metadata?.level) || 1,
         });
       }
     });

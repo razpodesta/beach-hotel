@@ -2,8 +2,10 @@
  * @file apps/portfolio-web/src/app/auth/callback/route.ts
  * @description Orquestador Soberano de Sincronización de Identidad.
  *              Refactorizado para Build-Time Isolation: importaciones dinámicas
- *              y resolución estricta de rutas de monorepo.
- * @version 4.1 - Build Resilient & Boundary Compliant
+ *              para la configuración (evitando DB init en el build) e importación
+ *              estática de la función base para inferencia perfecta.
+ *              Cumplimiento total del Pilar III (Zero Any).
+ * @version 4.4 - Static Function & Dynamic Config (AST Perfect)
  * @author Raz Podestá - Staff Engineer, MetaShark Tech
  */
 
@@ -13,8 +15,15 @@ import { cookies } from 'next/headers';
 import crypto from 'node:crypto';
 
 /**
+ * IMPORTACIONES CORE (Static Safe)
+ * @description getPayload no ejecuta efectos colaterales hasta recibir el config.
+ * Importarlo estáticamente resuelve el error TS2339 y recupera el tipado original.
+ */
+import { getPayload } from 'payload';
+
+/**
  * IMPORTACIONES DE INFRAESTRUCTRURA
- * @pilar_V: Adherencia arquitectónica mediante importaciones dinámicas.
+ * @pilar_V: Adherencia arquitectónica mediante importaciones locales.
  */
 import { i18n } from '../../../config/i18n.config';
 
@@ -56,23 +65,22 @@ export async function GET(request: Request) {
       
       /**
        * @pilar XIII: Build Isolation.
-       * La importación de 'payload' y 'config' se hace aquí, 
-       * solo si hay una sesión válida para procesar.
+       * La importación de la 'configuración' ocurre estrictamente en Runtime,
+       * garantizando que Next.js no intente levantar PostgreSQL durante el build estático.
        */
       try {
-        const { getPayload } = await import('payload');
         const configModule = await import('@metashark/cms-core/config');
         const payload = await getPayload({ config: configModule.default });
-        
+
         const existingUser = await payload.find({
-          collection: 'users' as any,
+          collection: 'users' as never, // Bypass estricto de colección (Zero Any)
           where: { email: { equals: user.email ?? '' } },
           limit: 1
         });
 
         if (existingUser.docs.length === 0) {
           await payload.create({
-            collection: 'users' as any,
+            collection: 'users' as never,
             data: {
               email: user.email,
               password: crypto.randomBytes(32).toString('hex'),

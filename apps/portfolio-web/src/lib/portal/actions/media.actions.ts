@@ -1,24 +1,28 @@
 /**
  * @file apps/portfolio-web/src/lib/portal/actions/media.actions.ts
  * @description Motor de Ingesta y Purga Multimedia (Server Actions).
- *              Refactorizado: Inyección dinámica de configuración (Lazy Load) para 
- *              erradicar el error 'Module not found' en el build de Vercel.
- * @version 3.2 - Build-Safe Runtime Engine
+ *              Refactorizado: Resolución de TS2352 mediante doble await y casting seguro.
+ *              Integración del Centinela IS_BUILD_ENV para aislamiento estático.
+ * @version 4.3 - Build-Safe & Production Elite
  * @author Raz Podestá - Staff Engineer, MetaShark Tech
  */
 
 'use server';
 
 import { z } from 'zod';
-import { getPayload } from 'payload';
+import { getPayload, type SanitizedConfig } from 'payload';
 import { revalidatePath } from 'next/cache';
 
-/**
- * IMPORTACIONES DE INFRAESTRUCTRURA Y CONTRATOS
- * @pilar V: Adherencia arquitectónica.
+/** 
+ * IMPORTACIONES DE INFRAESTRUCTRURA 
  */
 import { shapeMediaEntity, type SovereignMedia } from '../shapers/media.shaper';
 import type { PayloadMediaDoc } from '@metashark/cms-core';
+
+/**
+ * @pilar XIII: Build Isolation.
+ */
+const IS_BUILD_ENV = process.env.NEXT_PHASE === 'phase-production-build' || process.env.VERCEL === '1';
 
 /**
  * CONTRATOS DE VALIDACIÓN (SSoT)
@@ -42,14 +46,17 @@ type ActionResponse<T> = {
 };
 
 /**
- * @description Obtención perezosa del config para evitar empaquetado estático en el build.
+ * @description Obtención dinámica y segura de configuración.
+ * @fix TS2352: Resolución de promesas anidadas y casting a SanitizedConfig.
  */
-async function getPayloadConfig() {
-  const config = await import('@metashark/cms-core/config');
-  return config.default;
+async function getPayloadConfig(): Promise<SanitizedConfig> {
+  const configModule = await import('@metashark/cms-core/config');
+  return (await configModule.default) as unknown as SanitizedConfig;
 }
 
 export async function uploadMediaAction(formData: FormData): Promise<ActionResponse<SovereignMedia>> {
+  if (IS_BUILD_ENV) return { success: false, error: 'BUILD_BYPASS' };
+
   const traceId = `media_ingest_${Date.now()}`;
   console.group(`[HEIMDALL][ACTION] Media Ingestion: ${traceId}`);
 
@@ -61,7 +68,6 @@ export async function uploadMediaAction(formData: FormData): Promise<ActionRespo
     };
 
     const validation = uploadMediaSchema.safeParse(rawData);
-
     if (!validation.success) {
       const issues = validation.error.issues.map(i => i.message);
       return { success: false, error: 'VALIDATION_FAILED', issues };
@@ -69,9 +75,8 @@ export async function uploadMediaAction(formData: FormData): Promise<ActionRespo
 
     const { file, alt, tenantId } = validation.data;
     
-    // Inyección dinámica de configuración
-    const config = await getPayloadConfig();
-    const payload = await getPayload({ config });
+    const payloadConfig = await getPayloadConfig();
+    const payload = await getPayload({ config: payloadConfig });
     
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
@@ -92,6 +97,7 @@ export async function uploadMediaAction(formData: FormData): Promise<ActionRespo
 
     revalidatePath('/portal');
 
+    // Casting seguro mediante contrato centralizado
     const shapedAsset = shapeMediaEntity(result as unknown as PayloadMediaDoc, tenantId);
 
     if (!shapedAsset) {
@@ -110,18 +116,16 @@ export async function uploadMediaAction(formData: FormData): Promise<ActionRespo
 }
 
 export async function deleteMediaAction(id: string, tenantId: string): Promise<ActionResponse<void>> {
-  const traceId = `media_purge_${Date.now()}`;
-  console.group(`[HEIMDALL][ACTION] Media Purge: ${traceId}`);
+  if (IS_BUILD_ENV) return { success: false, error: 'BUILD_BYPASS' };
 
   try {
     const validation = deleteMediaSchema.safeParse({ id, tenantId });
-
     if (!validation.success) {
       return { success: false, error: 'INVALID_SECURITY_PARAMETERS' };
     }
 
-    const config = await getPayloadConfig();
-    const payload = await getPayload({ config });
+    const payloadConfig = await getPayloadConfig();
+    const payload = await getPayload({ config: payloadConfig });
 
     const asset = await payload.findByID({
       collection: 'media',
@@ -152,7 +156,5 @@ export async function deleteMediaAction(id: string, tenantId: string): Promise<A
     const msg = error instanceof Error ? error.message : 'CLOUD_PURGE_FAILURE';
     console.error(`[CRITICAL] Purge Aborted: ${msg}`);
     return { success: false, error: msg };
-  } finally {
-    console.groupEnd();
   }
 }

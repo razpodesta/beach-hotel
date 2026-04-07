@@ -37,3 +37,5 @@ public/fonts/*
 
 # --- INFRAESTRUCTRURA CMS ---
 packages/cms/core/src/payload-types.ts
+.cursor/rules/nx-rules.mdc
+.github/instructions/nx.instructions.md

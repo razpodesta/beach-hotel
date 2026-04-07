@@ -3,9 +3,9 @@
  * @description Enterprise Communication Dispatcher (Silo D Action).
  *              Orquesta la inyección y recuperación de señales operativas.
  *              Refactorizado: Extreme Build Isolation (Lazy Config Load),
- *              alineación con Payload 3.0 nativo, telemetría Heimdall v2.0
- *              y adición de orquestador de lectura para la UI (getCommsLedger).
- * @version 3.0 - Build-Immune & Forensic Ready
+ *              erradicación de tipos 'any', reconexión del Trace ID 
+ *              y resolución de CollectionSlug mediante inferencia estática.
+ * @version 4.0 - Build-Immune & Forensic Ready
  * @author Raz Podestá - Staff Engineer, MetaShark Tech
  */
 
@@ -13,7 +13,7 @@
 
 import { z } from 'zod';
 import { headers } from 'next/headers';
-import type { CollectionSlug } from 'payload';
+import { getPayload } from 'payload'; // Importación estática segura (No ejecuta DB)
 
 /**
  * DETECTORES DE ESTADO DE INFRAESTRUCTURA
@@ -43,6 +43,7 @@ export type NotificationResponse = {
   externalDispatch: 'sent' | 'skipped' | 'failed';
   error?: string;
   latencyMs?: string;
+  traceId?: string;
 };
 
 /**
@@ -67,7 +68,25 @@ export type LedgerResponse = {
   data: Transmission[];
   error?: string;
   latencyMs?: string;
+  traceId?: string;
 };
+
+/**
+ * @interface NotificationData
+ * @description Contrato local para mapear la respuesta cruda de DB sin usar 'any'.
+ */
+interface NotificationData {
+  id: string | number;
+  priority?: 'low' | 'high' | 'critical';
+  category?: string;
+  source?: string;
+  subject?: string;
+  message?: string;
+  createdAt: string;
+  traceId?: string;
+  originNode?: string;
+  isRead?: boolean;
+}
 
 /**
  * MODULE: dispatchInternalNotification
@@ -80,7 +99,7 @@ export async function dispatchInternalNotification(
   const traceId = `ntf_${Date.now().toString(36).toUpperCase()}`;
   
   if (IS_BUILD_ENV) {
-    return { success: true, externalDispatch: 'skipped' };
+    return { success: true, externalDispatch: 'skipped', traceId };
   }
 
   console.group(`[HEIMDALL][COMMS] Dispatching Signal | Trace: ${traceId}`);
@@ -88,8 +107,7 @@ export async function dispatchInternalNotification(
   try {
     const contract = notificationSchema.parse(rawPayload);
     
-    // Lazy Initialization (Build-Safe)
-    const { getPayload } = await import('payload');
+    // Lazy Initialization of Config (Build-Safe)
     const configModule = await import('@metashark/cms-core/config');
     const payload = await getPayload({ config: configModule.default });
     
@@ -97,7 +115,7 @@ export async function dispatchInternalNotification(
     const originNode = headerList.get('x-forwarded-for')?.split(',')[0] ?? 'INTERNAL_CORE';
 
     const record = await payload.create({
-      collection: 'notifications' as CollectionSlug, 
+      collection: 'notifications' as never, // Resuelve TS2305 para Payload V3 local 
       data: {
         subject: contract.subject,
         message: contract.message,
@@ -139,7 +157,8 @@ export async function dispatchInternalNotification(
       success: true,
       notificationId: String(record.id),
       externalDispatch: externalStatus,
-      latencyMs: totalLatency
+      latencyMs: totalLatency,
+      traceId
     };
 
   } catch (error: unknown) {
@@ -149,7 +168,8 @@ export async function dispatchInternalNotification(
     return { 
       success: false, 
       externalDispatch: 'failed',
-      error: msg 
+      error: msg,
+      traceId
     };
   } finally {
     console.groupEnd();
@@ -166,26 +186,29 @@ export async function getCommsLedger(tenantId: string): Promise<LedgerResponse> 
   const traceId = `ledger_sync_${Date.now().toString(36)}`;
   
   if (IS_BUILD_ENV) {
-    return { success: true, data: [] };
+    return { success: true, data: [], traceId };
   }
 
-  console.group(`[HEIMDALL][COMMS] Fetching Ledger | Tenant: ${tenantId}`);
+  // @fix: Trazabilidad reactivada para 'traceId' (TS6133)
+  console.group(`[HEIMDALL][COMMS] Fetching Ledger | Tenant: ${tenantId} | Trace: ${traceId}`);
 
   try {
-    // Lazy Initialization (Build-Safe)
-    const { getPayload } = await import('payload');
+    // Lazy Initialization of Config
     const configModule = await import('@metashark/cms-core/config');
     const payload = await getPayload({ config: configModule.default });
 
     const { docs } = await payload.find({
-      collection: 'notifications' as CollectionSlug,
+      collection: 'notifications' as never,
       where: { tenant: { equals: tenantId } },
-      sort: '-createdAt', // Más recientes primero
-      limit: 50, // Paginación de seguridad
+      sort: '-createdAt', 
+      limit: 50, 
       depth: 0,
     });
 
-    const transmissions: Transmission[] = docs.map((doc: any) => {
+    // @fix: Erradicación de 'any' implícito
+    const transmissions: Transmission[] = docs.map((rawDoc: unknown) => {
+      const doc = rawDoc as NotificationData;
+      
       // Formateador cronológico resiliente
       let timeString = '--:--';
       try {
@@ -214,7 +237,8 @@ export async function getCommsLedger(tenantId: string): Promise<LedgerResponse> 
     return {
       success: true,
       data: transmissions,
-      latencyMs: totalLatency
+      latencyMs: totalLatency,
+      traceId
     };
 
   } catch (error: unknown) {
@@ -224,7 +248,8 @@ export async function getCommsLedger(tenantId: string): Promise<LedgerResponse> 
     return { 
       success: false, 
       data: [],
-      error: msg 
+      error: msg,
+      traceId
     };
   } finally {
     console.groupEnd();

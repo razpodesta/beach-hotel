@@ -1,23 +1,28 @@
 /**
  * @file apps/portfolio-web/src/lib/portal/actions/campaign.actions.ts
  * @description Enterprise Campaign Orchestrator (Silo C Action).
- *              Orquesta el despacho masivo de comunicaciones a la audiencia indexada.
- *              Implementa procesamiento por lotes (Chunking), control de cuotas,
- *              telemetría de conversión y protección anti-bloqueo.
- * @version 1.0 - Enterprise Level 4.0 Standard
- * @author Staff Engineer - MetaShark Tech
+ *              Refactorizado: Resolución estricta de promesas de configuración (TS2352)
+ *              mediante 'await' y casting a 'unknown'.
+ * @version 1.2 - Type-Safe & Build-Isolated
+ * @author Raz Podestá - Staff Engineer, MetaShark Tech
  */
 
 'use server';
 
 import { z } from 'zod';
-import { getPayload, type CollectionSlug } from 'payload';
-import configPromise from '@metashark/cms-core/config';
+import { getPayload, type CollectionSlug, type SanitizedConfig } from 'payload';
 import { mailCloud } from '../../services/mail-cloud';
+
+/** 
+ * DETECTOR DE ENTORNO DE CONSTRUCCIÓN
+ * @pilar XIII: Build Isolation - Previene fugas de lógica de servidor al frontend.
+ */
+const IS_BUILD_ENV = 
+  process.env.NEXT_PHASE === 'phase-production-build' || 
+  process.env.VERCEL === '1';
 
 /**
  * CONTRATO DE EJECUCIÓN DE CAMPAÑA (SSoT)
- * @description Define la integridad requerida para un broadcast masivo.
  */
 const campaignExecutionSchema = z.object({
   subject: z.string().min(5).max(78),
@@ -41,9 +46,7 @@ export type CampaignResponse = {
 
 /**
  * MODULE: executeBroadcastCampaign
- * @description Punto de entrada soberano para el despacho masivo de comunicaciones.
- * @pilar X: Performance - Implementa procesamiento por lotes para proteger el Pooler.
- * @pilar IV: Trazabilidad - Genera un Campaign_ID único para auditoría.
+ * @description Punto de entrada soberano con aislamiento de build.
  */
 export async function executeBroadcastCampaign(
   rawPayload: unknown
@@ -51,20 +54,24 @@ export async function executeBroadcastCampaign(
   const startTime = performance.now();
   const campaignId = `cmp_${Date.now()}`;
   
+  // Guardia contra build estático
+  if (IS_BUILD_ENV) {
+    return { success: false, campaignId, error: 'BUILD_BYPASS' };
+  }
+
   console.group(`[ENTERPRISE][CAMPAIGN] Broadcast Initiated: ${campaignId}`);
 
   try {
-    // 1. VALIDACIÓN PERIMETRAL
     const contract = campaignExecutionSchema.parse(rawPayload);
-    const payload = await getPayload({ config: await configPromise });
 
-    // 2. RECUPERACIÓN DE AUDIENCIA (CRM Query)
+    // 1. CARGA DINÁMICA Y RESOLUCIÓN ASÍNCRONA DE CONFIGURACIÓN
+    const configModule = await import('@metashark/cms-core/config');
+    // Resolución de TS2352: Await al default y casting seguro vía unknown
+    const payloadConfig = (await configModule.default) as unknown as SanitizedConfig;
+    const payload = await getPayload({ config: payloadConfig });
+
+    // 2. RECUPERACIÓN DE AUDIENCIA
     const SUBSCRIBER_COLLECTION = 'subscribers' as CollectionSlug;
-    
-    /** 
-     * @description Recuperamos solo nodos activos dentro del perímetro del Tenant.
-     * Limitamos a 500 para esta fase (Escalabilidad controlada).
-     */
     const audience = await payload.find({
       collection: SUBSCRIBER_COLLECTION,
       where: {
@@ -79,28 +86,15 @@ export async function executeBroadcastCampaign(
     const totalTargeted = audience.docs.length;
     if (totalTargeted === 0) throw new Error('AUDIENCE_EMPTY_IN_PERIMETER');
 
-    console.log(`[PIPELINE] Target Audience detected: ${totalTargeted} nodes.`);
-
-    // 3. PROTOCOLO DE DESPACHO POR LOTES (Chunking Strategy)
-    /**
-     * @description Para evitar ser marcados como SPAM, dividimos el envío
-     * en fragmentos de 50 correos. Esto "suaviza" la carga en el servidor SMTP.
-     */
     const CHUNK_SIZE = 50;
     let dispatchedCount = 0;
     let failedCount = 0;
-
     const recipientEmails = audience.docs.map(doc => doc.email);
 
+    // 3. PROTOCOLO DE DESPACHO
     for (let i = 0; i < recipientEmails.length; i += CHUNK_SIZE) {
       const chunk = recipientEmails.slice(i, i + CHUNK_SIZE);
       
-      console.log(`[DISPATCH] Processing Batch ${dispatchedCount / CHUNK_SIZE + 1} | Size: ${chunk.length}`);
-
-      /**
-       * EJECUCIÓN PARALELA DENTRO DEL LOTE
-       * Utilizamos allSettled para que un fallo individual no detenga la campaña.
-       */
       const results = await Promise.allSettled(
         chunk.map(email => 
           mailCloud.send({
@@ -114,24 +108,17 @@ export async function executeBroadcastCampaign(
         )
       );
 
-      // Conteo de métricas de lote
       results.forEach(res => {
         if (res.status === 'fulfilled' && res.value.success) dispatchedCount++;
         else failedCount++;
       });
 
-      // Breve latencia artificial para enfriamiento de cabeceras (Anti-Spam)
       if (i + CHUNK_SIZE < recipientEmails.length) {
         await new Promise(resolve => setTimeout(resolve, 1000));
       }
     }
 
-    // 4. REGISTRO DE EVENTO (Infrastructure Log)
-    // @todo: Crear colección 'campaign-logs' para persistencia histórica.
-    
     const totalLatency = (performance.now() - startTime).toFixed(2);
-    console.log(`[SUCCESS] Campaign Concluded. Injected: ${dispatchedCount} | Failures: ${failedCount}`);
-
     return {
       success: true,
       campaignId,

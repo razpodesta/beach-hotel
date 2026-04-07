@@ -3,7 +3,9 @@
  * @description Gateway Soberano para Payload CMS 3.0.
  *              Refactorizado para Build-Time Isolation: Se utiliza importación 
  *              dinámica dentro de los handlers para evitar colisiones de dependencias Nx.
- * @version 8.14 - Production Hardened & Boundary Compliant
+ *              Nivelado: Resolución de TS2352 mediante casting doble de seguridad
+ *              hacia contratos de configuración sanitizada.
+ * @version 8.16 - Sanitized Config Resolution (No Overlap Fix)
  * @author Staff Engineer - MetaShark Tech
  */
 
@@ -13,6 +15,17 @@ import { NextRequest } from 'next/server';
  * CONTRATOS DE TIPO SOBERANOS
  */
 type RouteArgs = { params: Promise<{ slug?: string[] }> };
+
+/**
+ * @description Firma estricta para la función resultante del builder.
+ */
+type RouteHandler = (req: NextRequest, args: RouteArgs) => Promise<Response>;
+
+/**
+ * @description Firma para los constructores de rutas de Payload.
+ * Acepta unknown para el config para permitir la transición entre Config y SanitizedConfig.
+ */
+type RouteHandlerBuilder = (config: unknown) => RouteHandler;
 
 /**
  * @description Orquestador de ejecución diferida.
@@ -30,23 +43,30 @@ const executeHandler = async (
   const startTime = performance.now();
   
   try {
-    // Importación dinámica "Lazy-Load" para romper el grafo de dependencias de Nx
-    const { REST_GET, REST_POST, REST_PUT, REST_PATCH, REST_DELETE, REST_OPTIONS } = await import('@payloadcms/next/routes');
+    // 1. IMPORTACIÓN DINÁMICA (Lazy-Load Pipeline)
+    const routesModule = await import('@payloadcms/next/routes');
     const configModule = await import('@metashark/cms-core/config');
-    const { importMap } = await import('@payloadcms/next/importMap');
     
+    // 2. HANDSHAKE DE CONFIGURACIÓN
     const config = configModule.default;
-    const handlers = {
-        GET: REST_GET,
-        POST: REST_POST,
-        PUT: REST_PUT,
-        PATCH: REST_PATCH,
-        DELETE: REST_DELETE,
-        OPTIONS: REST_OPTIONS
+    
+    /**
+     * 3. MAPEO DE HANDLERS (Resolución de TS2352)
+     * Realizamos un casting doble (unknown -> RouteHandlerBuilder) para satisfacer
+     * al compilador sobre el contrato de SanitizedConfig de Payload.
+     */
+    const handlers: Record<string, RouteHandlerBuilder> = {
+        GET: routesModule.REST_GET as unknown as RouteHandlerBuilder,
+        POST: routesModule.REST_POST as unknown as RouteHandlerBuilder,
+        PUT: routesModule.REST_PUT as unknown as RouteHandlerBuilder,
+        PATCH: routesModule.REST_PATCH as unknown as RouteHandlerBuilder,
+        DELETE: routesModule.REST_DELETE as unknown as RouteHandlerBuilder,
+        OPTIONS: routesModule.REST_OPTIONS as unknown as RouteHandlerBuilder
     };
     
-    const handler = handlers[handlerName](config as any, importMap);
-    const response = await handler(req as any, args as any);
+    // 4. EJECUCIÓN SOBERANA
+    const handler = handlers[handlerName](config);
+    const response = await handler(req, args);
     
     const endTime = performance.now();
     console.log(`[STATUS] Success | Latency: ${(endTime - startTime).toFixed(2)}ms`);

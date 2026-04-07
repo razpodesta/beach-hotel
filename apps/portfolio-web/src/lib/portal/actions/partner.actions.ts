@@ -1,24 +1,25 @@
 /**
  * @file apps/portfolio-web/src/lib/portal/actions/partner.actions.ts
  * @description Enterprise Partner Authorization Pipeline (Silo B).
- *              Orquesta el onboarding de agencias aliadas, validación fiscal
- *              y sincronización de activos de marca blanca en S3.
- *              Implementa normalización de tipos para IDs, telemetría de 
- *              rendimiento y blindaje de perímetros comerciales.
- * @version 2.0 - Enterprise Level 4.0 | TS/ESLint Resolution
- * @author Staff Engineer - MetaShark Tech
+ *              Refactorizado: Aislamiento de Build absoluto mediante importaciones 
+ *              dinámicas y guardias de entorno. Resolución de TS2345/TS2322.
+ * @version 2.1 - Build-Safe & Production Elite
+ * @author Raz Podestá - Staff Engineer, MetaShark Tech
  */
 
 'use server';
 
-import { getPayload, type CollectionSlug } from 'payload';
-import configPromise from '@metashark/cms-core/config';
+import { getPayload, type CollectionSlug, type SanitizedConfig } from 'payload';
 import { partnerRegistrationSchema } from '../../schemas/partners/registration.schema';
 
 /**
- * TIPO RESULTADO CORPORATIVO (Result Pattern)
- * @description Contrato de salida con telemetría industrial.
+ * DETECTOR DE ENTORNO DE CONSTRUCCIÓN
+ * @pilar XIII: Build Isolation.
  */
+const IS_BUILD_ENV = 
+  process.env.NEXT_PHASE === 'phase-production-build' || 
+  process.env.VERCEL === '1';
+
 export type PartnerActionResponse = {
   success: boolean;
   agencyId?: string;
@@ -29,13 +30,16 @@ export type PartnerActionResponse = {
 /**
  * MODULE: registerAgencyAction
  * @description Punto de entrada soberano para el registro de nuevos nodos B2B.
- * @fix TS2322: Resolución de ambigüedad en IDs mediante normalización explícita.
- * @fix ESLint: Purgada importación 'z' no utilizada.
  */
 export async function registerAgencyAction(
   formData: FormData,
   rawMetadata: unknown
 ): Promise<PartnerActionResponse> {
+  // Guardia contra build estático
+  if (IS_BUILD_ENV) {
+    return { success: false, error: 'BUILD_BYPASS' };
+  }
+
   const startTime = performance.now();
   const traceId = `b2b_auth_${Date.now()}`;
   
@@ -51,9 +55,13 @@ export async function registerAgencyAction(
     }
 
     const data = validation.data;
-    const payload = await getPayload({ config: await configPromise });
 
-    // 2. AUDITORÍA DE PERÍMETRO (Tenant Verification)
+    // 2. CARGA DINÁMICA DE CONFIGURACIÓN (Build-Safe)
+    const configModule = await import('@metashark/cms-core/config');
+    const payloadConfig = (await configModule.default) as SanitizedConfig;
+    const payload = await getPayload({ config: payloadConfig });
+
+    // 3. AUDITORÍA DE PERÍMETRO (Tenant Verification)
     const tenantExists = await payload.findByID({
       collection: 'tenants',
       id: data.tenant,
@@ -64,7 +72,7 @@ export async function registerAgencyAction(
       throw new Error('TENANT_PERIMETER_NOT_FOUND');
     }
 
-    // 3. PROCESAMIENTO DE IDENTIDAD VISUAL (S3 Asset Sync)
+    // 4. PROCESAMIENTO DE IDENTIDAD VISUAL (S3 Asset Sync)
     let logoAssetId: string | undefined;
     const logoFile = formData.get('logo') as File | null;
 
@@ -88,14 +96,10 @@ export async function registerAgencyAction(
         },
       });
 
-      /**
-       * @fix TS2322: Normalización de ID de Media.
-       * Garantizamos el cumplimiento del contrato string-first.
-       */
       logoAssetId = String(mediaRecord.id);
     }
 
-    // 4. INDEXACIÓN DE NODO DE AGENCIA (Core PRM)
+    // 5. INDEXACIÓN DE NODO DE AGENCIA (Core PRM)
     const TARGET_COLLECTION = 'agencies' as CollectionSlug;
     
     const agencyResult = await payload.create({
@@ -108,16 +112,14 @@ export async function registerAgencyAction(
         website: data.website,
         logo: logoAssetId,
         tenant: data.tenant,
-        status: 'review', // Protocolo de Auditoría Humana mandatorio
-        trustScore: 50,    // Scoring inicial de confianza
+        status: 'review',
+        trustScore: 50,
         internalObservations: `Registration initiated via Web Portal. Trace: ${traceId}`
       }
     });
 
     const endTime = performance.now();
     const totalLatency = (endTime - startTime).toFixed(2);
-    
-    // @fix TS2322: Normalización de ID de Agencia.
     const finalAgencyId = String(agencyResult.id);
 
     console.log(`[SUCCESS] Agency Indexed. ID: ${finalAgencyId} | Latency: ${totalLatency}ms`);

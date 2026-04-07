@@ -3,18 +3,18 @@
   "version": "1.0.0",
   "description": "Plataforma digital soberana para Beach Hotel Canasvieiras & Pride Escape 2026. Ecosistema de hospitalidad boutique e ingeniería de alto rendimiento.",
   "author": "Raz Podestá - MetaShark Tech <contact@metashark.tech>",
-  "homepage": "https://beachhotelcanasvieiras.com",
+  "homepage": "https://beachcanasvieiras.com",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/razpodesta/hotel-beach-portfolio.git"
   },
   "license": "Proprietary",
   "private": true,
-"scripts": {
+  "scripts": {
     "dev": "nx serve portfolio-web",
     "build": "nx build portfolio-web --configuration=production",
-    "vercel-build": "pnpm run prebuild:web && pnpm run build",
-    "prebuild:web": "tsx scripts/sovereign-prebuild.ts",
+    "vercel-build": "pnpm run build",
+    "prebuild:web": "tsx apps/portfolio-web/scripts/sovereign-prebuild.ts",
     "sync:types": "tsx scripts/sync-payload-types.ts",
     "lint": "nx run-many --target=lint --all --parallel=1",
     "test": "nx run-many --target=test --all --parallel=1",
@@ -62,7 +62,7 @@
     "next": "~15.2.5",
     "next-mdx-remote": "^6.0.0",
     "next-themes": "^0.4.6",
-    "payload": "^3.79.0",
+    "payload": "^3.80.0",
     "postprocessing": "^6.38.0",
     "qrcode": "^1.5.4",
     "react": "^19.2.0",

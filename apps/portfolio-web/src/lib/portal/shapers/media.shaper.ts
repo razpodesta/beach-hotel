@@ -1,17 +1,18 @@
 /**
- * @file media.shaper.ts
+ * @file apps/portfolio-web/src/lib/portal/shapers/media.shaper.ts
  * @description Transformador soberano de entidades multimedia (The Alchemist).
- *              Refactorizado: Aislamiento por Tenant, resolución de URLs absolutas
- *              (anti-404) y blindaje contra fugas de datos (Tenant Leakage).
- * @version 4.0 - Security Shielded Edition
- * @author Raz Podestá - MetaShark Tech
+ *              Refactorizado: Blindaje contra divisiones por cero, normalización
+ *              estricta de URLs base y erradicación de comportamientos 
+ *              indeterminados durante el build.
+ * @version 4.1 - Resilience Hardened & Linter Pure
+ * @author Raz Podestá - Staff Engineer, MetaShark Tech
  */
 
 import type { PayloadMediaDoc } from '@metashark/cms-core';
 
 /**
  * @interface SovereignMedia
- * @description Contrato de salida para la UI de alta fidelidad.
+ * @description Contrato de salida inmutable para la UI.
  */
 export interface SovereignMedia {
   id: string;
@@ -38,7 +39,6 @@ export function shapeMediaEntity(
 ): SovereignMedia | null {
   
   // 1. BLINDAJE DE SEGURIDAD (Tenant Boundary Shield)
-  // Normalizamos el tenant del documento a string para comparar.
   const docTenant = typeof doc.tenant === 'object' && doc.tenant !== null 
     ? doc.tenant.id 
     : doc.tenant;
@@ -56,14 +56,16 @@ export function shapeMediaEntity(
     return null;
   }
   
+  // Normalización de Base URL con Fail-Safe para Build Environments
   if (!finalUrl.startsWith('http')) {
-    const cmsBaseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-    finalUrl = `${cmsBaseUrl.replace(/\/$/, '')}/${finalUrl.replace(/^\//, '')}`;
+    const cmsBaseUrl = (process.env.NEXT_PUBLIC_BASE_URL ?? 'https://beachhotelcanasvieiras.com').replace(/\/$/, '');
+    finalUrl = `${cmsBaseUrl}/${finalUrl.replace(/^\//, '')}`;
   }
 
-  // 3. NORMALIZACIÓN DE DIMENSIONES (CLS Protection)
-  const width = doc.width || 1200;
-  const height = doc.height || 630;
+  // 3. NORMALIZACIÓN DE DIMENSIONES (CLS Protection & Division-by-Zero Guard)
+  const width = doc.width && doc.width > 0 ? doc.width : 1200;
+  const height = doc.height && doc.height > 0 ? doc.height : 630;
+  const aspectRatio = width / height;
   
   return {
     id: doc.id,
@@ -74,7 +76,7 @@ export function shapeMediaEntity(
     dimensions: {
       width,
       height,
-      aspectRatio: width / height,
+      aspectRatio,
     },
   };
 }

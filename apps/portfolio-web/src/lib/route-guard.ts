@@ -3,10 +3,10 @@
  * @description Centinela de Borde y Orquestador de Acceso Perimetral (RBAC).
  *              Valida la integridad de la sesión, el aislamiento Multi-Tenant y 
  *              la jerarquía de autoridad en el Edge de Vercel.
- *              Refactorizado: Arquitectura de responsabilidad única, optimización 
- *              de búsqueda de rutas, telemetría Heimdall v2.5 y blindaje contra 
- *              efectos colaterales de build (Lazy Auth DNA).
- * @version 9.0 - Sovereign Sentinel Standard (Industrial Grade)
+ *              Refactorizado: Erradicación del "Edge Runtime Violation" eliminando 
+ *              importaciones dinámicas del CMS. Utiliza una Matriz Espejo Tipada
+ *              que garantiza la sincronización con el SSoT a nivel de compilador.
+ * @version 10.0 - Edge Immutable Standard (Zero Latency)
  * @author Raz Podestá - Staff Engineer, MetaShark Tech
  */
 
@@ -15,10 +15,11 @@ import { type Locale } from '../config/i18n.config';
 import { mainNavStructure, type NavItem } from './nav-links';
 
 /** 
- * IMPORTACIONES DE CONTRATO (Pure Types)
+ * IMPORTACIONES DE CONTRATO (Pure Types Only)
  * @pilar III: Seguridad de Tipos Absoluta.
+ * Al importar solo 'type', Webpack no incluye el CMS en el bundle del Edge.
  */
-import type { SovereignRoleType, RoleConfig } from '@metashark/cms-core';
+import type { SovereignRoleType } from '@metashark/cms-core';
 
 // ============================================================================
 // CONFIGURACIÓN DE INFRAESTRUCTRURA (SSoT)
@@ -80,36 +81,27 @@ export interface EnterpriseSession {
 }
 
 /**
- * CACHÉ VOLÁTIL DE AUTORIDAD
- * @description Persiste la matriz de roles en el ciclo de vida del Edge Worker.
+ * MATRIZ ESPEJO DE AUTORIDAD (Edge Safe)
+ * @description Copia inmutable de los niveles de autoridad.
+ * @pilar III: Al estar tipado contra `SovereignRoleType`, cualquier cambio 
+ * en los roles del CMS provocará un error de TypeScript aquí, garantizando el SSoT.
  */
-let DNA_CACHED_AUTHORITY: Record<SovereignRoleType | 'anonymous', number> | null = null;
+const EDGE_AUTHORITY_MATRIX: Record<SovereignRoleType | 'anonymous', number> = {
+  developer: 99,
+  admin: 50,
+  operator: 30,
+  sponsor: 20,
+  guest: 10,
+  anonymous: 0,
+};
 
 /**
  * @function resolveAuthorityMatrix
- * @description Handshake diferido con el CMS para obtener pesos de autoridad.
- * @pilar XIII: Build Isolation - Previene fallos de 'env' en tiempo de compilación.
+ * @description Devuelve los pesos de autoridad con telemetría Heimdall en latencia 0.
  */
-async function resolveAuthorityMatrix(traceId: string): Promise<Record<SovereignRoleType | 'anonymous', number>> {
-  if (DNA_CACHED_AUTHORITY) return DNA_CACHED_AUTHORITY;
-
-  const start = performance.now();
-  try {
-    const { ROLES_CONFIG } = await import('@metashark/cms-core');
-    
-    DNA_CACHED_AUTHORITY = {
-      anonymous: 0,
-      ...Object.fromEntries(ROLES_CONFIG.map((r: RoleConfig) => [r.value, r.level]))
-    } as Record<SovereignRoleType | 'anonymous', number>;
-
-    const duration = (performance.now() - start).toFixed(4);
-    console.log(`${C.magenta}   ● [DNA][GUARD]${C.reset} Authority DNA Synthesized | Latency: ${duration}ms | Trace: ${traceId}`);
-
-    return DNA_CACHED_AUTHORITY;
-  } catch (error) {
-    console.error(`${C.red}   ✕ [DNA][GUARD] Critical failure loading roles. Activating Safety Fallback.${C.reset}`);
-    return { anonymous: 0, guest: 10, sponsor: 20, operator: 30, admin: 50, developer: 99 };
-  }
+function resolveAuthorityMatrix(traceId: string): Record<SovereignRoleType | 'anonymous', number> {
+  console.log(`${C.magenta}   ● [DNA][GUARD]${C.reset} Authority DNA Synthesized in Edge | Trace: ${traceId}`);
+  return EDGE_AUTHORITY_MATRIX;
 }
 
 /**
@@ -199,9 +191,9 @@ export async function routeGuard(request: NextRequest, locale: Locale): Promise<
     const requiredRole = matchedRule[1];
     
     /** 
-     * @pilar VIII: Resiliencia - Carga diferida de la matriz de autoridad. 
+     * @pilar VIII: Lógica síncrona y segura para Vercel Edge. 
      */
-    const matrix = await resolveAuthorityMatrix(traceId);
+    const matrix = resolveAuthorityMatrix(traceId);
     const userLevel = matrix[session.role] || 0;
     const gateLevel = matrix[requiredRole] || 0;
 

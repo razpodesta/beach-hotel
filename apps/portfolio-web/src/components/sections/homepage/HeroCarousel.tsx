@@ -2,9 +2,10 @@
  * @file apps/portfolio-web/src/components/sections/homepage/HeroCarousel.tsx
  * @description Orquestador Cinemático de la Recepción (Fase 1: Awareness).
  *              Refactorizado: Motor de audio con protección de ciclo de vida,
- *              LCP Optimization (Fetch Priority), telemetría DNA-Level
- *              y normalización de rutas de activos S3.
- * @version 19.0 - Linter Pure & Next.js 15 Ready
+ *              LCP Optimization (Fetch Priority), telemetría DNA-Level,
+ *              normalización de rutas de activos S3 y erradicación de 
+ *              funciones vacías (Linter Pure).
+ * @version 19.2 - Linter Pure & Next.js 15 Ready
  * @author Raz Podestá - Staff Engineer, MetaShark Tech
  */
 
@@ -46,17 +47,19 @@ interface HeroCarouselProps {
   dictionary: HeroDictionary;
 }
 
-/** 
- * Función de limpieza estática para useSyncExternalStore 
- * @pilar X: Previene recreación de funciones en render.
- */
-const noop = () => {};
-const subscribe = () => noop;
-
 /**
  * Hook de Hidratación de Élite (Pilar VIII)
+ * @description Detecta si estamos en el cliente de forma segura.
+ *              Se inyecta un comentario interno para satisfacer al AST de TypeScript
+ *              sin requerir desactivar reglas del linter.
  */
 function useIsMounted(): boolean {
+  const subscribe = useCallback(() => {
+    return () => {
+      /* Intencionalmente vacío: Estado de montaje estático en cliente */
+    };
+  }, []);
+
   return useSyncExternalStore(subscribe, () => true, () => false);
 }
 
@@ -161,8 +164,10 @@ export function HeroCarousel({ dictionary }: HeroCarouselProps) {
     
     if (!isMuted) {
       audio.volume = 0;
-      audio.play().catch(() => { 
-        console.warn(`${C.yellow}[HEIMDALL][AUDIO] Autoplay blocked by policy.${C.reset}`); 
+      audio.play().catch((err: unknown) => { 
+        // Linter Pure: Proveemos telemetría en lugar de función vacía.
+        const msg = err instanceof Error ? err.message : 'Policy blocked';
+        console.warn(`${C.yellow}[HEIMDALL][AUDIO] Autoplay deferred: ${msg}${C.reset}`); 
       });
       
       fadeInterval = setInterval(() => {
@@ -193,8 +198,15 @@ export function HeroCarousel({ dictionary }: HeroCarouselProps) {
     console.log(`${C.cyan}   → [VIEWPORT]${C.reset} Active Slide: ${index} (${slides[index].id})`);
     
     videoRefs.current.forEach((v, i) => {
-      if (i === index) v.play().catch(noop);
-      else v.pause();
+      if (i === index) {
+        v.play().catch((err: unknown) => {
+          // @pilar IV: Trazabilidad forense para errores DOM de reproducción interrumpida.
+          const reason = err instanceof Error ? err.name : 'Unknown';
+          console.debug(`[HEIMDALL][VIDEO] Slide ${i} playback interrupted: ${reason}`);
+        });
+      } else {
+        v.pause();
+      }
     });
   }, [emblaApi, slides]);
 
@@ -262,7 +274,6 @@ export function HeroCarousel({ dictionary }: HeroCarouselProps) {
                     alt={slide.title}
                     fill
                     priority={index === 0}
-                    // Next.js 15 optimized priority hint
                     {...(index === 0 ? { fetchPriority: 'high' } : {})}
                     className={cn(
                       "object-cover transition-opacity duration-1500",
@@ -280,7 +291,6 @@ export function HeroCarousel({ dictionary }: HeroCarouselProps) {
                     onCanPlayThrough={() => handleCanPlayThrough(index)}
                     className={cn(
                       "h-full w-full object-cover transition-all duration-1500 transform-gpu",
-                      // Filtro de brillo adaptativo para contraste WCAG
                       "brightness-[0.45] [data-theme='light']:brightness-[0.55]",
                       isActive ? "scale-105" : "scale-100",
                       loadedAssets[index] ? "opacity-100" : "opacity-0"
@@ -356,7 +366,7 @@ export function HeroCarousel({ dictionary }: HeroCarouselProps) {
       {/* FOOTER SSSoT */}
       <div className="absolute bottom-4 right-8 opacity-20 pointer-events-none select-none">
          <span className="font-mono text-[7px] uppercase tracking-[0.5em] text-muted-foreground">
-           Sovereign Infrastructure v19.0 • S3 Stream Node
+           Sovereign Infrastructure v19.2 • S3 Stream Node
          </span>
       </div>
     </section>

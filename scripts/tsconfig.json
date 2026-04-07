@@ -25,7 +25,7 @@
     "../apps/portfolio-web/src/lib/schemas/**/*.ts",
     "../packages/**/src/**/*.ts",
     "../packages/**/src/**/*.tsx"
-  ],
+, "../apps/portfolio-web/scripts/sovereign-prebuild.ts"  ],
   "exclude": [
     "node_modules",
     "dist"
