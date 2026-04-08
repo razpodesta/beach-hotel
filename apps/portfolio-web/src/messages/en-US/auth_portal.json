@@ -7,7 +7,14 @@
   "facebook_label": "Continue with Facebook",
   "email_divider": "or use your email",
   "email_placeholder": "name@example.com",
+  "password_placeholder": "Secure password",
   "email_cta": "Access with Email",
+  "label_toggle_password": "Toggle password visibility",
+  "label_password_strength": "Strength",
+  "label_tos": "I agree to the Sanctuary Rules & Privacy Policy",
+  "label_newsletter": "Subscribe to high-fidelity updates",
+  "error_account_locked": "Security alert: Access locked for 24h.",
+  "error_invalid_credentials": "Authentication handshake failed.",
   "footer_trust": "Private Infrastructure • Zero Trackers",
   "privacy_notice": "By entering, you accept our Sanctuary Rules."
 }

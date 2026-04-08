@@ -7,7 +7,14 @@
   "facebook_label": "Continuar con Facebook",
   "email_divider": "o usa tu email",
   "email_placeholder": "nombre@ejemplo.com",
+  "password_placeholder": "Contraseña segura",
   "email_cta": "Acceder con Email",
+  "label_toggle_password": "Ver/Ocultar contraseña",
+  "label_password_strength": "Fortaleza",
+  "label_tos": "Acepto las Reglas del Santuario y Política de Privacidad",
+  "label_newsletter": "Suscribirse a actualizaciones de alta fidelidad",
+  "error_account_locked": "Alerta de seguridad: Acceso bloqueado por 24h.",
+  "error_invalid_credentials": "Handshake de autenticación fallido.",
   "footer_trust": "Infraestructura Privada • Cero Rastreadores",
   "privacy_notice": "Al ingresar, aceptas nuestras Reglas del Santuario."
 }
