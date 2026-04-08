@@ -6,7 +6,7 @@
  *              normalización de rutas de activos S3 y erradicación de 
  *              funciones vacías (Linter Pure).
  * @version 19.2 - Linter Pure & Next.js 15 Ready
- * @author Raz Podestá - Staff Engineer, MetaShark Tech
+ * @author Raz Podestá -  MetaShark Tech
  */
 
 'use client';

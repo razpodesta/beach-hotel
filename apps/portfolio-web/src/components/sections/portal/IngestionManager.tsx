@@ -5,7 +5,7 @@
  *              Refactorizado: Inyección de Telemetría Heimdall v2.5, optimización 
  *              de gestión de memoria, resiliencia de red y pureza React 19.
  * @version 5.2 - Forensic Ingestion Standard (Heimdall v2.5 Injected)
- * @author Raz Podestá - Staff Engineer, MetaShark Tech
+ * @author Raz Podestá -  MetaShark Tech
  */
 
 'use client';

@@ -6,7 +6,7 @@
  *              erradicación de tipos 'any', reconexión del Trace ID 
  *              y resolución de CollectionSlug mediante inferencia estática.
  * @version 4.0 - Build-Immune & Forensic Ready
- * @author Raz Podestá - Staff Engineer, MetaShark Tech
+ * @author Raz Podestá -  MetaShark Tech
  */
 
 'use server';

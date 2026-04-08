@@ -4,7 +4,7 @@
  *              Refactorizado: Resolución de TS2352 mediante doble await y casting seguro.
  *              Integración del Centinela IS_BUILD_ENV para aislamiento estático.
  * @version 4.3 - Build-Safe & Production Elite
- * @author Raz Podestá - Staff Engineer, MetaShark Tech
+ * @author Raz Podestá -  MetaShark Tech
  */
 
 'use server';

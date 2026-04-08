@@ -5,7 +5,7 @@
  *              eliminación de variables huérfanas, cumplimiento de fronteras Nx
  *              y telemetría de búsqueda optimizada.
  * @version 8.0 - Linter Pure & Architecture Ready
- * @author Raz Podestá - Staff Engineer, MetaShark Tech
+ * @author Raz Podestá -  MetaShark Tech
  */
 
 'use client';

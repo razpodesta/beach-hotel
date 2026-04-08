@@ -6,7 +6,7 @@
  *              Refactorizado: Erradicación de funciones impuras en el render (React 19),
  *              resolución de importaciones de Lucide y tipado estricto de reducers.
  * @version 6.4 - React 19 Pure & Forensic Telemetry
- * @author Raz Podestá - Staff Engineer, MetaShark Tech
+ * @author Raz Podestá -  MetaShark Tech
  */
 
 'use client';

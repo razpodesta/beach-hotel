@@ -4,7 +4,7 @@
  *              Refactorizado: Resolución estricta de promesas de configuración (TS2352)
  *              mediante 'await' y casting a 'unknown'.
  * @version 1.2 - Type-Safe & Build-Isolated
- * @author Raz Podestá - Staff Engineer, MetaShark Tech
+ * @author Raz Podestá -  MetaShark Tech
  */
 
 'use server';

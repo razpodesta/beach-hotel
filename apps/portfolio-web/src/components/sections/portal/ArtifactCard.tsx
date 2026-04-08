@@ -5,7 +5,7 @@
  *              normalización de clases Tailwind v4 y optimización de 
  *              renderizado bajo el estándar Day-First.
  * @version 2.1 - Framework Sync & Tailwind Canonical
- * @author Raz Podestá - Staff Engineer, MetaShark Tech
+ * @author Raz Podestá -  MetaShark Tech
  */
 
 'use client';

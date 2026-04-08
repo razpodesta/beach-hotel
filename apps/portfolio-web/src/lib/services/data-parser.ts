@@ -5,7 +5,7 @@
  *              Refactorizado: Resolución de error ESLint no-control-regex,
  *              normalización de printables vía Unicode y blindaje de tipos.
  * @version 4.1 - Linter Pure & Modern Unicode Sync
- * @author Raz Podestá - Staff Engineer, MetaShark Tech
+ * @author Raz Podestá -  MetaShark Tech
  */
 
 import * as XLSX from 'xlsx';

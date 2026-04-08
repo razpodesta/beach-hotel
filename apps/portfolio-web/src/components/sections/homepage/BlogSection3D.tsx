@@ -5,7 +5,7 @@
  *              autoplay con conciencia de visibilidad (Energy-Aware), 
  *              telemetría Heimdall v2.0 y cumplimiento de fronteras Nx.
  * @version 22.0 - Energy Efficient & Atmosphere Immersive
- * @author Raz Podestá - Staff Engineer, MetaShark Tech
+ * @author Raz Podestá -  MetaShark Tech
  */
 
 'use client';

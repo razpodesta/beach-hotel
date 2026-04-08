@@ -5,7 +5,7 @@
  *              estricta de URLs base y erradicación de comportamientos 
  *              indeterminados durante el build.
  * @version 4.1 - Resilience Hardened & Linter Pure
- * @author Raz Podestá - Staff Engineer, MetaShark Tech
+ * @author Raz Podestá -  MetaShark Tech
  */
 
 import type { PayloadMediaDoc } from '@metashark/cms-core';

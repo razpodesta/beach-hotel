@@ -4,7 +4,7 @@
  *              Refactorizado: Aislamiento de Build absoluto mediante importaciones 
  *              dinámicas y guardias de entorno. Resolución de TS2345/TS2322.
  * @version 2.1 - Build-Safe & Production Elite
- * @author Raz Podestá - Staff Engineer, MetaShark Tech
+ * @author Raz Podestá -  MetaShark Tech
  */
 
 'use server';

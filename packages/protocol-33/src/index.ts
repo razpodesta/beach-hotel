@@ -7,7 +7,7 @@
  *              erradicación de extensiones .js para empaquetado Source-First
  *              sin colisiones en Vercel.
  * @version 4.1 - Bundler Resolution Sync & SWC Ready
- * @author Raz Podestá - Staff Engineer, MetaShark Tech
+ * @author Raz Podestá -  MetaShark Tech
  */
 
 /**

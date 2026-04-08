@@ -6,7 +6,7 @@
  *              Refactorizado: Resolución de violación de frontera Nx (Lazy-load conflict),
  *              aislamiento total de tipos para build estático e inyección Heimdall v2.0.
  * @version 27.0 - Boundary Compliant & Build Resilient
- * @author Raz Podestá - Staff Engineer, MetaShark Tech
+ * @author Raz Podestá -  MetaShark Tech
  */
 
 import React from 'react';

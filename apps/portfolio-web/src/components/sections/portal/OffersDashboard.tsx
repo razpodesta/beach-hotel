@@ -6,7 +6,7 @@
  *              Heimdall v2.5, optimización de métricas de rendimiento y 
  *              protección de CLS mediante skeletons dinámicos.
  * @version 5.0 - Real-Time Revenue Intelligence & Forensic Sync
- * @author Raz Podestá - Staff Engineer, MetaShark Tech
+ * @author Raz Podestá -  MetaShark Tech
  */
 
 'use client';

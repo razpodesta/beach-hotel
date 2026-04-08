@@ -5,7 +5,7 @@
  *              telemetría de latencia Heimdall v2.0, validación de perímetros
  *              y feedback detallado de errores del clúster S3.
  * @version 4.0 - Memory Safe & Forensic Enabled
- * @author Raz Podestá - Staff Engineer, MetaShark Tech
+ * @author Raz Podestá -  MetaShark Tech
  */
 
 'use client';

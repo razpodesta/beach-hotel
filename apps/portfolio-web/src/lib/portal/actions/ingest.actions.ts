@@ -5,7 +5,7 @@
  *              estática de configPromise. Implementada lógica de carga dinámica 
  *              para prevenir el envenenamiento de los trabajadores de build.
  * @version 7.1 - Static Build Immunity
- * @author Raz Podestá - Staff Engineer, MetaShark Tech
+ * @author Raz Podestá -  MetaShark Tech
  */
 
 'use server';

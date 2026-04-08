@@ -4,7 +4,7 @@
  *              Refactorizado: Blindaje absoluto de 'noStore' durante el build
  *              para permitir la generación estática del sitemap y rutas.
  * @version 39.0 - Sitemap Build Immunity (noStore Guard)
- * @author Raz Podestá - Staff Engineer, MetaShark Tech
+ * @author Raz Podestá -  MetaShark Tech
  */
 
 import { getPayload } from 'payload';

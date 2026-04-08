@@ -5,7 +5,7 @@
  *              Refactorizado: Erradicación de non-null assertions, limpieza de linter,
  *              y blindaje de entorno.
  * @version 4.1 - Forensic & Linter-Pure Standard
- * @author Raz Podestá - Staff Engineer, MetaShark Tech
+ * @author Raz Podestá -  MetaShark Tech
  */
 
 'use server';

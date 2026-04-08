@@ -4,7 +4,7 @@
  *              Refactorizado: Erradicación de assertions no nulas, tipado estricto
  *              y blindaje contra variables de entorno inexistentes.
  * @version 2.2 - Identity Fortress Standard
- * @author Raz Podestá - Staff Engineer, MetaShark Tech
+ * @author Raz Podestá -  MetaShark Tech
  */
 
 'use client';

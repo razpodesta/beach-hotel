@@ -5,7 +5,7 @@
  *              Refactorizado: Inyección de Telemetría Heimdall v2.5, medición de
  *              latencia de Ledger, observabilidad cromática y resiliencia de estados.
  * @version 5.2 - Heimdall v2.5 Injected (Forensic Intelligence)
- * @author Raz Podestá - Staff Engineer, MetaShark Tech
+ * @author Raz Podestá -  MetaShark Tech
  */
 
 'use client';

@@ -5,7 +5,7 @@
  *              garantizar compatibilidad nativa con la Build Output API de Vercel.
  *              Mantiene el Webpack 5 Fallback y la purga de Warnings de Nx.
  * @version 7.0 - Vercel Serverless Ready & Zero Warnings Standard
- * @author Raz Podestá - Staff Engineer, MetaShark Tech
+ * @author Raz Podestá -  MetaShark Tech
  */
 
 import type { NextConfig } from 'next';

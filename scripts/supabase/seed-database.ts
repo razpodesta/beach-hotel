@@ -2,7 +2,7 @@
  * @file scripts/supabase/seed-database.ts
  * @version 31.3 - Genesis Engine: Final Industrial Hardening
  * @description Inyección determinista con guardas de resiliencia y normalización de esquemas.
- * @author Raz Podestá - Staff Engineer, MetaShark Tech
+ * @author Raz Podestá -  MetaShark Tech
  */
 
 import * as dotenv from 'dotenv';

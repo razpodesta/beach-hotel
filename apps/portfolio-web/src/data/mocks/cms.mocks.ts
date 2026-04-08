@@ -4,7 +4,7 @@
  * @description Fuente estática de verdad para datos de siembra.
  *              Refactorizado: Estructura de datos 100% alineada con los contratos Zod
  *              de las colecciones del CMS para garantizar inyección libre de errores.
- * @author Raz Podestá - Staff Engineer, MetaShark Tech
+ * @author Raz Podestá -  MetaShark Tech
  */
 
 export interface RawMockPost {

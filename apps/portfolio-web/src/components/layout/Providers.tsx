@@ -6,7 +6,7 @@
  *              y el Nuevo Guardián de Identidad (Supabase Sync).
  *              Nivelado: Integración de SovereignRoleType y Protocolo 33 (XP/Level).
  * @version 6.1 - Sovereign Identity & P33 Sync Edition
- * @author Raz Podestá - Staff Engineer, MetaShark Tech
+ * @author Raz Podestá -  MetaShark Tech
  */
 
 'use client';

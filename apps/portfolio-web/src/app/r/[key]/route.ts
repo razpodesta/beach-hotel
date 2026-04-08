@@ -5,7 +5,7 @@
  *              Ahora el motor aguarda la resolución completa de la configuración
  *              antes de inicializar el Payload CMS.
  * @version 4.3 - Type-Safe & Build-Hardened
- * @author Raz Podestá - Staff Engineer, MetaShark Tech
+ * @author Raz Podestá -  MetaShark Tech
  */
 
 import { NextRequest, NextResponse } from 'next/server';

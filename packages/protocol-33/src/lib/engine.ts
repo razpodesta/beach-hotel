@@ -6,7 +6,7 @@
  *              Refactorizado: Pureza matemática total, eliminación de hardcoding
  *              i18n y telemetría de progresión integrada.
  * @version 4.0 - Mathematical Purity & Observability
- * @author Raz Podestá - Staff Engineer, MetaShark Tech
+ * @author Raz Podestá -  MetaShark Tech
  */
 
 import type { LevelDefinition, UserProgress } from './types.js';

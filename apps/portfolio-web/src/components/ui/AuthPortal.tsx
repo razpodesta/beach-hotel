@@ -4,7 +4,7 @@
  *              Refactorizado: Resolución de TS2305 (Action export sync), 
  *              limpieza de imports y telemetría DNA.
  * @version 4.3 - Linter Pure & Boundary Compliant
- * @author Raz Podestá - Staff Engineer, MetaShark Tech
+ * @author Raz Podestá -  MetaShark Tech
  */
 
 'use client';

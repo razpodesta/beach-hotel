@@ -5,7 +5,7 @@
  *              Refactorizado: Motor de Batch-Processing activo, validación 
  *              de integridad L0 y blindaje de reputación Multi-Tenant.
  * @version 2.0 - Enterprise Batch Engine & L0 Integrity
- * @author Raz Podestá - Staff Engineer, MetaShark Tech
+ * @author Raz Podestá -  MetaShark Tech
  */
 
 import { Resend } from 'resend';

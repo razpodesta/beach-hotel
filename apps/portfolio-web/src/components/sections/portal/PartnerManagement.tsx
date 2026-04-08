@@ -6,7 +6,7 @@
  *              Refactorizado: Renderizado concurrente (React 19), telemetría 
  *              forense de búsqueda y sincronización total con el SSoT de i18n.
  * @version 6.5 - Concurrent Logic & Forensic Telemetry
- * @author Raz Podestá - Staff Engineer, MetaShark Tech
+ * @author Raz Podestá -  MetaShark Tech
  */
 
 'use client';

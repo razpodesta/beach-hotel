@@ -5,7 +5,7 @@
  *              absoluta con el SSoT de i18n, inyección de telemetría viva (Ping Reactor)
  *              y observabilidad Heimdall v2.0.
  * @version 3.0 - Live Telemetry & Linter Pure
- * @author Raz Podestá - Staff Engineer, MetaShark Tech
+ * @author Raz Podestá -  MetaShark Tech
  */
 
 'use client';

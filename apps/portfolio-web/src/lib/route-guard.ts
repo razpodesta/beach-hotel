@@ -7,7 +7,7 @@
  *              importaciones dinámicas del CMS. Utiliza una Matriz Espejo Tipada
  *              que garantiza la sincronización con el SSoT a nivel de compilador.
  * @version 10.0 - Edge Immutable Standard (Zero Latency)
- * @author Raz Podestá - Staff Engineer, MetaShark Tech
+ * @author Raz Podestá -  MetaShark Tech
  */
 
 import { NextResponse, type NextRequest } from 'next/server';

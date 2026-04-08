@@ -5,7 +5,7 @@
  *              Refactorizado: Resolución de TS2741 (loreLabel sync), erradicación
  *              de hardcoding y optimización de arquitectura de componentes.
  * @version 4.1 - Contract Synchronized & Performance Optimized
- * @author Raz Podestá - Staff Engineer, MetaShark Tech
+ * @author Raz Podestá -  MetaShark Tech
  */
 
 'use client';

@@ -6,7 +6,7 @@
  *              Refactorizado: Resolución de 'prefer-const', optimización de mutaciones
  *              de sesión e inyección de telemetría Heimdall v3.0.
  * @version 13.0 - Immutable Session Architecture & Linter Pure
- * @author Raz Podestá - Staff Engineer, MetaShark Tech
+ * @author Raz Podestá -  MetaShark Tech
  */
 
 import { create } from 'zustand';

@@ -6,7 +6,7 @@
  *              erradicación total de hardcoding, telemetría Heimdall v2.0
  *              y sincronización con el estándar visual Day-First (Tailwind v4).
  * @version 5.0 - Forensic Marketing & I18n Pure
- * @author Raz Podestá - Staff Engineer, MetaShark Tech
+ * @author Raz Podestá -  MetaShark Tech
  */
 
 'use client';

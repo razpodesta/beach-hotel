@@ -5,7 +5,7 @@
  *              erradicación de links huérfanos, telemetría Heimdall v2.0 
  *              y cumplimiento estricto del estándar Day-First.
  * @version 16.0 - Route Synchronized & Forensic Enabled
- * @author Raz Podestá - Staff Engineer, MetaShark Tech
+ * @author Raz Podestá -  MetaShark Tech
  */
 
 'use client';
