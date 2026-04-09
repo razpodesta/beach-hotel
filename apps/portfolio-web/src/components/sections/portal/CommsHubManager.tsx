@@ -1,21 +1,21 @@
 /**
  * @file apps/portfolio-web/src/components/sections/portal/CommsHubManager.tsx
  * @description Enterprise Communication Hub Orchestrator (Silo D Manager).
- *              Refactorizado: Inyección de Telemetría Heimdall v2.5, sellado de 
- *              contratos de prioridad y optimización de atmósfera Oxygen v4.
- *              Estándar: React 19 Pure & Forensic Logging.
- * @version 6.2 - Heimdall v2.5 Injected & Forensic Standard
- * @author Staff Engineer - MetaShark Tech
+ *              Refactorizado: Inteligencia de densidad de señales (Unread Tracking),
+ *              normalización de atmósfera Oxygen v4 y telemetría Heimdall v2.5.
+ *              Estándar: React 19 Pure & Forensic Signal Stream.
+ * @version 6.3 - Unread Intelligence & Oxygen v4 Hardened
+ * @author Raz Podestá -  MetaShark Tech
  */
 
 'use client';
 
-import React, { useState, useMemo, useEffect, useCallback, memo } from 'react';
+import React, { useState, useMemo, useEffect, useCallback, memo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ShieldAlert, CheckCircle2, Trash2, Reply, Wifi, 
   Loader2, Activity, Zap, Terminal, ShieldCheck,
-  RefreshCw
+  RefreshCw, Radio
 } from 'lucide-react';
 
 /** IMPORTACIONES DE INFRAESTRUCTRURA (Nx Boundary Safe) */
@@ -65,18 +65,19 @@ const CommsSignalCard = memo(({ tx, style, activeView, dictionary }: {
   return (
     <motion.article 
       layout
-      initial={{ opacity: 0, y: 10 }} 
-      animate={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0, y: 10, scale: 0.98 }} 
+      animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
       className={cn(
         "group relative flex flex-col md:flex-row items-center justify-between p-6 rounded-4xl border bg-surface/30",
         "hover:bg-surface/50 transition-all duration-700 shadow-xl overflow-hidden transform-gpu",
-        tx.priority === 'critical' ? "border-red-500/20" : "border-border hover:border-primary/30"
+        tx.priority === 'critical' ? "border-red-500/20" : "border-border hover:border-primary/30",
+        !tx.isRead && "border-l-4 border-l-primary"
       )}
     >
       <div className="flex items-center gap-8 flex-1 w-full relative z-10">
         <div className={cn(
-          "h-16 w-16 rounded-2xl flex items-center justify-center shrink-0 border transition-transform duration-700 group-hover:scale-110 shadow-inner", 
+          "h-16 w-16 rounded-2xl flex items-center justify-center shrink-0 border transition-all duration-700 group-hover:scale-110 shadow-inner", 
           style.bg, style.color, "border-current/10"
         )}>
            <Icon size={28} strokeWidth={1.5} className={cn(tx.priority === 'critical' && "animate-pulse")} />
@@ -92,6 +93,9 @@ const CommsSignalCard = memo(({ tx, style, activeView, dictionary }: {
              <h4 className="font-display text-base font-bold text-foreground leading-tight tracking-tight uppercase truncate">
                {tx.subject}
              </h4>
+             {!tx.isRead && (
+               <span className="flex h-2 w-2 rounded-full bg-primary animate-pulse" />
+             )}
           </div>
           
           {(activeView === 'messages' || activeView === 'logs') && tx.body && (
@@ -102,9 +106,9 @@ const CommsSignalCard = memo(({ tx, style, activeView, dictionary }: {
           
           <div className="flex items-center gap-4 text-[9px] font-mono text-muted-foreground uppercase tracking-widest opacity-60">
              <span>{dictionary.label_sender_node}: <b className="text-foreground/80">{tx.sender}</b></span>
-             <span className="h-1 w-1 rounded-full bg-border" />
-             <span>TRACE_ID: {tx.traceId}</span>
-             <span className="h-1 w-1 rounded-full bg-border" />
+             <div className="h-1 w-1 rounded-full bg-border" />
+             <span>ID_TRACE: {tx.traceId}</span>
+             <div className="h-1 w-1 rounded-full bg-border" />
              <span>{tx.timestamp}</span>
           </div>
         </div>
@@ -127,7 +131,6 @@ const CommsSignalCard = memo(({ tx, style, activeView, dictionary }: {
          </button>
       </div>
 
-      {/* Decorative Glow based on Priority */}
       <div className={cn("absolute -right-20 -bottom-20 h-40 w-40 blur-[80px] rounded-full opacity-0 group-hover:opacity-10 transition-opacity", style.glow)} />
     </motion.article>
   );
@@ -135,22 +138,24 @@ const CommsSignalCard = memo(({ tx, style, activeView, dictionary }: {
 CommsSignalCard.displayName = 'CommsSignalCard';
 
 // ============================================================================
-// 2. APARATO: CommsHubHeader (Status Orchestrator)
+// 2. APARATO: CommsHubHeader (Operational Nav)
 // ============================================================================
 const CommsHubHeader = memo(({ 
   dictionary, 
   activeView, 
   onViewChange, 
   isLoading, 
-  hasError 
+  hasError,
+  unreadCount
 }: { 
   dictionary: CommsHubDictionary;
   activeView: CommsView;
   onViewChange: (v: CommsView) => void;
   isLoading: boolean;
   hasError: boolean;
+  unreadCount: number;
 }) => (
-  <header className="flex flex-col lg:flex-row justify-between items-center bg-surface/60 backdrop-blur-3xl p-6 rounded-[2.5rem] border border-border/50 shadow-luxury gap-8">
+  <header className="flex flex-col lg:flex-row justify-between items-center bg-surface/60 backdrop-blur-3xl p-6 rounded-[2.5rem] border border-border/50 shadow-luxury gap-8 transition-all duration-700">
     <div className="flex items-center gap-6 px-4 w-full lg:w-auto">
        <div className={cn(
          "h-14 w-14 rounded-2xl border flex items-center justify-center relative shadow-inner transition-all duration-700",
@@ -158,19 +163,17 @@ const CommsHubHeader = memo(({
        )}>
          {isLoading ? <Loader2 size={28} className="animate-spin" /> : <Wifi size={28} className="animate-pulse" />}
          
-         {/* Signal Strength Decorator */}
-         {!isLoading && !hasError && (
-           <div className="absolute -top-1 -right-1">
-             <span className="flex h-3 w-3">
-               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75"></span>
-               <span className="relative inline-flex rounded-full h-3 w-3 bg-success"></span>
+         {unreadCount > 0 && !isLoading && (
+           <div className="absolute -top-2 -right-2">
+             <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-white shadow-lg animate-in zoom-in">
+               {unreadCount}
              </span>
            </div>
          )}
        </div>
        <div className="space-y-1">
           <span className={cn("text-[10px] font-mono font-bold uppercase tracking-[0.4em]", isLoading ? "text-yellow-500" : (hasError ? "text-red-500" : "text-success"))}>
-            {isLoading ? "SYNCHRONIZING..." : dictionary.status_online}
+            {isLoading ? "CALIBRATING_STREAM..." : dictionary.status_online}
           </span>
           <h2 className="text-2xl font-display font-bold text-foreground tracking-tighter uppercase leading-none">
             {dictionary.title}
@@ -178,7 +181,7 @@ const CommsHubHeader = memo(({
        </div>
     </div>
 
-    <nav className="flex items-center gap-2 bg-background/20 p-2 rounded-2xl border border-border/40 w-full lg:w-auto overflow-x-auto no-scrollbar">
+    <nav className="flex items-center gap-2 bg-background/20 p-2 rounded-2xl border border-border/40 w-full lg:w-auto overflow-x-auto no-scrollbar transform-gpu">
        {(['notifications', 'messages', 'logs'] as CommsView[]).map((v) => (
          <button 
            key={v} 
@@ -197,7 +200,7 @@ const CommsHubHeader = memo(({
 CommsHubHeader.displayName = 'CommsHubHeader';
 
 // ============================================================================
-// APARATO PRINCIPAL: CommsHubManager (The Orchestrator)
+// APARATO PRINCIPAL: CommsHubManager (Silo D Orchestrator)
 // ============================================================================
 export function CommsHubManager({ dictionary, className }: CommsHubManagerProps) {
   const { session } = useUIStore();
@@ -206,36 +209,46 @@ export function CommsHubManager({ dictionary, className }: CommsHubManagerProps)
   const [isLoading, setIsLoading] = useState(true);
   const [syncLatency, setSyncLatency] = useState<string | null>(null);
   const [errorCount, setErrorCount] = useState(0);
+  
+  const lastCountRef = useRef<number>(0);
 
   /**
    * PROTOCOLO HEIMDALL: Sincronización del Ledger Forense
-   * @pilar IV: Trazabilidad DNA-Level y medición nanométrica.
+   * @pilar IV: Trazabilidad DNA-Level y medición de "Signal Drift".
    */
   const fetchLedger = useCallback(async () => {
     if (!session?.tenantId) return;
     
     setIsLoading(true);
-    const traceId = `hub_sync_${Date.now().toString(36).toUpperCase()}`;
+    const traceId = `sig_recon_${Date.now().toString(36).toUpperCase()}`;
     const startTime = performance.now();
 
-    console.log(`${C.magenta}${C.bold}[DNA][COMMS]${C.reset} Synchronizing Ledger | Trace: ${C.cyan}${traceId}${C.reset}`);
+    console.log(`${C.magenta}${C.bold}[DNA][COMMS]${C.reset} Scanning Signal Stream | Trace: ${C.cyan}${traceId}${C.reset}`);
 
     try {
       const response = await getCommsLedger(session.tenantId);
       const duration = (performance.now() - startTime).toFixed(4);
 
       if (response.success && response.data) {
-        setTransmissions(response.data);
+        const newData = response.data;
+        const drift = newData.length - lastCountRef.current;
+        
+        setTransmissions(newData);
         setSyncLatency(duration);
         setErrorCount(0);
-        console.log(`${C.green}   ✓ [GRANTED]${C.reset} Ledger synced | Nodes: ${response.data.length} | Latency: ${duration}ms`);
+        lastCountRef.current = newData.length;
+
+        console.log(
+          `${C.green}   ✓ [GRANTED]${C.reset} Stream Synchronized | ` +
+          `Nodes: ${newData.length} | Drift: ${drift > 0 ? '+' : ''}${drift} | Lat: ${duration}ms`
+        );
       } else {
-        throw new Error(response.error);
+        throw new Error(response.error || 'GATEWAY_TIMEOUT');
       }
     } catch (error: unknown) {
-      const msg = error instanceof Error ? error.message : 'SIGNAL_LOST';
+      const msg = error instanceof Error ? error.message : 'SIGNAL_INTERRUPTED';
       setErrorCount(prev => prev + 1);
-      console.error(`${C.red}   ✕ [BREACH]${C.reset} Ledger sync failed. Trace: ${traceId} | Reason: ${msg}`);
+      console.error(`${C.red}   ✕ [BREACH] Signal recognition failed. Trace: ${traceId} | Reason: ${msg}`);
     } finally {
       setIsLoading(false);
     }
@@ -246,20 +259,24 @@ export function CommsHubManager({ dictionary, className }: CommsHubManagerProps)
   }, [fetchLedger]);
 
   /** 
-   * MOTOR DE FILTRADO TÁCTICO (Pilar X)
-   * @description Segmenta el flujo de señales por categoría operativa.
+   * INTELIGENCIA DE SEÑAL (Data Aggregator)
+   * @pilar X: Performance - Procesamiento en ciclo único para filtrado y conteo.
    */
-  const filteredData = useMemo(() => {
-    return transmissions.filter(t => {
+  const { filteredData, unreadCount } = useMemo(() => {
+    let unread = 0;
+    const filtered = transmissions.filter(t => {
+      if (!t.isRead) unread++;
+      
       if (activeView === 'notifications') return t.category !== 'comms' && t.category !== 'infra';
       if (activeView === 'messages') return t.category === 'comms';
       return t.category === 'infra' || t.category === 'security';
     });
+
+    return { filteredData: filtered, unreadCount: unread };
   }, [transmissions, activeView]);
 
   /** 
    * RESOLVER DE ESTILO (Oxygen Engine OKLCH) 
-   * @pilar VII: Theming Semántico.
    */
   const getPriorityStyle = useCallback((p: SignalPriority): PriorityStyle => ({
     critical: { 
@@ -285,22 +302,23 @@ export function CommsHubManager({ dictionary, className }: CommsHubManagerProps)
   return (
     <div className={cn("space-y-10 animate-in fade-in duration-1000", className)}>
       
-      {/* Cabecera del Hub con Estado de Red */}
+      {/* 1. CABECERA TÁCTICA (Status & Nav) */}
       <CommsHubHeader 
         dictionary={dictionary} 
         activeView={activeView} 
         onViewChange={setActiveView} 
         isLoading={isLoading} 
-        hasError={errorCount > 0} 
+        hasError={errorCount > 0}
+        unreadCount={unreadCount}
       />
 
-      {/* Viewport de Señales */}
+      {/* 2. VIEWPORT DE SEÑALES (Aceleración GPU) */}
       <section className="min-h-[450px]">
         <AnimatePresence mode="popLayout">
           {isLoading ? (
             <motion.div key="skeleton" className="space-y-4">
               {[1, 2, 3].map(i => (
-                <div key={i} className="h-32 w-full bg-surface/30 border border-border/50 rounded-4xl animate-pulse" />
+                <div key={i} className="h-32 w-full bg-surface/30 border border-border/40 rounded-4xl animate-pulse" />
               ))}
             </motion.div>
           ) : filteredData.length > 0 ? (
@@ -320,21 +338,24 @@ export function CommsHubManager({ dictionary, className }: CommsHubManagerProps)
               key="empty" 
               initial={{ opacity: 0, scale: 0.98 }} 
               animate={{ opacity: 1, scale: 1 }} 
-              className="py-48 text-center space-y-6"
+              className="py-48 text-center space-y-8 rounded-[4rem] border-2 border-dashed border-border bg-surface/10 relative overflow-hidden"
             >
               <div className="relative mx-auto w-max">
-                <div className="absolute inset-0 blur-3xl bg-primary/5 rounded-full" />
+                <div className="absolute inset-0 blur-3xl bg-primary/5 rounded-full animate-pulse" />
                 <Terminal size={64} className="mx-auto text-muted-foreground/10 relative" />
               </div>
-              <p className="font-mono text-[10px] uppercase tracking-[0.5em] text-muted-foreground animate-pulse">
-                {dictionary.empty_inbox}
-              </p>
+              <div className="space-y-2">
+                 <p className="font-mono text-[10px] uppercase tracking-[0.5em] text-muted-foreground">
+                   {dictionary.empty_inbox}
+                 </p>
+                 <span className="text-[7px] font-mono uppercase text-muted-foreground/30">RECON_MODE: SCANNING...</span>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
       </section>
 
-      {/* Footer de Telemetría Forense */}
+      {/* 3. FOOTER TELEMÉTRICO (Pulse Logic) */}
       <footer className="pt-8 border-t border-border/40 flex flex-col sm:flex-row justify-between items-center gap-6 opacity-40 hover:opacity-100 transition-opacity duration-1000">
          <div className="flex items-center gap-8">
             <div className="flex items-center gap-3 text-[10px] font-mono font-bold uppercase tracking-widest text-muted-foreground">
@@ -344,22 +365,25 @@ export function CommsHubManager({ dictionary, className }: CommsHubManagerProps)
             <div className="h-4 w-px bg-border/40 hidden sm:block" />
             <div className="flex items-center gap-3 text-[10px] font-mono font-bold uppercase tracking-widest text-muted-foreground">
               <ShieldCheck size={14} className="text-success" />
-              Security Protocol: v2.5 VALIDATED
+              Perimeter Protection: v2.5 VALIDATED
             </div>
          </div>
          
          <div className="flex items-center gap-6">
             <button 
               onClick={fetchLedger}
-              className="group flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-foreground hover:text-primary transition-all outline-none"
+              className="group flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-foreground hover:text-primary transition-all outline-none active:scale-95"
             >
               <RefreshCw size={14} className="group-hover:rotate-180 transition-transform duration-1000" />
-              Signal Re-Scan
+              Re-Scan Ledger
             </button>
             <div className="h-4 w-px bg-border/40 hidden sm:block" />
-            <span className="text-[9px] font-mono uppercase tracking-[0.5em] text-muted-foreground">
-              Node: {session?.tenantId?.substring(0, 8) || 'ROOT'} • P33 Ready
-            </span>
+            <div className="flex items-center gap-3 text-muted-foreground">
+               <Radio size={14} />
+               <span className="text-[9px] font-mono uppercase tracking-[0.5em]">
+                 Node: {session?.tenantId?.substring(0, 8) || 'ROOT'}
+               </span>
+            </div>
          </div>
       </footer>
     </div>

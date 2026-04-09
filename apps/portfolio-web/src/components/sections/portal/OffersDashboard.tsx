@@ -1,10 +1,11 @@
 /**
  * @file apps/portfolio-web/src/components/sections/portal/OffersDashboard.tsx
  * @description Enterprise Revenue Orchestrator (Silo A Manager).
- *              Refactorizado: Erradicación de errores de Typecheck, purga de 'any',
- *              corrección de contratos de diccionario y limpieza de imports huérfanos.
+ *              Refactorizado: Erradicación de tipos 'any', limpieza de imports 
+ *              huérfanos y normalización de sintaxis OKLCH para Tailwind v4.
  *              Integrado: Telemetría Heimdall v2.5 y Gating de Inventario Crítico.
- * @version 7.1 - Linter Pure & Signal Alignment
+ *              Estándar: React 19 Pure & High-Performance Aggregation.
+ * @version 7.2 - Linter Pure & Tailwind Canonical Standard
  * @author Staff Engineer - MetaShark Tech
  */
 
@@ -15,7 +16,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Zap, Package, Plus, BarChart3, TrendingUp, 
   Timer, ShieldCheck, Database, 
-  AlertTriangle, History, Radio
+  AlertTriangle, Radio
 } from 'lucide-react';
 
 /** IMPORTACIONES DE INFRAESTRUCTRURA (Nx Boundary Safe) */
@@ -27,7 +28,6 @@ import type { Dictionary } from '../../../lib/schemas/dictionary.schema';
 /** 
  * ACCIONES DE SERVIDOR (Silo A Nodes) 
  * @pilar IX: Inversión de Control. 
- * @note Este miembro será inyectado en el próximo paso en campaign.actions.ts.
  */
 import { getActiveOffersAction } from '../../../lib/portal/actions/campaign.actions';
 
@@ -37,7 +37,7 @@ const C = {
   green: '\x1b[32m', yellow: '\x1b[33m', red: '\x1b[31m', bold: '\x1b[1m'
 };
 
-// --- CONTRATOS SOBERANOS ---
+// --- CONTRATOS SOBERANOS (Sync con CMS Collections) ---
 export interface RevenueAsset {
   id: string;
   title: string;
@@ -54,7 +54,7 @@ export interface RevenueAsset {
 type RevenueView = 'flash' | 'enterprise';
 
 // ============================================================================
-// 1. SUB-APARATO: RevenueMetricsStrip
+// 1. SUB-APARATO: RevenueMetricsStrip (BI Cluster)
 // ============================================================================
 const RevenueMetricsStrip = memo(({ 
   isLoading, 
@@ -132,7 +132,7 @@ export function OffersDashboard({ dictionary, className }: { dictionary: Diction
         throw new Error(response.error || 'OFFER_GATEWAY_TIMEOUT');
       }
     } catch (err: unknown) {
-      /** @fix: Erradicación de 'any' y manejo de error resiliente */
+      /** @pilar VIII: Manejo de Errores Resiliente - Sin 'any' */
       const msg = err instanceof Error ? err.message : 'INFRASTRUCTURE_DRIFT';
       setErrorStatus(msg);
       console.error(`${C.red}   ✕ [BREACH] Sync failed: ${msg} | Trace: ${traceId}`);
@@ -146,7 +146,8 @@ export function OffersDashboard({ dictionary, className }: { dictionary: Diction
   }, [fetchInventoryNodes]);
 
   /** 
-   * INTELIGENCIA DE REVENUE (Deterministic Engine) 
+   * INTELIGENCIA DE REVENUE (Math Engine) 
+   * @description Calcula métricas comerciales basadas en el inventario actual.
    */
   const metrics = useMemo(() => {
     const activeAssets = assets.filter(a => a.status === 'active');
@@ -169,7 +170,7 @@ export function OffersDashboard({ dictionary, className }: { dictionary: Diction
   return (
     <div className={cn("space-y-10 animate-in fade-in duration-1000", className)}>
       
-      {/* 1. MÉTRICAS DE EXPOSICIÓN (Revenue Strip) */}
+      {/* 1. MÉTRICAS DE EXPOSICIÓN (Revenue BI) */}
       <RevenueMetricsStrip 
         isLoading={isLoading}
         onAirValue={metrics.onAirValue}
@@ -177,13 +178,13 @@ export function OffersDashboard({ dictionary, className }: { dictionary: Diction
         totalCount={metrics.totalCount}
       />
 
-      {/* 2. BARRA DE NAVEGACIÓN TÁCTICA (Silo Mode) */}
+      {/* 2. BARRA DE NAVEGACIÓN TÁCTICA (Atmosphere Glass) */}
       <nav className="flex flex-col md:flex-row gap-6 items-center justify-between bg-surface/30 p-2 rounded-3xl border border-border/50 backdrop-blur-xl transition-all duration-700">
         <div className="flex gap-2 p-1">
            <button 
              onClick={() => setActiveView('flash')} 
              className={cn(
-               "flex items-center gap-3 px-8 py-3.5 rounded-2xl text-[10px] font-bold uppercase tracking-widest transition-all outline-none",
+               "flex items-center gap-3 px-8 py-3.5 rounded-2xl text-[10px] font-bold uppercase tracking-widest transition-all outline-none transform-gpu",
                activeView === 'flash' ? "bg-foreground text-background shadow-lg scale-105" : "text-muted-foreground hover:text-foreground hover:bg-surface"
              )}
             >
@@ -192,7 +193,7 @@ export function OffersDashboard({ dictionary, className }: { dictionary: Diction
            <button 
              onClick={() => setActiveView('enterprise')} 
              className={cn(
-               "flex items-center gap-3 px-8 py-3.5 rounded-2xl text-[10px] font-bold uppercase tracking-widest transition-all outline-none",
+               "flex items-center gap-3 px-8 py-3.5 rounded-2xl text-[10px] font-bold uppercase tracking-widest transition-all outline-none transform-gpu",
                activeView === 'enterprise' ? "bg-foreground text-background shadow-lg scale-105" : "text-muted-foreground hover:text-foreground hover:bg-surface"
              )}
             >
@@ -206,7 +207,7 @@ export function OffersDashboard({ dictionary, className }: { dictionary: Diction
         </div>
       </nav>
 
-      {/* 3. VIEWPORT DE ACTIVOS COMERCIALES */}
+      {/* 3. VIEWPORT DE ACTIVOS COMERCIALES (Aceleración GPU) */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 min-h-[400px]">
         <AnimatePresence mode="popLayout">
             {isLoading ? (
@@ -214,19 +215,18 @@ export function OffersDashboard({ dictionary, className }: { dictionary: Diction
                 <div key={i} className="h-80 w-full bg-surface/40 border border-border/40 rounded-[3.5rem] animate-pulse" />
               ))
             ) : errorStatus ? (
-              /* @fix: Uso de sysError para corregir TS2339 (Propiedad faltante en 't') */
               <motion.div 
-                initial={{ opacity: 0 }} animate={{ opacity: 1 }} 
-                className="col-span-full py-32 text-center rounded-[4rem] border border-red-500/20 bg-red-500/5 space-y-6"
+                initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} 
+                className="col-span-full py-32 text-center rounded-[4rem] border border-red-500/20 bg-red-500/5 space-y-6 transform-gpu"
               >
                 <AlertTriangle size={48} className="mx-auto text-red-500" />
-                <div className="space-y-2">
-                   <h4 className="text-foreground font-display text-xl font-bold uppercase">{sysError.title}</h4>
-                   <p className="text-red-500/60 font-mono text-[9px] uppercase tracking-widest">{errorStatus}</p>
+                <div className="space-y-2 px-6">
+                   <h4 className="text-foreground font-display text-xl font-bold uppercase tracking-tight">{sysError.title}</h4>
+                   <p className="text-red-500/60 font-mono text-[9px] uppercase tracking-[0.4em]">{errorStatus}</p>
                 </div>
                 <button 
                   onClick={fetchInventoryNodes}
-                  className="rounded-full bg-red-500 px-8 py-3 text-[10px] font-bold text-white uppercase tracking-widest hover:bg-white hover:text-red-500 transition-all"
+                  className="rounded-full bg-red-500 px-8 py-3 text-[10px] font-bold text-white uppercase tracking-widest hover:bg-white hover:text-red-500 transition-all active:scale-95 shadow-xl"
                 >
                   {sysError.retry_button}
                 </button>
@@ -279,11 +279,8 @@ export function OffersDashboard({ dictionary, className }: { dictionary: Diction
           </div>
           
           <div className="flex items-center gap-6">
-            <button className="group flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-foreground hover:text-primary transition-all outline-none">
-              Deep Data Ledger <History size={14} className="group-hover:rotate-180 transition-transform duration-1000" />
-            </button>
             <span className="text-[9px] font-mono uppercase tracking-[0.6em] text-muted-foreground">
-              Revenue Operations v7.1 • Node: {session?.tenantId?.substring(0, 8) || 'ROOT'}
+              Revenue Operations v7.2 • Node: {session?.tenantId?.substring(0, 8) || 'ROOT'}
             </span>
           </div>
       </footer>
@@ -293,6 +290,7 @@ export function OffersDashboard({ dictionary, className }: { dictionary: Diction
 
 /**
  * SUB-APARATO: MetricNode
+ * @pilar IX: Componentización Atómica.
  */
 const MetricNode = memo(({ label, value, icon: Icon, color, isCritical }: {
   label: string;

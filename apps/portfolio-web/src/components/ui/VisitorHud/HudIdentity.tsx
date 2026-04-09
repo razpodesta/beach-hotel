@@ -1,11 +1,10 @@
 /**
- * @file HudIdentity.tsx
+ * @file apps/portfolio-web/src/components/ui/VisitorHud/HudIdentity.tsx
  * @description Módulo de identidad y reputación del Huésped Soberano (Protocolo 33).
- *              Refactorizado: Integración con el Reactor de Reputación v14.1, 
- *              resolución dinámica de etiquetas de rango (RBAC i18n) y 
- *              optimización de animaciones de bario-frecuencia.
- *              Estándar: React 19 Pure & Tailwind v4 OKLCH.
- * @version 3.0 - Reactive Reputation & Localized Ranks
+ *              Refactorizado: Sincronización con el Pasaporte v3.1, inyección de 
+ *              conteo real de artefactos y optimización de atmósfera Oxygen v4.
+ *              Estándar: Heimdall v2.5 Forensic Logging & React 19 Pure.
+ * @version 3.1 - Passport Sync & Oxygen v4 Hardened
  * @author Staff Engineer - MetaShark Tech
  */
 
@@ -13,7 +12,7 @@
 
 import React, { useMemo, useEffect, memo } from 'react';
 import { motion } from 'framer-motion';
-import { User, Trophy, Zap, Star, ShieldCheck } from 'lucide-react';
+import { User, Trophy, Star, TrendingUp } from 'lucide-react';
 import { calculateProgress } from '@metashark/protocol-33';
 
 /**
@@ -29,24 +28,31 @@ import type { SovereignRoleType } from '@metashark/cms-core';
  * @pilar III: Seguridad de Tipos Absoluta.
  */
 interface HudIdentityProps {
-  /** Datos de sesión del usuario autenticado */
+  /** Datos de identidad sincronizados desde el Bridge v3.1 */
   user: { 
     name: string; 
     role: SovereignRoleType; 
-    xp: number 
+    xp: number;
+    artifactsCount?: number;
   };
-  /** Diccionario maestro para etiquetas de rango y perfil */
+  /** Diccionario maestro nivelado */
   dictionary: Dictionary;
 }
 
+// Protocolo Cromático Heimdall v2.5
+const C = {
+  reset: '\x1b[0m', magenta: '\x1b[35m', cyan: '\x1b[36m', 
+  green: '\x1b[32m', yellow: '\x1b[33m', bold: '\x1b[1m'
+};
+
 /**
  * APARATO: HudIdentity
- * @description Representa la ascensión del usuario en el ecosistema MetaShark.
+ * @description Representa la jerarquía y el progreso digital del Huésped.
  */
 export const HudIdentity = memo(({ user, dictionary }: HudIdentityProps) => {
   /**
-   * 1. MOTOR DE PROGRESIÓN (Math Engine Sync)
-   * @pilar X: Performance - El cálculo se realiza solo si el XP muta.
+   * 1. MOTOR DE PROGRESIÓN (P33 Engine Core)
+   * @pilar X: Performance - Cálculo determinista basado en RazTokens.
    */
   const progress = useMemo(() => calculateProgress(user.xp), [user.xp]);
   
@@ -55,8 +61,7 @@ export const HudIdentity = memo(({ user, dictionary }: HudIdentityProps) => {
   const portal = dictionary.portal;
 
   /**
-   * 2. RESOLVER DE RANGO (Localized Identity)
-   * @description Mapea el rol técnico a una etiqueta narrativa de hospitalidad.
+   * 2. RESOLVER DE RANGO (Localized RBAC Labels)
    */
   const localizedRole = useMemo(() => {
     const roleMap: Record<SovereignRoleType, string> = {
@@ -71,17 +76,20 @@ export const HudIdentity = memo(({ user, dictionary }: HudIdentityProps) => {
 
   /**
    * PROTOCOLO HEIMDALL: Telemetría de Reputación
-   * @pilar IV: Trazabilidad de la sincronización de identidad en el HUD.
    */
   useEffect(() => {
-    const traceId = `p33_sync_${Date.now().toString(36).toUpperCase()}`;
+    const traceId = `p33_pulse_${Date.now().toString(36).toUpperCase()}`;
+    const xpRemaining = progress.nextLevelXp - progress.currentXp;
+    
     if (process.env.NODE_ENV !== 'test') {
       console.log(
-        `%c[DNA][P33] Identity Rendered | Trace: ${traceId} | Level: ${progress.currentLevel}`, 
-        'color: #a855f7'
+        `${C.magenta}${C.bold}[DNA][P33]${C.reset} Identity Synchronized | ` +
+        `Level: ${C.cyan}${progress.currentLevel}${C.reset} | ` +
+        `Next: ${C.yellow}${xpRemaining} RZB${C.reset} | ` +
+        `Trace: ${traceId}`
       );
     }
-  }, [progress.currentLevel]);
+  }, [progress.currentLevel, progress.nextLevelXp, progress.currentXp]);
 
   return (
     <motion.div 
@@ -90,13 +98,13 @@ export const HudIdentity = memo(({ user, dictionary }: HudIdentityProps) => {
       exit={{ opacity: 0, x: -20 }}
       className="space-y-8 transform-gpu"
     >
-      {/* --- 1. SECCIÓN: AVATAR & RANGO (Atmosphere Guard) --- */}
+      {/* --- 1. SECCIÓN: IDENTIDAD VISUAL (Oxygen Avatar) --- */}
       <div className="flex items-center gap-5">
-        <div className="relative">
-          {/* Contenedor de Avatar con Acento OKLCH */}
-          <div className="h-16 w-16 rounded-3xl bg-linear-to-br from-primary to-accent p-px shadow-luxury transform-gpu transition-transform hover:scale-105 duration-500">
+        <div className="relative group">
+          {/* Contenedor de Avatar con Acento OKLCH v4 */}
+          <div className="h-16 w-16 rounded-3xl bg-linear-to-br from-primary to-accent p-px shadow-luxury transform-gpu transition-all duration-700 hover:rotate-3">
             <div className="flex h-full w-full items-center justify-center rounded-[1.4rem] bg-surface transition-colors duration-1000">
-              <User size={28} className="text-foreground opacity-60" />
+              <User size={28} className="text-foreground/40 group-hover:text-primary transition-colors" />
             </div>
           </div>
           
@@ -107,7 +115,7 @@ export const HudIdentity = memo(({ user, dictionary }: HudIdentityProps) => {
             key={progress.currentLevel}
             className={cn(
               "absolute -bottom-2 -right-2 flex h-8 w-8 items-center justify-center rounded-full font-display text-[10px] font-bold text-white shadow-3xl border-2 transition-all duration-700",
-              "bg-primary border-surface"
+              "bg-primary border-surface shadow-[0_0_15px_oklch(65%_0.25_270/0.4)]"
             )}
           >
             {progress.currentLevel}
@@ -118,23 +126,29 @@ export const HudIdentity = memo(({ user, dictionary }: HudIdentityProps) => {
           <p className="text-[8px] font-mono text-primary uppercase tracking-[0.4em] font-bold mb-1 truncate">
             {localizedRole}
           </p>
-          <h4 className="font-display text-xl font-bold text-foreground tracking-tight leading-none truncate">
+          <h4 className="font-display text-xl font-bold text-foreground tracking-tight leading-none truncate transition-colors">
             {user.name}
           </h4>
         </div>
       </div>
 
-      {/* --- 2. BARRA DE PROGRESIÓN (Reputation Reactor) --- */}
+      {/* --- 2. BARRA DE PROGRESIÓN (A11Y Compliant) --- */}
       <div className="space-y-4">
         <div className="flex items-center justify-between text-[9px] font-bold uppercase tracking-widest text-muted-foreground">
-          <span className="flex items-center gap-1.5 transition-colors hover:text-primary">
+          <span className="flex items-center gap-1.5 transition-colors hover:text-primary cursor-help" title={`Total XP: ${progress.currentXp} RazTokens`}>
             <Star size={10} className="text-primary animate-pulse" /> 
             {p.xp_label}: <b className="text-foreground">{progress.currentXp}</b> RZB
           </span>
           <span className="opacity-60">{t.xp_next_label}: {progress.nextLevelXp} RZB</span>
         </div>
         
-        <div className="relative h-2 w-full overflow-hidden rounded-full bg-foreground/5 border border-border/10 p-0.5">
+        <div 
+          className="relative h-2 w-full overflow-hidden rounded-full bg-foreground/5 border border-border/10 p-0.5"
+          role="progressbar"
+          aria-valuenow={progress.progressPercent}
+          aria-valuemin={0}
+          aria-valuemax={100}
+        >
           <motion.div 
             initial={{ width: 0 }}
             animate={{ width: `${progress.progressPercent}%` }}
@@ -147,30 +161,32 @@ export const HudIdentity = memo(({ user, dictionary }: HudIdentityProps) => {
         </div>
       </div>
 
-      {/* --- 3. ESTADÍSTICAS OPERATIVAS (Lego Atoms) --- */}
+      {/* --- 3. ESTADÍSTICAS SOBERANAS (Lego Dashboard) --- */}
       <div className="grid grid-cols-2 gap-4">
-        {/* Card: Artefactos */}
+        {/* Card: Artefactos (Data-Driven Count) */}
         <div className={cn(
           "group rounded-4xl border border-border/40 bg-surface/50 p-5 flex flex-col gap-3 transition-all duration-700",
-          "hover:border-primary/30 hover:bg-surface hover:-translate-y-1 transform-gpu"
+          "hover:border-primary/30 hover:bg-surface hover:-translate-y-1 transform-gpu shadow-sm hover:shadow-xl"
         )}>
           <div className="flex items-center justify-between">
-            <Trophy size={18} className="text-muted-foreground transition-colors group-hover:text-yellow-500 group-hover:rotate-12" />
-            <ShieldCheck size={12} className="text-success opacity-0 group-hover:opacity-100 transition-opacity" />
+            <Trophy size={18} className="text-muted-foreground transition-all duration-500 group-hover:text-yellow-500 group-hover:scale-110 group-hover:rotate-12" />
+            <span className="font-display font-bold text-foreground leading-none">
+              {user.artifactsCount ?? 0}
+            </span>
           </div>
           <span className="text-[10px] font-bold text-muted-foreground group-hover:text-foreground uppercase tracking-widest transition-colors">
             {t.stat_artifacts}
           </span>
         </div>
 
-        {/* Card: Racha / Engagement */}
+        {/* Card: Progresión de Rango */}
         <div className={cn(
           "group rounded-4xl border border-border/40 bg-surface/50 p-5 flex flex-col gap-3 transition-all duration-700",
-          "hover:border-accent/30 hover:bg-surface hover:-translate-y-1 transform-gpu"
+          "hover:border-accent/30 hover:bg-surface hover:-translate-y-1 transform-gpu shadow-sm hover:shadow-xl"
         )}>
           <div className="flex items-center justify-between">
-            <Zap size={18} className="text-muted-foreground transition-colors group-hover:text-accent animate-pulse" />
-            <div className="h-1.5 w-1.5 rounded-full bg-success shadow-success/40 shadow-lg" />
+            <TrendingUp size={18} className="text-muted-foreground transition-all duration-500 group-hover:text-accent group-hover:scale-110" />
+            <div className="h-1.5 w-1.5 rounded-full bg-success shadow-[0_0_8px_oklch(70%_0.18_140)] animate-pulse" />
           </div>
           <span className="text-[10px] font-bold text-muted-foreground group-hover:text-foreground uppercase tracking-widest transition-colors">
             {t.stat_streak}
@@ -178,10 +194,10 @@ export const HudIdentity = memo(({ user, dictionary }: HudIdentityProps) => {
         </div>
       </div>
 
-      {/* FOOTER: INDICADOR DE PROTOCOLO */}
-      <div className="pt-2 text-center opacity-20 group-hover:opacity-40 transition-opacity">
-         <p className="text-[7px] font-mono uppercase tracking-[0.6em] text-foreground">
-           P33_CORE_LINK: STABLE
+      {/* FOOTER: INDICADOR DE HANDSHAKE */}
+      <div className="pt-2 text-center">
+         <p className="text-[7px] font-mono uppercase tracking-[0.6em] text-foreground/20 group-hover:text-primary/40 transition-colors duration-1000">
+           P33_DNA_LINK: NOMINAL
          </p>
       </div>
     </motion.div>
