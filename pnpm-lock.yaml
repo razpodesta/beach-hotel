@@ -387,6 +387,9 @@ importers:
       '@metashark/cms-ui':
         specifier: workspace:*
         version: link:../../packages/cms/ui
+      '@metashark/identity-gateway':
+        specifier: workspace:*
+        version: link:../../packages/identity-gateway
       '@metashark/protocol-33':
         specifier: workspace:*
         version: link:../../packages/protocol-33

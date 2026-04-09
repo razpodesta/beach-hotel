@@ -1,25 +1,31 @@
 /**
  * @file packages/identity-gateway/src/i18n/index.ts
- * @description Orquestador de Internacionalización Autónomo.
+ * @description Orquestador de Internacionalización Autónomo (The Polyglot Node).
  *              Gestiona los fallbacks de idioma y la mezcla de diccionarios
- *              bajo el estándar de Inversión de Control y pureza de tipos.
- *              Refactorizado: Erradicación de 'any' y cumplimiento de ESM estricto.
- * @version 1.1 - Linter Pure & Type Safe
- * @author Raz Podestá - MetaShark Tech
+ *              bajo el estándar de Inversión de Control.
+ *              Refactorizado: Erradicación de extensiones .js para compatibilidad 
+ *              con resolución de módulos tipo "bundler".
+ * @version 1.2 - Bundler Sync & Source Resolution Fixed
+ * @author Staff Engineer - MetaShark Tech
  */
 
-import { identityDictionarySchema, type IdentityDictionary } from '../schemas/auth.schema.js';
+import { identityDictionarySchema, type IdentityDictionary } from '../schemas/auth.schema';
 
 // Importaciones estáticas para garantizar disponibilidad inmediata
 import enUS from './locales/en-US.json';
 import esES from './locales/es-ES.json';
 import ptBR from './locales/pt-BR.json';
 
+/**
+ * CONFIGURACIÓN DE GLOBALIZACIÓN
+ * @pilar I: Soberanía de Identidad.
+ */
 const DEFAULT_LOCALE = 'en-US';
 
 /**
  * MAPA SOBERANO DE LOCALES
- * @pilar III: Seguridad de Tipos Absoluta. Eliminamos 'any' en favor del contrato IdentityDictionary.
+ * @pilar III: Seguridad de Tipos Absoluta. 
+ * Mapeo explícito para evitar inferencias laxas.
  */
 const locales: Record<string, IdentityDictionary> = {
   'en-US': enUS as IdentityDictionary,
@@ -29,36 +35,37 @@ const locales: Record<string, IdentityDictionary> = {
 
 /**
  * @function resolveIdentityDictionary
- * @description Mezcla el diccionario proporcionado por el usuario con el fallback local.
- * @param {string} locale - Código de idioma solicitado.
- * @param {Partial<IdentityDictionary>} [overrides] - Diccionario parcial inyectado por el host.
- * @returns {IdentityDictionary} Diccionario validado y completo listo para la UI.
+ * @description Mezcla el diccionario de la librería con los overrides del host.
+ * @param {string} locale - Código de idioma solicitado (BCP 47).
+ * @param {Partial<IdentityDictionary>} [overrides] - Inyección de control desde el host.
+ * @returns {IdentityDictionary} Nodo de contenido validado y listo para render.
  */
 export function resolveIdentityDictionary(
   locale: string = DEFAULT_LOCALE,
   overrides?: Partial<IdentityDictionary>
 ): IdentityDictionary {
-  // 1. Resolución de Base con Fallback Determinista
+  // 1. Resolución de Base con Fallback Determinista (Heimdall Pattern)
   const base = locales[locale] || locales[DEFAULT_LOCALE];
   
   // 2. Composición de Contenido (Inversión de Control)
-  // El host tiene prioridad absoluta sobre los textos de la librería.
   const merged = { ...base, ...overrides };
 
-  // 3. Validación de Contrato SSoT (Heimdall Guard)
+  // 3. Validación de Contrato SSoT (Sanity Check)
   const result = identityDictionarySchema.safeParse(merged);
 
   if (!result.success) {
     /**
      * @pilar IV: Observabilidad DNA-Level.
-     * Reportamos la anomalía estructural sin detener el hilo de ejecución del usuario.
+     * Reportamos la anomalía en el contrato sin interrumpir el flujo del huésped.
      */
-    console.warn(
-      `%c[HEIMDALL][IDENTITY-GATEWAY] Dictionary Contract Violation in locale: ${locale}`,
-      'color: #ffb86c; font-weight: bold;'
-    );
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn(
+        `%c[HEIMDALL][IDENTITY-GATEWAY] Dictionary drift detected in locale: ${locale}`,
+        'color: #ffb86c; font-weight: bold;'
+      );
+    }
     
-    // En caso de desincronización, retornamos el nodo íntegro por defecto.
+    // En caso de ruptura de esquema, servimos el nodo íntegro de seguridad.
     return locales[DEFAULT_LOCALE];
   }
 

@@ -1,10 +1,10 @@
 /**
  * @file apps/portfolio-web/tsconfig.json
- * @description Configuración Soberana de TypeScript para el Orquestador Web.
- *              Refactorizado: Expansión del perímetro de visibilidad (include) para 
- *              sellar el modo Pure Source-First. Permite que el compilador valide 
- *              los fuentes de las librerías sin requerir archivos .d.ts.
- * @version 7.1 - Global Source Visibility (Typecheck Hardened)
+ * @description Orquestador de Tipos de la App Web (Oxygen Shell).
+ *              Refactorizado: Consolidación de alias (Paths Merge) para restaurar 
+ *              la visibilidad de @metashark/* tras la colisión de herencia.
+ *              Nivelado: Inclusión profunda de fuentes para paquetes anidados.
+ * @version 7.2 - Path Consolidation & Deep Source Visibility
  * @author Staff Engineer - MetaShark Tech
  */
 {
@@ -12,14 +12,11 @@
   "compilerOptions": {
     /**
      * @pilar XIII: Sincronización de Infraestructura.
-     * Silenciamos la advertencia de 'baseUrl' cumpliendo con TS 6.0 standards.
      */
     "ignoreDeprecations": "5.0",
 
     /**
-     * @pilar IX: Delegación de Compilación.
-     * Operamos en modo 'noEmit'. La transpilación real ocurre en el worker 
-     * de Next.js vía SWC consumiendo directamente los fuentes mapeados.
+     * @pilar IX: Delegación de Compilación (Pure Source-First).
      */
     "composite": false,
     "incremental": true,
@@ -47,12 +44,27 @@
         "name": "next"
       }
     ],
+
+    /**
+     * @fix: Fusión de Caminos (Path Consolidation).
+     * @description Se restauran los alias de la base ya que TS no los hereda 
+     *              si se define un bloque 'paths' local.
+     */
     "paths": {
       "@/*": ["./src/*"],
+      
+      // Mapeos dinámicos de Payload 3.0
       "@payloadcms/next/importMap": ["./.next/types/payload-import-map.js"],
-      "@payloadcms/next/views/*": [
-        "../../node_modules/@payloadcms/next/dist/views/*"
-      ]
+      "@payloadcms/next/views/*": ["../../node_modules/@payloadcms/next/dist/views/*"],
+
+      // Mapeos del Monorepo (Restaurados)
+      "@metashark/cms-core": ["../../packages/cms/core/src/index.ts"],
+      "@metashark/cms-core/config": ["../../packages/cms/core/src/payload.config.ts"],
+      "@metashark/cms-ui": ["../../packages/cms/ui/src/index.ts"],
+      "@metashark/protocol-33": ["../../packages/protocol-33/src/index.ts"],
+      "@metashark/auth-shield": ["../../packages/auth-shield/src/index.ts"],
+      "@metashark/identity-gateway": ["../../packages/identity-gateway/src/index.ts"],
+      "@metashark/testing-utils": ["../../packages/testing-utils/src/index.ts"]
     }
   },
   "include": [
@@ -64,13 +76,12 @@
     
     /**
      * @pilar IV: Pure Source-First (Visibilidad de Librerías).
-     * @description Inyectamos los fuentes de los paquetes internos en el grafo 
-     * de validación de la App. Esto erradica el error de "Module Not Found" 
-     * durante el comando 'nx typecheck'.
+     * @description Globbing profundo (**) para capturar paquetes en subcarpetas 
+     *              como 'packages/cms/core' y 'packages/identity-gateway'.
      */
-    "../../packages/*/src/**/*.ts",
-    "../../packages/*/src/**/*.tsx",
-    "../../packages/*/src/**/*.json"
+    "../../packages/**/src/**/*.ts",
+    "../../packages/**/src/**/*.tsx",
+    "../../packages/**/src/**/*.json"
   ],
   "exclude": [
     "node_modules",

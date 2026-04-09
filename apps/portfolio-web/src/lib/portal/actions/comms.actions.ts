@@ -5,7 +5,7 @@
  *              Refactorizado: Centralización de tipos vía @metashark/cms-core (SSoT).
  *              Integrado: Protocolo Heimdall v2.5 para telemetría de latencia.
  *              Aislamiento: Implementación de "Cold-Start Sync" para resiliencia de Build.
- * @version 6.0 - SSoT Type Sync & Build Hardened
+ * @version 6.1 - SSoT Type Sync & Build Hardened (Final Seal)
  * @author Staff Engineer - MetaShark Tech
  */
 
@@ -17,14 +17,14 @@ import { getPayload, type CollectionSlug, type SanitizedConfig } from 'payload';
 
 /** 
  * IMPORTACIÓN DE CONTRATOS SOBERANOS (SSoT)
- * @fix TS2307: Se abandona la ruta relativa en favor del alias del Core.
- * Nota: Requiere que @metashark/cms-core/index.ts exporte los tipos generados.
+ * @pilar III: Seguridad de Tipos Absoluta.
+ * @description Consumo de la interfaz 'Notification' (singular) generada por el Core.
  */
 import type { Notification } from '@metashark/cms-core';
 
 /**
  * DETECTORES DE ESTADO DE INFRAESTRUCTRURA
- * @pilar XIII: Build Isolation.
+ * @pilar XIII: Build Isolation Guard.
  */
 const IS_BUILD_ENV = 
   process.env.NEXT_PHASE === 'phase-production-build' || 
@@ -38,6 +38,10 @@ const C = {
   green: '\x1b[32m', yellow: '\x1b[33m', red: '\x1b[31m', bold: '\x1b[1m'
 };
 
+/**
+ * ESQUEMA DE VALIDACIÓN: notificationSchema
+ * @description Contrato inmutable para la inyección de señales externas.
+ */
 const notificationSchema = z.object({
   subject: z.string().min(3).max(100),
   message: z.string().min(5),
@@ -48,15 +52,10 @@ const notificationSchema = z.object({
   metadata: z.record(z.string(), z.unknown()).optional(),
 });
 
-export type NotificationResponse = {
-  success: boolean;
-  notificationId?: string;
-  externalDispatch: 'sent' | 'skipped' | 'failed';
-  error?: string;
-  latencyMs?: string;
-  traceId: string;
-};
-
+/**
+ * @interface Transmission
+ * @description Contrato de salida para el renderizado atómico en el Hub de UI.
+ */
 export interface Transmission {
   id: string;
   priority: 'low' | 'high' | 'critical';
@@ -70,6 +69,15 @@ export interface Transmission {
   isRead: boolean;
 }
 
+export type NotificationResponse = {
+  success: boolean;
+  notificationId?: string;
+  externalDispatch: 'sent' | 'skipped' | 'failed';
+  error?: string;
+  latencyMs?: string;
+  traceId: string;
+};
+
 export type LedgerResponse = {
   success: boolean;
   data: Transmission[];
@@ -79,8 +87,9 @@ export type LedgerResponse = {
 };
 
 /**
- * MODULE: dispatchInternalNotification
- * @description Inyecta una señal en el Ledger de infraestructura.
+ * @function dispatchInternalNotification
+ * @description Inyecta una señal en el Ledger de infraestructura y activa alertas críticas.
+ * @pilar IX: Inversión de Control y Responsabilidad Única.
  */
 export async function dispatchInternalNotification(
   rawPayload: unknown
@@ -97,7 +106,7 @@ export async function dispatchInternalNotification(
   try {
     const contract = notificationSchema.parse(rawPayload);
     
-    // 1. CARGA DINÁMICA DE CONFIGURACIÓN (Cold-Start Safe)
+    // 1. CARGA DINÁMICA DE CONFIGURACIÓN (Lazy Initialization)
     const configModule = await import('@metashark/cms-core/config');
     const payloadConfig = (await configModule.default) as SanitizedConfig;
     const payload = await getPayload({ config: payloadConfig });
@@ -123,6 +132,7 @@ export async function dispatchInternalNotification(
       }
     });
 
+    // 2. PROTOCOLO DE ALERTA EXTERNA (Critical Path)
     let externalStatus: 'sent' | 'skipped' | 'failed' = 'skipped';
     if (contract.priority === 'critical') {
       const webhookUrl = process.env.CRITICAL_ALERTS_WEBHOOK;
@@ -131,7 +141,7 @@ export async function dispatchInternalNotification(
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            content: `🚨 **CRITICAL ALERT** | **Trace:** \`${traceId}\` | **Msg:** ${contract.message}`
+            content: `🚨 **CRITICAL_INCIDENT** | Trace: \`${traceId}\` | Node: \`${originNode}\` | Msg: ${contract.message}`
           })
         });
         externalStatus = response.ok ? 'sent' : 'failed';
@@ -157,8 +167,9 @@ export async function dispatchInternalNotification(
 }
 
 /**
- * MODULE: getCommsLedger
+ * @function getCommsLedger
  * @description Recupera el histórico de transmisiones del perímetro actual.
+ * @pilar IV: Observabilidad - Reporta latencia de hidratación del Silo D.
  */
 export async function getCommsLedger(tenantId: string): Promise<LedgerResponse> {
   const startTime = performance.now();
@@ -185,14 +196,19 @@ export async function getCommsLedger(tenantId: string): Promise<LedgerResponse> 
       depth: 0,
     });
 
-    // Casting seguro mediante el contrato del Core
+    /**
+     * 3. TRANSMUTACIÓN DE DATOS (Editorial Shaper)
+     * @description Cast seguro hacia la interfaz singular 'Notification'.
+     */
     const transmissions: Transmission[] = (docs as unknown as Notification[]).map((doc) => {
       let timeString = '--:--';
       try {
         timeString = new Intl.DateTimeFormat('pt-BR', { 
           hour: '2-digit', minute: '2-digit', second: '2-digit' 
         }).format(new Date(doc.createdAt));
-      } catch { /* recovery silently */ }
+      } catch { 
+        /* Fallback silencioso para no interrumpir el flujo del Ledger */ 
+      }
 
       return {
         id: String(doc.id),

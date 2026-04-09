@@ -3,22 +3,27 @@
  * @description Orquestador de Acceso Soberano (Server Actions).
  *              Encapsula la comunicación con Supabase Auth, validación L0
  *              y gestión de estados de identidad sin dependencias de CMS.
- *              Refactorizado: Erradicación de aserciones '!', validación de 
- *              infraestructura y aplanamiento de contratos.
- * @version 5.1 - Resilience & ESM Hardened
- * @author Raz Podestá - MetaShark Tech
+ *              Refactorizado: Erradicación de extensiones .js para compatibilidad 
+ *              con resolución "bundler" y éxito de build en Vercel.
+ * @version 5.2 - Bundler Resolution Standard (Vercel Fix)
+ * @author Staff Engineer - MetaShark Tech
  */
 
 'use server';
 
 import { cookies } from 'next/headers';
 import { createServerClient } from '@supabase/ssr';
-import { verifyReCaptcha } from '../security/recaptcha.js';
+/** 
+ * IMPORTACIONES SANEADAS 
+ * @pilar V: Adherencia Arquitectónica. Se eliminan extensiones .js 
+ * para permitir la resolución nativa de fuentes .ts.
+ */
+import { verifyReCaptcha } from '../security/recaptcha';
 import { 
   loginCredentialsSchema, 
   registerCredentialsSchema,
   type IdentityUser
-} from '../schemas/auth.schema.js';
+} from '../schemas/auth.schema';
 
 /**
  * @description Tipo de retorno estandarizado para todas las acciones de identidad.
@@ -34,7 +39,7 @@ export type AuthActionResult<T = unknown> = {
 /**
  * @function getSupabaseServerClient
  * @description Inicializa el cliente de Supabase con validación de perímetro.
- * @throws {Error} Si faltan las llaves de infraestructura.
+ * @pilar VIII: Resiliencia de Infraestructura.
  */
 async function getSupabaseServerClient() {
   const cookieStore = await cookies();
@@ -42,10 +47,6 @@ async function getSupabaseServerClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-  /**
-   * @pilar VIII: Resiliencia de Infraestructura.
-   * Evitamos el uso de '!' mediante validación explícita de entorno.
-   */
   if (!url || !anonKey) {
     console.error('[HEIMDALL][INFRA] Missing Supabase environment variables.');
     throw new Error('INFRASTRUCTURE_UNSTABLE');
@@ -60,8 +61,7 @@ async function getSupabaseServerClient() {
             cookieStore.set(name, value, options)
           );
         } catch {
-          // El middleware o server components podrían intentar setear cookies; 
-          // capturamos silenciosamente para evitar bloqueos de renderizado.
+          // Capturado para evitar bloqueos en pre-renderizado estático
         }
       },
     },
@@ -98,10 +98,6 @@ export async function loginAction(rawCredentials: unknown): Promise<AuthActionRe
       return { success: false, code: 'AUTH_FAILURE', error: error.message };
     }
 
-    /**
-     * @pilar III: Seguridad de Tipos.
-     * Devolvemos el usuario directamente para cumplir con el contrato IdentityUser.
-     */
     console.log(`[GRANTED] Identity verified: ${email}`);
     return { 
       success: true, 
@@ -110,7 +106,7 @@ export async function loginAction(rawCredentials: unknown): Promise<AuthActionRe
 
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : 'CORE_ENGINE_DRIFT';
-    console.error(`[CRITICAL] Internal failure in Silo D: ${msg}`);
+    console.error(`[CRITICAL] Internal failure in Identity Actions: ${msg}`);
     return { success: false, code: 'SERVER_ERROR', error: msg };
   } finally {
     console.groupEnd();
@@ -165,6 +161,7 @@ export async function registerAction(rawCredentials: unknown): Promise<AuthActio
 
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : 'CORE_ENGINE_DRIFT';
+    console.error(`[CRITICAL] Internal failure during registration: ${msg}`);
     return { success: false, code: 'SERVER_ERROR', error: msg };
   } finally {
     console.groupEnd();
@@ -173,6 +170,7 @@ export async function registerAction(rawCredentials: unknown): Promise<AuthActio
 
 /**
  * ACTION: signOutAction
+ * @description Invalida la sesión actual en el clúster de identidad.
  */
 export async function signOutAction(): Promise<AuthActionResult> {
   try {
