@@ -1,9 +1,10 @@
 /**
  * @file apps/portfolio-web/src/lib/portal/actions/campaign.actions.ts
- * @description Enterprise Campaign Orchestrator (Silo C Action).
- *              Refactorizado: Resolución estricta de promesas de configuración (TS2352)
- *              mediante 'await' y casting a 'unknown'.
- * @version 1.2 - Type-Safe & Build-Isolated
+ * @description Enterprise Campaign & Revenue Orchestrator (Silo A/C Actions).
+ *              Refactorizado: Erradicación de 'any' en mapeo de inventario,
+ *              resolución de módulos de infraestructura y sincronización SSoT.
+ *              Estándar: Heimdall v2.5 Forensic Handshake & Linter Pure.
+ * @version 2.1 - Type-Safe & Path Hardened
  * @author Raz Podestá -  MetaShark Tech
  */
 
@@ -15,14 +16,20 @@ import { mailCloud } from '../../services/mail-cloud';
 
 /** 
  * DETECTOR DE ENTORNO DE CONSTRUCCIÓN
- * @pilar XIII: Build Isolation - Previene fugas de lógica de servidor al frontend.
+ * @pilar XIII: Build Isolation Guard.
  */
 const IS_BUILD_ENV = 
   process.env.NEXT_PHASE === 'phase-production-build' || 
   process.env.VERCEL === '1';
 
+// --- PROTOCOLO CROMÁTICO HEIMDALL ---
+const C = {
+  reset: '\x1b[0m', magenta: '\x1b[35m', cyan: '\x1b[36m', 
+  green: '\x1b[32m', yellow: '\x1b[33m', red: '\x1b[31m', bold: '\x1b[1m'
+};
+
 /**
- * CONTRATO DE EJECUCIÓN DE CAMPAÑA (SSoT)
+ * CONTRATOS SOBERANOS
  */
 const campaignExecutionSchema = z.object({
   subject: z.string().min(5).max(78),
@@ -45,8 +52,35 @@ export type CampaignResponse = {
 };
 
 /**
+ * @interface RawRevenueDoc
+ * @description Interfaz interna para el casting seguro de documentos de Payload.
+ */
+interface RawRevenueDoc {
+  id: string;
+  title: string;
+  basePrice?: number;
+  discountValue?: number;
+  currentStock?: number;
+  maxCapacity?: number;
+  totalInventory?: number;
+  validUntil?: string;
+  expiresAt?: string;
+  vibe?: 'day' | 'night';
+  status: 'active' | 'sold_out' | 'expired';
+}
+
+/**
+ * @description Obtención dinámica y segura de configuración.
+ * @fix TS2352: Resolución de promesas anidadas y casting a SanitizedConfig.
+ */
+async function getPayloadConfig(): Promise<SanitizedConfig> {
+  const configModule = await import('@metashark/cms-core/config');
+  return (await configModule.default) as unknown as SanitizedConfig;
+}
+
+/**
  * MODULE: executeBroadcastCampaign
- * @description Punto de entrada soberano con aislamiento de build.
+ * @description Punto de entrada para el despacho masivo de misiones (Silo C).
  */
 export async function executeBroadcastCampaign(
   rawPayload: unknown
@@ -54,26 +88,15 @@ export async function executeBroadcastCampaign(
   const startTime = performance.now();
   const campaignId = `cmp_${Date.now()}`;
   
-  // Guardia contra build estático
-  if (IS_BUILD_ENV) {
-    return { success: false, campaignId, error: 'BUILD_BYPASS' };
-  }
-
-  console.group(`[ENTERPRISE][CAMPAIGN] Broadcast Initiated: ${campaignId}`);
+  if (IS_BUILD_ENV) return { success: false, campaignId, error: 'BUILD_BYPASS' };
 
   try {
     const contract = campaignExecutionSchema.parse(rawPayload);
-
-    // 1. CARGA DINÁMICA Y RESOLUCIÓN ASÍNCRONA DE CONFIGURACIÓN
-    const configModule = await import('@metashark/cms-core/config');
-    // Resolución de TS2352: Await al default y casting seguro vía unknown
-    const payloadConfig = (await configModule.default) as unknown as SanitizedConfig;
+    const payloadConfig = await getPayloadConfig();
     const payload = await getPayload({ config: payloadConfig });
 
-    // 2. RECUPERACIÓN DE AUDIENCIA
-    const SUBSCRIBER_COLLECTION = 'subscribers' as CollectionSlug;
     const audience = await payload.find({
-      collection: SUBSCRIBER_COLLECTION,
+      collection: 'subscribers' as CollectionSlug,
       where: {
         and: [
           { tenant: { equals: contract.tenant } },
@@ -84,41 +107,22 @@ export async function executeBroadcastCampaign(
     });
 
     const totalTargeted = audience.docs.length;
-    if (totalTargeted === 0) throw new Error('AUDIENCE_EMPTY_IN_PERIMETER');
+    if (totalTargeted === 0) throw new Error('AUDIENCE_EMPTY');
 
-    const CHUNK_SIZE = 50;
     let dispatchedCount = 0;
     let failedCount = 0;
-    const recipientEmails = audience.docs.map(doc => doc.email);
 
-    // 3. PROTOCOLO DE DESPACHO
-    for (let i = 0; i < recipientEmails.length; i += CHUNK_SIZE) {
-      const chunk = recipientEmails.slice(i, i + CHUNK_SIZE);
-      
-      const results = await Promise.allSettled(
-        chunk.map(email => 
-          mailCloud.send({
-            to: [email],
-            subject: contract.subject,
-            html: contract.html,
-            text: contract.text,
-            tenantId: contract.tenant,
-            tags: [{ name: 'campaign_id', value: campaignId }]
-          })
-        )
-      );
-
-      results.forEach(res => {
-        if (res.status === 'fulfilled' && res.value.success) dispatchedCount++;
-        else failedCount++;
+    for (const doc of audience.docs) {
+      const res = await mailCloud.send({
+        to: [doc.email],
+        subject: contract.subject,
+        html: contract.html,
+        text: contract.text,
+        tenantId: contract.tenant,
       });
-
-      if (i + CHUNK_SIZE < recipientEmails.length) {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-      }
+      if (res.success) dispatchedCount++; else failedCount++;
     }
 
-    const totalLatency = (performance.now() - startTime).toFixed(2);
     return {
       success: true,
       campaignId,
@@ -126,20 +130,74 @@ export async function executeBroadcastCampaign(
         totalTargeted,
         dispatched: dispatchedCount,
         failed: failedCount,
-        latencyMs: `${totalLatency}ms`
+        latencyMs: `${(performance.now() - startTime).toFixed(2)}ms`
       }
     };
-
   } catch (error: unknown) {
-    const msg = error instanceof Error ? error.message : 'UNEXPECTED_CAMPAIGN_DRIFT';
-    console.error(`[CRITICAL][CAMPAIGN] Broadcast Aborted: ${msg}`);
-    
-    return { 
-      success: false, 
-      campaignId,
-      error: msg 
-    };
-  } finally {
-    console.groupEnd();
+    return { success: false, campaignId, error: error instanceof Error ? error.message : 'CAMPAIGN_DRIFT' };
+  }
+}
+
+/**
+ * ============================================================================
+ * MODULE: getActiveOffersAction (Silo A Bridge)
+ * ============================================================================
+ * @description Recupera nodos de inventario real desde el CMS.
+ */
+export async function getActiveOffersAction(
+  tenantId: string, 
+  view: 'flash' | 'enterprise'
+): Promise<{ success: boolean; data?: unknown[]; error?: string }> {
+  const startTime = performance.now();
+  const traceId = `rev_fetch_${Date.now().toString(36).toUpperCase()}`;
+
+  if (IS_BUILD_ENV) return { success: true, data: [] };
+
+  console.log(`${C.magenta}${C.bold}[DNA][REVENUE]${C.reset} Handshake real iniciado | Trace: ${C.cyan}${traceId}${C.reset}`);
+
+  try {
+    const payloadConfig = await getPayloadConfig();
+    const payload = await getPayload({ config: payloadConfig });
+
+    const collection: CollectionSlug = view === 'flash' ? 'flash-sales' : 'offers';
+
+    const { docs } = await payload.find({
+      collection,
+      where: {
+        and: [
+          { tenant: { equals: tenantId } },
+          { status: { equals: 'active' } }
+        ]
+      },
+      limit: 20,
+      depth: 1,
+    });
+
+    /**
+     * @pilar III: Erradicación de any.
+     * Normalización del polimorfismo entre FlashSales y Offers.
+     */
+    const shapedData = (docs as unknown as RawRevenueDoc[]).map((doc) => ({
+      id: doc.id,
+      title: doc.title,
+      basePrice: doc.basePrice || 0,
+      discount: doc.discountValue || 0,
+      stock: doc.currentStock || doc.maxCapacity || 1,
+      capacity: doc.totalInventory || doc.maxCapacity || 1,
+      expiresAt: doc.expiresAt || doc.validUntil || new Date().toISOString(),
+      type: view,
+      vibe: doc.vibe || 'day',
+      status: doc.status
+    }));
+
+    const duration = (performance.now() - startTime).toFixed(4);
+    console.log(`${C.green}   ✓ [GRANTED]${C.reset} Revenue nodes fetched: ${docs.length} | Lat: ${duration}ms`);
+
+    return { success: true, data: shapedData };
+
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : 'OFFER_FETCH_FAILED';
+    console.error(`${C.red}   ✕ [BREACH]${C.reset} Handshake aborted in Silo A: ${msg}`);
+    return { success: false, error: msg };
   }
 }

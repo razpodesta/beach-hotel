@@ -1,10 +1,10 @@
 /**
  * @file apps/portfolio-web/src/components/sections/portal/CommsHubManager.tsx
- * @description Enterprise Communication Hub Orchestrator (Silo D).
- *              Refactorizado: Erradicación de variables no usadas y sellado de 
- *              contratos de tipos. Implementa el patrón de responsabilidad única.
- *              Estándar: Heimdall v2.5 Injected & React 19 Purity.
- * @version 6.1 - Linter Pure & Type Contract Sealed
+ * @description Enterprise Communication Hub Orchestrator (Silo D Manager).
+ *              Refactorizado: Inyección de Telemetría Heimdall v2.5, sellado de 
+ *              contratos de prioridad y optimización de atmósfera Oxygen v4.
+ *              Estándar: React 19 Pure & Forensic Logging.
+ * @version 6.2 - Heimdall v2.5 Injected & Forensic Standard
  * @author Staff Engineer - MetaShark Tech
  */
 
@@ -14,7 +14,8 @@ import React, { useState, useMemo, useEffect, useCallback, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ShieldAlert, CheckCircle2, Trash2, Reply, Wifi, 
-  Loader2, Activity, Zap, Terminal, ShieldCheck
+  Loader2, Activity, Zap, Terminal, ShieldCheck,
+  RefreshCw
 } from 'lucide-react';
 
 /** IMPORTACIONES DE INFRAESTRUCTRURA (Nx Boundary Safe) */
@@ -24,13 +25,13 @@ import type { Dictionary } from '../../../lib/schemas/dictionary.schema';
 import type { CommsHubDictionary } from '../../../lib/schemas/comms/hub.schema';
 import { getCommsLedger, type Transmission } from '../../../lib/portal/actions/comms.actions';
 
-// --- PROTOCOLO CROMÁTICO HEIMDALL ---
+// --- PROTOCOLO CROMÁTICO HEIMDALL v2.5 ---
 const C = {
   reset: '\x1b[0m', magenta: '\x1b[35m', cyan: '\x1b[36m', 
   green: '\x1b[32m', yellow: '\x1b[33m', red: '\x1b[31m', bold: '\x1b[1m'
 };
 
-// --- CONTRATOS LÓGICOS ---
+// --- CONTRATOS LÓGICOS SOBERANOS ---
 type CommsView = 'notifications' | 'messages' | 'logs';
 type SignalPriority = 'low' | 'high' | 'critical';
 
@@ -46,14 +47,12 @@ interface PriorityStyle {
  * @pilar III: Seguridad de Tipos Absoluta.
  */
 export interface CommsHubManagerProps {
-  /** Fragmento validado del diccionario SSoT */
   dictionary: Dictionary['comms_hub'];
-  /** Clases de estilo inyectadas por el orquestador */
   className?: string;
 }
 
 // ============================================================================
-// 1. ÁTOMO: CommsSignalCard
+// 1. ÁTOMO: CommsSignalCard (Forensic Entity)
 // ============================================================================
 const CommsSignalCard = memo(({ tx, style, activeView, dictionary }: { 
   tx: Transmission; 
@@ -104,7 +103,7 @@ const CommsSignalCard = memo(({ tx, style, activeView, dictionary }: {
           <div className="flex items-center gap-4 text-[9px] font-mono text-muted-foreground uppercase tracking-widest opacity-60">
              <span>{dictionary.label_sender_node}: <b className="text-foreground/80">{tx.sender}</b></span>
              <span className="h-1 w-1 rounded-full bg-border" />
-             <span>ID: {tx.traceId}</span>
+             <span>TRACE_ID: {tx.traceId}</span>
              <span className="h-1 w-1 rounded-full bg-border" />
              <span>{tx.timestamp}</span>
           </div>
@@ -128,6 +127,7 @@ const CommsSignalCard = memo(({ tx, style, activeView, dictionary }: {
          </button>
       </div>
 
+      {/* Decorative Glow based on Priority */}
       <div className={cn("absolute -right-20 -bottom-20 h-40 w-40 blur-[80px] rounded-full opacity-0 group-hover:opacity-10 transition-opacity", style.glow)} />
     </motion.article>
   );
@@ -135,7 +135,7 @@ const CommsSignalCard = memo(({ tx, style, activeView, dictionary }: {
 CommsSignalCard.displayName = 'CommsSignalCard';
 
 // ============================================================================
-// 2. APARATO: CommsHubHeader
+// 2. APARATO: CommsHubHeader (Status Orchestrator)
 // ============================================================================
 const CommsHubHeader = memo(({ 
   dictionary, 
@@ -157,6 +157,16 @@ const CommsHubHeader = memo(({
          isLoading ? "bg-yellow-500/10 border-yellow-500/20 text-yellow-500" : (hasError ? "bg-red-500/10 border-red-500/20 text-red-500" : "bg-success/10 border-success/20 text-success")
        )}>
          {isLoading ? <Loader2 size={28} className="animate-spin" /> : <Wifi size={28} className="animate-pulse" />}
+         
+         {/* Signal Strength Decorator */}
+         {!isLoading && !hasError && (
+           <div className="absolute -top-1 -right-1">
+             <span className="flex h-3 w-3">
+               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75"></span>
+               <span className="relative inline-flex rounded-full h-3 w-3 bg-success"></span>
+             </span>
+           </div>
+         )}
        </div>
        <div className="space-y-1">
           <span className={cn("text-[10px] font-mono font-bold uppercase tracking-[0.4em]", isLoading ? "text-yellow-500" : (hasError ? "text-red-500" : "text-success"))}>
@@ -187,47 +197,6 @@ const CommsHubHeader = memo(({
 CommsHubHeader.displayName = 'CommsHubHeader';
 
 // ============================================================================
-// 3. APARATO: CommsHubFooter
-// ============================================================================
-const CommsHubFooter = memo(({ 
-  syncLatency, 
-  onRefresh, 
-  tenantId 
-}: { 
-  syncLatency: string | null; 
-  onRefresh: () => void;
-  tenantId: string;
-}) => (
-  <footer className="pt-8 border-t border-border/40 flex flex-col sm:flex-row justify-between items-center gap-6 opacity-40 hover:opacity-100 transition-opacity duration-700">
-     <div className="flex items-center gap-8">
-        <div className="flex items-center gap-3 text-[10px] font-mono font-bold uppercase tracking-widest text-muted-foreground">
-          <Zap size={14} className="text-primary animate-pulse" />
-          Sync Latency: {syncLatency ? `${syncLatency}ms` : '---'}
-        </div>
-        <div className="h-4 w-px bg-border/40 hidden sm:block" />
-        <div className="flex items-center gap-3 text-[10px] font-mono font-bold uppercase tracking-widest text-muted-foreground">
-          <ShieldCheck size={14} className="text-success" />
-          Silo D Security: VALIDATED
-        </div>
-     </div>
-     
-     <div className="flex items-center gap-6">
-        <button 
-          onClick={onRefresh}
-          className="group flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-foreground hover:text-primary transition-all outline-none"
-        >
-          <Activity size={14} className="group-hover:rotate-180 transition-transform duration-700" />
-          Force Refresh
-        </button>
-        <span className="text-[9px] font-mono uppercase tracking-[0.5em] text-muted-foreground">
-          v6.1 Forensic Hub • Perimeter: {tenantId.substring(0, 8)}
-        </span>
-     </div>
-  </footer>
-));
-CommsHubFooter.displayName = 'CommsHubFooter';
-
-// ============================================================================
 // APARATO PRINCIPAL: CommsHubManager (The Orchestrator)
 // ============================================================================
 export function CommsHubManager({ dictionary, className }: CommsHubManagerProps) {
@@ -239,7 +208,8 @@ export function CommsHubManager({ dictionary, className }: CommsHubManagerProps)
   const [errorCount, setErrorCount] = useState(0);
 
   /**
-   * PROTOCOLO HEIMDALL: Sincronización del Ledger
+   * PROTOCOLO HEIMDALL: Sincronización del Ledger Forense
+   * @pilar IV: Trazabilidad DNA-Level y medición nanométrica.
    */
   const fetchLedger = useCallback(async () => {
     if (!session?.tenantId) return;
@@ -258,21 +228,27 @@ export function CommsHubManager({ dictionary, className }: CommsHubManagerProps)
         setTransmissions(response.data);
         setSyncLatency(duration);
         setErrorCount(0);
-        console.log(`${C.green}   ✓ [GRANTED]${C.reset} Ledger ready. Nodes: ${response.data.length} | Latency: ${duration}ms`);
+        console.log(`${C.green}   ✓ [GRANTED]${C.reset} Ledger synced | Nodes: ${response.data.length} | Latency: ${duration}ms`);
       } else {
         throw new Error(response.error);
       }
-    } catch (error) {
+    } catch (error: unknown) {
+      const msg = error instanceof Error ? error.message : 'SIGNAL_LOST';
       setErrorCount(prev => prev + 1);
-      console.error(`${C.red}   ✕ [BREACH]${C.reset} Ledger sync failed. Trace: ${traceId}`, error);
+      console.error(`${C.red}   ✕ [BREACH]${C.reset} Ledger sync failed. Trace: ${traceId} | Reason: ${msg}`);
     } finally {
       setIsLoading(false);
     }
   }, [session?.tenantId]);
 
-  useEffect(() => { fetchLedger(); }, [fetchLedger]);
+  useEffect(() => {
+    fetchLedger();
+  }, [fetchLedger]);
 
-  /** MOTOR DE FILTRADO TÁCTICO */
+  /** 
+   * MOTOR DE FILTRADO TÁCTICO (Pilar X)
+   * @description Segmenta el flujo de señales por categoría operativa.
+   */
   const filteredData = useMemo(() => {
     return transmissions.filter(t => {
       if (activeView === 'notifications') return t.category !== 'comms' && t.category !== 'infra';
@@ -281,16 +257,35 @@ export function CommsHubManager({ dictionary, className }: CommsHubManagerProps)
     });
   }, [transmissions, activeView]);
 
-  /** RESOLVER DE ESTILO (Oxygen Engine) */
+  /** 
+   * RESOLVER DE ESTILO (Oxygen Engine OKLCH) 
+   * @pilar VII: Theming Semántico.
+   */
   const getPriorityStyle = useCallback((p: SignalPriority): PriorityStyle => ({
-    critical: { color: 'text-red-500', bg: 'bg-red-500/10', glow: 'bg-red-500', label: dictionary.label_priority_critical },
-    high: { color: 'text-yellow-500', bg: 'bg-yellow-500/10', glow: 'bg-yellow-500', label: dictionary.label_priority_high },
-    low: { color: 'text-success', bg: 'bg-success/10', glow: 'bg-success', label: dictionary.label_priority_low }
+    critical: { 
+      color: 'text-red-500', 
+      bg: 'bg-red-500/10', 
+      glow: 'bg-red-500', 
+      label: dictionary.label_priority_critical 
+    },
+    high: { 
+      color: 'text-yellow-500', 
+      bg: 'bg-yellow-500/10', 
+      glow: 'bg-yellow-500', 
+      label: dictionary.label_priority_high 
+    },
+    low: { 
+      color: 'text-success', 
+      bg: 'bg-success/10', 
+      glow: 'bg-success', 
+      label: dictionary.label_priority_low 
+    }
   }[p]), [dictionary]);
 
   return (
     <div className={cn("space-y-10 animate-in fade-in duration-1000", className)}>
       
+      {/* Cabecera del Hub con Estado de Red */}
       <CommsHubHeader 
         dictionary={dictionary} 
         activeView={activeView} 
@@ -299,11 +294,14 @@ export function CommsHubManager({ dictionary, className }: CommsHubManagerProps)
         hasError={errorCount > 0} 
       />
 
+      {/* Viewport de Señales */}
       <section className="min-h-[450px]">
         <AnimatePresence mode="popLayout">
           {isLoading ? (
             <motion.div key="skeleton" className="space-y-4">
-              {[1, 2, 3].map(i => <div key={i} className="h-28 w-full bg-surface/30 border border-border rounded-4xl animate-pulse" />)}
+              {[1, 2, 3].map(i => (
+                <div key={i} className="h-32 w-full bg-surface/30 border border-border/50 rounded-4xl animate-pulse" />
+              ))}
             </motion.div>
           ) : filteredData.length > 0 ? (
             <motion.div key="list" className="space-y-4" layout>
@@ -318,19 +316,52 @@ export function CommsHubManager({ dictionary, className }: CommsHubManagerProps)
               ))}
             </motion.div>
           ) : (
-            <motion.div key="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="py-48 text-center space-y-4">
-              <Terminal size={48} className="mx-auto text-muted-foreground/20" />
-              <p className="font-mono text-[10px] uppercase tracking-[0.5em] text-muted-foreground">{dictionary.empty_inbox}</p>
+            <motion.div 
+              key="empty" 
+              initial={{ opacity: 0, scale: 0.98 }} 
+              animate={{ opacity: 1, scale: 1 }} 
+              className="py-48 text-center space-y-6"
+            >
+              <div className="relative mx-auto w-max">
+                <div className="absolute inset-0 blur-3xl bg-primary/5 rounded-full" />
+                <Terminal size={64} className="mx-auto text-muted-foreground/10 relative" />
+              </div>
+              <p className="font-mono text-[10px] uppercase tracking-[0.5em] text-muted-foreground animate-pulse">
+                {dictionary.empty_inbox}
+              </p>
             </motion.div>
           )}
         </AnimatePresence>
       </section>
 
-      <CommsHubFooter 
-        syncLatency={syncLatency} 
-        onRefresh={fetchLedger} 
-        tenantId={session?.tenantId || 'ROOT_NODE'} 
-      />
+      {/* Footer de Telemetría Forense */}
+      <footer className="pt-8 border-t border-border/40 flex flex-col sm:flex-row justify-between items-center gap-6 opacity-40 hover:opacity-100 transition-opacity duration-1000">
+         <div className="flex items-center gap-8">
+            <div className="flex items-center gap-3 text-[10px] font-mono font-bold uppercase tracking-widest text-muted-foreground">
+              <Zap size={14} className="text-primary animate-pulse" />
+              Sync Latency: {syncLatency ? `${syncLatency}ms` : '---'}
+            </div>
+            <div className="h-4 w-px bg-border/40 hidden sm:block" />
+            <div className="flex items-center gap-3 text-[10px] font-mono font-bold uppercase tracking-widest text-muted-foreground">
+              <ShieldCheck size={14} className="text-success" />
+              Security Protocol: v2.5 VALIDATED
+            </div>
+         </div>
+         
+         <div className="flex items-center gap-6">
+            <button 
+              onClick={fetchLedger}
+              className="group flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-foreground hover:text-primary transition-all outline-none"
+            >
+              <RefreshCw size={14} className="group-hover:rotate-180 transition-transform duration-1000" />
+              Signal Re-Scan
+            </button>
+            <div className="h-4 w-px bg-border/40 hidden sm:block" />
+            <span className="text-[9px] font-mono uppercase tracking-[0.5em] text-muted-foreground">
+              Node: {session?.tenantId?.substring(0, 8) || 'ROOT'} • P33 Ready
+            </span>
+         </div>
+      </footer>
     </div>
   );
 }

@@ -1,10 +1,11 @@
 /**
  * @file apps/portfolio-web/src/lib/portal/actions/auth-sync.actions.ts
- * @description Orquestador de Sincronización de Identidad (Identity Bridge).
- *              Realiza el Handshake final entre Supabase y Payload CMS.
- *              Refactorizado: Activación del Reactor de Reputación (Protocolo 33).
- *              Inyectado: Bono de Génesis (+50 XP) y Artefacto de Origen.
- * @version 2.0 - Reputation Reactor Active (Heimdall v2.5)
+ * @description Orquestador de Sincronización de Identidad y Reactor de Reputación.
+ *              Realiza el Handshake final entre Supabase Auth y Payload CMS.
+ *              Refactorizado: Unificación de respuesta para nodos recurrentes,
+ *              mapeo de identidad extendida y recalibración de nivel P33.
+ *              Estándar: Heimdall v2.5 Forensic Trace & DNA Sync.
+ * @version 3.1 - Atomic Reputation Sync & Metadata Mapping
  * @author Staff Engineer - MetaShark Tech
  */
 
@@ -15,10 +16,10 @@ import crypto from 'node:crypto';
 import { getPayload } from 'payload';
 
 /** 
- * IMPORTACIONES DE CONTRATO (SSoT)
- * @pilar V: Adherencia Arquitectónica.
+ * IMPORTACIONES DE INFRAESTRUCTRURA (Nx Boundary Safe)
  */
 import type { SovereignRoleType } from '@metashark/cms-core';
+import { calculateProgress } from '@metashark/protocol-33';
 
 /**
  * DETECTORES DE ESTADO DE INFRAESTRUCTRURA
@@ -26,6 +27,13 @@ import type { SovereignRoleType } from '@metashark/cms-core';
 const IS_BUILD_ENV = 
   process.env.NEXT_PHASE === 'phase-production-build' || 
   process.env.VERCEL === '1';
+
+/**
+ * IDENTIFICADORES DETERMINISTAS (Génesis Manifest)
+ */
+const MASTER_TENANT_ID = '00000000-0000-0000-0000-000000000001';
+const GENESIS_XP = 50;
+const INITIAL_ARTIFACT = 'monolito-obsidiana';
 
 /**
  * CONTRATOS DE HANDSHAKE (SSoT)
@@ -43,12 +51,15 @@ export type SyncActionResult = {
     role: SovereignRoleType;
     email: string;
     xp: number;
+    level: number;
+    artifacts: string[];
+    name: string;
   };
   error?: string;
   traceId: string;
 };
 
-// Constantes cromáticas para Logs Heimdall v2.5
+// Protocolo Cromático Heimdall v2.5
 const C = {
   reset: '\x1b[0m', cyan: '\x1b[36m', green: '\x1b[32m', 
   yellow: '\x1b[33m', magenta: '\x1b[35m', bold: '\x1b[1m', red: '\x1b[31m'
@@ -57,7 +68,6 @@ const C = {
 /**
  * @function syncIdentityAction
  * @description Punto de entrada para sincronizar la identidad y activar la reputación.
- * @pilar IX: Inversión de Control. Handshake entre Auth y Data.
  */
 export async function syncIdentityAction(
   rawUser: unknown
@@ -76,13 +86,13 @@ export async function syncIdentityAction(
       throw new Error('HANDSHAKE_DATA_MALFORMED');
     }
 
-    const { email } = validation.data;
+    const { email, name } = validation.data;
 
-    // 2. INICIALIZACIÓN PEREZOSA (Build-Safe)
+    // 2. INICIALIZACIÓN PEREZOSA DEL CMS (Isolated Synthesis)
     const configModule = await import('@metashark/cms-core/config');
     const payload = await getPayload({ config: configModule.default });
 
-    // 3. PROTOCOLO DE BUSQUEDA
+    // 3. PROTOCOLO DE LOCALIZACIÓN DE NODO
     const { docs } = await payload.find({
       collection: 'users',
       where: { email: { equals: email } },
@@ -94,24 +104,20 @@ export async function syncIdentityAction(
 
     if (!profile) {
       /**
-       * @step Provisioning: Activación del Reactor de Reputación.
-       * @protocol_33: Asignación de Bono de Génesis y Artefacto de Origen.
+       * @step Provisioning: Activación del Reactor de Reputación P33.
+       * @description Se crea la identidad digital con el bono de Génesis.
        */
       console.log(`   ${C.yellow}→ [PROVISIONING]${C.reset} Nueva identidad soberana detectada: ${email}`);
       
-      const GENESIS_XP = 50;
-      const INITIAL_ARTIFACT = 'monolito-obsidiana';
-
       profile = await payload.create({
         collection: 'users',
         data: {
           email,
           role: 'guest',
-          // ID Fijo del Beach Hotel (Génesis Manifest v3.0)
-          tenant: '00000000-0000-0000-0000-000000000001',
+          tenant: MASTER_TENANT_ID,
           password: crypto.randomBytes(32).toString('hex'),
           _verified: true,
-          // --- REPUTATION REACTOR DATA ---
+          // REPUTATION REACTOR INITIAL STATE
           experiencePoints: GENESIS_XP,
           level: 1,
           guestMetadata: {
@@ -120,19 +126,23 @@ export async function syncIdentityAction(
         },
       });
 
-      /**
-       * @pilar IV: Observabilidad. Log de inyección de reputación.
-       */
       console.log(`   ${C.green}✓ [P33_REACTOR]${C.reset} Genesis Bonus granted: ${C.bold}+${GENESIS_XP} XP${C.reset}`);
-      console.log(`   ${C.green}✓ [P33_REACTOR]${C.reset} Artifact materialized: ${C.cyan}${INITIAL_ARTIFACT}${C.reset}`);
-
     } else {
       console.log(`   ${C.green}✓ [IDENTIFIED]${C.reset} Nodo de identidad vinculado: ${email}`);
     }
 
+    // 4. CALIBRACIÓN DE PROGRESIÓN (The Math Shield)
+    // Aseguramos que el nivel devuelto sea siempre el resultado del motor lógico.
+    const currentXp = Number(profile.experiencePoints || 0);
+    const { currentLevel } = calculateProgress(currentXp);
+
     const totalLatency = (performance.now() - startTime).toFixed(4);
     console.log(`${C.green}${C.bold}[GRANTED]${C.reset} Identity Bridge sincronizado | Latency: ${totalLatency}ms\n`);
 
+    /**
+     * @returns {SyncActionResult} Payload purificado para la hidratación de la UI.
+     * @pilar III: Inferencia de tipos y normalización de salida.
+     */
     return {
       success: true,
       traceId,
@@ -140,7 +150,11 @@ export async function syncIdentityAction(
         id: String(profile.id),
         role: profile.role as SovereignRoleType,
         email: profile.email,
-        xp: Number(profile.experiencePoints || 0)
+        name: name || profile.email.split('@')[0],
+        xp: currentXp,
+        level: currentLevel,
+        // En Fase 5, esto consultará la relación 'Inventory'
+        artifacts: [INITIAL_ARTIFACT] 
       }
     };
 

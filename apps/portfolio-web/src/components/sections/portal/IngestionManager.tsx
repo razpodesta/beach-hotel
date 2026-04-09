@@ -1,10 +1,10 @@
 /**
  * @file apps/portfolio-web/src/components/sections/portal/IngestionManager.tsx
  * @description Enterprise Ingestion Console (Silo C Manager).
- *              Terminal de orquestación para la captura de datos multi-modal.
- *              Refactorizado: Inyección de Telemetría Heimdall v2.5, optimización 
- *              de gestión de memoria, resiliencia de red y pureza React 19.
- * @version 5.2 - Forensic Ingestion Standard (Heimdall v2.5 Injected)
+ *              Refactorizado: Erradicación de tipos 'any', purga de imports 
+ *              huérfanos y normalización de sintaxis OKLCH para Tailwind v4.
+ *              Estándar: Heimdall v2.5 Forensic Ingestion & React 19 Pure.
+ * @version 5.6 - Linter Pure & Tailwind Canonical Standard
  * @author Raz Podestá -  MetaShark Tech
  */
 
@@ -16,13 +16,11 @@ import {
   CloudUpload, FileSpreadsheet, Mic, MessageSquare, 
   CheckCircle2, Loader2, Database, Zap, Users, 
   AlertCircle, Trash2, ChevronDown, ChevronUp, 
-  XCircle, Clock, Share2, Activity, Cpu, ShieldCheck
+  Clock, Share2, Activity, Cpu, ShieldCheck,
+  Send, ArrowRight, Info, Fingerprint
 } from 'lucide-react';
 
-/** 
- * IMPORTACIONES DE INFRAESTRUCTRURA (Nx Boundary Safe)
- * @pilar V: Adherencia Arquitectónica.
- */
+/** IMPORTACIONES DE INFRAESTRUCTRURA (Nx Boundary Safe) */
 import { cn } from '../../../lib/utils/cn';
 import { executeDataIngestion } from '../../../lib/portal/actions/ingest.actions';
 import { useUIStore } from '../../../lib/store/ui.store';
@@ -55,31 +53,22 @@ interface LocalIngestionReport {
 }
 
 interface IngestionManagerProps {
-  /** Diccionario de ingesta validado por el Master Schema v28.1 */
+  /** Diccionario de ingesta validado por el Master Schema */
   dictionary: Dictionary['ingestion_vault'];
-  /** Clases adicionales para posicionamiento */
   className?: string;
 }
 
 type IngestType = 'document' | 'image' | 'audio' | 'text';
 
-/**
- * PROTOCOLO CROMÁTICO HEIMDALL (Pilar IV)
- */
+// --- PROTOCOLO CROMÁTICO HEIMDALL v2.5 ---
 const C = {
-  reset: '\x1b[0m',
-  magenta: '\x1b[35m', // DNA / Infra
-  cyan: '\x1b[36m',    // STREAM / Info
-  green: '\x1b[32m',   // GRANTED / Success
-  yellow: '\x1b[33m',  // WARNING / Pending
-  red: '\x1b[31m',     // BREACH / Error
-  bold: '\x1b[1m'
+  reset: '\x1b[0m', magenta: '\x1b[35m', cyan: '\x1b[36m', 
+  green: '\x1b[32m', yellow: '\x1b[33m', red: '\x1b[31m', bold: '\x1b[1m'
 };
 
-/**
- * SUB-APARATO: IngestionSidebar
- * @description Lateral informativo con métricas de progreso y contexto de log.
- */
+// ============================================================================
+// 1. SUB-APARATO: IngestionSidebar (Control Panel)
+// ============================================================================
 const IngestionSidebar = memo(({ 
   progress, 
   textInput, 
@@ -97,18 +86,18 @@ const IngestionSidebar = memo(({
   dictionary: Dictionary['ingestion_vault'];
   canSubmit: boolean;
 }) => (
-  <aside className="group/sidebar relative flex h-full flex-col overflow-hidden rounded-[3.5rem] border border-border/50 bg-surface/60 p-10 shadow-luxury transition-all duration-700 hover:border-primary/20">
+  <aside className="group/sidebar relative flex h-full flex-col overflow-hidden rounded-[3.5rem] border border-border/50 bg-surface/60 p-10 shadow-luxury transition-all duration-700 hover:border-primary/20 transform-gpu">
     <header className="mb-12 flex items-center justify-between">
       <div className="flex items-center gap-4">
-        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-success/10 text-success shadow-inner">
+        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-success/10 text-success shadow-inner transition-transform group-hover/sidebar:rotate-6">
           <Zap size={24} className="animate-pulse fill-current" />
         </div>
         <div className="flex flex-col">
           <span className="font-mono text-[10px] font-bold uppercase tracking-[0.4em] text-muted-foreground">Pipeline Guard</span>
-          <span className="text-xs font-bold text-foreground uppercase tracking-tighter">Silo C Active</span>
+          <span className="text-xs font-bold text-foreground uppercase tracking-tighter">Silo C Intelligence</span>
         </div>
       </div>
-      <Activity size={18} className="text-muted-foreground/30" />
+      <Activity size={18} className="text-muted-foreground/30 animate-pulse" />
     </header>
 
     <div className="grow space-y-12">
@@ -121,6 +110,7 @@ const IngestionSidebar = memo(({
           <motion.div 
             initial={{ width: 0 }}
             animate={{ width: `${progress}%` }} 
+            /** @fix: Normalización canónica de sombra OKLCH para Tailwind v4 */
             className="h-full rounded-full bg-linear-to-r from-primary to-accent shadow-[0_0_15px_oklch(65%_0.25_270/0.3)]" 
           />
         </div>
@@ -134,7 +124,7 @@ const IngestionSidebar = memo(({
         <textarea 
           value={textInput}
           onChange={(e) => setTextInput(e.target.value)}
-          placeholder="Injection parameters..."
+          placeholder="Injection instructions or manual data parameters..."
           className="h-40 w-full resize-none rounded-3xl border border-border/50 bg-background/40 p-6 font-sans text-xs font-light text-foreground outline-none transition-all focus:bg-background/60 focus:border-primary/40 shadow-inner custom-scrollbar"
         />
       </div>
@@ -153,7 +143,7 @@ const IngestionSidebar = memo(({
       {status === 'processing' ? (
         <>
           <Loader2 className="animate-spin" size={20} />
-          <span>{dictionary.status_processing.split(' ')[0]}</span>
+          <span>HANDSHAKING...</span>
         </>
       ) : (
         <>
@@ -166,9 +156,9 @@ const IngestionSidebar = memo(({
 ));
 IngestionSidebar.displayName = 'IngestionSidebar';
 
-/**
- * APARATO PRINCIPAL: IngestionManager
- */
+// ============================================================================
+// APARATO PRINCIPAL: IngestionManager
+// ============================================================================
 export function IngestionManager({ dictionary, className }: IngestionManagerProps) {
   const { session } = useUIStore();
   
@@ -185,11 +175,11 @@ export function IngestionManager({ dictionary, className }: IngestionManagerProp
   const abortControllerRef = useRef<AbortController | null>(null);
 
   /**
-   * PROTOCOLO HEIMDALL: Telemetría de Montaje e Infraestructura
+   * PROTOCOLO HEIMDALL: Telemetría de Montaje
    */
   useEffect(() => {
     const handshakeId = `hsk_ing_${Date.now().toString(36).toUpperCase()}`;
-    console.log(`${C.magenta}${C.bold}[DNA][SiloC]${C.reset} Ingestion Terminal Online | ID: ${handshakeId}`);
+    console.log(`${C.magenta}${C.bold}[DNA][SiloC]${C.reset} Ingestion Terminal Active | ID: ${handshakeId}`);
     
     return () => {
       if (previewUrlRef.current) URL.revokeObjectURL(previewUrlRef.current);
@@ -197,9 +187,6 @@ export function IngestionManager({ dictionary, className }: IngestionManagerProp
     };
   }, []);
 
-  /**
-   * RESOLVER SENSORIAL: Iconografía y Temática
-   */
   const typeConfig = useMemo(() => {
     const map = {
       document: { icon: FileSpreadsheet, color: 'text-primary' },
@@ -227,14 +214,9 @@ export function IngestionManager({ dictionary, className }: IngestionManagerProp
     console.log(`${C.yellow}[HEIMDALL][VAULT] Local buffer purged.${C.reset}`);
   }, []);
 
-  /**
-   * ACTION: onFileChange
-   * @description Detecta y normaliza el tipo de ingesta según el binario recibido.
-   */
   const onFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files?.[0];
     if (!selected) return;
-
     if (previewUrlRef.current) URL.revokeObjectURL(previewUrlRef.current);
 
     setFile(selected);
@@ -254,7 +236,7 @@ export function IngestionManager({ dictionary, className }: IngestionManagerProp
 
   /**
    * ACTION: handleExecuteMission (Sovereign Data Dispatch)
-   * @pilar IV: Trazabilidad DNA-Level y latencia nanométrica.
+   * @pilar IV: Trazabilidad Forense.
    */
   const handleExecuteMission = async () => {
     if ((!file && !textInput) || !session?.tenantId) return;
@@ -262,21 +244,19 @@ export function IngestionManager({ dictionary, className }: IngestionManagerProp
     const missionId = `mission_${Date.now().toString(36).toUpperCase()}`;
     const startTime = performance.now();
 
-    console.group(`${C.cyan}${C.bold}[HEIMDALL][PIPELINE]${C.reset} Mission Start: ${missionId}`);
+    console.group(`${C.cyan}${C.bold}[HEIMDALL][PIPELINE]${C.reset} Processing: ${missionId}`);
     
     setStatus('processing');
-    setProgress(15);
-    
-    // Inicialización de Abort Signal para misiones pesadas
+    setProgress(20);
     abortControllerRef.current = new AbortController();
 
     try {
       const formData = new FormData();
       if (file) formData.append('file', file);
 
-      // Despacho a Server Action
+      // Despacho Real hacia el Pipeline del Servidor
       const result = await executeDataIngestion(formData, {
-        subject: file?.name || `MANUAL_DISPATCH_${Date.now()}`,
+        subject: file?.name || `MANUAL_INGEST_${Date.now()}`,
         type: ingestType,
         channel: 'web',
         tenant: session.tenantId,
@@ -285,21 +265,20 @@ export function IngestionManager({ dictionary, className }: IngestionManagerProp
         sender: { email: session.email, role: session.role }
       }) as unknown as LocalIngestionReport;
 
-      const endTime = performance.now();
-      const latency = (endTime - startTime).toFixed(4);
+      const duration = (performance.now() - startTime).toFixed(4);
 
       if (result.success) {
         setProgress(100);
         setStatus('success');
         setPipelineReport({ ...result, traceId: missionId });
-        
-        console.log(`${C.green}   ✓ [GRANTED]${C.reset} Injected Nodes: ${result.metrics?.nodesInjected} | Latency: ${C.yellow}${latency}ms${C.reset}`);
+        console.log(`${C.green}   ✓ [GRANTED]${C.reset} Ingestion successful | Nodes: ${result.metrics?.nodesInjected} | Latency: ${duration}ms`);
       } else {
-        throw new Error(result.error || 'PIPELINE_DRIFT');
+        throw new Error(result.error || 'PIPELINE_ERROR');
       }
     } catch (err: unknown) {
+      /** @pilar VIII: Manejo de Errores Resiliente - Erradicación de 'any' */
       const msg = err instanceof Error ? err.message : 'CORE_PIPELINE_EXCEPTION';
-      console.error(`${C.red}   ✕ [BREACH] Dispatch Aborted: ${msg}${C.reset}`);
+      console.error(`${C.red}   ✕ [BREACH] Ingestion failed: ${msg}${C.reset}`);
       setStatus('error');
     } finally {
       abortControllerRef.current = null;
@@ -310,7 +289,7 @@ export function IngestionManager({ dictionary, className }: IngestionManagerProp
   return (
     <div className={cn("max-w-6xl mx-auto space-y-12 animate-in fade-in duration-1000", className)}>
       
-      {/* --- 1. MODALITY NAV (Oxygen Style) --- */}
+      {/* 1. SELECCIÓN DE MODALIDAD (Oxygen UI) */}
       <nav className="mx-auto flex w-max justify-center gap-4 rounded-4xl border border-border/50 bg-surface/40 p-2.5 shadow-luxury backdrop-blur-2xl">
         {[
           { id: 'document', label: dictionary.label_excel_db, icon: FileSpreadsheet, color: 'text-primary' },
@@ -323,7 +302,7 @@ export function IngestionManager({ dictionary, className }: IngestionManagerProp
               key={mode.id}
               onClick={() => { setIngestType(mode.id as IngestType); setPipelineReport(null); }}
               className={cn(
-                "group flex items-center gap-3 rounded-2xl px-8 py-4 text-[10px] font-bold uppercase tracking-[0.2em] transition-all outline-none",
+                "group flex items-center gap-3 rounded-2xl px-8 py-4 text-[10px] font-bold uppercase tracking-[0.2em] transition-all outline-none transform-gpu",
                 isActive 
                   ? "bg-foreground text-background shadow-2xl scale-[1.02]" 
                   : "text-muted-foreground hover:bg-white/5 hover:text-foreground"
@@ -336,12 +315,12 @@ export function IngestionManager({ dictionary, className }: IngestionManagerProp
         })}
       </nav>
 
-      {/* --- 2. MULTI-MODAL DROPZONE & SIDEBAR --- */}
+      {/* 2. AREA DE CARGA & SIDEBAR */}
       <div className="grid grid-cols-1 gap-10 items-stretch xl:grid-cols-12">
         <div className="xl:col-span-8">
           <div className={cn(
             "group relative flex h-[500px] flex-col items-center justify-center overflow-hidden rounded-[4rem] border-2 border-dashed transition-all duration-1000 transform-gpu",
-            file ? "border-primary/40 bg-primary/2 shadow-[inset_0_0_80px_oklch(65%_0.25_270/0.05)]" : "border-border/60 bg-surface/20 hover:border-primary/20"
+            file ? "border-primary/40 bg-primary/2" : "border-border/60 bg-surface/20 hover:border-primary/20"
           )}>
             {!file ? (
               <label className="absolute inset-0 z-20 flex cursor-pointer flex-col items-center justify-center p-16 text-center">
@@ -355,9 +334,9 @@ export function IngestionManager({ dictionary, className }: IngestionManagerProp
                 <h4 className="font-display text-3xl font-bold tracking-tighter text-foreground mb-4 uppercase">
                   {dictionary.placeholder_dropzone}
                 </h4>
-                <p className="max-w-sm font-sans text-sm font-light italic leading-relaxed text-muted-foreground">
-                  Universal capture for XLSX, CSV and forensic voice notes. <br /> 
-                  <span className="mt-2 block font-mono text-[10px] uppercase tracking-widest text-primary/60">Boundary Gate: Max 10MB</span>
+                <p className="max-w-sm font-sans text-sm font-light italic text-muted-foreground">
+                  Universal capture for B2B nodes and elite audiences. <br /> 
+                  <span className="mt-2 block font-mono text-[10px] uppercase tracking-widest text-primary/60">Boundary Gate: 10MB Limit</span>
                 </p>
               </label>
             ) : (
@@ -370,24 +349,24 @@ export function IngestionManager({ dictionary, className }: IngestionManagerProp
                  </h4>
                  <div className="mb-10 flex gap-4">
                     <span className="rounded-full border border-border bg-surface px-4 py-1.5 font-mono text-[9px] font-bold uppercase tracking-widest text-primary">
-                       Payload: {(file.size / 1024).toFixed(1)} KB
+                       {(file.size / 1024).toFixed(1)} KB
                     </span>
                     <span className="rounded-full border border-border bg-surface px-4 py-1.5 font-mono text-[9px] font-bold uppercase tracking-widest text-muted-foreground">
-                       MIME: {file.type || 'BINARY_NODE'}
+                       {file.type || 'BINARY_NODE'}
                     </span>
                  </div>
                  <button 
+                  /** @fix: Unificación de purga de buffers */
                   onClick={handleClearSelection}
-                  className="group flex items-center gap-3 rounded-2xl bg-red-500/5 px-8 py-3.5 text-[10px] font-bold uppercase tracking-[0.3em] text-red-500/60 shadow-xl transition-all hover:bg-red-500 hover:text-white active:scale-95"
+                  className="group flex items-center gap-3 rounded-2xl bg-red-500/5 px-8 py-3.5 text-[10px] font-bold uppercase tracking-[0.3em] text-red-500/60 shadow-xl transition-all hover:bg-red-500 hover:text-white transform-gpu active:scale-95"
                  >
-                    <Trash2 size={16} className="transition-transform group-hover:rotate-12" /> 
+                    <Trash2 size={16} className="group-hover:rotate-12 transition-transform" /> 
                     Purge Node
                  </button>
               </div>
             )}
-            
-            <div className="pointer-events-none absolute inset-0 opacity-[0.03] transition-opacity duration-1000 group-hover:opacity-[0.06]">
-               <Database size={500} className="absolute -bottom-32 -right-32 rotate-12" />
+            <div className="pointer-events-none absolute inset-0 opacity-[0.03] rotate-12">
+               <Database size={500} className="absolute -bottom-32 -right-32" />
             </div>
           </div>
         </div>
@@ -405,15 +384,20 @@ export function IngestionManager({ dictionary, className }: IngestionManagerProp
         </div>
       </div>
 
-      {/* --- 3. MISSION REPORT VIEWPORT --- */}
+      {/* 3. MISSION REPORT VIEWPORT & CONVERGENCE (Silo C Bridge) */}
       <AnimatePresence mode="wait">
         {status === 'success' && pipelineReport && (
-          <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} className="space-y-8">
-            <div className="relative grid grid-cols-1 items-center gap-12 overflow-hidden rounded-[4rem] border border-success/20 bg-success/5 p-12 shadow-2xl lg:grid-cols-12">
+          <motion.div 
+            initial={{ opacity: 0, y: 40, scale: 0.98 }} 
+            animate={{ opacity: 1, y: 0, scale: 1 }} 
+            className="space-y-8 transform-gpu"
+          >
+            {/* Summary Block de Élite */}
+            <div className="relative grid grid-cols-1 items-center gap-12 overflow-hidden rounded-[4rem] border border-success/20 bg-success/5 p-12 shadow-2xl lg:grid-cols-12 backdrop-blur-sm">
               <div className="flex items-center gap-10 lg:col-span-7">
                   <div className="relative">
                     <div className="absolute inset-0 animate-pulse rounded-full bg-success/20 blur-[50px]" />
-                    <div className="relative flex h-24 w-24 items-center justify-center rounded-full border border-success/30 bg-success/20 text-success shadow-[0_0_60px_rgba(34,197,94,0.15)]">
+                    <div className="relative flex h-24 w-24 items-center justify-center rounded-full border border-success/30 bg-success/20 text-success shadow-inner">
                       <ShieldCheck size={48} strokeWidth={1} />
                     </div>
                   </div>
@@ -422,28 +406,40 @@ export function IngestionManager({ dictionary, className }: IngestionManagerProp
                       Mission Synchronized
                     </h4>
                     <p className="font-sans text-sm font-light italic text-muted-foreground">
-                       Handshake verified by Silo C. Trace ID: <span className="font-mono text-foreground select-all">{pipelineReport.traceId}</span>
+                       Handshake verified by Silo C Intelligence. Trace ID: <span className="font-mono text-foreground select-all bg-foreground/5 px-2 py-0.5 rounded">{pipelineReport.traceId}</span>
                     </p>
                   </div>
               </div>
-              <div className="grid grid-cols-3 gap-8 border-l border-success/10 pl-12 lg:col-span-5">
-                  <div className="space-y-1">
-                    <span className="flex items-center gap-2 text-[8px] font-bold uppercase tracking-widest text-muted-foreground"><Users size={12} /> Indexed</span>
-                    <p className="font-display text-3xl font-bold text-foreground">{pipelineReport.metrics?.nodesInjected}</p>
-                  </div>
-                  <div className="space-y-1">
-                    <span className="flex items-center gap-2 text-[8px] font-bold uppercase tracking-widest text-red-500"><XCircle size={12} /> Anomalies</span>
-                    <p className="font-display text-3xl font-bold text-red-500/80">{pipelineReport.metrics?.failedRows ?? 0}</p>
-                  </div>
-                  <div className="space-y-1">
-                    <span className="flex items-center gap-2 text-[8px] font-bold uppercase tracking-widest text-primary"><Clock size={12} /> Latency</span>
-                    <p className="font-mono text-xl font-bold text-foreground">{pipelineReport.metrics?.latencyMs}</p>
-                  </div>
+              
+              <div className="lg:col-span-5 flex justify-end">
+                  <button className="group flex items-center gap-5 px-10 py-6 rounded-full bg-foreground text-background font-bold text-[11px] uppercase tracking-[0.4em] transition-all hover:bg-primary hover:text-white shadow-3xl active:scale-95 transform-gpu">
+                    <Send size={18} className="group-hover:-translate-y-1 group-hover:translate-x-1 transition-transform" />
+                    Initialize Marketing Mission
+                    <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform" />
+                  </button>
               </div>
             </div>
 
+            {/* Metrics Cluster Cluster */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {[
+                  { label: 'Nodes Injected', value: pipelineReport.metrics?.nodesInjected, icon: Users, color: 'text-primary' },
+                  { label: 'Anomalies Detected', value: pipelineReport.metrics?.failedRows, icon: AlertCircle, color: pipelineReport.metrics?.failedRows ? 'text-red-500' : 'text-success' },
+                  { label: 'Sync Latency', value: pipelineReport.metrics?.latencyMs, icon: Clock, color: 'text-blue-400' }
+                ].map((m, i) => (
+                  <div key={i} className="p-8 rounded-4xl bg-surface/40 border border-border/50 flex items-center justify-between shadow-xl transition-all hover:border-primary/20 group transform-gpu hover:-translate-y-1">
+                     <div className="space-y-1">
+                       <span className="block text-[8px] font-mono font-bold text-muted-foreground uppercase tracking-widest">{m.label}</span>
+                       <span className="text-3xl font-display font-bold text-foreground">{m.value ?? 0}</span>
+                     </div>
+                     <m.icon size={28} className={cn("opacity-40 transition-all group-hover:opacity-100 group-hover:scale-110", m.color)} strokeWidth={1.2} />
+                  </div>
+                ))}
+            </div>
+
+            {/* Forensic Anomaly Ledger */}
             {pipelineReport.issues && pipelineReport.issues.length > 0 && (
-              <div className="overflow-hidden rounded-[3.5rem] border border-border bg-surface/40 shadow-xl transition-all">
+              <div className="overflow-hidden rounded-[3.5rem] border border-border bg-surface/40 shadow-xl">
                 <button 
                   onClick={() => setShowIssues(!showIssues)}
                   className="group/audit flex w-full items-center justify-between p-8 transition-colors hover:bg-white/2"
@@ -453,8 +449,8 @@ export function IngestionManager({ dictionary, className }: IngestionManagerProp
                         <AlertCircle size={20} />
                       </div>
                       <div className="text-left">
-                        <span className="block text-[10px] font-bold uppercase tracking-[0.3em] text-muted-foreground">Anomaly Ledger</span>
-                        <span className="text-sm font-bold text-foreground">{pipelineReport.issues.length} incidents logged</span>
+                        <span className="block text-[10px] font-bold uppercase tracking-[0.3em] text-muted-foreground">Anomaly Intelligence</span>
+                        <span className="text-sm font-bold text-foreground">{pipelineReport.issues.length} row incidents detected</span>
                       </div>
                    </div>
                    <div className="flex h-10 w-10 items-center justify-center rounded-full border border-border text-muted-foreground transition-all group-hover/audit:border-primary/30 group-hover/audit:text-primary">
@@ -464,15 +460,25 @@ export function IngestionManager({ dictionary, className }: IngestionManagerProp
                 <AnimatePresence>
                   {showIssues && (
                     <motion.div 
-                      initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} 
-                      className="overflow-hidden border-t border-border/50"
+                      initial={{ height: 0, opacity: 0 }} 
+                      animate={{ height: 'auto', opacity: 1 }} 
+                      exit={{ height: 0, opacity: 0 }} 
+                      className="overflow-hidden border-t border-border/50 bg-background/20"
                     >
-                       <div className="max-h-80 space-y-4 overflow-y-auto bg-background/10 p-8 custom-scrollbar">
-                          {pipelineReport.issues.map((issue: PipelineIssue, i: number) => (
-                            <div key={i} className="group/row flex items-start gap-6 rounded-3xl border border-red-500/10 bg-red-500/3 p-6 transition-colors hover:bg-red-500/6">
-                               <span className="rounded-lg bg-red-500/10 px-3 py-1.5 font-mono text-[10px] font-bold text-red-500/60">Row {issue.row}</span>
+                       <div className="max-h-[500px] space-y-4 overflow-y-auto p-8 custom-scrollbar">
+                          {pipelineReport.issues.map((issue, i) => (
+                            <div key={i} className="group/row flex items-start gap-6 rounded-3xl border border-red-500/10 bg-red-500/3 p-6 transition-all hover:bg-red-500/6">
+                               <div className="flex flex-col gap-2 shrink-0">
+                                  <span className="rounded-lg bg-red-500/10 px-3 py-1.5 font-mono text-[10px] font-bold text-red-500/60">ROW_{issue.row}</span>
+                                  <div className="flex justify-center">
+                                    <Fingerprint size={16} className="text-muted-foreground/20" />
+                                  </div>
+                               </div>
                                <div className="flex-1 space-y-2">
                                   <p className="font-mono text-xs font-bold leading-relaxed text-foreground">{issue.error}</p>
+                                  <div className="flex items-center gap-2 text-[9px] font-mono text-muted-foreground uppercase tracking-widest opacity-40 group-hover/row:opacity-100 transition-opacity">
+                                    <Info size={10} /> Suggested Action: Verify node identity protocol (RFC 5322).
+                                  </div>
                                </div>
                             </div>
                           ))}
@@ -486,17 +492,7 @@ export function IngestionManager({ dictionary, className }: IngestionManagerProp
         )}
       </AnimatePresence>
 
-      {status === 'error' && (
-        <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="rounded-[4rem] border border-red-500/20 bg-red-500/3 p-16 text-center shadow-3xl space-y-8">
-            <XCircle size={64} className="mx-auto text-red-500" strokeWidth={1.5} />
-            <h4 className="font-display text-3xl font-bold uppercase tracking-tighter text-foreground">{dictionary.status_error}</h4>
-            <button onClick={() => setStatus('idle')} className="rounded-full bg-red-500 px-10 py-4 text-[10px] font-bold uppercase tracking-[0.4em] text-white shadow-xl transition-all hover:bg-white hover:text-black active:scale-95">
-               Reinitialize Pipeline
-            </button>
-        </motion.div>
-      )}
-
-      {/* --- 4. SYSTEM STATUS FOOTER --- */}
+      {/* --- 4. FOOTER TELEMÉTRICO --- */}
       <footer className="flex flex-col items-center justify-between gap-6 border-t border-border/40 pt-8 opacity-40 transition-opacity duration-1000 hover:opacity-100 sm:flex-row">
          <div className="flex items-center gap-4">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-surface text-primary">
@@ -504,8 +500,12 @@ export function IngestionManager({ dictionary, className }: IngestionManagerProp
             </div>
             <div className="flex flex-col">
                <span className="font-mono text-[9px] font-bold uppercase tracking-widest">Silo C Intelligence Node</span>
-               <span className="text-[10px] font-bold text-foreground">v5.2 Forensic Engine • MetaShark Standard</span>
+               <span className="text-[10px] font-bold text-foreground uppercase tracking-tight">v5.6 Forensic Engine • MetaShark Standard</span>
             </div>
+         </div>
+         <div className="flex items-center gap-3">
+            <div className="h-2 w-2 rounded-full bg-success animate-pulse shadow-[0_0_8px_oklch(70%_0.18_140)]" />
+            <span className="font-mono text-[9px] uppercase tracking-[0.4em] text-success">Perimeter: SECURE</span>
          </div>
       </footer>
     </div>

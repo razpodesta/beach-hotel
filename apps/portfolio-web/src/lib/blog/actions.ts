@@ -1,10 +1,12 @@
 /**
  * @file apps/portfolio-web/src/lib/blog/actions.ts
  * @description Orquestador soberano de datos para el Concierge Journal (Silo C).
- *              Refactorizado: Blindaje absoluto de 'noStore' durante el build
- *              para permitir la generación estática del sitemap y rutas.
- * @version 39.0 - Sitemap Build Immunity (noStore Guard)
- * @author Raz Podestá -  MetaShark Tech
+ *              Refactorizado: Erradicación de errores de Linter (unused vars),
+ *              implementación de Optional Catch Binding y Resilient DB Handshake.
+ *              Permite la conexión a Supabase durante el build de Vercel para
+ *              generar páginas con datos reales, manteniendo el fallback a mocks.
+ * @version 41.0 - Linter Pure & Resilient Handshake
+ * @author Staff Engineer - MetaShark Tech
  */
 
 import { getPayload } from 'payload';
@@ -21,13 +23,19 @@ import type { RawMockPost } from '../../data/mocks/cms.mocks';
 import type { Dictionary } from '../schemas/dictionary.schema';
 
 /**
- * DETECTORES DE ESTADO DE INFRAESTRUCTRURA
- * @pilar VIII: Resiliencia de Infraestructura.
+ * PROTOCOLO CROMÁTICO HEIMDALL
  */
-const IS_BUILD_ENV = 
-  process.env.NEXT_PHASE === 'phase-production-build' || 
-  process.env.VERCEL === '1' ||
-  (process.env.NODE_ENV === 'production' && !process.env.DATABASE_URL);
+const C = {
+  reset: '\x1b[0m', cyan: '\x1b[36m', green: '\x1b[32m', 
+  yellow: '\x1b[33m', magenta: '\x1b[35m', red: '\x1b[31m', bold: '\x1b[1m'
+};
+
+/**
+ * GUARDIANES DE INFRAESTRUCTRURA (Sovereign Detection)
+ * @pilar VIII: Resiliencia. 
+ */
+const IS_GENERATION_PHASE = process.env.PAYLOAD_GENERATE === 'true';
+const CAN_CONNECT_DB = !!process.env.DATABASE_URL;
 
 interface LexicalNode {
   type: string;
@@ -100,15 +108,18 @@ class EditorialShaper {
     const raw = entry as RawPayloadPost;
     const t = dict.blog_page;
 
-    // 1. Resolución de Autor (Relationship Proxy)
+    // Resolución de Autor con tipado fuerte (Pilar III)
     let author = t.hero_title;
     if (raw.author) {
-      author = typeof raw.author === 'object' 
-        ? raw.author.username || raw.author.email?.split('@')[0] || author 
-        : raw.author;
+      if (typeof raw.author === 'string') {
+        author = raw.author;
+      } else if (typeof raw.author === 'object') {
+        // Safe access to union type without excessive casting
+        const authorObj = raw.author as { username?: string; email?: string };
+        author = authorObj.username || authorObj.email?.split('@')[0] || author;
+      }
     }
 
-    // 2. Normalización de Taxonomía
     const rawTagsArray = Array.isArray(raw.tags) ? raw.tags : [];
     const normalizedTags = rawTagsArray.map(tagItem => {
       if (typeof tagItem === 'string') return tagItem.toLowerCase().trim();
@@ -120,12 +131,10 @@ class EditorialShaper {
 
     const mdx = LexicalCompiler.compile(raw.content);
     
-    // 3. Detección Inteligente de Atmósfera (Pilar XII)
     const isNight = ['night', 'festival', 'party', 'techno', 'pride', 'escape'].some(v => 
       normalizedTags.includes(v) || raw.title?.toLowerCase().includes(v)
     );
 
-    // 4. Validación de Contrato SSoT
     const shapeResult = postWithSlugSchema.safeParse({
       slug: raw.slug || `journal-fallback-${Date.now()}`,
       metadata: {
@@ -157,10 +166,14 @@ class EditorialShaper {
 class EditorialDataResolver {
   private static async getPayloadInstance(): Promise<Payload | null> {
     /** 
-     * @pilar XIII: Build Immunity.
-     * Si estamos en fase de build, abortamos antes de importar la configuración.
+     * @pilar XIII: Build Isolation.
      */
-    if (IS_BUILD_ENV) return null;
+    if (IS_GENERATION_PHASE) return null;
+
+    if (!CAN_CONNECT_DB) {
+        console.log(`${C.yellow}[HEIMDALL][BUILD] No DATABASE_URL detected. Sanctuary Mocks enabled.${C.reset}`);
+        return null;
+    }
     
     if (cachedPayload) return cachedPayload;
     
@@ -169,7 +182,8 @@ class EditorialDataResolver {
       cachedPayload = await getPayload({ config: configModule.default });
       return cachedPayload;
     } catch {
-      console.error('[HEIMDALL][CRITICAL] Payload Handshake Failed.');
+      /** @fix ESLint 185: Optional Catch Binding implemented */
+      console.error(`${C.red}[HEIMDALL][CRITICAL] Database Handshake Failed. Switching to Safe Sanctuary Mode.${C.reset}`);
       return null;
     }
   }
@@ -186,18 +200,16 @@ class EditorialDataResolver {
     const traceId = `journal_fetch_${Date.now()}`;
     const payload = await this.getPayloadInstance();
 
-    // 1. RESOLUCIÓN DE MOCKS (Build-Safe & Linter Optimized)
+    // 1. RESOLUCIÓN DE MOCKS
     if (!payload) {
-      console.log(`[HEIMDALL][${traceId}] Mode: STATIC_MOCK (Build-Safe)`);
+      console.log(`${C.magenta}[HEIMDALL][${traceId}] Mode: LOCAL_SANCTUARY (Mocked Data)${C.reset}`);
       const mocks = MOCK_POSTS
         .map(m => EditorialShaper.shape(this.adaptMockToRaw(m), dict))
         .filter((post): post is PostWithSlug => post !== null);
       
       const { slug, tag } = options;
-      
       if (slug) return mocks.filter(m => m.slug === slug);
       if (tag) return mocks.filter(m => m.metadata.tags.includes(tag));
-      
       return mocks;
     }
 
@@ -215,12 +227,15 @@ class EditorialDataResolver {
         depth: 2,
       });
 
+      console.log(`${C.green}[HEIMDALL][${traceId}] Mode: CLOUD_PRODUCTION (Real Data Synchronized)${C.reset}`);
+
       return docs
         .map(doc => EditorialShaper.shape(doc, dict))
         .filter((post): post is PostWithSlug => post !== null);
 
     } catch {
-      console.warn(`[HEIMDALL][${traceId}] Connection degraded. Activating Recovery Fallback.`);
+      /** @fix ESLint 236: Optional Catch Binding implemented */
+      console.warn(`${C.yellow}[HEIMDALL][${traceId}] Connection degraded. Activating Recovery Fallback.${C.reset}`);
       
       return MOCK_POSTS
         .map(m => EditorialShaper.shape(this.adaptMockToRaw(m), dict))
@@ -231,26 +246,32 @@ class EditorialDataResolver {
 
 /**
  * INTERFAZ PÚBLICA (Server Actions)
- * @pilar VIII: Resiliencia del Build
- * Evitamos ejecutar noStore() durante el proceso de compilación para que Next.js
- * pueda generar páginas estáticas y el sitemap sin penalización por CSR Bailout.
  */
 
 export async function getAllPosts(lang: Locale = i18n.defaultLocale): Promise<PostWithSlug[]> {
-  if (!IS_BUILD_ENV) noStore();
+  if (process.env.NEXT_PHASE !== 'phase-production-build') {
+      noStore();
+  }
+  
   const dict = await getDictionary(lang);
   return EditorialDataResolver.fetch({ lang }, dict);
 }
 
 export async function getPostBySlug(slug: string, lang: Locale = i18n.defaultLocale): Promise<PostWithSlug | null> {
-  if (!IS_BUILD_ENV) noStore();
+  if (process.env.NEXT_PHASE !== 'phase-production-build') {
+      noStore();
+  }
+
   const dict = await getDictionary(lang);
   const results = await EditorialDataResolver.fetch({ slug, lang }, dict);
   return results[0] || null;
 }
 
 export async function getPostsByTag(tag: string, lang: Locale = i18n.defaultLocale): Promise<PostWithSlug[]> {
-  if (!IS_BUILD_ENV) noStore();
+  if (process.env.NEXT_PHASE !== 'phase-production-build') {
+      noStore();
+  }
+
   const dict = await getDictionary(lang);
   const normalizedTag = tag.toLowerCase().trim().replace(/\s+/g, '-');
   return EditorialDataResolver.fetch({ tag: normalizedTag, lang }, dict);
