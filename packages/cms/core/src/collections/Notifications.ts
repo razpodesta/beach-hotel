@@ -1,11 +1,8 @@
 /**
  * @file packages/cms/core/src/collections/Notifications.ts
- * @description Ledger Forense de Notificaciones y Señales Operativas (Silo D).
- *              Refactorizado: Exportación explícita del contrato 'Notification' 
- *              para erradicar el error TS2724 en el frontend.
- *              Nivelado: Lógica de retención automática y telemetría Heimdall v2.5.
- * @version 3.0 - Contract Sealed & Forensic Standard
- * @author Staff Engineer - MetaShark Tech
+ * @description Ledger Forense de Notificaciones (Silo D).
+ *              Refactorizado: Erradicación de extensión .js en Access.
+ * @version 3.1 - Resolution Standard
  */
 
 import { 
@@ -14,12 +11,8 @@ import {
   type CollectionAfterChangeHook,
   type Access
 } from 'payload';
-
-/** 
- * IMPORTACIONES DE PERÍMETRO SOBERANO 
- * @pilar V: Adherencia Arquitectónica.
- */
-import { multiTenantReadAccess, multiTenantWriteAccess } from './Access.js';
+// @fix: Eliminación de extensión .js
+import { multiTenantReadAccess, multiTenantWriteAccess } from './Access';
 
 /**
  * @interface Notification

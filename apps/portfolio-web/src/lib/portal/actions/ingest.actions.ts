@@ -1,10 +1,8 @@
 /**
  * @file apps/portfolio-web/src/lib/portal/actions/ingest.actions.ts
  * @description Enterprise Data Ingestion Pipeline (Silo C).
- *              Orquesta la captura, validación y persistencia de datos masivos.
- *              Refactorizado: Optimización de flujo binario, tipado estricto
- *              y observabilidad Heimdall v2.5 integrada.
- * @version 8.0 - Forensic Ingestion Standard
+ *              Refactorizado: Purga de extensión .js para cumplimiento con resolución "bundler".
+ * @version 8.1 - Bundler Resolution Standard
  * @author Raz Podestá -  MetaShark Tech
  */
 
@@ -12,7 +10,8 @@
 
 import { z } from 'zod';
 import { getPayload, type CollectionSlug, type SanitizedConfig } from 'payload';
-import { dataParser, type AudienceNode, type ParserIssue } from '../../services/data-parser.js';
+// @fix: Eliminación de extensión .js para resolución nativa bundler
+import { dataParser, type AudienceNode, type ParserIssue } from '../../services/data-parser';
 
 /** 
  * DETECTORES DE ESTADO DE INFRAESTRUCTRURA
