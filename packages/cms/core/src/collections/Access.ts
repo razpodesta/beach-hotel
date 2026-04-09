@@ -3,13 +3,19 @@
  * @description Orquestador Soberano de Seguridad Multi-Tenant (Security Core).
  *              Centraliza la lógica de RBAC, aislamiento de perímetros y 
  *              validación de jerarquías del Protocolo 33.
- *              Refactorizado: Atomización de helpers de autoridad y telemetría 
- *              Heimdall de ultra-performance.
- * @version 9.0 - Atomic Security & P33 Ready
- * @author Raz Podestá - MetaShark Tech
+ *              Refactorizado: Sincronización con ROLES_CONFIG, extracción de tenant 
+ *              hardened y telemetría forense Heimdall v2.5.
+ *              Estándar: Multi-Tenant Shield & Forensic Auditing.
+ * @version 10.0 - Sovereign Role Sync & Forensic Latency
+ * @author Staff Engineer - MetaShark Tech
  */
 
 import type { Access, Where } from 'payload';
+/** 
+ * IMPORTACIONES DE CONTRATO (SSoT)
+ * @pilar V: Adherencia Arquitectónica. Extensiones .js para cumplimiento ESM.
+ */
+import { type SovereignRoleType } from './users/roles/config.js';
 
 /**
  * @interface SovereignUser
@@ -18,22 +24,15 @@ import type { Access, Where } from 'payload';
 interface SovereignUser {
   id: string;
   email: string;
-  role: 'developer' | 'admin' | 'operator' | 'sponsor' | 'guest';
+  role: SovereignRoleType;
   tenant?: string | { id: string } | null;
-  level?: number; // Hook para Protocolo 33
+  level?: number;
 }
 
-/**
- * CONSTANTES DE TELEMETRÍA (Protocolo Heimdall)
- */
+/** CONSTANTES CROMÁTICAS HEIMDALL v2.5 */
 const C = {
-  reset: '\x1b[0m',
-  cyan: '\x1b[36m',
-  green: '\x1b[32m',
-  yellow: '\x1b[33m',
-  red: '\x1b[31m',
-  magenta: '\x1b[35m',
-  bold: '\x1b[1m'
+  reset: '\x1b[0m', cyan: '\x1b[36m', green: '\x1b[32m', 
+  yellow: '\x1b[33m', magenta: '\x1b[35m', bold: '\x1b[1m', red: '\x1b[31m'
 };
 
 // ============================================================================
@@ -42,7 +41,7 @@ const C = {
 
 /**
  * @function isSovereignUser
- * @description Type guard para asegurar la integridad del objeto user.
+ * @description Type guard para asegurar la integridad del nodo de identidad.
  */
 const isSovereignUser = (user: unknown): user is SovereignUser => {
   return (
@@ -54,10 +53,10 @@ const isSovereignUser = (user: unknown): user is SovereignUser => {
 };
 
 /**
- * @function getIdentityDetails
+ * @function getIdentityPerimeter
  * @description Extrae de forma segura el ID del Tenant y el nivel de autoridad.
  */
-const getIdentityDetails = (user: SovereignUser) => {
+const getIdentityPerimeter = (user: SovereignUser) => {
   const tenantId = typeof user.tenant === 'object' ? user.tenant?.id : user.tenant;
   const isSuperUser = user.role === 'admin' || user.role === 'developer';
   return { tenantId, isSuperUser };
@@ -71,24 +70,26 @@ const getIdentityDetails = (user: SovereignUser) => {
  * REGLA: multiTenantReadAccess
  * @description Orquesta la visibilidad: SuperUsers (Todo) | Otros (Su Tenant + Público).
  */
-export const multiTenantReadAccess: Access = ({ req: { user } }) => {
+export const multiTenantReadAccess: Access = async ({ req: { user } }) => {
   const start = performance.now();
+  const traceId = `acc_read_${Date.now().toString(36).toUpperCase()}`;
   
   if (!isSovereignUser(user)) {
     const publicFilter: Where = { status: { equals: 'published' } };
-    console.log(`${C.yellow}   ✓ [ACCESS][PUBLIC]${C.reset} Anonymous read access | Time: ${(performance.now() - start).toFixed(4)}ms`);
+    if (process.env.NODE_ENV !== 'test') {
+      console.log(`${C.yellow}   ✓ [ACCESS][PUBLIC]${C.reset} Anonymous read | Trace: ${traceId} | Time: ${(performance.now() - start).toFixed(4)}ms`);
+    }
     return publicFilter;
   }
 
-  const { tenantId, isSuperUser } = getIdentityDetails(user);
+  const { tenantId, isSuperUser } = getIdentityPerimeter(user);
 
-  // 1. Root Bypass
+  // 1. Root Bypass (S0/S1)
   if (isSuperUser) {
-    console.log(`${C.green}   ✓ [ACCESS][ROOT]${C.reset} SuperUser ${user.email} granted total read | Time: ${(performance.now() - start).toFixed(4)}ms`);
     return true;
   }
 
-  // 2. Aislamiento por Perímetro + Contenido Público
+  // 2. Aislamiento por Perímetro (Tenant Guard) + Contenido Público
   const filter: Where = {
     or: [
       { status: { equals: 'published' } },
@@ -96,7 +97,9 @@ export const multiTenantReadAccess: Access = ({ req: { user } }) => {
     ]
   };
 
-  console.log(`${C.cyan}   ✓ [ACCESS][TENANT]${C.reset} Filtered read for ${user.email} | Tenant: ${tenantId} | Time: ${(performance.now() - start).toFixed(4)}ms`);
+  if (process.env.NODE_ENV !== 'test') {
+    console.log(`${C.cyan}   ✓ [ACCESS][TENANT]${C.reset} Filtered for ${user.email} | Trace: ${traceId} | Time: ${(performance.now() - start).toFixed(4)}ms`);
+  }
   return filter;
 };
 
@@ -104,60 +107,62 @@ export const multiTenantReadAccess: Access = ({ req: { user } }) => {
  * REGLA: multiTenantWriteAccess
  * @description Blindaje de escritura: SuperUsers (Todo) | Otros (Solo su Tenant).
  */
-export const multiTenantWriteAccess: Access = ({ req: { user, url } }) => {
-  const start = performance.now();
+export const multiTenantWriteAccess: Access = async ({ req: { user, url } }) => {
+  // const start = performance.now();
+  const traceId = `acc_write_${Date.now().toString(36).toUpperCase()}`;
 
   if (!isSovereignUser(user)) {
-    console.log(`${C.red}   ✕ [ACCESS][DENIED]${C.reset} Unauthenticated write attempt at ${url}`);
+    console.error(`${C.red}   ✕ [ACCESS][DENIED]${C.reset} Unauthenticated write at ${url} | Trace: ${traceId}`);
     return false;
   }
 
-  const { tenantId, isSuperUser } = getIdentityDetails(user);
+  const { tenantId, isSuperUser } = getIdentityPerimeter(user);
 
   // 1. Root Bypass
   if (isSuperUser) {
-    console.log(`${C.green}   ✓ [ACCESS][ROOT]${C.reset} SuperUser ${user.email} granted write | Time: ${(performance.now() - start).toFixed(4)}ms`);
     return true;
   }
 
   // 2. Aislamiento Estricto
   if (tenantId) {
-    console.log(`${C.cyan}   ✓ [ACCESS][TENANT]${C.reset} Restricted write for ${user.email} | Tenant: ${tenantId} | Time: ${(performance.now() - start).toFixed(4)}ms`);
     return { tenant: { equals: tenantId } };
   }
 
-  /** ALERTA DE SEGURIDAD (Heimdall Protocol) */
-  console.error(`${C.red}${C.bold}   [HEIMDALL][SECURITY-BREACH] Attempted write without Tenant | User: ${user.email} | Target: ${url}${C.reset}`);
+  /** ALERTA DE SEGURIDAD (Brecha detectada) */
+  console.error(`${C.red}${C.bold}   [BREACH]${C.reset} Attempted write without Tenant | User: ${user.email} | Trace: ${traceId}`);
   return false;
 };
 
 /**
  * REGLA: adminOnly
- * @description Reserva el acceso estrictamente a la jerarquía de gestión.
+ * @description Reserva el acceso estrictamente a la jerarquía de gestión (S0/S1).
  */
-export const adminOnly: Access = ({ req: { user } }) => {
-  const start = performance.now();
-  
+export const adminOnly: Access = async ({ req: { user } }) => {
   const isAuth = isSovereignUser(user) && (user.role === 'admin' || user.role === 'developer');
-  const duration = (performance.now() - start).toFixed(4);
-
-  if (isAuth) {
-    console.log(`${C.green}   ✓ [ACCESS][ADMIN]${C.reset} Access confirmed | Time: ${duration}ms`);
-  } else {
-    console.log(`${C.red}   ✕ [ACCESS][BLOCKED]${C.reset} Admin-only area | User: ${user?.email || 'Unknown'} | Time: ${duration}ms`);
+  
+  if (!isAuth && process.env.NODE_ENV !== 'test') {
+    console.warn(`${C.red}   ✕ [ACCESS][BLOCKED]${C.reset} Admin-only area attempt by: ${user?.email || 'Unknown'}`);
   }
 
   return isAuth;
 };
 
 /**
- * REGLA: eliteGating (Protocolo 33 Ready)
- * @description Ejemplo de cómo el sistema está listo para el gating por nivel.
+ * REGLA: eliteGating (Protocolo 33 Integrated)
+ * @description Gating dinámico basado en el nivel de ascensión.
  */
-export const eliteGating = (minLevel: number): Access => ({ req: { user } }) => {
+export const eliteGating = (minLevel: number): Access => async ({ req: { user } }) => {
   if (!isSovereignUser(user)) return false;
-  const { isSuperUser } = getIdentityDetails(user);
+  const { isSuperUser } = getIdentityPerimeter(user);
+  
+  // La jerarquía de ingeniería ignora el gating de experiencia
   if (isSuperUser) return true;
   
-  return (user.level ?? 0) >= minLevel;
+  const hasLevel = (user.level ?? 0) >= minLevel;
+  
+  if (!hasLevel && process.env.NODE_ENV !== 'test') {
+    console.log(`${C.yellow}   ✕ [P33_GATING]${C.reset} Level too low for access: ${user.level}/${minLevel}`);
+  }
+
+  return hasLevel;
 };

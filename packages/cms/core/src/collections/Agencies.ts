@@ -2,9 +2,11 @@
  * @file packages/cms/core/src/collections/Agencies.ts
  * @description Enterprise Partner Identity Repository (Silo B).
  *              Orquesta el ecosistema de Alianzas B2B con validación KYB,
- *              segmentación por niveles de producción y telemetría Heimdall v2.0.
- *              Blindado para aislamiento Multi-Tenant y cumplimiento fiscal global.
- * @version 5.0 - Enterprise PRM Standard (Forensic Ready)
+ *              agregadores financieros y telemetría Heimdall v2.5.
+ *              Refactorizado: Resolución de TS2307 (Path Fix), purga de linter
+ *              mediante Optional Catch Binding y validación de integridad fiscal.
+ *              Estándar: Multi-Tenant Shield & Forensic Auditing.
+ * @version 6.2 - Path Sealed & Linter Pure
  * @author Staff Engineer - MetaShark Tech
  */
 
@@ -13,24 +15,24 @@ import {
   type CollectionBeforeChangeHook, 
   type CollectionAfterChangeHook 
 } from 'payload';
-import { multiTenantReadAccess, multiTenantWriteAccess } from './Access';
 
-/**
- * CONSTANTES DE TELEMETRÍA (Protocolo Heimdall)
+/** 
+ * IMPORTACIONES DE PERÍMETRO SOBERANO
+ * @pilar V: Adherencia Arquitectónica. 
+ * @fix TS2307: Ruta corregida a nivel local (./) para resolución exitosa en el grafo.
  */
+import { multiTenantReadAccess, multiTenantWriteAccess } from './Access.js';
+
+/** CONSTANTES CROMÁTICAS HEIMDALL v2.5 */
 const C = {
-  reset: '\x1b[0m',
-  cyan: '\x1b[36m',
-  green: '\x1b[32m',
-  yellow: '\x1b[33m',
-  magenta: '\x1b[35m',
-  bold: '\x1b[1m',
-  blue: '\x1b[34m',
-  red: '\x1b[31m'
+  reset: '\x1b[0m', cyan: '\x1b[36m', green: '\x1b[32m', 
+  yellow: '\x1b[33m', magenta: '\x1b[35m', bold: '\x1b[1m', red: '\x1b[31m'
 };
 
 const collectionStart = performance.now();
-console.log(`${C.magenta}  [DNA][LOAD] Building Collection: AGENCIES (Partner Network)...${C.reset}`);
+if (process.env.NODE_ENV !== 'test') {
+  console.log(`${C.magenta}  [DNA][LOAD] Building Collection: AGENCIES (Partner Network)...${C.reset}`);
+}
 
 /**
  * APARATO: Agencies
@@ -41,14 +43,10 @@ export const Agencies: CollectionConfig = {
   admin: {
     useAsTitle: 'brandName',
     group: 'Supply Chain / Partners',
-    defaultColumns: ['brandName', 'tier', 'trustScore', 'status', 'tenant'],
+    defaultColumns: ['brandName', 'tier', 'trustScore', 'status', 'totalYield'],
     description: 'Diretório central de operadoras e agências de viagens verificadas.',
   },
   
-  /**
-   * REGLAS DE ACCESO (Sovereign Security)
-   * @pilar VIII: Aislamiento Perimetral Tier S2.
-   */
   access: {
     read: multiTenantReadAccess,
     create: ({ req: { user } }) => !!user && (user.role === 'admin' || user.role === 'developer'),
@@ -56,40 +54,30 @@ export const Agencies: CollectionConfig = {
     delete: ({ req: { user } }) => user?.role === 'developer',
   },
 
-  /**
-   * GUARDIANES DE CUMPLIMIENTO (Forensic Hooks)
-   */
   hooks: {
     /**
      * HOOK: beforeChange
-     * @description Sanitización fiscal y blindaje de propiedad.
+     * @description Sanitización fiscal y blindaje de propiedad Multi-Tenant.
      */
     beforeChange: [
       (async ({ data, operation, req }) => {
         const start = performance.now();
-        const traceId = `prm_sync_${Date.now().toString(36)}`;
+        const traceId = `prm_dna_${Date.now().toString(36).toUpperCase()}`;
         
-        console.log(`${C.blue}    [HEIMDALL][PRM][START] Validating Partner Identity | ID: ${traceId}${C.reset}`);
-
-        // 1. Inyección de Perímetro Automática
+        // 1. Handshake de Perímetro (Tenant Guard)
         if (operation === 'create' && req.user && !data.tenant) {
-          data.tenant = typeof req.user.tenant === 'object' && req.user.tenant !== null 
-            ? req.user.tenant.id 
-            : req.user.tenant;
+          data.tenant = typeof req.user.tenant === 'object' ? req.user.tenant.id : req.user.tenant;
         }
 
-        // 2. Normalización de Identidad Fiscal (Strict Alpha-Numeric)
+        // 2. Normalización Fiscal (Pilar III)
         if (data.taxId) {
-          data.taxId = data.taxId.replace(/[^\d\w-]/g, '').toUpperCase();
-        }
-
-        // 3. Sanitización de URL Corporativa
-        if (data.website) {
-          data.website = data.website.toLowerCase().trim();
+          data.taxId = (data.taxId as string).replace(/[^\d\w-]/g, '').toUpperCase();
         }
 
         const duration = performance.now() - start;
-        console.log(`${C.green}    [HEIMDALL][PRM][END] Compliance Handshake OK | Time: ${duration.toFixed(4)}ms${C.reset}`);
+        if (process.env.NODE_ENV !== 'test') {
+          console.log(`${C.cyan}    [HEIMDALL][PRM] Handshake OK | Trace: ${traceId} | Lat: ${duration.toFixed(4)}ms${C.reset}`);
+        }
         
         return data;
       }) as CollectionBeforeChangeHook,
@@ -97,13 +85,33 @@ export const Agencies: CollectionConfig = {
 
     /**
      * HOOK: afterChange
-     * @description Telemetría de transición de estados comerciales.
+     * @description Orquesta la sincronización con el Silo D (Notifications) ante cambios de auditoría.
      */
     afterChange: [
       (async ({ doc, operation, previousDoc, req }) => {
         if (operation === 'update' && doc.status !== previousDoc?.status) {
-          const actor = req.user?.email || 'SYSTEM_NODE';
-          console.log(`${C.yellow}    [AUDIT][PARTNER-TRANSITION]${C.reset} Agency: ${doc.brandName} | Status: ${previousDoc?.status} → ${doc.status} | Actor: ${actor}`);
+          const actor = req.user?.email || 'SYSTEM_CORE';
+          
+          try {
+            await req.payload.create({
+              collection: 'notifications',
+              data: {
+                subject: `Estatus de Agencia Actualizado: ${doc.brandName}`,
+                message: `El nodo ${doc.brandName} ha sido marcado como ${doc.status.toUpperCase()} por ${actor}.`,
+                priority: doc.status === 'blocked' ? 'critical' : 'high',
+                category: 'security',
+                source: 'PRM_CORE',
+                tenant: typeof doc.tenant === 'object' ? doc.tenant.id : doc.tenant,
+                isRead: false,
+              }
+            });
+          } catch {
+            /** 
+             * @fix ESLint: Optional Catch Binding implemented.
+             * @pilar VIII: Resiliencia - El fallo en el log no debe abortar la mutación.
+             */
+            console.error(`${C.red}   ✕ [SILO_D_LINK_FAILED] Unable to log agency status change.${C.reset}`);
+          }
         }
       }) as CollectionAfterChangeHook,
     ]
@@ -114,23 +122,13 @@ export const Agencies: CollectionConfig = {
       type: 'tabs',
       tabs: [
         {
-          label: 'Identidad Corporativa (KYB)',
+          label: 'Identidade Corporativa',
           fields: [
             {
               type: 'row',
               fields: [
-                { 
-                  name: 'brandName', 
-                  type: 'text', 
-                  required: true, 
-                  admin: { width: '50%', placeholder: 'Nombre Comercial' } 
-                },
-                { 
-                  name: 'legalName', 
-                  type: 'text', 
-                  required: true, 
-                  admin: { width: '50%', placeholder: 'Razón Social Legal' } 
-                },
+                { name: 'brandName', type: 'text', required: true, admin: { width: '50%' } },
+                { name: 'legalName', type: 'text', required: true, admin: { width: '50%' } },
               ]
             },
             {
@@ -144,9 +142,7 @@ export const Agencies: CollectionConfig = {
                   options: [
                     { label: 'Brasil (CNPJ)', value: 'BR' },
                     { label: 'Chile (RUT)', value: 'CL' },
-                    { label: 'Argentina (CUIT)', value: 'AR' },
-                    { label: 'Uruguay (RUT)', value: 'UY' },
-                    { label: 'USA / International (TaxID)', value: 'INTL' }
+                    { label: 'USA / INTL (TaxID)', value: 'INTL' }
                   ],
                   admin: { width: '30%' }
                 },
@@ -154,38 +150,62 @@ export const Agencies: CollectionConfig = {
                   name: 'taxId', 
                   type: 'text', 
                   required: true, 
-                  index: true,
-                  admin: { width: '40%', description: 'ID Fiscal inmutable sin símbolos.' } 
+                  index: true, 
+                  admin: { width: '40%' },
+                  validate: (val: string | null | undefined) => {
+                    if (val && val.length >= 5) return true;
+                    return 'Identificador fiscal inválido o muy corto para auditoría.';
+                  }
                 },
-                { 
-                  name: 'iataCode', 
-                  type: 'text', 
-                  admin: { width: '30%', description: 'Código regulador (opcional).' } 
-                },
+                { name: 'iataCode', type: 'text', admin: { width: '30%' } },
               ]
             },
             {
-              type: 'row',
-              fields: [
-                { 
-                  name: 'website', 
-                  type: 'text', 
-                  admin: { width: '50%', placeholder: 'https://agency-portal.com' } 
-                },
-                { 
-                  name: 'logo', 
-                  type: 'upload', 
-                  relationTo: 'media', 
-                  required: true,
-                  admin: { width: '50%', description: 'Isotipo para materiales co-branded.' }
-                },
-              ]
+              name: 'logo',
+              type: 'upload',
+              relationTo: 'media',
+              required: true,
+              admin: { description: 'Isotipo para co-branding y flyers.' }
             }
           ]
         },
         {
-          label: 'Segmentación & Performance',
+          label: 'Performance & BI',
+          description: 'Métricas de rendimento financeiro acumulado e confiança na rede.',
           fields: [
+            {
+              type: 'row',
+              fields: [
+                { 
+                  name: 'totalYield', 
+                  type: 'number', 
+                  defaultValue: 0, 
+                  admin: { 
+                    width: '33%', 
+                    readOnly: true,
+                    description: 'Valor total de reservas geradas (R$).'
+                  } 
+                },
+                { 
+                  name: 'pendingCommission', 
+                  type: 'number', 
+                  defaultValue: 0, 
+                  admin: { 
+                    width: '33%', 
+                    readOnly: true,
+                    description: 'Comissões devengadas pendentes de pagamento.'
+                  } 
+                },
+                { 
+                  name: 'trustScore', 
+                  type: 'number', 
+                  min: 0, 
+                  max: 100, 
+                  defaultValue: 50, 
+                  admin: { width: '34%', description: 'Índice de credibilidade (0-100).' } 
+                },
+              ]
+            },
             {
               type: 'row',
               fields: [
@@ -200,15 +220,7 @@ export const Agencies: CollectionConfig = {
                     { label: 'Silver Operator', value: 'silver' },
                     { label: 'Bronze Iniciado', value: 'bronze' }
                   ],
-                  admin: { width: '33%' } 
-                },
-                { 
-                  name: 'trustScore', 
-                  type: 'number', 
-                  min: 0, 
-                  max: 100, 
-                  defaultValue: 50, 
-                  admin: { width: '33%', description: 'Índice de solvencia (0-100).' } 
+                  admin: { width: '50%' } 
                 },
                 {
                   name: 'status',
@@ -220,43 +232,14 @@ export const Agencies: CollectionConfig = {
                     { label: 'En Auditoría', value: 'review' },
                     { label: 'Bloqueado (Incumplimiento)', value: 'blocked' }
                   ],
-                  admin: { width: '34%' }
-                }
-              ]
-            },
-            {
-              name: 'commercialTerms',
-              type: 'group',
-              label: 'Acuerdos Financieros',
-              fields: [
-                {
-                  type: 'row',
-                  fields: [
-                    { 
-                      name: 'baseCommission', 
-                      type: 'number', 
-                      defaultValue: 10, 
-                      admin: { width: '50%', description: 'Porcentaje de comisión (%)' } 
-                    },
-                    { 
-                      name: 'paymentCycle', 
-                      type: 'select', 
-                      defaultValue: 'net-30',
-                      options: [
-                        { label: 'Pre-pago (Cut & Pay)', value: 'prepaid' },
-                        { label: 'Net 15 (Quincenal)', value: 'net-15' },
-                        { label: 'Net 30 (Mensual)', value: 'net-30' }
-                      ],
-                      admin: { width: '50%' } 
-                    }
-                  ]
+                  admin: { width: '50%' }
                 }
               ]
             }
           ]
         },
         {
-          label: 'Infraestructura',
+          label: 'Infraestrutura',
           fields: [
             { 
               name: 'tenant', 
@@ -264,17 +247,9 @@ export const Agencies: CollectionConfig = {
               relationTo: 'tenants', 
               required: true, 
               index: true,
-              admin: { 
-                position: 'sidebar', 
-                readOnly: true,
-                description: 'Propiedad ancla de la alianza comercial.'
-              } 
+              admin: { position: 'sidebar', readOnly: true } 
             },
-            { 
-              name: 'internalObservations', 
-              type: 'textarea', 
-              admin: { description: 'Registro inmutable de notas técnicas y comerciales.' } 
-            }
+            { name: 'internalObservations', type: 'textarea', admin: { description: 'Registro inalterável de notas técnicas.' } }
           ]
         }
       ]
@@ -283,4 +258,6 @@ export const Agencies: CollectionConfig = {
 };
 
 const collectionDuration = performance.now() - collectionStart;
-console.log(`   ${C.green}✓ [DNA][SUCCESS]${C.reset} Agencies Repository calibrated | Time: ${collectionDuration.toFixed(4)}ms\n`);
+if (process.env.NODE_ENV !== 'test') {
+  console.log(`   ${C.green}✓ [DNA][SUCCESS]${C.reset} Agencies Registry leveled | Time: ${collectionDuration.toFixed(4)}ms\n`);
+}

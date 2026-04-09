@@ -1,11 +1,10 @@
 /**
  * @file apps/portfolio-web/src/lib/blog/actions.ts
  * @description Orquestador soberano de datos para el Concierge Journal (Silo C).
- *              Refactorizado: Erradicación de errores de Linter (unused vars),
- *              implementación de Optional Catch Binding y Resilient DB Handshake.
- *              Permite la conexión a Supabase durante el build de Vercel para
- *              generar páginas con datos reales, manteniendo el fallback a mocks.
- * @version 41.0 - Linter Pure & Resilient Handshake
+ *              Refactorizado: Resolución de TS18048 mediante síntesis de filtros 
+ *              inmutables, aislamiento Multi-Tenant y normalización S3.
+ *              Estándar: Heimdall v2.5 Forensic Logging & React 19 Pure.
+ * @version 42.1 - Type-Safe Filter Synthesis & S3 Hardened
  * @author Staff Engineer - MetaShark Tech
  */
 
@@ -23,7 +22,7 @@ import type { RawMockPost } from '../../data/mocks/cms.mocks';
 import type { Dictionary } from '../schemas/dictionary.schema';
 
 /**
- * PROTOCOLO CROMÁTICO HEIMDALL
+ * PROTOCOLO CROMÁTICO HEIMDALL v2.5
  */
 const C = {
   reset: '\x1b[0m', cyan: '\x1b[36m', green: '\x1b[32m', 
@@ -32,10 +31,11 @@ const C = {
 
 /**
  * GUARDIANES DE INFRAESTRUCTRURA (Sovereign Detection)
- * @pilar VIII: Resiliencia. 
+ * @pilar VIII: Resiliencia de Build.
  */
-const IS_GENERATION_PHASE = process.env.PAYLOAD_GENERATE === 'true';
-const CAN_CONNECT_DB = !!process.env.DATABASE_URL;
+const IS_BUILD = process.env.NEXT_PHASE === 'phase-production-build';
+const IS_TYPE_GEN = process.env.PAYLOAD_GENERATE === 'true';
+const MASTER_TENANT_ID = '00000000-0000-0000-0000-000000000001';
 
 interface LexicalNode {
   type: string;
@@ -49,6 +49,10 @@ interface LexicalRoot {
   root?: { children?: LexicalNode[] };
 }
 
+/**
+ * @interface RawPayloadPost
+ * @description Contrato de entrada desde el CMS (Unshaked Entity).
+ */
 interface RawPayloadPost {
   title?: string | null;
   slug?: string | null;
@@ -58,6 +62,7 @@ interface RawPayloadPost {
   author?: string | { username?: string; email?: string; id?: string } | null;
   tags?: Array<{ tag: string }> | string[] | null;
   ogImage?: string | { url: string; id?: string } | null;
+  vibe?: 'day' | 'night' | null;
 }
 
 let cachedPayload: Payload | null = null;
@@ -108,42 +113,45 @@ class EditorialShaper {
     const raw = entry as RawPayloadPost;
     const t = dict.blog_page;
 
-    // Resolución de Autor con tipado fuerte (Pilar III)
-    let author = t.hero_title;
+    // 1. RESOLUCIÓN DE AUTOR (Pilar III)
+    let authorName = t.hero_title;
     if (raw.author) {
       if (typeof raw.author === 'string') {
-        author = raw.author;
+        authorName = raw.author;
       } else if (typeof raw.author === 'object') {
-        // Safe access to union type without excessive casting
         const authorObj = raw.author as { username?: string; email?: string };
-        author = authorObj.username || authorObj.email?.split('@')[0] || author;
+        authorName = authorObj.username || authorObj.email?.split('@')[0] || authorName;
       }
     }
 
+    // 2. NORMALIZACIÓN DE TAXONOMÍA
     const rawTagsArray = Array.isArray(raw.tags) ? raw.tags : [];
     const normalizedTags = rawTagsArray.map(tagItem => {
       if (typeof tagItem === 'string') return tagItem.toLowerCase().trim();
-      if (typeof tagItem === 'object' && tagItem !== null && 'tag' in tagItem && typeof tagItem.tag === 'string') {
-        return tagItem.tag.toLowerCase().trim();
+      if (typeof tagItem === 'object' && tagItem !== null && 'tag' in tagItem) {
+        return (tagItem as { tag: string }).tag.toLowerCase().trim();
       }
       return null;
     }).filter((tag): tag is string => tag !== null);
 
     const mdx = LexicalCompiler.compile(raw.content);
     
-    const isNight = ['night', 'festival', 'party', 'techno', 'pride', 'escape'].some(v => 
+    // 3. DETECCIÓN DE ATMÓSFERA (SSoT)
+    const isNight = raw.vibe === 'night' || ['festival', 'techno', 'night'].some(v => 
       normalizedTags.includes(v) || raw.title?.toLowerCase().includes(v)
     );
 
+    // 4. VALIDACIÓN DE CONTRATO SOBERANO
     const shapeResult = postWithSlugSchema.safeParse({
       slug: raw.slug || `journal-fallback-${Date.now()}`,
       metadata: {
         title: raw.title || 'Untitled Sanctuary Entry',
         description: raw.description || t.page_description,
-        author,
+        author: authorName,
         published_date: raw.publishedDate || new Date().toISOString(),
         tags: normalizedTags.length > 0 ? normalizedTags : ['sanctuary'],
         vibe: isNight ? 'night' : 'day',
+        // Resolución de imagen S3: Soporta tanto string como objeto relacional
         ogImage: typeof raw.ogImage === 'object' ? raw.ogImage?.url : (raw.ogImage || undefined),
         readingTime: Math.max(1, Math.ceil(mdx.split(/\s+/).length / 225))
       },
@@ -151,7 +159,7 @@ class EditorialShaper {
     });
 
     if (!shapeResult.success) {
-      console.warn(`[HEIMDALL][DATA-DROP] Contract Violation in: ${raw.slug || 'unknown'}`);
+      console.warn(`${C.yellow}[HEIMDALL][DATA-DROP]${C.reset} Contract Violation in: ${raw.slug || 'unknown'}`);
       return null;
     }
 
@@ -165,14 +173,11 @@ class EditorialShaper {
  */
 class EditorialDataResolver {
   private static async getPayloadInstance(): Promise<Payload | null> {
-    /** 
-     * @pilar XIII: Build Isolation.
-     */
-    if (IS_GENERATION_PHASE) return null;
+    if (IS_TYPE_GEN) return null;
 
-    if (!CAN_CONNECT_DB) {
-        console.log(`${C.yellow}[HEIMDALL][BUILD] No DATABASE_URL detected. Sanctuary Mocks enabled.${C.reset}`);
-        return null;
+    if (!process.env.DATABASE_URL) {
+      console.log(`${C.yellow}[HEIMDALL][CONFIG] No DATABASE_URL. Sanctuary Mode (Mocks) enabled.${C.reset}`);
+      return null;
     }
     
     if (cachedPayload) return cachedPayload;
@@ -182,8 +187,7 @@ class EditorialDataResolver {
       cachedPayload = await getPayload({ config: configModule.default });
       return cachedPayload;
     } catch {
-      /** @fix ESLint 185: Optional Catch Binding implemented */
-      console.error(`${C.red}[HEIMDALL][CRITICAL] Database Handshake Failed. Switching to Safe Sanctuary Mode.${C.reset}`);
+      console.error(`${C.red}[HEIMDALL][CRITICAL] Database Handshake Failed. Switching to Mocks.${C.reset}`);
       return null;
     }
   }
@@ -200,7 +204,7 @@ class EditorialDataResolver {
     const traceId = `journal_fetch_${Date.now()}`;
     const payload = await this.getPayloadInstance();
 
-    // 1. RESOLUCIÓN DE MOCKS
+    // 1. RESOLUCIÓN DE MOCKS (Fallo de red o entorno sin DB)
     if (!payload) {
       console.log(`${C.magenta}[HEIMDALL][${traceId}] Mode: LOCAL_SANCTUARY (Mocked Data)${C.reset}`);
       const mocks = MOCK_POSTS
@@ -215,9 +219,20 @@ class EditorialDataResolver {
 
     // 2. RECUPERACIÓN REAL DESDE EL CLÚSTER
     try {
-      const whereClause: Where = { status: { equals: 'published' } };
-      if (options.slug) whereClause.slug = { equals: options.slug };
-      if (options.tag) whereClause['tags.tag'] = { equals: options.tag };
+      /**
+       * @pilar IX: Aislamiento Multi-Tenant.
+       * @fix TS18048: Construcción de array de condiciones independiente para 
+       * garantizar seguridad de tipos incondicional.
+       */
+      const conditions: Where[] = [
+        { status: { equals: 'published' } },
+        { tenant: { equals: MASTER_TENANT_ID } }
+      ];
+
+      if (options.slug) conditions.push({ slug: { equals: options.slug } });
+      if (options.tag) conditions.push({ 'tags.tag': { equals: options.tag } });
+
+      const whereClause: Where = { and: conditions };
 
       const { docs } = await payload.find({
         collection: 'blog-posts',
@@ -227,14 +242,14 @@ class EditorialDataResolver {
         depth: 2,
       });
 
-      console.log(`${C.green}[HEIMDALL][${traceId}] Mode: CLOUD_PRODUCTION (Real Data Synchronized)${C.reset}`);
+      const modeLabel = IS_BUILD ? 'BUILD_REAL_SYNC' : 'CLOUD_PRODUCTION';
+      console.log(`${C.green}[HEIMDALL][${traceId}] Mode: ${modeLabel} (Nodes: ${docs.length})${C.reset}`);
 
       return docs
         .map(doc => EditorialShaper.shape(doc, dict))
         .filter((post): post is PostWithSlug => post !== null);
 
     } catch {
-      /** @fix ESLint 236: Optional Catch Binding implemented */
       console.warn(`${C.yellow}[HEIMDALL][${traceId}] Connection degraded. Activating Recovery Fallback.${C.reset}`);
       
       return MOCK_POSTS
@@ -249,29 +264,20 @@ class EditorialDataResolver {
  */
 
 export async function getAllPosts(lang: Locale = i18n.defaultLocale): Promise<PostWithSlug[]> {
-  if (process.env.NEXT_PHASE !== 'phase-production-build') {
-      noStore();
-  }
-  
+  if (!IS_BUILD) noStore();
   const dict = await getDictionary(lang);
   return EditorialDataResolver.fetch({ lang }, dict);
 }
 
 export async function getPostBySlug(slug: string, lang: Locale = i18n.defaultLocale): Promise<PostWithSlug | null> {
-  if (process.env.NEXT_PHASE !== 'phase-production-build') {
-      noStore();
-  }
-
+  if (!IS_BUILD) noStore();
   const dict = await getDictionary(lang);
   const results = await EditorialDataResolver.fetch({ slug, lang }, dict);
   return results[0] || null;
 }
 
 export async function getPostsByTag(tag: string, lang: Locale = i18n.defaultLocale): Promise<PostWithSlug[]> {
-  if (process.env.NEXT_PHASE !== 'phase-production-build') {
-      noStore();
-  }
-
+  if (!IS_BUILD) noStore();
   const dict = await getDictionary(lang);
   const normalizedTag = tag.toLowerCase().trim().replace(/\s+/g, '-');
   return EditorialDataResolver.fetch({ tag: normalizedTag, lang }, dict);

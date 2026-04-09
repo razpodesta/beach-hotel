@@ -1,8 +1,11 @@
 /**
  * @file packages/cms/core/src/collections/Notifications.ts
- * @description Ledger Forense de Notificaciones (Silo D).
- *              Refactorizado: Erradicación de extensión .js en Access.
- * @version 3.1 - Resolution Standard
+ * @description Ledger Forense de Notificaciones y Señales Operativas (Silo D).
+ *              Refactorizado: Gestión de retención inmutable, indexación táctica,
+ *              telemetría Heimdall v2.5 y optimización de metadatos técnicos.
+ *              Estándar: Forensic Trace & Multi-Tenant Shield.
+ * @version 3.2 - Retention Hardened & Metadata Optimized
+ * @author Staff Engineer - MetaShark Tech
  */
 
 import { 
@@ -11,13 +14,11 @@ import {
   type CollectionAfterChangeHook,
   type Access
 } from 'payload';
-// @fix: Eliminación de extensión .js
 import { multiTenantReadAccess, multiTenantWriteAccess } from './Access';
 
 /**
  * @interface Notification
  * @description Contrato soberano de datos para una transmisión del Ledger.
- * @pilar III: Sello de Contrato para evitar errores de resolución en el frontend.
  */
 export interface Notification {
   id: string;
@@ -30,7 +31,7 @@ export interface Notification {
   traceId: string;
   originNode?: string;
   isRead: boolean;
-  recipient?: string | unknown;
+  recipient?: string | { id: string };
   metadata?: Record<string, unknown>;
   tenant: string | { id: string };
   expiresAt: string;
@@ -44,6 +45,11 @@ const C = {
   reset: '\x1b[0m', cyan: '\x1b[36m', green: '\x1b[32m', 
   yellow: '\x1b[33m', magenta: '\x1b[35m', bold: '\x1b[1m', red: '\x1b[31m'
 };
+
+const collectionStart = performance.now();
+if (process.env.NODE_ENV !== 'test') {
+  console.log(`${C.magenta}  [DNA][LOAD] Building Collection: NOTIFICATIONS (Forensic Ledger)...${C.reset}`);
+}
 
 /**
  * APARATO: Notifications
@@ -64,7 +70,7 @@ export const Notifications: CollectionConfig = {
    */
   access: {
     read: multiTenantReadAccess,
-    create: (() => true) as Access, // Permitir inyección de señales desde cualquier nodo verificado
+    create: (() => true) as Access, 
     update: multiTenantWriteAccess,
     delete: (({ req: { user } }) => user?.role === 'developer') as Access,
   },
@@ -72,7 +78,7 @@ export const Notifications: CollectionConfig = {
   hooks: {
     /**
      * HOOK: beforeChange
-     * @description Orquestación de metadatos forenses y política de retención.
+     * @description Orquestación de metadatos forenses y política de retención inmutable.
      */
     beforeChange: [
       (async ({ data, operation, req, originalDoc }) => {
@@ -83,7 +89,7 @@ export const Notifications: CollectionConfig = {
           data.traceId = `sig_${Date.now().toString(36).toUpperCase()}`;
         }
 
-        // 2. Inyección de Perímetro Multi-Tenant
+        // 2. Inyección de Perímetro Multi-Tenant (Shield)
         if (operation === 'create' && req.user && !data.tenant) {
           data.tenant = typeof req.user.tenant === 'object' && req.user.tenant !== null 
             ? req.user.tenant.id 
@@ -91,7 +97,7 @@ export const Notifications: CollectionConfig = {
         }
 
         // 3. Motor de Retención Inteligente (Auto-Purge Strategy)
-        if (operation === 'create') {
+        if (operation === 'create' && !data.expiresAt) {
           const now = new Date();
           let days = 15; // Retención base
           if (data.priority === 'high') days = 45;
@@ -115,7 +121,7 @@ export const Notifications: CollectionConfig = {
 
     /**
      * HOOK: afterChange
-     * @description Alerta inmediata en logs de servidor ante incidencias de Nivel Crítico.
+     * @description Alerta inmediata ante incidencias críticas.
      */
     afterChange: [
       (async ({ doc, operation }) => {
@@ -148,6 +154,7 @@ export const Notifications: CollectionConfig = {
                   type: 'select',
                   required: true,
                   defaultValue: 'ops',
+                  index: true,
                   options: [
                     { label: 'Segurança (Shield)', value: 'security' },
                     { label: 'Operações (Node)', value: 'ops' },
@@ -167,6 +174,7 @@ export const Notifications: CollectionConfig = {
                   type: 'select',
                   required: true,
                   defaultValue: 'low',
+                  index: true,
                   options: [
                     { label: 'Normal (L0)', value: 'low' },
                     { label: 'Elevada (L1)', value: 'high' },
@@ -178,16 +186,16 @@ export const Notifications: CollectionConfig = {
               ]
             },
             { name: 'message', type: 'textarea', required: true, admin: { description: 'Detalhes forenses da sinalização.' } },
-            { name: 'actionUrl', type: 'text', admin: { description: 'Link opcional para resolução imediata.' } }
+            { name: 'actionUrl', type: 'text', admin: { description: 'Link para resolução imediata.' } }
           ]
         },
         {
-          label: 'Rastreabilidade Forense',
+          label: 'Rastreabilidade & Dados',
           fields: [
             {
               type: 'row',
               fields: [
-                { name: 'traceId', type: 'text', admin: { width: '50%', readOnly: true } },
+                { name: 'traceId', type: 'text', unique: true, admin: { width: '50%', readOnly: true } },
                 { name: 'originNode', type: 'text', admin: { width: '50%', description: 'IP ou Contexto do despachador.' } }
               ]
             },
@@ -195,14 +203,21 @@ export const Notifications: CollectionConfig = {
               type: 'row',
               fields: [
                 { name: 'isRead', type: 'checkbox', defaultValue: false, admin: { width: '50%' } },
-                { name: 'recipient', type: 'relationship', relationTo: 'users', admin: { width: '50%', description: 'Destinatário específico (opcional).' } }
+                { name: 'recipient', type: 'relationship', relationTo: 'users', admin: { width: '50%', description: 'Destinatário opcional.' } }
               ]
             },
-            { name: 'metadata', type: 'json', admin: { description: 'Payload técnico bruto (Error stacks, JSON inputs).' } }
+            { 
+              name: 'metadata', 
+              type: 'json', 
+              admin: { 
+                description: 'Payload técnico bruto.',
+                condition: (data) => !!data.metadata 
+              } 
+            }
           ]
         },
         {
-          label: 'Infraestrutura & Purga',
+          label: 'Fronteira Operacional',
           fields: [
             {
               name: 'tenant',
@@ -213,16 +228,17 @@ export const Notifications: CollectionConfig = {
               admin: { 
                 position: 'sidebar', 
                 readOnly: true,
-                description: 'Perímetro proprietário da notificação.'
+                description: 'Perímetro proprietário.'
               }
             },
             {
               name: 'expiresAt',
               type: 'date',
+              index: true,
               admin: { 
                 position: 'sidebar', 
                 readOnly: true,
-                description: 'Data programada para o Auto-Purge industrial.' 
+                description: 'Data do Auto-Purge industrial.' 
               }
             },
             { name: 'readAt', type: 'date', admin: { position: 'sidebar', readOnly: true } }
@@ -232,3 +248,8 @@ export const Notifications: CollectionConfig = {
     }
   ]
 };
+
+const collectionDuration = performance.now() - collectionStart;
+if (process.env.NODE_ENV !== 'test') {
+  console.log(`   ${C.green}✓ [DNA][SUCCESS]${C.reset} Notifications Ledger calibrated | Time: ${collectionDuration.toFixed(4)}ms\n`);
+}

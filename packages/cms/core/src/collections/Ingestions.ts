@@ -2,9 +2,10 @@
  * @file packages/cms/core/src/collections/Ingestions.ts
  * @description Enterprise Data Ingestion Repository (Silo C).
  *              Orquesta el flujo de captura multi-modal y el pipeline de transformación.
- *              Implementa trazabilidad forense, métricas de rendimiento industrial,
- *              y aislamiento Multi-Tenant de Grado S0.
- * @version 5.0 - DNA Ingestion Standard (Heimdall v2.0 Injected)
+ *              Refactorizado: Sincronía con IngestionManager v5.6, estructuración 
+ *              de métricas de rendimiento, ledger de anomalías e integración con Silo D.
+ *              Estándar: Heimdall v2.5 Forensic Ingestion & Multi-Tenant Shield.
+ * @version 6.0 - Intelligence Metrics & Silo Convergence
  * @author Staff Engineer - MetaShark Tech
  */
 
@@ -13,93 +14,103 @@ import {
   type CollectionBeforeChangeHook, 
   type CollectionAfterChangeHook 
 } from 'payload';
-import { multiTenantReadAccess, multiTenantWriteAccess } from './Access';
 
-/**
- * CONSTANTES DE TELEMETRÍA (Protocolo Heimdall)
+/** 
+ * IMPORTACIONES DE PERÍMETRO SOBERANO
+ * @pilar V: Adherencia Arquitectónica. Extensiones .js para rigor ESM.
  */
+import { multiTenantReadAccess, multiTenantWriteAccess } from './Access.js';
+
+/** CONSTANTES CROMÁTICAS HEIMDALL v2.5 */
 const C = {
-  reset: '\x1b[0m',
-  cyan: '\x1b[36m',
-  green: '\x1b[32m',
-  yellow: '\x1b[33m',
-  magenta: '\x1b[35m',
-  bold: '\x1b[1m',
-  blue: '\x1b[34m',
-  red: '\x1b[31m'
+  reset: '\x1b[0m', cyan: '\x1b[36m', green: '\x1b[32m', 
+  yellow: '\x1b[33m', magenta: '\x1b[35m', bold: '\x1b[1m', red: '\x1b[31m'
 };
 
 const collectionStart = performance.now();
-console.log(`${C.magenta}  [DNA][LOAD] Building Collection: INGESTIONS (Data Engineering Hub)...${C.reset}`);
+if (process.env.NODE_ENV !== 'test') {
+  console.log(`${C.magenta}  [DNA][LOAD] Building Collection: INGESTIONS (Data Engineering)...${C.reset}`);
+}
 
 /**
  * APARATO: Ingestions
- * @description Orquestador de la ingesta de activos de inteligencia corporativa.
+ * @description Centro de persistencia para el pipeline de transmutación de datos.
  */
 export const Ingestions: CollectionConfig = {
   slug: 'ingestions',
   admin: {
     useAsTitle: 'subject',
     group: 'Data Engineering',
-    defaultColumns: ['subject', 'type', 'status', 'priority', 'tenant', 'createdAt'],
+    defaultColumns: ['subject', 'type', 'status', 'tenant', 'createdAt'],
     description: 'Pipeline central de captura e processamento de inteligência de dados.',
   },
   
-  /**
-   * REGLAS DE ACCESO SOBERANO
-   * @pilar VIII: Resiliencia y Seguridad Perimetral.
-   * La creación se mantiene abierta para S2S (Server-to-Server) handshakes, 
-   * pero la lectura está blindada por Tenant.
-   */
   access: {
     read: multiTenantReadAccess,
-    create: () => true, 
+    create: () => true, // Acceso S2S (Server-to-Server)
     update: multiTenantWriteAccess,
     delete: ({ req: { user } }) => user?.role === 'developer',
   },
 
-  /**
-   * GUARDIANES DE CICLO DE VIDA (Pipeline Hooks)
-   */
   hooks: {
     /**
      * HOOK: beforeChange
-     * @description Inyecta Trace IDs, garantiza el perímetro de propiedad y prepara el handshake.
+     * @description Inyecta metadatos forenses y garantiza el aislamiento Multi-Tenant.
      */
     beforeChange: [
       (async ({ data, operation, req }) => {
         const start = performance.now();
         
-        // 1. Generación de Trace ID Inmutable (Forensic Token)
+        // 1. Generación de Trace ID Inmutable
         if (operation === 'create' && !data.traceId) {
           data.traceId = `ing_${Date.now().toString(36).toUpperCase()}`;
         }
 
-        console.log(`${C.blue}    [HEIMDALL][PIPELINE][START] Handshake Initiated | ID: ${data.traceId}${C.reset}`);
-
-        // 2. Garantía de Perímetro Multi-Tenant
+        // 2. Handshake de Perímetro Multi-Tenant
         if (operation === 'create' && req.user && !data.tenant) {
-          data.tenant = typeof req.user.tenant === 'object' && req.user.tenant !== null 
-            ? req.user.tenant.id 
-            : req.user.tenant;
-          console.log(`       [INFO] Pipeline entry auto-anchored to Tenant: ${data.tenant}`);
+          data.tenant = typeof req.user.tenant === 'object' ? req.user.tenant.id : req.user.tenant;
         }
 
-        const duration = performance.now() - start;
-        console.log(`${C.green}    [HEIMDALL][PIPELINE][END] Metadata Sealed | Time: ${duration.toFixed(4)}ms${C.reset}`);
+        const duration = (performance.now() - start).toFixed(4);
+        if (process.env.NODE_ENV !== 'test') {
+          console.log(`${C.cyan}    [HEIMDALL][PIPELINE] Metadata Sealed | Trace: ${data.traceId} | Lat: ${duration}ms${C.reset}`);
+        }
         
         return data;
       }) as CollectionBeforeChangeHook,
     ],
 
     /**
-     * HOOK: afterChange
-     * @description Reporta la inyección exitosa en el clúster de inteligencia.
+     * HOOK: afterChange (Convergence Trigger)
+     * @description Notifica al Silo D (CommsHub) sobre el resultado de la misión de ingesta.
      */
     afterChange: [
-      (async ({ doc, operation }) => {
-        if (operation === 'create') {
-          console.log(`   ${C.cyan}→ [DATA_INGESTED]${C.reset} New node in Silo C: ${doc.subject} | Channel: ${doc.channel} | Trace: ${doc.traceId}`);
+      (async ({ doc, operation, req }) => {
+        if (operation !== 'create') return;
+
+        /**
+         * @step Signal Generation
+         * Determinamos la prioridad basada en anomalías detectadas.
+         */
+        const hasAnomalies = Number(doc.pipelineMetrics?.failedRows || 0) > 0;
+        const totalInjected = Number(doc.pipelineMetrics?.nodesInjected || 0);
+
+        try {
+          await req.payload.create({
+            collection: 'notifications',
+            data: {
+              subject: `Pipeline Ingestión: ${doc.subject}`,
+              message: `Misión ${doc.traceId} completada. Nodos: ${totalInjected}. Anomalías: ${doc.pipelineMetrics?.failedRows || 0}.`,
+              priority: hasAnomalies ? 'high' : 'low',
+              category: 'ops',
+              source: 'INGESTION_ENGINE',
+              tenant: typeof doc.tenant === 'object' ? doc.tenant.id : doc.tenant,
+              isRead: false,
+              metadata: { ingestionId: doc.id, traceId: doc.traceId }
+            }
+          });
+        } catch {
+          console.error(`${C.red}   ✕ [SILO_D_LINK_FAILED] Unable to log ingestion result.${C.reset}`);
         }
       }) as CollectionAfterChangeHook,
     ]
@@ -110,29 +121,22 @@ export const Ingestions: CollectionConfig = {
       type: 'tabs',
       tabs: [
         {
-          label: 'Identidade da Fonte',
+          label: 'Identidade da Missão',
           fields: [
             {
               type: 'row',
               fields: [
-                { 
-                  name: 'subject', 
-                  type: 'text', 
-                  required: true, 
-                  admin: { width: '65%', placeholder: 'Ej: Batch_Audience_Sync_Q2' } 
-                },
+                { name: 'subject', type: 'text', required: true, admin: { width: '70%' } },
                 {
                   name: 'priority',
                   type: 'select',
                   defaultValue: 'normal',
-                  required: true,
                   options: [
-                    { label: 'Crítico (Imediato)', value: 'critical' },
-                    { label: 'Alta Prioridade', value: 'high' },
-                    { label: 'Normal', value: 'normal' },
-                    { label: 'Lote (Batch)', value: 'batch' }
+                    { label: 'Crítico', value: 'critical' },
+                    { label: 'Alta', value: 'high' },
+                    { label: 'Normal', value: 'normal' }
                   ],
-                  admin: { width: '35%' }
+                  admin: { width: '30%' }
                 }
               ]
             },
@@ -144,10 +148,10 @@ export const Ingestions: CollectionConfig = {
                   type: 'select', 
                   required: true,
                   options: [
-                    { label: 'Documento (Excel/CSV)', value: 'document' },
-                    { label: 'Captura Visual (OCR)', value: 'image' },
-                    { label: 'Inteligência de Voz', value: 'audio' },
-                    { label: 'Fluxo de Texto', value: 'text' }
+                    { label: 'Excel/CSV', value: 'document' },
+                    { label: 'OCR Image', value: 'image' },
+                    { label: 'Voice Ingest', value: 'audio' },
+                    { label: 'Raw Text', value: 'text' }
                   ],
                   admin: { width: '33%' }
                 },
@@ -156,10 +160,9 @@ export const Ingestions: CollectionConfig = {
                   type: 'select',
                   required: true,
                   options: [
-                    { label: 'Portal de Operações', value: 'web' },
-                    { label: 'WhatsApp Sync', value: 'whatsapp' },
-                    { label: 'Email Gateway', value: 'email' },
-                    { label: 'API Externa', value: 'api' }
+                    { label: 'Portal', value: 'web' },
+                    { label: 'WhatsApp', value: 'whatsapp' },
+                    { label: 'API', value: 'api' }
                   ],
                   admin: { width: '33%' }
                 },
@@ -169,11 +172,10 @@ export const Ingestions: CollectionConfig = {
                   defaultValue: 'pending',
                   required: true,
                   options: [
-                    { label: 'Aguardando Pipeline', value: 'pending' },
-                    { label: 'Processando Atividade', value: 'processing' },
-                    { label: 'Indexado com Sucesso', value: 'processed' },
-                    { label: 'Erro de Protocolo', value: 'error' },
-                    { label: 'Análise de IA', value: 'ai_analysis' }
+                    { label: 'Waiting', value: 'pending' },
+                    { label: 'Processing', value: 'processing' },
+                    { label: 'Processed', value: 'processed' },
+                    { label: 'Error', value: 'error' }
                   ],
                   admin: { width: '34%' }
                 }
@@ -182,81 +184,49 @@ export const Ingestions: CollectionConfig = {
           ]
         },
         {
-          label: 'Payload & Transformação',
+          label: 'Métricas & Anomalias',
           fields: [
-            { 
-              name: 'rawContent', 
-              type: 'textarea', 
-              admin: { description: 'Conteúdo original ou transcrição bruta do sinal.' } 
-            },
-            { 
-              name: 'asset', 
-              type: 'upload', 
-              relationTo: 'media', 
-              admin: { description: 'Recurso binário persistido no S3 Cluster.' } 
-            },
-            { 
-              name: 'pipelineMetrics', 
+            {
+              name: 'pipelineMetrics',
               type: 'group',
-              label: 'Telemetria Operacional',
+              label: 'Indicadores Industriais',
               fields: [
                 {
                   type: 'row',
                   fields: [
-                    { name: 'executionTimeMs', type: 'number', admin: { width: '33%', readOnly: true } },
-                    { name: 'itemsProcessed', type: 'number', admin: { width: '33%', readOnly: true } },
-                    { name: 'errorCount', type: 'number', admin: { width: '34%', readOnly: true } }
+                    { name: 'nodesInjected', type: 'number', defaultValue: 0, admin: { width: '25%' } },
+                    { name: 'duplicatesSkipped', type: 'number', defaultValue: 0, admin: { width: '25%' } },
+                    { name: 'failedRows', type: 'number', defaultValue: 0, admin: { width: '25%' } },
+                    { name: 'executionTimeMs', type: 'number', admin: { width: '25%' } }
                   ]
                 }
               ]
             },
-            { 
-              name: 'processedData', 
-              type: 'json', 
-              admin: { description: 'Estrutura canônica JSON resultante do processamento.' } 
-            }
-          ]
-        },
-        {
-          label: 'IA & Intelligence Insights',
-          fields: [
             {
-              name: 'aiSummary',
-              type: 'textarea',
-              admin: { description: 'Resumo executivo gerado por modelos de lenguaje.' }
-            },
-            {
-              type: 'row',
+              name: 'issues',
+              type: 'array',
+              label: 'Ledger de Anomalias',
+              labels: { singular: 'Incidente', plural: 'Incidentes Detectados' },
               fields: [
-                { 
-                  name: 'confidenceScore', 
-                  type: 'number', 
-                  min: 0, 
-                  max: 100, 
-                  admin: { width: '50%', description: 'Nivel de certeza de la extracción IA (0-100).' } 
+                {
+                  type: 'row',
+                  fields: [
+                    { name: 'row', type: 'number', admin: { width: '20%' } },
+                    { name: 'error', type: 'text', admin: { width: '80%' } }
+                  ]
                 },
-                { 
-                  name: 'entitiesDetected', 
-                  type: 'array', 
-                  admin: { width: '50%' },
-                  fields: [{ name: 'entity', type: 'text' }],
-                  labels: { singular: 'Entidade', plural: 'Entidades Detectadas' }
-                }
+                { name: 'data', type: 'json', admin: { description: 'Payload original da linha con erro.' } }
               ]
             }
           ]
         },
         {
-          label: 'Infraestrutura & Trace',
+          label: 'Forense & Trace',
           fields: [
             {
               type: 'row',
               fields: [
-                { 
-                  name: 'traceId', 
-                  type: 'text', 
-                  admin: { width: '50%', readOnly: true, description: 'Token de rastreio inalterável.' } 
-                },
+                { name: 'traceId', type: 'text', admin: { width: '50%', readOnly: true } },
                 { 
                   name: 'tenant', 
                   type: 'relationship', 
@@ -267,22 +237,16 @@ export const Ingestions: CollectionConfig = {
                 }
               ]
             },
-            { 
-              name: 'originId', 
-              type: 'text', 
-              admin: { description: 'External Ref ID (WhatsApp SID, Email Message-ID).' } 
-            },
-            { 
-              name: 'senderInfo', 
-              type: 'json', 
-              admin: { description: 'Metadados do agente ou sistema emissor.' } 
-            }
+            { name: 'processedData', type: 'json', admin: { description: 'Snapshot JSON do resultado.' } },
+            { name: 'senderInfo', type: 'json' }
           ]
         }
       ]
     }
-  ]
+  ],
 };
 
 const collectionDuration = performance.now() - collectionStart;
-console.log(`   ${C.green}✓ [DNA][SUCCESS]${C.reset} Ingestion Hub calibrated | Time: ${collectionDuration.toFixed(4)}ms\n`);
+if (process.env.NODE_ENV !== 'test') {
+  console.log(`   ${C.green}✓ [DNA][SUCCESS]${C.reset} Ingestions Engine calibrated | Time: ${collectionDuration.toFixed(4)}ms\n`);
+}

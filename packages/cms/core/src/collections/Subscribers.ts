@@ -3,9 +3,9 @@
  * @description Centro de Inteligencia de Leads y Ciclo de Vida del Huésped (CRM Hub).
  *              Orquesta la persistencia de identidades, gestión de consentimiento
  *              y métricas de engagement con aislamiento Multi-Tenant de Grado S0.
- *              Refactorizado: Normalización de identidad, cumplimiento LGPD,
- *              y telemetría Heimdall v2.0 para auditoría de ingesta.
- * @version 3.0 - Enterprise CRM Standard (Forensic Ready)
+ *              Refactorizado: Automatización de Consentimiento LGPD, resolución ESM (.js),
+ *              perfilado de identidad y convergencia reactiva con Silo D.
+ * @version 4.0 - Compliance Hardened & Silo Convergence
  * @author Staff Engineer - MetaShark Tech
  */
 
@@ -14,28 +14,27 @@ import {
   type CollectionBeforeChangeHook, 
   type CollectionAfterChangeHook 
 } from 'payload';
-import { multiTenantReadAccess, multiTenantWriteAccess } from './Access';
 
-/**
- * CONSTANTES DE TELEMETRÍA (Protocolo Heimdall)
+/** 
+ * IMPORTACIONES DE PERÍMETRO SOBERANO
+ * @pilar V: Adherencia Arquitectónica. Extensiones .js para rigor ESM.
  */
+import { multiTenantReadAccess, multiTenantWriteAccess } from './Access.js';
+
+/** CONSTANTES CROMÁTICAS HEIMDALL v2.5 */
 const C = {
-  reset: '\x1b[0m',
-  cyan: '\x1b[36m',
-  green: '\x1b[32m',
-  yellow: '\x1b[33m',
-  magenta: '\x1b[35m',
-  bold: '\x1b[1m',
-  blue: '\x1b[34m',
-  red: '\x1b[31m'
+  reset: '\x1b[0m', cyan: '\x1b[36m', green: '\x1b[32m', 
+  yellow: '\x1b[33m', magenta: '\x1b[35m', bold: '\x1b[1m', red: '\x1b[31m'
 };
 
 const collectionStart = performance.now();
-console.log(`${C.magenta}  [DNA][LOAD] Building Collection: SUBSCRIBERS (CRM Node)...${C.reset}`);
+if (process.env.NODE_ENV !== 'test') {
+  console.log(`${C.magenta}  [DNA][LOAD] Building Collection: SUBSCRIBERS (CRM Hub)...${C.reset}`);
+}
 
 /**
  * APARATO: Subscribers
- * @description Única fuente de verdad para la audiencia del ecosistema MetaShark.
+ * @description Única fuente de verdad para la audiencia y leads del ecosistema.
  */
 export const Subscribers: CollectionConfig = {
   slug: 'subscribers',
@@ -46,64 +45,86 @@ export const Subscribers: CollectionConfig = {
     description: 'Gestão centralizada de identidades e jornada de conversão do hóspede.',
   },
   
-  /**
-   * REGLAS DE ACCESO (Sovereign Security)
-   * @pilar VIII: Aislamiento absoluto. La creación es pública (Handshake), 
-   * pero la auditoría es exclusiva del Staff autenticado por Tenant.
-   */
   access: {
     read: multiTenantReadAccess,
-    create: () => true, // Acceso para formularios de aterrizaje
+    create: () => true, // Handshake público de captura
     update: multiTenantWriteAccess,
-    delete: ({ req: { user } }) => user?.role === 'developer', // Solo Devs purgan identidades
+    delete: ({ req: { user } }) => user?.role === 'developer',
   },
 
-  /**
-   * GUARDIANES DE IDENTIDAD (Forensic Hooks)
-   */
   hooks: {
     /**
      * HOOK: beforeChange
-     * @description Sanitiza la identidad y garantiza el perímetro de propiedad.
+     * @description Sanitiza identidad, gestiona cumplimiento LGPD y ancla perímetros.
      */
     beforeChange: [
-      (async ({ req, data, operation }) => {
+      (async ({ req, data, operation, originalDoc }) => {
         const start = performance.now();
-        const traceId = `crm_sync_${Date.now().toString(36)}`;
-        
-        console.log(`${C.blue}    [HEIMDALL][CRM][START] Syncing Identity Node | ID: ${traceId}${C.reset}`);
+        const traceId = `crm_sync_${Date.now().toString(36).toUpperCase()}`;
 
-        // 1. Inyección de Perímetro Multi-Tenant
+        // 1. Handshake de Perímetro Multi-Tenant
         if (operation === 'create' && req.user && !data.tenant) {
-          data.tenant = typeof req.user.tenant === 'object' && req.user.tenant !== null 
-            ? req.user.tenant.id 
-            : req.user.tenant;
+          data.tenant = typeof req.user.tenant === 'object' ? req.user.tenant.id : req.user.tenant;
         }
 
-        // 2. Normalización de Identidad (Strict Lowercase)
+        // 2. Normalización de Identidad (Pilar III)
         if (data.email) {
           data.email = data.email.toLowerCase().trim();
         }
 
-        // 3. Timestamp de Actividad Inicial
+        // 3. Reactor de Consentimiento (Compliance Shield)
+        // Si es nuevo o si alguno de los checks de consentimiento ha cambiado
+        const hasConsentChanged = operation === 'create' || 
+          data.consentMarketing !== originalDoc?.consentMarketing ||
+          data.consentAnalytics !== originalDoc?.consentAnalytics;
+
+        if (hasConsentChanged) {
+          data.consentTimestamp = new Date().toISOString();
+        }
+
+        // 4. Timestamp de Actividad Inicial
         if (operation === 'create') {
           data.lastEngagementDate = new Date().toISOString();
         }
 
-        const duration = performance.now() - start;
-        console.log(`${C.green}    [HEIMDALL][CRM][END] Identity Sealed | Time: ${duration.toFixed(4)}ms${C.reset}`);
+        const duration = (performance.now() - start).toFixed(4);
+        if (process.env.NODE_ENV !== 'test') {
+          console.log(`${C.cyan}    [HEIMDALL][CRM] Identity Sealed | Trace: ${traceId} | Lat: ${duration}ms${C.reset}`);
+        }
         return data;
       }) as CollectionBeforeChangeHook,
     ],
 
     /**
      * HOOK: afterChange
-     * @description Registra la conversión exitosa en el ledger de infraestructura.
+     * @description Reporta la captura de leads y cualifica conversiones en Silo D.
      */
     afterChange: [
-      (async ({ doc, operation }) => {
-        if (operation === 'create') {
-          console.log(`   ${C.cyan}→ [LEAD_CAPTURED]${C.reset} New identity in CRM: ${doc.email} | Source: ${doc.source}`);
+      (async ({ doc, operation, req }) => {
+        if (operation !== 'create') return;
+
+        if (process.env.NODE_ENV !== 'test') {
+          console.log(`   ${C.green}→ [LEAD_CAPTURED]${C.reset} New node: ${doc.email} | Source: ${doc.source}`);
+        }
+
+        // Cualificación de Lead y Notificación a Staff
+        if (doc.engagementLevel === 'loyalist') {
+          try {
+            await req.payload.create({
+              collection: 'notifications',
+              data: {
+                subject: 'Lead de Alta Fidelidad Detectado',
+                message: `El usuario ${doc.email} ha alcanzado el nivel LOYALIST.`,
+                priority: 'high',
+                category: 'ops',
+                source: 'CRM_ENGINE',
+                tenant: typeof doc.tenant === 'object' ? doc.tenant.id : doc.tenant,
+                isRead: false,
+              }
+            });
+          } catch {
+            console.error(`${C.red}   ✕ [SILO_D_LINK_FAILED] Unable to alert high-value lead.${C.reset}`);
+          }
         }
       }) as CollectionAfterChangeHook,
     ]
@@ -120,6 +141,15 @@ export const Subscribers: CollectionConfig = {
               type: 'row',
               fields: [
                 {
+                  name: 'name',
+                  type: 'text',
+                  admin: { 
+                    width: '40%', 
+                    placeholder: 'Nome de tratamento',
+                    description: 'Utilizado para personalização no Marketing Cloud.' 
+                  }
+                },
+                {
                   name: 'email',
                   type: 'email',
                   required: true,
@@ -127,6 +157,11 @@ export const Subscribers: CollectionConfig = {
                   index: true,
                   admin: { width: '60%', placeholder: 'hospede@exemplo.com' }
                 },
+              ]
+            },
+            {
+              type: 'row',
+              fields: [
                 {
                   name: 'status',
                   type: 'select',
@@ -139,22 +174,7 @@ export const Subscribers: CollectionConfig = {
                     { label: 'Inválido (Bounce)', value: 'bounced' },
                     { label: 'Em Quarentena', value: 'quarantine' }
                   ],
-                  admin: { width: '40%' }
-                },
-              ]
-            },
-            {
-              type: 'row',
-              fields: [
-                {
-                  name: 'source',
-                  type: 'text',
-                  defaultValue: 'web-portal',
-                  index: true,
-                  admin: { 
-                    width: '50%',
-                    description: 'Canal de origen (Ej: hero-form, festival-landing).' 
-                  }
+                  admin: { width: '33%' }
                 },
                 {
                   name: 'engagementLevel',
@@ -165,15 +185,25 @@ export const Subscribers: CollectionConfig = {
                     { label: 'Engajado (Active)', value: 'engaged' },
                     { label: 'Fidelizado (Loyalist)', value: 'loyalist' }
                   ],
-                  admin: { width: '50%' }
-                }
+                  admin: { width: '33%' }
+                },
+                {
+                  name: 'source',
+                  type: 'text',
+                  defaultValue: 'web-portal',
+                  index: true,
+                  admin: { 
+                    width: '34%',
+                    description: 'Canal de origen (Ej: hero-form, Silo-C Ingest).' 
+                  }
+                },
               ]
             }
           ]
         },
         {
           label: 'Compliance & Consentimento',
-          description: 'Rastreadores de conformidade legal LGPD / GDPR.',
+          description: 'Gestão inalterável de conformidade legal LGPD.',
           fields: [
             {
               type: 'row',
@@ -183,13 +213,13 @@ export const Subscribers: CollectionConfig = {
                   type: 'checkbox',
                   defaultValue: true,
                   required: true,
-                  admin: { width: '50%', description: 'Autorización para envíos promocionales.' }
+                  admin: { width: '50%', description: 'Autorização para comunicações.' }
                 },
                 {
                   name: 'consentAnalytics',
                   type: 'checkbox',
                   defaultValue: true,
-                  admin: { width: '50%', description: 'Autorización para tracking de comportamiento.' }
+                  admin: { width: '50%', description: 'Autorização para behavioral tracking.' }
                 }
               ]
             },
@@ -198,13 +228,13 @@ export const Subscribers: CollectionConfig = {
               type: 'date',
               admin: { 
                 readOnly: true,
-                description: 'Carimbo de tiempo inmutable de la aceptación de términos.' 
+                description: 'Carimbo de tempo da última alteração de consentimento.' 
               }
             }
           ]
         },
         {
-          label: 'Performance & Telemetria',
+          label: 'Métricas de Cloud',
           fields: [
             {
               type: 'row',
@@ -219,7 +249,7 @@ export const Subscribers: CollectionConfig = {
                   name: 'openRate',
                   type: 'number',
                   defaultValue: 0,
-                  admin: { readOnly: true, width: '33%' }
+                  admin: { readOnly: true, width: '33%', description: 'Porcentagem de abertura.' }
                 },
                 {
                   name: 'lastEngagementDate',
@@ -232,13 +262,13 @@ export const Subscribers: CollectionConfig = {
               name: 'metaData',
               type: 'json',
               admin: { 
-                description: 'Payload técnico capturado por Heimdall (IP, UserAgent, UTMs).' 
+                description: 'Payload técnico forense (Trace ID, IP, Client Context).' 
               }
             }
           ]
         },
         {
-          label: 'Infraestrutura',
+          label: 'Fronteira Operacional',
           fields: [
             {
               name: 'tenant',
@@ -249,16 +279,16 @@ export const Subscribers: CollectionConfig = {
               admin: { 
                 position: 'sidebar',
                 readOnly: true,
-                description: 'Propriedade proprietária desta identidade.'
+                description: 'Perímetro proprietário desta identidade.'
               }
             },
             {
               name: 'unsubscribedAt',
               type: 'date',
               admin: { 
-                position: 'sidebar',
+                position: 'sidebar', 
                 readOnly: true,
-                condition: (data) => data.status === 'unsubscribed'
+                condition: (data) => data?.status === 'unsubscribed'
               }
             }
           ]
@@ -269,4 +299,6 @@ export const Subscribers: CollectionConfig = {
 };
 
 const collectionDuration = performance.now() - collectionStart;
-console.log(`   ${C.green}✓ [DNA][SUCCESS]${C.reset} Subscribers CRM calibrated | Time: ${collectionDuration.toFixed(4)}ms\n`);
+if (process.env.NODE_ENV !== 'test') {
+  console.log(`   ${C.green}✓ [DNA][SUCCESS]${C.reset} Subscribers Hub calibrated | Time: ${collectionDuration.toFixed(4)}ms\n`);
+}

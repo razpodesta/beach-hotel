@@ -2,9 +2,10 @@
  * @file packages/cms/core/src/collections/DynamicRoutes.ts
  * @description Orquestador de Enrutamiento Dinámico e Inteligente (Gateway Silo).
  *              Gestiona puntos de acceso físicos (QRs) con lógica condicional.
- *              Refactorizado: Resolución de TS2322 (Strict Validation Types)
- *              y nivelación de observabilidad Heimdall.
- * @version 3.1 - Type-Safe Gateway Standard
+ *              Refactorizado: Resolución ESM (.js), blindaje de llaves reservadas,
+ *              validación forense de tiempo y optimización P33.
+ *              Estándar: Heimdall v2.5 Forensic Logging & Multi-Tenant Shield.
+ * @version 3.2 - Reserved Keys Shield & ESM Compliance
  * @author Staff Engineer - MetaShark Tech
  */
 
@@ -13,47 +14,88 @@ import {
   type CollectionBeforeChangeHook, 
   type CollectionAfterChangeHook 
 } from 'payload';
-import { multiTenantReadAccess, multiTenantWriteAccess } from './Access';
 
-/**
- * CONSTANTES DE TELEMETRÍA (Protocolo Heimdall)
+/** 
+ * IMPORTACIONES DE PERÍMETRO SOBERANO
+ * @pilar V: Adherencia Arquitectónica. Extensiones .js para rigor ESM.
  */
+import { multiTenantReadAccess, multiTenantWriteAccess } from './Access.js';
+
+/** CONSTANTES CROMÁTICAS HEIMDALL v2.5 */
 const C = {
-  reset: '\x1b[0m',
-  cyan: '\x1b[36m',
-  green: '\x1b[32m',
-  yellow: '\x1b[33m',
-  magenta: '\x1b[35m',
-  bold: '\x1b[1m',
-  blue: '\x1b[34m',
-  red: '\x1b[31m'
+  reset: '\x1b[0m', cyan: '\x1b[36m', green: '\x1b[32m', 
+  yellow: '\x1b[33m', magenta: '\x1b[35m', bold: '\x1b[1m', red: '\x1b[31m'
 };
 
 const collectionStart = performance.now();
-console.log(`${C.magenta}  [DNA][LOAD] Building Collection: DYNAMIC ROUTES (Gateway)...${C.reset}`);
+if (process.env.NODE_ENV !== 'test') {
+  console.log(`${C.magenta}  [DNA][LOAD] Building Collection: DYNAMIC ROUTES (Gateway)...${C.reset}`);
+}
+
+// ============================================================================
+// VALIDADORES DE ÉLITE (Business Logic Guards)
+// ============================================================================
 
 /**
- * HELPER: validateTimeFormat
- * @description Valida el formato HH:mm cumpliendo con el contrato de Payload 3.0.
- * @fix TS2322: Maneja la unión de tipos string | string[] | null | undefined.
+ * @function validateTimeFormat
+ * @description Valida el contrato HH:mm (24h) con feedback forense.
  */
 const validateTimeFormat = (val: string | string[] | null | undefined): true | string => {
-  if (!val) return true; // El campo es opcional a nivel de esquema
-  if (typeof val !== 'string') return 'Tipo de dato inválido';
+  if (!val) return true;
+  if (typeof val !== 'string') return 'Dato no reconocido como protocolo de tiempo.';
   
   const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
-  return timeRegex.test(val) || 'Formato de tiempo inválido (HH:mm)';
+  return timeRegex.test(val) || 'Formato INVÁLIDO. Use HH:mm (ej: 07:30, 23:15).';
 };
 
 /**
- * APARATO PRINCIPAL: DynamicRoutes
+ * @constant RESERVED_KEYS
+ * @description Rumbos prohibidos para evitar el secuestro de rutas críticas.
  */
+const RESERVED_KEYS = ['admin', 'api', 'portal', 'auth', 'media', 'sitemap', 'robots', 'login', 'join'];
+
+// ============================================================================
+// GUARDIANES DE CICLO DE VIDA (Gateway Hooks)
+// ============================================================================
+
+const beforeChangeHook: CollectionBeforeChangeHook = async ({ data, operation, req }) => {
+  const start = performance.now();
+  const traceId = `gw_sync_${Date.now().toString(36).toUpperCase()}`;
+
+  // 1. Handshake de Perímetro (Tenant Guard)
+  if (operation === 'create' && req.user && !data.tenant) {
+    data.tenant = typeof req.user.tenant === 'object' ? req.user.tenant.id : req.user.tenant;
+  }
+
+  // 2. Sanitización y Gating de Route Key
+  if (data.routeKey) {
+    const cleanKey = data.routeKey.toLowerCase().replace(/[^a-z0-9-]/g, '-');
+    
+    if (RESERVED_KEYS.includes(cleanKey)) {
+      throw new Error(`SECURITY_ERR: La llave '${cleanKey}' es una ruta reservada del sistema.`);
+    }
+    
+    data.routeKey = cleanKey;
+  }
+
+  const duration = (performance.now() - start).toFixed(4);
+  if (process.env.NODE_ENV !== 'test') {
+    console.log(`${C.green}    [HEIMDALL][GATEWAY] Handshake OK | Trace: ${traceId} | Lat: ${duration}ms${C.reset}`);
+  }
+  
+  return data;
+};
+
+// ============================================================================
+// APARATO PRINCIPAL: DynamicRoutes
+// ============================================================================
+
 export const DynamicRoutes: CollectionConfig = {
   slug: 'dynamic-routes',
   admin: {
     useAsTitle: 'internalReference',
     group: 'Infrastructure',
-    description: 'Puntos de acceso inteligentes. Mapeo de QRs y rumbos condicionales.',
+    description: 'Pontos de acesso inteligentes e mapeamento de rumbos dinâmicos.',
     defaultColumns: ['internalReference', 'routeKey', 'fallbackUrl', 'tenant'],
   },
   
@@ -65,39 +107,16 @@ export const DynamicRoutes: CollectionConfig = {
   },
 
   hooks: {
-    /**
-     * HOOK: beforeChange
-     * @pilar IV: Observabilidad - Trazabilidad de latencia en la sincronización de rumbos.
-     */
-    beforeChange: [
-      (async ({ data, operation, req }) => {
-        const start = performance.now();
-        const traceId = `gw_sync_${Date.now().toString(36)}`;
-        
-        console.log(`${C.blue}    [HEIMDALL][GATEWAY][START] Syncing Route Logic | ID: ${traceId}${C.reset}`);
-
-        // 1. Inyección de Perímetro (Tenant Shield)
-        if (operation === 'create' && req.user && !data.tenant) {
-          data.tenant = typeof req.user.tenant === 'object' && req.user.tenant !== null 
-            ? req.user.tenant.id 
-            : req.user.tenant;
-        }
-
-        // 2. Sanitización de Route Key (URL Safe)
-        if (data.routeKey) {
-          data.routeKey = data.routeKey.toLowerCase().replace(/[^a-z0-9-]/g, '-');
-        }
-
-        const duration = performance.now() - start;
-        console.log(`${C.green}    [HEIMDALL][GATEWAY][END] Protocol Ready | Time: ${duration.toFixed(4)}ms${C.reset}`);
-        
-        return data;
-      }) as CollectionBeforeChangeHook,
-    ],
-
+    beforeChange: [beforeChangeHook],
     afterChange: [
       (async ({ doc, operation }) => {
-        console.log(`   ${C.cyan}→ [GATEWAY_UPDATE]${C.reset} Route /r/${doc.routeKey} mapped to ${doc.fallbackUrl} | Op: ${operation}`);
+        if (process.env.NODE_ENV !== 'test') {
+          const rulesCount = doc.conditionalRules?.length || 0;
+          console.log(
+            `   ${C.cyan}→ [GATEWAY_UPDATE]${C.reset} /r/${doc.routeKey} calibrated | ` +
+            `Rules: ${rulesCount} | Op: ${operation}`
+          );
+        }
       }) as CollectionAfterChangeHook,
     ]
   },
@@ -107,7 +126,7 @@ export const DynamicRoutes: CollectionConfig = {
       type: 'tabs',
       tabs: [
         {
-          label: 'Identidad del Punto',
+          label: 'Identidade do Ponto',
           fields: [
             {
               type: 'row',
@@ -118,7 +137,7 @@ export const DynamicRoutes: CollectionConfig = {
                   required: true, 
                   admin: { 
                     width: '60%',
-                    placeholder: 'Ej: Tótem Recepción - Desayuno/Cena' 
+                    placeholder: 'Ej: Tótem Recepción - Buffet' 
                   } 
                 },
                 { 
@@ -129,7 +148,7 @@ export const DynamicRoutes: CollectionConfig = {
                   required: true, 
                   admin: { 
                     width: '40%',
-                    description: 'Ruta final: hotel.com/r/[routeKey]' 
+                    description: 'hotel.com/r/[routeKey]' 
                   } 
                 },
               ]
@@ -139,21 +158,21 @@ export const DynamicRoutes: CollectionConfig = {
               type: 'text', 
               required: true, 
               admin: { 
-                description: 'URL de destino predeterminada (si no se cumplen reglas horarias).' 
+                description: 'URL de destino padrão se as regras não forem atendidas.' 
               } 
             },
           ]
         },
         {
-          label: 'Inteligencia Condicional',
+          label: 'Inteligência Condicional',
           fields: [
             {
               name: 'conditionalRules',
               type: 'array',
-              label: 'Algoritmos de Redirección',
+              label: 'Algoritmos de Redirecionamento',
               labels: {
-                singular: 'Regla Horaria/Nivel',
-                plural: 'Reglas de Enrutamiento'
+                singular: 'Regra de Contexto',
+                plural: 'Regras de Enrutamento'
               },
               fields: [
                 {
@@ -164,8 +183,7 @@ export const DynamicRoutes: CollectionConfig = {
                       type: 'text', 
                       admin: { 
                         placeholder: '07:00', 
-                        width: '25%',
-                        description: 'Formato HH:mm' 
+                        width: '25%' 
                       },
                       validate: validateTimeFormat
                     },
@@ -174,8 +192,7 @@ export const DynamicRoutes: CollectionConfig = {
                       type: 'text', 
                       admin: { 
                         placeholder: '11:00', 
-                        width: '25%',
-                        description: 'Formato HH:mm'
+                        width: '25%' 
                       },
                       validate: validateTimeFormat
                     },
@@ -185,7 +202,7 @@ export const DynamicRoutes: CollectionConfig = {
                       required: true, 
                       admin: { 
                         width: '50%',
-                        placeholder: '/desayuno-gourmet'
+                        placeholder: '/desayuno'
                       } 
                     }
                   ]
@@ -194,8 +211,9 @@ export const DynamicRoutes: CollectionConfig = {
                   name: 'requiredLoyaltyLevel',
                   type: 'number',
                   defaultValue: 0,
+                  index: true, // @fix: Optimización de filtrado P33
                   admin: { 
-                    description: 'Nivel mínimo del Protocolo 33 requerido para este rumbo.' 
+                    description: 'Nível mínimo do Protocolo 33 para ativar esta regra.' 
                   }
                 }
               ]
@@ -203,7 +221,7 @@ export const DynamicRoutes: CollectionConfig = {
           ]
         },
         {
-          label: 'Infraestructura',
+          label: 'Infraestrutura',
           fields: [
             {
               name: 'tenant',
@@ -214,7 +232,7 @@ export const DynamicRoutes: CollectionConfig = {
               admin: { 
                 position: 'sidebar',
                 readOnly: true,
-                description: 'Perímetro físico-digital de este punto de acceso.'
+                description: 'Perímetro proprietário do ponto.'
               }
             }
           ]
@@ -225,4 +243,6 @@ export const DynamicRoutes: CollectionConfig = {
 };
 
 const collectionDuration = performance.now() - collectionStart;
-console.log(`   ${C.green}✓ [DNA][SUCCESS]${C.reset} Gateway Engine calibrated | Time: ${collectionDuration.toFixed(4)}ms\n`);
+if (process.env.NODE_ENV !== 'test') {
+  console.log(`   ${C.green}✓ [DNA][SUCCESS]${C.reset} Gateway Engine calibrated | Time: ${collectionDuration.toFixed(4)}ms\n`);
+}

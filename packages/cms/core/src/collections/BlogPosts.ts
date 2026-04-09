@@ -2,9 +2,10 @@
  * @file packages/cms/core/src/collections/BlogPosts.ts
  * @description Colección Soberana del Motor Editorial (Concierge Journal).
  *              Orquesta la narrativa del santuario con inteligencia de metadatos,
- *              aislamiento Multi-Tenant de Grado S0 y telemetría Heimdall v2.0.
- *              Atomizado para maximizar la performance de build y legibilidad.
- * @version 7.0 - Forensic Editorial Engine (Heimdall Injected)
+ *              aislamiento Multi-Tenant y blindaje SEO inmutable.
+ *              Refactorizado: Resolución ESM (.js), normalización de taxonomía,
+ *              protección de permalinks y telemetría Heimdall v2.5.
+ * @version 8.0 - SEO Shield & ESM Resolution Hardened
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -21,113 +22,102 @@ import {
   LinkFeature 
 } from '@payloadcms/richtext-lexical';
 
-/** IMPORTACIONES DE PERÍMETRO SOBERANO */
-import { multiTenantReadAccess, multiTenantWriteAccess } from './Access';
-
-/**
- * CONSTANTES DE TELEMETRÍA (Protocolo Heimdall)
+/** 
+ * IMPORTACIONES DE PERÍMETRO SOBERANO
+ * @pilar V: Adherencia Arquitectónica. Extensiones .js para rigor ESM.
  */
+import { multiTenantReadAccess, multiTenantWriteAccess } from './Access.js';
+
+/** CONSTANTES CROMÁTICAS HEIMDALL v2.5 */
 const C = {
-  reset: '\x1b[0m',
-  cyan: '\x1b[36m',
-  green: '\x1b[32m',
-  yellow: '\x1b[33m',
-  magenta: '\x1b[35m',
-  bold: '\x1b[1m',
-  blue: '\x1b[34m',
-  red: '\x1b[31m'
+  reset: '\x1b[0m', cyan: '\x1b[36m', green: '\x1b[32m', 
+  yellow: '\x1b[33m', magenta: '\x1b[35m', bold: '\x1b[1m', red: '\x1b[31m'
 };
 
 const collectionStart = performance.now();
-console.log(`${C.magenta}  [DNA][LOAD] Building Collection: BLOG POSTS (Editorial Hub)...${C.reset}`);
+if (process.env.NODE_ENV !== 'test') {
+  console.log(`${C.magenta}  [DNA][LOAD] Building Collection: BLOG POSTS (Editorial Core)...${C.reset}`);
+}
 
 // ============================================================================
-// ATOMIZACIÓN DE INTELIGENCIA EDITORIAL (Pure Functions)
+// INTELIGENCIA EDITORIAL ESTÁTICA (Pilar X - Performance)
 // ============================================================================
 
 /**
  * @function generateSemanticSlug
- * @description Transmuta un título en una ruta SEO-Friendly inmutable.
+ * @description Transmuta títulos en identificadores SEO-Friendly inmutables.
  */
 const generateSemanticSlug = (title: string): string => {
   return title
     .toLowerCase()
     .trim()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '') // Remueve acentos
     .replace(/[^\w\s-]/g, '')
     .replace(/\s+/g, '-');
 };
 
 /**
  * @function calculateReadingTime
- * @description Estima el tiempo de lectura basándose en la densidad del Lexical AST.
+ * @description Motor de estimación cronológica basado en densidad de AST.
  */
 const calculateReadingTime = (content: unknown): number => {
   if (!content || typeof content !== 'object') return 1;
   try {
-    const contentString = JSON.stringify(content);
-    const wordCount = contentString.split(/\s+/g).length;
-    return Math.max(1, Math.ceil(wordCount / 225)); // Standard: 225 wpm
+    const wordCount = JSON.stringify(content).split(/\s+/g).length;
+    return Math.max(1, Math.ceil(wordCount / 225)); // Standard reading pace
   } catch {
     return 1;
   }
 };
 
 // ============================================================================
-// GUARDIANES DE CICLO DE VIDA (DNA Hooks)
+// GUARDIANES DE CICLO DE VIDA (Editorial DNA Hooks)
 // ============================================================================
 
-/**
- * HOOK: beforeChange
- * @description Orquesta la normalización de taxonomía, slugificación y propiedad.
- */
-const beforeChangeHook: CollectionBeforeChangeHook = async ({ req, data, operation }) => {
+const beforeChangeEditorial: CollectionBeforeChangeHook = async ({ req, data, operation, originalDoc }) => {
   const start = performance.now();
-  const traceId = `blog_sync_${Date.now().toString(36)}`;
-  
-  console.log(`${C.blue}    [HEIMDALL][EDITORIAL][START] Processing Story | ID: ${traceId}${C.reset}`);
+  const traceId = `edit_sync_${Date.now().toString(36).toUpperCase()}`;
 
   // 1. Handshake de Propiedad (Multi-Tenant Shield)
   if (operation === 'create' && req.user && !data.tenant) {
-    data.tenant = typeof req.user.tenant === 'object' && req.user.tenant !== null 
-      ? req.user.tenant.id 
-      : req.user.tenant;
+    data.tenant = typeof req.user.tenant === 'object' ? req.user.tenant.id : req.user.tenant;
     
-    // Auto-atribución de autoría
+    // Auto-atribución de Autoría (Smart Mapping)
     if (!data.author) data.author = req.user.id;
-    console.log(`       [INFO] Story anchored to Tenant and User Identity.`);
   }
 
-  // 2. Inteligencia de Rumbos (Slug Generation)
+  // 2. Sello de Identidad SEO (Slug Guard)
   if (data.title && !data.slug) {
     data.slug = generateSemanticSlug(data.title);
   }
 
-  // 3. Normalización de Taxonomía (MACS Standard)
+  // Protección de Permalink: No cambiar slug si el post ya está publicado
+  if (operation === 'update' && originalDoc?.status === 'published' && data.slug !== originalDoc.slug) {
+    console.warn(`${C.red}   [SEO_ALERT] Permanent link mutation blocked for: ${originalDoc.slug}${C.reset}`);
+    data.slug = originalDoc.slug;
+  }
+
+  // 3. Normalización de Taxonomía
   if (data.tags && Array.isArray(data.tags)) {
     data.tags = data.tags.map((item: { tag: string }) => ({
-      tag: item.tag.toLowerCase().trim().replace(/\s+/g, '-')
+      tag: item.tag.toLowerCase().trim().replace(/[^a-z0-9-]/g, '')
     }));
   }
 
-  // 4. Métrica de Densidad Editorial
+  // 4. Recalibración de Métricas de Lectura
   data.readingTime = calculateReadingTime(data.content);
 
-  const duration = performance.now() - start;
-  console.log(`${C.green}    [HEIMDALL][EDITORIAL][END] Narrative Prepared | Time: ${duration.toFixed(4)}ms${C.reset}`);
+  const duration = (performance.now() - start).toFixed(4);
+  if (process.env.NODE_ENV !== 'test') {
+    console.log(`${C.green}    [HEIMDALL][EDITORIAL] Narrative Sealed | Trace: ${traceId} | Lat: ${duration}ms${C.reset}`);
+  }
   
   return data;
 };
 
-/**
- * HOOK: afterChange
- * @description Reporta la sincronización exitosa al Ledger de infraestructura.
- */
-const afterChangeHook: CollectionAfterChangeHook = async ({ doc }) => {
-  console.log(`   ${C.cyan}→ [JOURNAL_SYNC]${C.reset} Post "${doc.title}" synchronized | Status: ${doc.status} | Trace: ${Date.now()}`);
-};
-
 // ============================================================================
-// APARATO PRINCIPAL: BlogPosts
+// DEFINICIÓN DE LA COLECCIÓN
 // ============================================================================
 
 export const BlogPosts: CollectionConfig = {
@@ -140,10 +130,6 @@ export const BlogPosts: CollectionConfig = {
     description: 'Gestão da narrativa e inteligência editorial do Santuário.',
   },
   
-  /**
-   * REGLAS DE ACCESO (Sovereign Security)
-   * @pilar VIII: Resiliencia y Aislamiento Perimetral.
-   */
   access: {
     read: multiTenantReadAccess,
     create: ({ req: { user } }) => !!user && (user.role === 'admin' || user.role === 'developer'),
@@ -152,8 +138,14 @@ export const BlogPosts: CollectionConfig = {
   },
 
   hooks: {
-    beforeChange: [beforeChangeHook],
-    afterChange: [afterChangeHook],
+    beforeChange: [beforeChangeEditorial],
+    afterChange: [
+      (async ({ doc, operation: _op }) => {
+        if (process.env.NODE_ENV !== 'test') {
+          console.log(`   ${C.cyan}→ [JOURNAL_SYNC]${C.reset} "${doc.title}" synchronized | Vibe: ${doc.vibe}`);
+        }
+      }) as CollectionAfterChangeHook,
+    ],
   },
 
   fields: [
@@ -166,14 +158,14 @@ export const BlogPosts: CollectionConfig = {
       admin: { 
         position: 'sidebar', 
         readOnly: true,
-        description: 'Propriedade detentora desta narrativa editorial.'
+        description: 'Propriedade detentora desta narrativa.'
       },
     },
     {
       type: 'tabs',
       tabs: [
         {
-          label: 'Narrativa & Conteúdo',
+          label: 'Conteúdo & Narrativa',
           fields: [
             {
               type: 'row',
@@ -182,15 +174,15 @@ export const BlogPosts: CollectionConfig = {
                   name: 'title', 
                   type: 'text', 
                   required: true, 
-                  admin: { width: '70%', placeholder: 'Título de impacto cinematográfico' } 
+                  admin: { width: '70%', placeholder: 'Título de impacto' } 
                 },
                 { 
                   name: 'slug', 
                   type: 'text', 
                   unique: true, 
-                  required: true, 
                   index: true, 
-                  admin: { width: '30%', description: 'Ruta semântica para SEO (ex: segredos-da-ilha).' } 
+                  required: true, 
+                  admin: { width: '30%', description: 'Permalink inalterável após publicação.' } 
                 },
               ]
             },
@@ -206,18 +198,17 @@ export const BlogPosts: CollectionConfig = {
                   HTMLConverterFeature({}),
                 ],
               }), 
-              admin: { description: 'Corpo da matéria com suporte a MDX-like rendering.' }
             },
             { 
               name: 'description', 
               type: 'textarea', 
               required: true,
-              admin: { description: 'Extrato para Meta-Description. Crítico para SEO E-E-A-T.' }
+              admin: { description: 'Resumo crítico para meta-tags SEO.' }
             },
           ],
         },
         {
-          label: 'Atribuição & Performance',
+          label: 'Atribuição & Atmosfera',
           fields: [
             {
               type: 'row',
@@ -237,10 +228,7 @@ export const BlogPosts: CollectionConfig = {
                   required: true,
                   admin: { 
                     width: '50%',
-                    date: {
-                      pickerAppearance: 'dayAndTime',
-                      displayFormat: 'dd/MM/yyyy HH:mm'
-                    }
+                    date: { pickerAppearance: 'dayAndTime', displayFormat: 'dd/MM/yyyy HH:mm' }
                   }
                 },
               ]
@@ -254,23 +242,42 @@ export const BlogPosts: CollectionConfig = {
                   required: true,
                   defaultValue: 'draft',
                   options: [
-                    { label: 'Rascunho (Privado)', value: 'draft' },
-                    { label: 'Publicado (Live)', value: 'published' }
+                    { label: 'Draft', value: 'draft' },
+                    { label: 'Published', value: 'published' }
                   ], 
                   admin: { width: '50%' }
                 },
                 { 
                   name: 'vibe', 
                   type: 'select', 
-                  required: true,
+                  required: true, 
                   defaultValue: 'day',
                   options: [
-                    { label: 'Atmosfera: Dia (Light)', value: 'day' },
-                    { label: 'Atmosfera: Noite (Sanctuary)', value: 'night' }
+                    { label: 'Day (Luz)', value: 'day' },
+                    { label: 'Night (Sanctuary)', value: 'night' }
                   ], 
-                  admin: { width: '50%', description: 'Define o tema visual do artigo no frontend.' }
+                  admin: { width: '50%', description: 'Define o tema visual no Portal.' }
                 },
               ]
+            },
+            { 
+              name: 'tags', 
+              type: 'array', 
+              labels: { singular: 'Tag', plural: 'Tags' },
+              fields: [{ name: 'tag', type: 'text', required: true }],
+              admin: { description: 'Taxonomia indexada por busca semântica.' }
+            }
+          ],
+        },
+        {
+          label: 'Metadata & Social',
+          fields: [
+            { 
+              name: 'ogImage', 
+              type: 'upload', 
+              relationTo: 'media', 
+              required: true,
+              admin: { description: 'Asset visual de alta fidelidade para LCP.' }
             },
             { 
               name: 'readingTime', 
@@ -278,32 +285,8 @@ export const BlogPosts: CollectionConfig = {
               admin: { 
                 position: 'sidebar', 
                 readOnly: true,
-                description: 'Tempo estimado calculado automaticamente (wpm: 225).' 
+                description: 'Cálculo de densidade (wpm: 225).' 
               } 
-            },
-            { 
-              name: 'tags', 
-              type: 'array', 
-              labels: { singular: 'Tag', plural: 'Taxonomia Editorial' },
-              fields: [{ name: 'tag', type: 'text', required: true }],
-              admin: { description: 'Palavras-chave para o motor de busca perimetral.' }
-            }
-          ],
-        },
-        {
-          label: 'SEO & Social Assets',
-          fields: [
-            { 
-              name: 'metaTitle', 
-              type: 'text', 
-              admin: { description: 'Título alternativo para o cabeçalho do navegador.' } 
-            },
-            { 
-              name: 'ogImage', 
-              type: 'upload', 
-              relationTo: 'media', 
-              required: true,
-              admin: { description: 'Ativo visual de alta fidelidade para compartilhamento social.' }
             },
           ],
         }
@@ -313,4 +296,6 @@ export const BlogPosts: CollectionConfig = {
 };
 
 const collectionDuration = performance.now() - collectionStart;
-console.log(`   ${C.green}✓ [DNA][SUCCESS]${C.reset} Editorial Engine calibrated | Time: ${collectionDuration.toFixed(4)}ms\n`);
+if (process.env.NODE_ENV !== 'test') {
+  console.log(`   ${C.green}✓ [DNA][SUCCESS]${C.reset} Editorial Core calibrated | Time: ${collectionDuration.toFixed(4)}ms\n`);
+}

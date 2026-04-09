@@ -1,40 +1,82 @@
 /**
  * @file packages/cms/core/src/collections/Tenants.ts
- * @description Orquestador Soberano de Perímetros Multi-Tenant.
- *              Evolucionado para gestionar la Identidad Cromática (OKLCH) y 
- *              Configuración de Atmósfera, eliminando el hardcoding en el Frontend.
- *              Inyecta Protocolo Heimdall para auditoría de performance.
- * @version 4.0 - Sovereign Identity & Atmosphere Orchestrator
- * @author Raz Podestá - MetaShark Tech
+ * @description Orquestador Soberano de Perímetros Multi-Tenant (Root Node).
+ *              Define la frontera física, digital, social y estética de cada propiedad.
+ *              Refactorizado: Inmutabilidad de slugs, validación OKLCH v4, 
+ *              inyección de Social DNA y resolución ESM (.js).
+ *              Estándar: Heimdall v2.5 Forensic Logging & Multi-Tenant Shield.
+ * @version 5.0 - Master Identity & Social DNA Sealed
+ * @author Staff Engineer - MetaShark Tech
  */
 
 import { type CollectionConfig, type CollectionBeforeChangeHook } from 'payload';
-import { multiTenantReadAccess, multiTenantWriteAccess } from './Access';
+import { multiTenantReadAccess, multiTenantWriteAccess } from './Access.js';
 
+/** CONSTANTES CROMÁTICAS HEIMDALL v2.5 */
 const C = {
-  reset: '\x1b[0m',
-  cyan: '\x1b[36m',
-  green: '\x1b[32m',
-  magenta: '\x1b[35m',
-  bold: '\x1b[1m'
+  reset: '\x1b[0m', cyan: '\x1b[36m', green: '\x1b[32m', 
+  yellow: '\x1b[33m', magenta: '\x1b[35m', bold: '\x1b[1m', red: '\x1b[31m'
 };
 
+const collectionStart = performance.now();
+if (process.env.NODE_ENV !== 'test') {
+  console.log(`${C.magenta}  [DNA][LOAD] Building Collection: TENANTS (Master Perimeter)...${C.reset}`);
+}
+
+// ============================================================================
+// GUARDIANES DE CICLO DE VIDA (Perimeter Hooks)
+// ============================================================================
+
 /**
- * APARATO: Tenants
- * @description Define la frontera física, digital y estética de cada propiedad.
+ * HOOK: beforeChangePerimeter
+ * @description Automatiza la identidad semántica y protege la inmutabilidad.
  */
+const beforeChangePerimeter: CollectionBeforeChangeHook = async ({ data, operation, originalDoc }) => {
+  const start = performance.now();
+  const traceId = `tenant_hsk_${Date.now().toString(36).toUpperCase()}`;
+
+  // 1. Automatización de Slug (Génesis Protocol)
+  if (data.name && !data.slug) {
+    data.slug = (data.name as string)
+      .toLowerCase()
+      .trim()
+      .replace(/[^\w\s-]/g, '')
+      .replace(/\s+/g, '-');
+  }
+
+  // 2. Protección de Inmutabilidad tras Creación
+  if (operation === 'update' && data.slug !== originalDoc?.slug) {
+    throw new Error('SECURITY_BREACH: Tenant Slug is immutable post-creation to preserve SEO integrity.');
+  }
+
+  // 3. Normalización de Dominio (Protocol Shield)
+  if (data.domain) {
+    data.domain = (data.domain as string).replace(/\/$/, '').toLowerCase();
+  }
+
+  const duration = (performance.now() - start).toFixed(4);
+  if (process.env.NODE_ENV !== 'test') {
+    console.log(`${C.green}    [HEIMDALL][PERIMETER] Identity Sealed | Trace: ${traceId} | Lat: ${duration}ms${C.reset}`);
+  }
+  
+  return data;
+};
+
+// ============================================================================
+// DEFINICIÓN DE LA COLECCIÓN
+// ============================================================================
+
 export const Tenants: CollectionConfig = {
   slug: 'tenants',
   admin: {
     useAsTitle: 'name',
     group: 'Infrastructure',
-    description: 'Gestión centralizada de identidades de propiedad y configuraciones de marca.',
+    description: 'Gestão centralizada de identidades de propriedade e DNA de marca.',
     defaultColumns: ['name', 'slug', 'domain', 'status'],
   },
 
   /**
-   * REGLAS DE ACCESO PERIMETRAL
-   * @pilar VIII: Resiliencia y Seguridad Tier S0.
+   * REGLAS DE ACCESO (Sovereign Security Tier S0)
    */
   access: {
     read: multiTenantReadAccess,
@@ -43,37 +85,8 @@ export const Tenants: CollectionConfig = {
     delete: ({ req: { user } }) => user?.role === 'developer',
   },
 
-  /**
-   * GUARDIANES DE INTEGRIDAD (Heimdall Hooks)
-   */
   hooks: {
-    beforeChange: [
-      (async ({ data, operation }) => {
-        const start = performance.now();
-        const traceId = `tenant_sync_${Date.now().toString(36)}`;
-        
-        console.log(`${C.magenta}  [HEIMDALL][PERIMETER][START] Syncing Tenant Identity | ID: ${traceId}${C.reset}`);
-
-        // 1. Automatización de Identificador Semántico
-        if (data.name && typeof data.name === 'string' && !data.slug) {
-          data.slug = data.name
-            .toLowerCase()
-            .trim()
-            .replace(/[^\w\s-]/g, '')
-            .replace(/\s+/g, '-');
-        }
-
-        // 2. Normalización de Dominio (Protocol Shield)
-        if (data.domain && typeof data.domain === 'string') {
-          data.domain = data.domain.replace(/\/$/, '').toLowerCase();
-        }
-
-        const duration = performance.now() - start;
-        console.log(`     ${C.green}✓ [OK]${C.reset} Identity SSSoT updated | Op: ${operation} | Time: ${duration.toFixed(4)}ms`);
-        
-        return data;
-      }) as CollectionBeforeChangeHook,
-    ],
+    beforeChange: [beforeChangePerimeter],
   },
 
   fields: [
@@ -81,30 +94,26 @@ export const Tenants: CollectionConfig = {
       type: 'tabs',
       tabs: [
         {
-          label: 'Identidad de Perímetro',
+          label: 'Identidade de Perímetro',
           fields: [
             {
               type: 'row',
               fields: [
-                {
-                  name: 'name',
-                  type: 'text',
-                  required: true,
-                  admin: { 
-                    width: '50%',
-                    placeholder: 'Ej: Beach Hotel Canasvieiras' 
-                  },
+                { 
+                  name: 'name', 
+                  type: 'text', 
+                  required: true, 
+                  admin: { width: '50%', placeholder: 'Nome Comercial' } 
                 },
-                {
-                  name: 'slug',
-                  type: 'text',
-                  required: true,
-                  unique: true,
+                { 
+                  name: 'slug', 
+                  type: 'text', 
+                  unique: true, 
                   index: true,
                   admin: { 
-                    width: '50%',
-                    description: 'Identificador inmutable para rumbos de API.' 
-                  },
+                    width: '50%', 
+                    description: 'Identificador inalterável para API (Inamovível).' 
+                  } 
                 },
               ],
             },
@@ -115,7 +124,7 @@ export const Tenants: CollectionConfig = {
               required: true,
               admin: {
                 placeholder: 'https://beachhotelcanasvieiras.com',
-                description: 'Dominio DNS autorizado para el Handshake del Middleware.',
+                description: 'Domínio DNS autorizado para handshake de segurança.',
               },
             },
             {
@@ -125,16 +134,16 @@ export const Tenants: CollectionConfig = {
               required: true,
               options: [
                 { label: 'Operativo (Online)', value: 'active' },
-                { label: 'Mantenimiento (Static Fallback)', value: 'maintenance' },
-                { label: 'Suspendido (Vault Locked)', value: 'suspended' },
+                { label: 'Manutenção (Static Mock)', value: 'maintenance' },
+                { label: 'Suspenso (Perímetro Trancado)', value: 'suspended' },
               ],
               admin: { position: 'sidebar' }
             }
           ],
         },
         {
-          label: 'Atmósfera & Branding',
-          description: 'Configuración cromática soberana basada en el espacio OKLCH.',
+          label: 'Oxygen DNA (Branding)',
+          description: 'Configuração cromática baseada no espaço OKLCH para Tailwind v4.',
           fields: [
             {
               type: 'row',
@@ -144,54 +153,69 @@ export const Tenants: CollectionConfig = {
                   type: 'text',
                   required: true,
                   defaultValue: 'oklch(65% 0.25 270)',
-                  admin: { 
-                    width: '50%',
-                    description: 'Token Primary para el Oxygen Engine.' 
-                  },
+                  admin: { width: '50%', description: 'Token Primary (Header/UI).' }
                 },
                 {
                   name: 'accentColor',
                   type: 'text',
                   required: true,
                   defaultValue: 'oklch(70% 0.15 320)',
-                  admin: { 
-                    width: '50%',
-                    description: 'Token Accent para micro-interacciones.' 
-                  },
+                  admin: { width: '50%', description: 'Token Accent (Glow/P33).' }
                 },
               ],
             },
             {
-              name: 'logo',
-              type: 'upload',
-              relationTo: 'media',
-              required: true,
-              admin: { description: 'Isotipo oficial para el Header y Facturación.' },
-            },
-            {
-              name: 'favicon',
-              type: 'upload',
-              relationTo: 'media',
-              admin: { description: 'Icono de pestaña (32x32px optimized).' },
+              type: 'row',
+              fields: [
+                { name: 'logo', type: 'upload', relationTo: 'media', required: true, admin: { width: '50%' } },
+                { name: 'favicon', type: 'upload', relationTo: 'media', admin: { width: '50%' } }
+              ]
             }
           ],
         },
         {
-          label: 'Protocolo 33 Settings',
+          label: 'Social & SEO Master',
+          fields: [
+            {
+              name: 'socialDNA',
+              type: 'group',
+              label: 'Redes Sociais Globais',
+              fields: [
+                {
+                  type: 'row',
+                  fields: [
+                    { name: 'instagram', type: 'text', admin: { width: '33%', placeholder: '@beachhotel' } },
+                    { name: 'facebook', type: 'text', admin: { width: '33%' } },
+                    { name: 'whatsapp', type: 'text', admin: { width: '34%', placeholder: '+55...' } }
+                  ]
+                }
+              ]
+            },
+            {
+              name: 'seoMaster',
+              type: 'group',
+              label: 'Configurações Globais de Busca',
+              fields: [
+                { name: 'globalMetaTitle', type: 'text', admin: { placeholder: 'Título base do Hotel' } },
+                { name: 'globalMetaDescription', type: 'textarea' }
+              ]
+            }
+          ]
+        },
+        {
+          label: 'Protocolo 33 Control',
           fields: [
             {
               name: 'enableGamification',
               type: 'checkbox',
               defaultValue: true,
-              admin: { description: 'Activa la recolección de artefactos en esta propiedad.' }
+              admin: { description: 'Ativa o sistema de reputação e artefatos nesta propriedade.' }
             },
             {
               name: 'baseExperienceMultiplier',
               type: 'number',
               defaultValue: 1,
-              admin: { 
-                description: 'Multiplicador de XP para eventos especiales en este Tenant.' 
-              }
+              admin: { description: 'Multiplicador de XP para eventos táticos neste Tenant.' }
             }
           ]
         }
@@ -199,3 +223,8 @@ export const Tenants: CollectionConfig = {
     },
   ],
 };
+
+const collectionDuration = performance.now() - collectionStart;
+if (process.env.NODE_ENV !== 'test') {
+  console.log(`   ${C.green}✓ [DNA][SUCCESS]${C.reset} Tenants Perimeters levelvelled | Time: ${collectionDuration.toFixed(4)}ms\n`);
+}

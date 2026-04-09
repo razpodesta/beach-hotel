@@ -1,10 +1,11 @@
 /**
  * @file packages/cms/core/src/collections/Media.ts
  * @description Bóveda Soberana de Activos Multimedia (The Sanctuary Vault).
- *              Orquesta la gestión de activos binarios con optimización de entrega (LCP),
- *              aislamiento Multi-Tenant de Grado S0 y telemetría forense Heimdall.
- *              Sincronizado con Supabase Storage (S3 Protocol).
- * @version 10.0 - Forensic S3 Asset Orchestrator
+ *              Orquesta la gestión de activos binarios con optimización agresiva de 
+ *              entrega (LCP), aislamiento Multi-Tenant de Grado S0 y telemetría 
+ *              forense Heimdall v2.5. Sincronizado con Supabase Storage (S3).
+ *              Refactorizado: Resolución ESM (.js), soporte AVIF y blindaje de perímetro.
+ * @version 11.1 - AVIF LCP Hardening & ESM Compliance
  * @author Staff Engineer - MetaShark Tech
  */
 
@@ -14,7 +15,12 @@ import {
   type CollectionAfterChangeHook,
   type CollectionAfterDeleteHook 
 } from 'payload';
-import { multiTenantReadAccess, multiTenantWriteAccess } from './Access';
+
+/** 
+ * IMPORTACIONES DE PERÍMETRO SOBERANO
+ * @pilar V: Adherencia Arquitectónica. Extensiones .js para rigor ESM.
+ */
+import { multiTenantReadAccess, multiTenantWriteAccess } from './Access.js';
 
 /**
  * @interface PayloadMediaDoc
@@ -31,44 +37,94 @@ export interface PayloadMediaDoc {
   filename?: string | null;
   tenant?: string | { id: string } | null; 
   caption?: string | null;
+  assetContext?: 'branding' | 'interior' | 'event' | 'social' | 'system';
 }
 
 /**
- * CONSTANTES DE TELEMETRÍA (Protocolo Heimdall)
+ * CONSTANTES DE TELEMETRÍA (Protocolo Heimdall v2.5)
  */
 const C = {
-  reset: '\x1b[0m',
-  cyan: '\x1b[36m',
-  green: '\x1b[32m',
-  yellow: '\x1b[33m',
-  magenta: '\x1b[35m',
-  bold: '\x1b[1m',
-  blue: '\x1b[34m',
-  red: '\x1b[31m'
+  reset: '\x1b[0m', cyan: '\x1b[36m', green: '\x1b[32m', 
+  yellow: '\x1b[33m', magenta: '\x1b[35m', bold: '\x1b[1m', red: '\x1b[31m'
 };
 
 const collectionStart = performance.now();
-console.log(`${C.magenta}  [DNA][LOAD] Building Collection: MEDIA (The Sanctuary Vault)...${C.reset}`);
+if (process.env.NODE_ENV !== 'test') {
+  console.log(`${C.magenta}  [DNA][LOAD] Building Collection: MEDIA (Sovereign Vault)...${C.reset}`);
+}
+
+// ============================================================================
+// GUARDIANES DE CICLO DE VIDA (DNA Hooks)
+// ============================================================================
 
 /**
- * APARATO PRINCIPAL: Media
- * @description Gestión de activos con soporte para procesamiento dinámico de imágenes.
+ * HOOK: beforeChangeHook
+ * @description Sanitiza identidad, gestiona cumplimiento SEO y ancla perímetros.
  */
+const beforeChangeHook: CollectionBeforeChangeHook = async ({ req, data, operation }) => {
+  const start = performance.now();
+  const traceId = `media_hsk_${Date.now().toString(36).toUpperCase()}`;
+  
+  if (process.env.NODE_ENV !== 'test') {
+    console.log(`${C.cyan}    [HEIMDALL][VAULT][START] Asset Handshake | ID: ${traceId}${C.reset}`);
+  }
+
+  // 1. Handshake de Propiedad (Multi-Tenant Shield)
+  if (operation === 'create' && req.user && !data.tenant) {
+    data.tenant = typeof req.user.tenant === 'object' && req.user.tenant !== null 
+      ? req.user.tenant.id 
+      : req.user.tenant;
+  }
+
+  // 2. Validación de Perímetro (Anti-Orphan Guard)
+  if (!data.tenant && process.env.NODE_ENV === 'production') {
+    throw new Error('SECURITY_BREACH: Media assets must be anchored to a valid Tenant ID.');
+  }
+
+  // 3. Normalización de Metadatos SEO (E-E-A-T Compliance)
+  if (data.alt) {
+    data.alt = data.alt.trim().substring(0, 125);
+  }
+
+  const duration = (performance.now() - start).toFixed(4);
+  if (process.env.NODE_ENV !== 'test') {
+    console.log(`${C.green}    [HEIMDALL][VAULT][END] Metadata Sealed | Time: ${duration}ms${C.reset}`);
+  }
+  return data;
+};
+
+const afterChangeHook: CollectionAfterChangeHook = async ({ doc, operation }) => {
+  if (operation === 'create') {
+    const efficiency = doc.filesize ? (doc.filesize / 1024).toFixed(2) : '0';
+    if (process.env.NODE_ENV !== 'test') {
+      console.log(
+        `   ${C.green}✓ [S3_PERSISTED]${C.reset} File: ${C.bold}${doc.filename}${C.reset} | ` +
+        `Payload: ${efficiency}KB | Dim: ${doc.width}x${doc.height}px`
+      );
+    }
+  }
+};
+
+const afterDeleteHook: CollectionAfterDeleteHook = async ({ id, doc }) => {
+  if (process.env.NODE_ENV !== 'test') {
+    console.log(`${C.red}    [HEIMDALL][PURGE] Asset Eradicated | ID: ${id} | Filename: ${doc.filename}${C.reset}`);
+  }
+};
+
+// ============================================================================
+// APARATO PRINCIPAL: Media
+// ============================================================================
+
 export const Media: CollectionConfig = {
   slug: 'media',
   admin: {
     useAsTitle: 'alt',
     group: 'Infrastructure',
-    description: 'Bóveda centralizada de activos de alta fidelidad. Sincronizada con S3.',
-    defaultColumns: ['alt', 'filename', 'mimeType', 'tenant'],
+    description: 'Gestão de ativos binários de alta fidelidade sincronizados com S3 Cluster.',
+    defaultColumns: ['alt', 'mimeType', 'filesize', 'tenant'],
     preview: (doc) => doc?.url as string,
   },
   
-  /**
-   * REGLAS DE ACCESO (Sovereign Security)
-   * @pilar VIII: Aislamiento absoluto. Un activo solo es visible si es público 
-   * o si pertenece al Tenant de la sesión activa.
-   */
   access: {
     read: multiTenantReadAccess,
     create: ({ req: { user } }) => !!user,
@@ -77,78 +133,58 @@ export const Media: CollectionConfig = {
   },
 
   /**
-   * CONFIGURACIÓN DE INGESTA (Upload Engine)
-   * @description Define los derivados de imagen para maximizar el Core Web Vital LCP.
+   * CONFIGURACIÓN DE INGESTA (LCP Optimization Engine)
+   * @pilar X: Performance - Derivados específicos para dispositivos móviles y 4K.
    */
   upload: {
     staticDir: 'media',
     imageSizes: [
-      { name: 'thumbnail', width: 400, height: 300, position: 'centre' },
-      { name: 'card', width: 768, height: 1024, position: 'centre' },
-      { name: 'hero-cinematic', width: 2560, height: 1080, position: 'centre' },
-      { name: 'mobile-optimized', width: 1170, height: 2532, position: 'centre' },
+      { 
+        name: 'thumbnail', 
+        width: 400, 
+        height: 300, 
+        position: 'centre',
+        formatOptions: { format: 'webp', options: { quality: 80 } }
+      },
+      { 
+        name: 'card', 
+        width: 768, 
+        height: 1024, 
+        position: 'centre',
+        /** @fix: AVIF para LCP < 1.0s en dispositivos móviles */
+        formatOptions: { format: 'avif', options: { quality: 75 } } 
+      },
+      { 
+        name: 'hero-cinematic', 
+        width: 2560, 
+        height: 1080, 
+        position: 'centre',
+        formatOptions: { format: 'webp', options: { quality: 85 } } 
+      },
+      { 
+        name: 'mobile-optimized', 
+        width: 1170, 
+        height: 2532, 
+        position: 'centre',
+        formatOptions: { format: 'avif', options: { quality: 70 } }
+      },
     ],
     adminThumbnail: 'thumbnail',
-    mimeTypes: ['image/*', 'video/mp4', 'application/pdf'],
+    mimeTypes: [
+      'image/jpeg', 
+      'image/png', 
+      'image/webp', 
+      'image/avif', 
+      'video/mp4', 
+      'application/pdf'
+    ],
     focalPoint: true,
   },
 
   hooks: {
-    /**
-     * HOOK: beforeChange
-     * @description Garantiza el Handshake de Propiedad y normaliza metadatos SEO.
-     */
-    beforeChange: [
-      (async ({ req, data, operation }) => {
-        const start = performance.now();
-        const traceId = `media_ingest_${Date.now().toString(36)}`;
-        
-        console.log(`${C.blue}    [HEIMDALL][VAULT][START] Ingesting Asset | ID: ${traceId} | Op: ${operation}${C.reset}`);
-
-        // 1. Inyección Forzada de Tenant (Security Perimeter)
-        if (operation === 'create' && req.user) {
-          const userTenant = typeof req.user.tenant === 'object' && req.user.tenant !== null 
-            ? req.user.tenant.id 
-            : req.user.tenant;
-          
-          if (!data.tenant) {
-            data.tenant = userTenant;
-            console.log(`       [INFO] Asset auto-linked to Tenant: ${userTenant}`);
-          }
-        }
-
-        // 2. Normalización de Alt Text (SEO Compliance)
-        if (data.alt) {
-          data.alt = data.alt.trim();
-        }
-
-        const duration = performance.now() - start;
-        console.log(`${C.green}    [HEIMDALL][VAULT][END] Metadata Prepared | Time: ${duration.toFixed(4)}ms${C.reset}`);
-        return data;
-      }) as CollectionBeforeChangeHook,
-    ],
-
-    /**
-     * HOOK: afterChange
-     * @description Reporta la persistencia física en el Clúster S3.
-     */
-    afterChange: [
-      (async ({ doc, operation }) => {
-        if (operation === 'create') {
-          console.log(`   ${C.cyan}→ [S3_SYNC]${C.reset} File physically persisted: ${doc.filename} | Size: ${doc.filesize} bytes`);
-        }
-      }) as CollectionAfterChangeHook,
-    ],
-
-    /**
-     * HOOK: afterDelete
-     * @description Trazabilidad de Purga. Notifica la eliminación de un activo del ecosistema.
-     */
-    afterDelete: [
-      (async ({ id, doc }) => {
-        console.log(`${C.red}    [HEIMDALL][PURGE] Asset Eradicated | ID: ${id} | Filename: ${doc.filename}${C.reset}`);
-      }) as CollectionAfterDeleteHook,
-    ]
+    beforeChange: [beforeChangeHook],
+    afterChange: [afterChangeHook],
+    afterDelete: [afterDeleteHook],
   },
 
   fields: [
@@ -164,20 +200,33 @@ export const Media: CollectionConfig = {
               required: true,
               index: true,
               admin: { 
-                description: 'Crítico para SEO E-E-A-T. Describa el activo para motores de búsqueda y accesibilidad.',
-                placeholder: 'Ej: Suíte Master Alpha - Vista Panorámica del Mar de Canasvieiras'
+                description: 'Crítico para SEO. Texto alternativo descriptivo (mín. 8 caracteres).',
+                placeholder: 'Ej: Suíte Master Alpha - Vista Panorâmica do Mar'
               },
               validate: (val: string | null | undefined) => {
                 if (val && val.length >= 8) return true;
-                return 'Handshake SEO Fallido: El texto alternativo debe ser descriptivo (mín. 8 caracteres).';
+                return 'Handshake SEO Fallido: Descripción insuficiente para indexación de élite.';
               }
+            },
+            {
+              name: 'assetContext',
+              type: 'select',
+              required: true,
+              defaultValue: 'interior',
+              index: true, // @fix: Optimización de búsqueda por contexto
+              options: [
+                { label: 'Branding & Identity', value: 'branding' },
+                { label: 'Hotel Interior / Suites', value: 'interior' },
+                { label: 'Festival / Event Signals', value: 'event' },
+                { label: 'Social & Editorial Content', value: 'social' },
+                { label: 'System Infrastructure', value: 'system' }
+              ],
+              admin: { description: 'Categorização para o motor de busca do Silo C.' }
             },
             {
               name: 'caption',
               type: 'textarea',
-              admin: { 
-                description: 'Información editorial extendida (Journal/Blog captions).' 
-              },
+              admin: { description: 'Informação editorial extendida para o Journal.' },
             },
           ]
         },
@@ -193,7 +242,7 @@ export const Media: CollectionConfig = {
               admin: { 
                 position: 'sidebar', 
                 readOnly: true,
-                description: 'Propietario legal y digital de este activo multimedia.' 
+                description: 'Perímetro legal e digital proprietário.' 
               },
             },
             {
@@ -201,7 +250,7 @@ export const Media: CollectionConfig = {
               type: 'textarea',
               admin: {
                 position: 'sidebar',
-                description: 'Notas internas de auditoría técnica (Solo Staff).'
+                description: 'Log inalterável de auditoria técnica.'
               }
             }
           ]
@@ -212,4 +261,6 @@ export const Media: CollectionConfig = {
 };
 
 const collectionDuration = performance.now() - collectionStart;
-console.log(`   ${C.green}✓ [DNA][SUCCESS]${C.reset} Media Vault calibrated | Time: ${collectionDuration.toFixed(4)}ms\n`);
+if (process.env.NODE_ENV !== 'test') {
+  console.log(`   ${C.green}✓ [DNA][SUCCESS]${C.reset} Media Vault calibrated | Time: ${collectionDuration.toFixed(4)}ms\n`);
+}
