@@ -14,15 +14,20 @@
       "import": "./src/index.ts",
       "default": "./src/index.ts"
     },
+    "./server": {
+      "types": "./src/server.ts",
+      "import": "./src/server.ts",
+      "default": "./src/server.ts"
+    },
     "./package.json": "./package.json"
   },
   "sideEffects": false,
   "dependencies": {
+    "@hookform/resolvers": "^3.3.4",
     "lucide-react": "^0.552.0",
-    "react-icons": "^5.0.1",
-    "zod": "^4.1.12",
     "react-hook-form": "^7.51.0",
-    "@hookform/resolvers": "^3.3.4"
+    "react-icons": "^5.0.1",
+    "zod": "^4.1.12"
   },
   "peerDependencies": {
     "@supabase/ssr": "^0.7.0",

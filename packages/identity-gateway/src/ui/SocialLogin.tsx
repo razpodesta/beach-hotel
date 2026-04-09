@@ -3,7 +3,9 @@
  * @description Cluster de acceso social de alta fidelidad. 
  *              Implementa botones tácticos con branding inmersivo y 
  *              efectos de profundidad visual.
- * @version 1.0 - Luxury OAuth Interface
+ *              Refactorizado: Sincronizado con el estándar ESM y 
+ *              documentación de élite.
+ * @version 1.1 - Luxury OAuth Interface & Linter Pure
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -57,7 +59,7 @@ export function SocialLogin({ dictionary, onProviderClick, disabled }: SocialLog
             disabled={disabled}
             className={cn(
               "group relative flex h-16 items-center justify-center rounded-2xl border border-border/50 bg-background/40 transition-all duration-500",
-              "hover:border-primary/30 hover:bg-surface shadow-lg",
+              "hover:border-primary/30 hover:bg-surface shadow-lg transform-gpu",
               p.glow,
               disabled && "opacity-40 cursor-not-allowed grayscale"
             )}

@@ -2,18 +2,29 @@
  * @file apps/portfolio-web/src/app/auth/callback/route.ts
  * @description Punto de entrada soberano para retornos de identidad (OAuth).
  *              Actúa como el puente de red entre Supabase Auth y el Identity Bridge.
- *              Refactorizado: Resolución de TS7006, inyección de telemetría Heimdall
- *              y blindaje de extracción de metadatos.
- * @version 6.3 - Total Latency Tracking & Type Hardened
+ *              Refactorizado: Sincronización con el nuevo puerto de servidor de
+ *              la librería (@metashark/identity-gateway/server) y erradicación
+ *              de extensiones .js para resolución "bundler" (Next.js 15).
+ * @version 6.4 - Server Export & Bundler Sync
  * @author Raz Podestá - MetaShark Tech
  */
 
-import { handleOAuthCallback } from '@metashark/identity-gateway';
-import { syncIdentityAction } from '../../../lib/portal/actions/auth-sync.actions.js';
-import { i18n, isValidLocale } from '../../../config/i18n.config.js';
+/** 
+ * ALINEACIÓN ARQUITECTÓNICA (Server Isolation)
+ * @description Importamos exclusivamente desde el entry point de servidor de la librería,
+ * garantizando que Next.js no arrastre este código al entorno del cliente.
+ */
+import { handleOAuthCallback } from '@metashark/identity-gateway/server';
+
+/**
+ * IMPORTACIÓN DE CONTRATOS E INFRAESTRUCTURA LOCAL
+ * @pilar V: Adherencia Arquitectónica. Erradicación de extensiones .js.
+ */
+import { syncIdentityAction } from '../../../lib/portal/actions/auth-sync.actions';
+import { i18n, isValidLocale } from '../../../config/i18n.config';
 
 /** 
- * IMPORTACIÓN DE CONTRATOS DE INFRAESTRUCTRURA 
+ * IMPORTACIÓN DE CONTRATOS EXTERNOS 
  * @pilar III: Seguridad de Tipos Absoluta. 
  */
 import type { User } from '@supabase/supabase-js';

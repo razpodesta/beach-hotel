@@ -1,9 +1,11 @@
 /**
  * @file packages/identity-gateway/src/ui/forms/LoginForm.tsx
  * @description Aparato de Autenticación con Fortaleza. 
- *              Refactorizado: Purga de variables no utilizadas en bloques catch.
+ *              Refactorizado: Erradicación de extensiones .js para 
+ *              compatibilidad absoluta con el motor de resolución "bundler"
+ *              (Next.js 15 / Vercel Build Sync).
  *              Cumplimiento: Pilar X (Higiene de Código) e Integridad de Tipos.
- * @version 3.2 - Linter Pure & ESM Compliant
+ * @version 3.3 - Bundler Resolution Standard
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -14,13 +16,13 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeOff, Loader2, Mail, Lock, ShieldCheck } from 'lucide-react';
 
-import { cn } from '../../utils/cn.js';
+import { cn } from '../../utils/cn';
 import { 
   loginCredentialsSchema, 
   type LoginCredentials, 
   type IdentityDictionary 
-} from '../../schemas/auth.schema.js';
-import { PasswordStrength } from '../PasswordStrength.js';
+} from '../../schemas/auth.schema';
+import { PasswordStrength } from '../PasswordStrength';
 
 interface LoginFormProps {
   dictionary: IdentityDictionary;

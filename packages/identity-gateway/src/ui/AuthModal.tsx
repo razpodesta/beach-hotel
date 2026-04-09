@@ -3,8 +3,9 @@
  * @description Orquestador Supremo de Identidad. 
  *              Gestiona transiciones entre Login/Registro, inyección de ReCaptcha v3,
  *              y handshake con las Server Actions de la librería.
- *              Refactorizado: Resolución de TS2345 mediante Type Narrowing.
- * @version 1.4 - Type Guard Hardened
+ *              Refactorizado: Erradicación de extensiones .js para resolución nativa 
+ *              del motor SWC/Webpack en modo "bundler".
+ * @version 1.5 - Bundler Resolution Standard
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -14,16 +15,16 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ShieldCheck, Sparkles } from 'lucide-react';
 
-import { resolveIdentityDictionary } from '../i18n/index.js';
+import { resolveIdentityDictionary } from '../i18n/index';
 import { 
   type IdentityDictionary, 
   type IdentityUser, 
   type AuthCredentials 
-} from '../schemas/auth.schema.js';
-import { LoginForm } from './forms/LoginForm.js';
-import { RegisterForm } from './forms/RegisterForm.js';
-import { SocialLogin } from './SocialLogin.js';
-import { loginAction, registerAction } from '../actions/server-auth.js';
+} from '../schemas/auth.schema';
+import { LoginForm } from './forms/LoginForm';
+import { RegisterForm } from './forms/RegisterForm';
+import { SocialLogin } from './SocialLogin';
+import { loginAction, registerAction } from '../actions/server-auth';
 
 /**
  * @interface AuthModalProps
@@ -100,7 +101,7 @@ export function AuthModal({
     try {
       const result = await loginAction(credentials);
       
-      // @fix TS2345: Validación explícita de la forma del dato
+      // Validación explícita de la forma del dato
       if (result.success && isIdentityUser(result.data)) {
         handleAuthSuccess(result.data);
       } else {
@@ -118,7 +119,7 @@ export function AuthModal({
     try {
       const result = await registerAction(credentials);
       
-      // @fix TS2345: Validación explícita de la forma del dato
+      // Validación explícita de la forma del dato
       if (result.success && isIdentityUser(result.data)) {
         handleAuthSuccess(result.data);
       } else {
