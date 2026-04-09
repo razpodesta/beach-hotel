@@ -3,36 +3,37 @@
   "compilerOptions": {
     "baseUrl": ".",
     "rootDir": ".",
-    
-    /* 
-       PILAR XIII: PUREZA DE SOURCE (Orquestador Global)
-       Desactivamos la emisión en la raíz. Este archivo actúa 
-       exclusivamente como el "Solution File" para orquestar 
-       los distintos dominios del monorepo en el IDE.
-    */
     "noEmit": true
   },
-  /* 
-     El array 'files' vacío asegura que TypeScript no intente 
-     compilar archivos sueltos en la raíz, delegando todo el 
-     trabajo y la resolución a las 'references'.
-  */
-  "files":[],
-  "include":[],
-  /* 
-     GRAFO TOPOLÓGICO SOBERANO:
-     Orden de dependencias de abajo hacia arriba (Bottom-Up).
-     Garantiza que el Typechecker (y el IDE) construyan el árbol 
-     de dependencias en el orden exacto de consumo.
-  */
-  "references":[
-    { "path": "./packages/auth-shield" },
-    { "path": "./packages/protocol-33" },
-    { "path": "./packages/testing-utils" },
-    { "path": "./packages/cms/core" },
-    { "path": "./packages/cms/ui" },
-    { "path": "./apps/portfolio-web" },
-    { "path": "./tests" },
-    { "path": "./scripts" }
+  "files": [],
+  "include": [],
+  "references": [
+    {
+      "path": "./packages/auth-shield"
+    },
+    {
+      "path": "./packages/protocol-33"
+    },
+    {
+      "path": "./packages/testing-utils"
+    },
+    {
+      "path": "./packages/cms/core"
+    },
+    {
+      "path": "./packages/cms/ui"
+    },
+    {
+      "path": "./apps/portfolio-web"
+    },
+    {
+      "path": "./tests"
+    },
+    {
+      "path": "./scripts"
+    },
+    {
+      "path": "./packages/identity-gateway"
+    }
   ]
 }

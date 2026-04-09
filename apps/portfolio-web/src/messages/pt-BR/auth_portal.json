@@ -6,15 +6,33 @@
   "google_label": "Continuar com Google",
   "facebook_label": "Continuar com Facebook",
   "email_divider": "ou use seu e-mail",
+  
+  "label_name": "Nome Completo",
+  "name_placeholder": "Como devemos chamar você?",
+  "label_email": "E-mail de Identidade",
   "email_placeholder": "nome@exemplo.com",
-  "password_placeholder": "Senha segura",
-  "email_cta": "Acessar com E-mail",
+  "label_password": "Chave de Acesso",
+  "password_placeholder": "Digite sua senha segura",
+  "label_confirm_password": "Verificar Chave",
+  "confirm_password_placeholder": "Repita sua senha",
+  
+  "login_cta": "Acessar Santuário",
+  "register_cta": "Inicializar Identidade",
+  
   "label_toggle_password": "Ver/Ocultar senha",
-  "label_password_strength": "Fortaleza",
+  "label_password_strength": "Nível de Entropia",
+  "label_processing": "Sincronizando...",
+  
   "label_tos": "Aceito as Regras do Santuário e Política de Privacidade",
   "label_newsletter": "Assinar atualizações de alta fidelidade",
+  
   "error_account_locked": "Alerta de segurança: Acesso bloqueado por 24h.",
   "error_invalid_credentials": "Handshake de autenticação falhou.",
+  "error_identity_exists": "Este nó de identidade já está indexado neste perímetro.",
+  
+  "success_registration_title": "Identidade Provisionada",
+  "success_registration_subtitle": "Seu nó digital está ativo. Bem-vindo ao Santuário.",
+  
   "footer_trust": "Infraestrutura Privada • Zero Rastreadores",
-  "privacy_notice": "Ao entrar, você aceita nossas Regras do Santuário."
+  "privacy_notice": "Ao entrar, você aceita nossas Regras de Dados Soberanos."
 }

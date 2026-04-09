@@ -2,31 +2,42 @@
  * @file apps/portfolio-web/src/lib/portal/actions/comms.actions.ts
  * @description Enterprise Communication Dispatcher (Silo D Action).
  *              Orquesta la inyección y recuperación de señales operativas.
- *              Refactorizado: Extreme Build Isolation (Lazy Config Load),
- *              erradicación de tipos 'any', reconexión del Trace ID 
- *              y resolución de CollectionSlug mediante inferencia estática.
- * @version 4.0 - Build-Immune & Forensic Ready
- * @author Raz Podestá -  MetaShark Tech
+ *              Refactorizado: Centralización de tipos vía @metashark/cms-core (SSoT).
+ *              Integrado: Protocolo Heimdall v2.5 para telemetría de latencia.
+ *              Aislamiento: Implementación de "Cold-Start Sync" para resiliencia de Build.
+ * @version 6.0 - SSoT Type Sync & Build Hardened
+ * @author Staff Engineer - MetaShark Tech
  */
 
 'use server';
 
 import { z } from 'zod';
 import { headers } from 'next/headers';
-import { getPayload } from 'payload'; // Importación estática segura (No ejecuta DB)
+import { getPayload, type CollectionSlug, type SanitizedConfig } from 'payload';
+
+/** 
+ * IMPORTACIÓN DE CONTRATOS SOBERANOS (SSoT)
+ * @fix TS2307: Se abandona la ruta relativa en favor del alias del Core.
+ * Nota: Requiere que @metashark/cms-core/index.ts exporte los tipos generados.
+ */
+import type { Notification } from '@metashark/cms-core';
 
 /**
- * DETECTORES DE ESTADO DE INFRAESTRUCTURA
- * @pilar XIII: Impide que el motor de Payload intente arrancar en workers de compilación.
+ * DETECTORES DE ESTADO DE INFRAESTRUCTRURA
+ * @pilar XIII: Build Isolation.
  */
 const IS_BUILD_ENV = 
   process.env.NEXT_PHASE === 'phase-production-build' || 
   process.env.VERCEL === '1';
 
 /**
- * CONTRATOS DE INTEGRIDAD SSoT
- * @description Alineados estrictamente con 'packages/cms/core/src/collections/Notifications.ts'.
+ * PROTOCOLO CROMÁTICO HEIMDALL v2.5
  */
+const C = {
+  reset: '\x1b[0m', magenta: '\x1b[35m', cyan: '\x1b[36m', 
+  green: '\x1b[32m', yellow: '\x1b[33m', red: '\x1b[31m', bold: '\x1b[1m'
+};
+
 const notificationSchema = z.object({
   subject: z.string().min(3).max(100),
   message: z.string().min(5),
@@ -43,13 +54,9 @@ export type NotificationResponse = {
   externalDispatch: 'sent' | 'skipped' | 'failed';
   error?: string;
   latencyMs?: string;
-  traceId?: string;
+  traceId: string;
 };
 
-/**
- * @interface Transmission
- * @description Contrato de salida formateado específicamente para consumo en UI.
- */
 export interface Transmission {
   id: string;
   priority: 'low' | 'high' | 'critical';
@@ -68,29 +75,12 @@ export type LedgerResponse = {
   data: Transmission[];
   error?: string;
   latencyMs?: string;
-  traceId?: string;
+  traceId: string;
 };
 
 /**
- * @interface NotificationData
- * @description Contrato local para mapear la respuesta cruda de DB sin usar 'any'.
- */
-interface NotificationData {
-  id: string | number;
-  priority?: 'low' | 'high' | 'critical';
-  category?: string;
-  source?: string;
-  subject?: string;
-  message?: string;
-  createdAt: string;
-  traceId?: string;
-  originNode?: string;
-  isRead?: boolean;
-}
-
-/**
  * MODULE: dispatchInternalNotification
- * @description Inyecta una nueva alerta en el Ledger de Infraestructura y dispara Webhooks si es crítica.
+ * @description Inyecta una señal en el Ledger de infraestructura.
  */
 export async function dispatchInternalNotification(
   rawPayload: unknown
@@ -102,20 +92,23 @@ export async function dispatchInternalNotification(
     return { success: true, externalDispatch: 'skipped', traceId };
   }
 
-  console.group(`[HEIMDALL][COMMS] Dispatching Signal | Trace: ${traceId}`);
+  console.log(`\n${C.magenta}${C.bold}[DNA][COMMS]${C.reset} Dispatching Signal: ${C.cyan}${traceId}${C.reset}`);
 
   try {
     const contract = notificationSchema.parse(rawPayload);
     
-    // Lazy Initialization of Config (Build-Safe)
+    // 1. CARGA DINÁMICA DE CONFIGURACIÓN (Cold-Start Safe)
     const configModule = await import('@metashark/cms-core/config');
-    const payload = await getPayload({ config: configModule.default });
+    const payloadConfig = (await configModule.default) as SanitizedConfig;
+    const payload = await getPayload({ config: payloadConfig });
     
     const headerList = await headers();
     const originNode = headerList.get('x-forwarded-for')?.split(',')[0] ?? 'INTERNAL_CORE';
 
+    const NOTIFICATION_COLL: CollectionSlug = 'notifications';
+    
     const record = await payload.create({
-      collection: 'notifications' as never, // Resuelve TS2305 para Payload V3 local 
+      collection: NOTIFICATION_COLL,
       data: {
         subject: contract.subject,
         message: contract.message,
@@ -131,127 +124,103 @@ export async function dispatchInternalNotification(
     });
 
     let externalStatus: 'sent' | 'skipped' | 'failed' = 'skipped';
-
     if (contract.priority === 'critical') {
       const webhookUrl = process.env.CRITICAL_ALERTS_WEBHOOK;
       if (webhookUrl) {
-        try {
-          const response = await fetch(webhookUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              content: `🚨 **CRITICAL ALERT**\n**Trace:** \`${traceId}\`\n**Node:** \`${originNode}\`\n**Message:** ${contract.message}`
-            })
-          });
-          externalStatus = response.ok ? 'sent' : 'failed';
-        } catch {
-          externalStatus = 'failed';
-        }
+        const response = await fetch(webhookUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            content: `🚨 **CRITICAL ALERT** | **Trace:** \`${traceId}\` | **Msg:** ${contract.message}`
+          })
+        });
+        externalStatus = response.ok ? 'sent' : 'failed';
       }
     }
 
-    const totalLatency = (performance.now() - startTime).toFixed(2);
-    console.log(`[SUCCESS] Signal Logged in Ledger | Latency: ${totalLatency}ms`);
+    const duration = (performance.now() - startTime).toFixed(4);
+    console.log(`${C.green}${C.bold}[GRANTED]${C.reset} Signal Logged | Latency: ${duration}ms\n`);
 
     return {
       success: true,
       notificationId: String(record.id),
       externalDispatch: externalStatus,
-      latencyMs: totalLatency,
+      latencyMs: duration,
       traceId
     };
 
-  } catch (error: unknown) {
-    const msg = error instanceof Error ? error.message : 'UNEXPECTED_COMMS_DRIFT';
-    console.error(`[CRITICAL] Signal Dispatch Aborted: ${msg}`);
-    
-    return { 
-      success: false, 
-      externalDispatch: 'failed',
-      error: msg,
-      traceId
-    };
-  } finally {
-    console.groupEnd();
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : 'SIGNAL_DRIFT';
+    console.error(`${C.red}${C.bold}[BREACH] Dispatch Failed:${C.reset} ${msg}`);
+    return { success: false, externalDispatch: 'failed', error: msg, traceId };
   }
 }
 
 /**
  * MODULE: getCommsLedger
- * @description Orquestador de lectura para el Silo D. Recupera el historial 
- *              de transmisiones validado y formateado para la UI.
+ * @description Recupera el histórico de transmisiones del perímetro actual.
  */
 export async function getCommsLedger(tenantId: string): Promise<LedgerResponse> {
   const startTime = performance.now();
-  const traceId = `ledger_sync_${Date.now().toString(36)}`;
+  const traceId = `ledger_sync_${Date.now().toString(36).toUpperCase()}`;
   
   if (IS_BUILD_ENV) {
     return { success: true, data: [], traceId };
   }
 
-  // @fix: Trazabilidad reactivada para 'traceId' (TS6133)
-  console.group(`[HEIMDALL][COMMS] Fetching Ledger | Tenant: ${tenantId} | Trace: ${traceId}`);
+  console.log(`\n${C.magenta}${C.bold}[DNA][LEDGER]${C.reset} Syncing Perimeter: ${C.cyan}${tenantId}${C.reset}`);
 
   try {
-    // Lazy Initialization of Config
     const configModule = await import('@metashark/cms-core/config');
-    const payload = await getPayload({ config: configModule.default });
+    const payloadConfig = (await configModule.default) as SanitizedConfig;
+    const payload = await getPayload({ config: payloadConfig });
+
+    const NOTIFICATION_COLL: CollectionSlug = 'notifications';
 
     const { docs } = await payload.find({
-      collection: 'notifications' as never,
+      collection: NOTIFICATION_COLL,
       where: { tenant: { equals: tenantId } },
       sort: '-createdAt', 
       limit: 50, 
       depth: 0,
     });
 
-    // @fix: Erradicación de 'any' implícito
-    const transmissions: Transmission[] = docs.map((rawDoc: unknown) => {
-      const doc = rawDoc as NotificationData;
-      
-      // Formateador cronológico resiliente
+    // Casting seguro mediante el contrato del Core
+    const transmissions: Transmission[] = (docs as unknown as Notification[]).map((doc) => {
       let timeString = '--:--';
       try {
         timeString = new Intl.DateTimeFormat('pt-BR', { 
           hour: '2-digit', minute: '2-digit', second: '2-digit' 
         }).format(new Date(doc.createdAt));
-      } catch { /* silent fallback */ }
+      } catch { /* recovery silently */ }
 
       return {
         id: String(doc.id),
-        priority: doc.priority || 'low',
+        priority: (doc.priority as 'low' | 'high' | 'critical') || 'low',
         category: doc.category || 'ops',
         sender: doc.source || 'SYSTEM',
-        subject: doc.subject || 'Unknown Signal',
-        body: doc.message,
+        subject: doc.subject || 'Unknown Node',
+        body: doc.message || '',
         timestamp: timeString,
         traceId: doc.traceId || 'N/A',
-        nodeSource: doc.originNode || 'UNKNOWN_NODE',
+        nodeSource: doc.originNode || 'EDGE_CORE',
         isRead: Boolean(doc.isRead)
       };
     });
 
-    const totalLatency = (performance.now() - startTime).toFixed(2);
-    console.log(`[SUCCESS] Ledger Synced. Nodes: ${transmissions.length} | Latency: ${totalLatency}ms`);
+    const duration = (performance.now() - startTime).toFixed(4);
+    console.log(`${C.green}${C.bold}[GRANTED]${C.reset} Ledger ready. Nodes: ${transmissions.length} | Latency: ${duration}ms\n`);
 
     return {
       success: true,
       data: transmissions,
-      latencyMs: totalLatency,
+      latencyMs: duration,
       traceId
     };
 
-  } catch (error: unknown) {
-    const msg = error instanceof Error ? error.message : 'UNEXPECTED_LEDGER_DRIFT';
-    console.error(`[CRITICAL] Ledger Sync Failed: ${msg}`);
-    
-    return { 
-      success: false, 
-      data: [],
-      error: msg,
-      traceId
-    };
-  } finally {
-    console.groupEnd();
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : 'LEDGER_SYNC_FAILED';
+    console.error(`${C.red}${C.bold}[BREACH] Ledger Sync Aborted:${C.reset} ${msg}`);
+    return { success: false, data: [], error: msg, traceId };
   }
 }

@@ -1,13 +1,47 @@
+/**
+ * @file packages/cms/core/tsconfig.lib.json
+ * @description Configuración de validación para el motor de datos (Core CMS).
+ *              Refactorizado: Erradicación del modo "Project References" para sellar 
+ *              la arquitectura Pure Source-First (Manifiesto v4.0).
+ *              Elimina el error TS6305 al forzar la resolución vía paths.
+ * @version 4.0 - Pure Source-First Sealed
+ * @author Staff Engineer - MetaShark Tech
+ */
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "../../../dist/packages/cms/core",
     "rootDir": "src",
-    "composite": true,
-    "noEmit": false,
-    "emitDeclarationOnly": false,
+    /**
+     * @pilar IX: Delegación de Compilación (Pure Source-First).
+     * Desactivamos 'composite' para que el compilador no exija archivos .d.ts
+     * de las dependencias internas y utilice los fuentes definidos en tsconfig.base.json.
+     */
+    "composite": false,
+    "incremental": true,
+    
+    /**
+     * @description En cumplimiento con la soberanía de fuentes, este target 
+     * se utiliza principalmente para validación estática (typecheck).
+     */
+    "noEmit": true,
+    "declaration": false,
+    "declarationMap": false,
+
     "tsBuildInfoFile": "../../../dist/packages/cms/core/tsconfig.lib.tsbuildinfo"
   },
-  "include": ["src/**/*.ts", "src/payload-types.ts"],
-  "exclude": ["**/*.spec.ts", "**/*.test.ts"]
+  "include": [
+    "src/**/*.ts", 
+    "src/payload-types.ts"
+  ],
+  "exclude": [
+    "**/*.spec.ts", 
+    "**/*.test.ts", 
+    "node_modules", 
+    "dist"
+  ]
+  /**
+   * @fix TS6305: Se eliminan las 'references'.
+   * La resolución de @metashark/protocol-33 ahora es 100% via paths (Source-First).
+   */
 }

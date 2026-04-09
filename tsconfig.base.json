@@ -1,26 +1,28 @@
+/**
+ * @file tsconfig.base.json
+ * @description Constitución Soberana de TypeScript (The Master Registry).
+ *              Refactorizado: Erradicación de sintaxis snake_case inválida y 
+ *              alineación con el estándar de rigor TS 5.9+.
+ *              Propósito: SSoT para la resolución de módulos y reglas de calidad.
+ * @version 7.0 - Global Syntax Hardened & ESM Sync
+ * @author Staff Engineer - MetaShark Tech
+ */
 {
   "compileOnSave": false,
   "compilerOptions": {
     /**
      * @pilar XIII: Sincronización de Infraestructura.
-     * Versión 5.0 es el valor estándar para TypeScript 5.x.
+     * Silenciamos advertencias de 'baseUrl' requeridas por el motor de Nx 
+     * para la resolución de paths en el monorepo.
      */
     "ignoreDeprecations": "5.0",
-    
     "rootDir": ".",
     "sourceMap": true,
-    "declaration": true,
     "target": "es2022",
     "module": "esnext",
     "moduleResolution": "bundler",
     "moduleDetection": "force",
-    
-    /**
-     * @pilar III: Seguridad de Tipos de Élite.
-     * Establece el estándar para importaciones claras y tree-shaking eficiente.
-     */
     "verbatimModuleSyntax": true,
-    
     "lib": ["esnext", "dom", "dom.iterable"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
@@ -31,7 +33,17 @@
     "resolveJsonModule": true,
     "incremental": true,
 
-    /* PILAR III: SEGURIDAD DE TIPOS ABSOLUTA - MÁXIMO RIGOR */
+    /**
+     * @pilar IV: Pure Source-First. 
+     * Desactivamos 'composite' en la base para favorecer la velocidad de SWC.
+     * Los nodos que requieran Project References (ej: cms-core) deben 
+     * sobrescribirlo explícitamente.
+     */
+    "composite": false,
+    "declaration": false,
+    "declarationMap": false,
+
+    /* --- LEYES DE CALIDAD INNEGOCIABLES (Pilar III) --- */
     "strict": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
@@ -40,24 +52,35 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
+
+    /**
+     * @fix: Resolución de error de Severidad 8 detectado en cascada.
+     * Se transmuta 'noFallthroughCases_in_switch' a 'noFallthroughCasesInSwitch' (CamelCase).
+     */
     "noFallthroughCasesInSwitch": true,
 
-    /* PILAR V: ADHERENCIA ARQUITECTÓNICA (Grafo Soberano) */
-    "composite": true,
-    "declarationMap": true,
-
     "baseUrl": ".",
+
+    /**
+     * @pilar V: Adherencia Arquitectónica (Sovereign Paths).
+     * Único registro de alias para evitar dependencias circulares.
+     */
     "paths": {
-      /**
-       * @description Mapeo de Alias Soberanos.
-       * Todas las rutas son relativas a la raíz del monorepo.
-       */
       "@/*": ["apps/portfolio-web/src/*"],
+      
+      // Silo: Gestión de Contenidos (CMS)
       "@metashark/cms-core": ["packages/cms/core/src/index.ts"],
       "@metashark/cms-core/config": ["packages/cms/core/src/payload.config.ts"],
       "@metashark/cms-ui": ["packages/cms/ui/src/index.ts"],
+      
+      // Silo: Lógica de Negocio y Gamificación
       "@metashark/protocol-33": ["packages/protocol-33/src/index.ts"],
+      
+      // Silo: Seguridad e Identidad
       "@metashark/auth-shield": ["packages/auth-shield/src/index.ts"],
+      "@metashark/identity-gateway": ["packages/identity-gateway/src/index.ts"],
+      
+      // Silo: Infraestructura de Calidad
       "@metashark/testing-utils": ["packages/testing-utils/src/index.ts"]
     }
   },

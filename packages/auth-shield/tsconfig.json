@@ -2,16 +2,20 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "baseUrl": ".",
-    "rootDir": ".",
     "composite": true,
-    "noEmit": true,
-    "module": "nodenext",
-    "moduleResolution": "nodenext",
+    "rootDir": ".",
+    "noEmit": false,
+    "emitDeclarationOnly": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
     "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "jsx": "react-jsx",
     "declaration": true,
     "declarationMap": true,
-    "types": ["node"]
+    "types": ["node", "react", "react-dom"]
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", "dist", "jest.config.ts", "**/*.spec.ts", "**/*.test.ts"]
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "exclude": ["node_modules", "dist", "jest.config.ts", "**/*.spec.ts", "**/*.spec.tsx"]
 }

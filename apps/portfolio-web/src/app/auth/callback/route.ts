@@ -1,100 +1,85 @@
 /**
  * @file apps/portfolio-web/src/app/auth/callback/route.ts
- * @description Orquestador Soberano de Sincronización de Identidad (Callback Bridge).
- *              Refactorizado: Erradicación de non-null assertions, tipado estricto
- *              y blindaje de identidad forense.
- * @version 5.1 - Identity Bridge & Type-Safe
- * @author Raz Podestá -  MetaShark Tech
+ * @description Punto de entrada soberano para retornos de identidad (OAuth).
+ *              Actúa como el puente de red entre Supabase Auth y el Identity Bridge.
+ *              Refactorizado: Resolución de TS7006, inyección de telemetría Heimdall
+ *              y blindaje de extracción de metadatos.
+ * @version 6.3 - Total Latency Tracking & Type Hardened
+ * @author Raz Podestá - MetaShark Tech
  */
 
-import { NextResponse } from 'next/server';
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
-import crypto from 'node:crypto';
-import { getPayload } from 'payload';
-import { i18n, isValidLocale, type Locale } from '../../../config/i18n.config';
+import { handleOAuthCallback } from '@metashark/identity-gateway';
+import { syncIdentityAction } from '../../../lib/portal/actions/auth-sync.actions.js';
+import { i18n, isValidLocale } from '../../../config/i18n.config.js';
 
+/** 
+ * IMPORTACIÓN DE CONTRATOS DE INFRAESTRUCTRURA 
+ * @pilar III: Seguridad de Tipos Absoluta. 
+ */
+import type { User } from '@supabase/supabase-js';
+
+/**
+ * APARATO: GET (OAuth Callback Handler)
+ * @description Procesa el intercambio de código por sesión y sincroniza con el CMS.
+ * @pilar IX: Inversión de Control (IoC).
+ */
 export async function GET(request: Request) {
-  const { searchParams, origin } = new URL(request.url);
-  const code = searchParams.get('code');
-  const next = searchParams.get('next') ?? '/portal';
-  
-  const locale = next.split('/')[1] && isValidLocale(next.split('/')[1]) 
-    ? (next.split('/')[1] as Locale) 
-    : i18n.defaultLocale;
+  const startTime = performance.now();
+  const requestTraceId = `oauth_cb_${Date.now().toString(36).toUpperCase()}`;
 
-  if (!code) {
-    return NextResponse.redirect(`${origin}/${locale}?auth=error`);
-  }
+  console.group(`[HEIMDALL][AUTH] Incoming OAuth Handshake | Trace: ${requestTraceId}`);
 
-  const cookieStore = await cookies();
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  /**
+   * Delegamos el handshake técnico a la librería @metashark/identity-gateway.
+   * La librería verifica la identidad humana y criptográfica.
+   */
+  return handleOAuthCallback(request, {
+    defaultLocale: i18n.defaultLocale,
+    isValidLocale: isValidLocale,
+    defaultRedirect: '/portal',
 
-  if (!supabaseUrl || !supabaseAnonKey) {
-    console.error('[HEIMDALL][CRITICAL] Auth Config Missing.');
-    return NextResponse.redirect(`${origin}/${locale}/server-error?code=AUTH_MISCONFIG`);
-  }
+    /**
+     * @callback onIdentityVerified
+     * @description El eslabón que une la Identidad Criptográfica con los Datos del CMS.
+     */
+    onIdentityVerified: async (supabaseUser: User, traceId: string) => {
+      const syncStart = performance.now();
+      
+      /**
+       * @pilar III: Seguridad de Tipos.
+       * Extracción segura de identidad con fallbacks deterministas.
+       */
+      const userMetadata = supabaseUser.user_metadata || {};
+      const fullName = (userMetadata.full_name as string) || 
+                       (userMetadata.name as string) || 
+                       'Sovereign Guest';
 
-  const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
-    cookies: {
-      getAll() { return cookieStore.getAll(); },
-      setAll(cookiesToSet) {
-        cookiesToSet.forEach(({ name, value, options }) =>
-          cookieStore.set(name, value, options)
-        );
-      },
-    },
-  });
-
-  const { data, error } = await supabase.auth.exchangeCodeForSession(code);
-
-  if (error || !data.user) {
-    console.error('[HEIMDALL][AUTH] Code exchange failed:', error);
-    return NextResponse.redirect(`${origin}/${locale}?auth=error`);
-  }
-
-  // Identidad validada
-  const userEmail = data.user.email;
-  
-  // Guardias de seguridad para tipos (Pilar III: Seguridad de Tipos Absoluta)
-  if (!userEmail) {
-    console.error('[HEIMDALL][SECURITY] Auth User missing email claim.');
-    return NextResponse.redirect(`${origin}/${locale}?auth=error`);
-  }
-
-  // 2. Identity Bridge: Sincronización con el CMS Core
-  try {
-    const configModule = await import('@metashark/cms-core/config');
-    const payload = await getPayload({ config: configModule.default });
-
-    const existingUser = await payload.find({
-      collection: 'users',
-      where: { email: { equals: userEmail } },
-      limit: 1
-    });
-
-    if (existingUser.docs.length === 0) {
-      console.log(`[HEIMDALL][IDENTITY] Provisioning new identity for: ${userEmail}`);
-      await payload.create({
-        collection: 'users',
-        data: {
-          email: userEmail,
-          password: crypto.randomBytes(32).toString('hex'),
-          role: 'guest',
-          tenant: '00000000-0000-0000-0000-000000000001',
-          _verified: true
-        }
+      console.log(`   → [DNA][BRIDGE] Identity Linked: ${supabaseUser.email}`);
+      
+      // Handshake de Sincronización con el Núcleo (Silo D)
+      const syncResult = await syncIdentityAction({
+        id: supabaseUser.id,
+        email: supabaseUser.email ?? '',
+        name: fullName
       });
-    }
-  } catch (syncError) {
-    console.error(`[CRITICAL] Identity Bridge Failed:`, syncError);
-  }
 
-  // 3. Redirección final con continuidad
-  const finalPath = next.startsWith('/') ? next : `/${next}`;
-  const finalUrl = `${origin}${finalPath}`;
-  
-  console.log(`[HEIMDALL][AUTH] Dispatching Identity to: ${finalUrl}`);
-  return NextResponse.redirect(finalUrl);
+      const totalLatency = (performance.now() - startTime).toFixed(4);
+      const syncLatency = (performance.now() - syncStart).toFixed(4);
+
+      if (syncResult.success) {
+        console.log(`   ✓ [GRANTED] Bridge Sync Success | Lat: ${syncLatency}ms | Total: ${totalLatency}ms`);
+      } else {
+        /**
+         * @pilar VIII: Resiliencia.
+         * Si el bridge falla, el usuario ya tiene sesión en Supabase pero no en el CMS.
+         * Reportamos la brecha para auditoría forense inmediata.
+         */
+        console.error(
+          `   ✕ [BREACH] Identity Bridge Failure | User: ${supabaseUser.email} | Reason: ${syncResult.error} | Trace: ${traceId}`
+        );
+      }
+      
+      console.groupEnd();
+    }
+  });
 }

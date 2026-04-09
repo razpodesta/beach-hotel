@@ -1,0 +1,32 @@
+/**
+ * @file packages/identity-gateway/tsconfig.lib.json
+ * @description Configuración de compilación para la librería de identidad.
+ *              Refactorizado: Resolución de TS6307 permitiendo la inclusión 
+ *              de diccionarios JSON en el grafo de tipos.
+ * @version 2.0 - Build Path Synchronized
+ * @author Staff Engineer - MetaShark Tech
+ */
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../dist/packages/identity-gateway",
+    "rootDir": "src",
+    "composite": true,
+    "noEmit": false,
+    "emitDeclarationOnly": false,
+    "tsBuildInfoFile": "../../dist/packages/identity-gateway/tsconfig.lib.tsbuildinfo"
+  },
+  "include": [
+    "src/**/*.ts", 
+    "src/**/*.tsx", 
+    "src/**/*.json"
+  ],
+  "exclude": [
+    "**/*.spec.ts", 
+    "**/*.test.ts", 
+    "**/*.spec.tsx", 
+    "**/*.test.tsx",
+    "node_modules",
+    "dist"
+  ]
+}

@@ -2,7 +2,9 @@
  * @file packages/protocol-33/src/lib/types.ts
  * @description Constitución de tipos y contratos inmutables para el motor 
  *              de gamificación y reputación (Protocolo 33).
- * @version 2.0 - TSDoc Hardening & Sovereign Constants
+ *              Refactorizado: Resolución de TS2305 mediante la unificación de 
+ *              Artifact y ArtifactDefinition para sincronía con el Codex.
+ * @version 2.2 - Type Contract Alignment & SSoT
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -25,6 +27,7 @@ export type Rarity = (typeof RARITIES)[number];
 /**
  * @interface ArtifactDefinition
  * @description Contrato inmutable que define la identidad de un objeto coleccionable.
+ * @pilar III: SSoT - Utilizado por el Codex para la definición de activos.
  */
 export interface ArtifactDefinition {
   /** Identificador semántico único (ej: 'pato-goma-oro') */
@@ -39,9 +42,16 @@ export interface ArtifactDefinition {
   rarity: Rarity;
   /** Valor base en RazTokens (RZB) para la economía interna */
   baseValue: number;
-  /** Suministro máximo. Si es undefined, el suministro es infinito (estándar) */
+  /** Suministro máximo. Si es undefined, el suministro es infinito */
   maxSupply?: number;
 }
+
+/**
+ * @type Artifact
+ * @description Alias de tipo para compatibilidad con el orquestador de UI y el store.
+ * Resuelve la colisión de nomenclatura entre el motor lógico y la presentación.
+ */
+export type Artifact = ArtifactDefinition;
 
 /**
  * @interface LevelDefinition
@@ -69,7 +79,6 @@ export interface UserProgress {
   nextLevelXp: number;
   /** 
    * Porcentaje de progreso dentro del nivel actual (0.00 a 100.00).
-   * @example 45.50 representa el 45.5% del camino al siguiente nivel.
    */
   progressPercent: number;
 }

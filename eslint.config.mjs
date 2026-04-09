@@ -6,7 +6,7 @@
  *              1. Definición estricta de Scopes reales (metashark, cms, shared).
  *              2. Permisos explícitos para dependencias inter-capa (gamification, security).
  *              3. Blindaje del Espejo de Calidad (Tests).
- * @version 6.0 - Sovereign Frontier Standard (Tag Sync Edition)
+ * @version 7.0 - Identity Gateway Frontier Sync
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -20,7 +20,7 @@ export default [
 
   // --- CAPA 2: EXCLUSIONES GLOBALES ---
   {
-    ignores: [
+    ignores:[
       '**/node_modules',
       '**/dist',
       '**/.next',
@@ -36,22 +36,32 @@ export default [
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
     rules: {
-      '@nx/enforce-module-boundaries': [
+      '@nx/enforce-module-boundaries':[
         'error',
         {
           enforceBuildableLibDependency: true,
           // Autorización explícita para dependencias fundamentales del ecosistema
-          allow: ['react', 'react-dom', 'next', 'payload', 'zod', 'framer-motion'],
-          depConstraints: [
+          allow:[
+            'react', 
+            'react-dom', 
+            'next', 
+            'payload', 
+            'zod', 
+            'framer-motion',
+            // @fix: Autorizamos a Supabase a cruzar fronteras sin fricción del Linter
+            '@supabase/supabase-js',
+            '@supabase/ssr'
+          ],
+          depConstraints:[
             // 1. FRONTEND WEB (App)
-            // Sincronizado con project.json -> "tags": ["scope:metashark"]
+            // Sincronizado con project.json -> "tags":["scope:metashark"]
             {
               sourceTag: 'scope:metashark',
-              onlyDependOnLibsWithTags: [
+              onlyDependOnLibsWithTags:[
                 'scope:shared', 
                 'scope:cms',
                 'layer:data', 
-                'layer:security', 
+                'layer:security',     // Consumo autorizado para @metashark/identity-gateway
                 'layer:presentation',
                 'layer:gamification',
                 'layer:infrastructure'
@@ -61,24 +71,25 @@ export default [
             // Sincronizado con project.json -> "tags": ["scope:cms"]
             {
               sourceTag: 'scope:cms',
-              onlyDependOnLibsWithTags: [
+              onlyDependOnLibsWithTags:[
                 'scope:shared',
                 'scope:cms',          // Permite la comunicación entre cms-core y cms-ui
                 'layer:data',
-                'layer:security',     // Requerido por cms-core para auth-shield
+                'layer:security',     // Requerido por cms-core para auth-shield & identity-gateway
                 'layer:gamification', // Requerido por cms-core para protocol-33
                 'layer:presentation'
               ],
             },
-            // 3. LIBRERÍAS COMPARTIDAS (Shared)
+            // 3. LIBRERÍAS COMPARTIDAS (Shared - Ej: Identity Gateway)
             // Sincronizado con project.json -> "tags": ["scope:shared"]
             {
               sourceTag: 'scope:shared',
-              onlyDependOnLibsWithTags: [
+              onlyDependOnLibsWithTags:[
                 'scope:shared',
                 'layer:infrastructure',
-                'layer:security',
+                'layer:security',     // Permite que identity-gateway consuma auth-shield
                 'layer:gamification',
+                'layer:presentation', // @fix: Permite que librerías compartidas consuman UI pura
                 'layer:util'
               ],
             },
@@ -86,7 +97,7 @@ export default [
             // Permite que la infraestructura de testing audite cualquier capa
             {
               sourceTag: 'scope:tests',
-              onlyDependOnLibsWithTags: [
+              onlyDependOnLibsWithTags:[
                 'scope:metashark',
                 'scope:cms',
                 'scope:shared',

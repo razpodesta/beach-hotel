@@ -1,27 +1,47 @@
+/**
+ * @file apps/portfolio-web/tsconfig.json
+ * @description Configuración Soberana de TypeScript para el Orquestador Web.
+ *              Refactorizado: Expansión del perímetro de visibilidad (include) para 
+ *              sellar el modo Pure Source-First. Permite que el compilador valide 
+ *              los fuentes de las librerías sin requerir archivos .d.ts.
+ * @version 7.1 - Global Source Visibility (Typecheck Hardened)
+ * @author Staff Engineer - MetaShark Tech
+ */
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     /**
      * @pilar XIII: Sincronización de Infraestructura.
-     * @fix TS5103: Valor normalizado a "5.0" para compatibilidad con TS 5.x.
+     * Silenciamos la advertencia de 'baseUrl' cumpliendo con TS 6.0 standards.
      */
     "ignoreDeprecations": "5.0",
-    
-    
-    /* PILAR V: ADHERENCIA ARQUITECTÓNICA (Nx Composite Mode) */
-    "composite": true,
+
+    /**
+     * @pilar IX: Delegación de Compilación.
+     * Operamos en modo 'noEmit'. La transpilación real ocurre en el worker 
+     * de Next.js vía SWC consumiendo directamente los fuentes mapeados.
+     */
+    "composite": false,
     "incremental": true,
-    
+    "noEmit": true,
+
     /**
      * @pilar XIII: Soberanía de Artefactos.
-     * Los metadatos de compilación residen exclusivamente en el directorio de infraestructura raíz.
      */
     "tsBuildInfoFile": "../../dist/apps/portfolio-web/tsconfig.tsbuildinfo",
-    
-    /* PILAR IX: DELEGACIÓN DE COMPILACIÓN (Source-First) */
-    "noEmit": true,
+
     "jsx": "preserve",
-    
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "moduleResolution": "bundler",
+    "module": "esnext",
+    "target": "es2022",
+    "skipLibCheck": true,
+    "strict": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "noFallthroughCasesInSwitch": true,
+
     "plugins": [
       {
         "name": "next"
@@ -30,21 +50,33 @@
     "paths": {
       "@/*": ["./src/*"],
       "@payloadcms/next/importMap": ["./.next/types/payload-import-map.js"],
-      "@payloadcms/next/views/*": ["../../node_modules/@payloadcms/next/dist/views/*"]
+      "@payloadcms/next/views/*": [
+        "../../node_modules/@payloadcms/next/dist/views/*"
+      ]
     }
   },
   "include": [
-    "next-env.d.ts", 
+    "next-env.d.ts",
     ".next/types/**/*.ts",
-    "src/**/*.ts", 
+    "src/**/*.ts",
     "src/**/*.tsx",
-    "payload-types.d.ts"
+    "payload-types.d.ts",
+    
+    /**
+     * @pilar IV: Pure Source-First (Visibilidad de Librerías).
+     * @description Inyectamos los fuentes de los paquetes internos en el grafo 
+     * de validación de la App. Esto erradica el error de "Module Not Found" 
+     * durante el comando 'nx typecheck'.
+     */
+    "../../packages/*/src/**/*.ts",
+    "../../packages/*/src/**/*.tsx",
+    "../../packages/*/src/**/*.json"
   ],
   "exclude": [
-    "node_modules", 
-    "dist", 
-    ".next", 
-    "out", 
+    "node_modules",
+    "dist",
+    ".next",
+    "out",
     "**/*.spec.ts",
     "**/*.test.ts"
   ]

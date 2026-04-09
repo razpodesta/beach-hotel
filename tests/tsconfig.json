@@ -1,37 +1,52 @@
 /**
  * @file tests/tsconfig.json
- * @description Configuración soberana del Espejo de Calidad.
- *              Nivelado: Transición a ESM ('esnext' / 'bundler') para erradicar 
- *              el error TS1295 bajo 'verbatimModuleSyntax'. La transpilación
- *              JIT en tiempo de ejecución se delega exclusivamente a @swc/jest.
- * @version 12.0 - ESM Sync & TS1295 Resolution
- * @author Raz Podestá - MetaShark Tech
+ * @description Configuración Soberana del Espejo de Calidad (Test Infrastructure).
+ *              Refactorizado: Resolución del error de raíz (rootDir violation) 
+ *              mediante aislamiento de fuentes y sellado de depreciaciones.
+ *              Arquitectura: Pure Test-Node (ESM / Next.js 15 compatible).
+ * @version 14.0 - RootDir Boundary Fixed & TS 6.0 Ready
+ * @author Staff Engineer - MetaShark Tech
  */
 {
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
-    "baseUrl": ".",
-    /* 
-       PILAR V: ADHERENCIA ARQUITECTÓNICA
-       Mantenemos composite para permitir la orquestación desde la raíz.
-    */
+    /**
+     * @pilar XIII: Sincronización de Infraestructura.
+     * Silenciamos la advertencia de 'baseUrl' (requerida por Nx) para 
+     * cumplimiento estricto de los estándares TS 5.x/6.x.
+     */
+    "ignoreDeprecations": "5.0",
+
+    /**
+     * @pilar V: Adherencia Arquitectónica.
+     * Mantenemos 'composite' para la orquestación del grafo de Nx.
+     * Esto requiere que 'noEmit' sea false y se generen declaraciones.
+     */
     "composite": true,
-    
-    /* 
-       RESOLUCIÓN ESM SOBERANA:
-       Evita el bloqueo TS1295 al permitir sintaxis import/export nativa.
-       Alineado con el estándar del ecosistema MetaShark.
-    */
+    "incremental": true,
+    "noEmit": false,
+    "emitDeclarationOnly": true,
+    "declaration": true,
+    "declarationMap": true,
+
+    /**
+     * @pilar XIII: Soberanía de Artefactos.
+     * Los metadatos de los tests se aíslan en el directorio de infraestructura dist.
+     */
+    "outDir": "../dist/out-tsc/tests",
+    "tsBuildInfoFile": "../dist/out-tsc/tests/tsconfig.tsbuildinfo",
+
+    /* CONFIGURACIÓN DE RESOLUCIÓN SOBERANA */
     "module": "esnext",
     "moduleResolution": "bundler",
+    "baseUrl": ".",
+    /**
+     * @fix: Establecemos el origen estricto en la carpeta local de tests
+     * para evitar colisiones con archivos de otras aplicaciones del monorepo.
+     */
+    "rootDir": ".",
     
-    /* 
-       PILAR XIII: PUREZA DE SOURCE
-       Bloqueamos la emisión física para evitar la creación de artefactos
-       redundantes en el directorio de pruebas.
-    */
-    "noEmit": true,
-    "types":[
+    "types": [
       "node", 
       "jest", 
       "@testing-library/jest-dom", 
@@ -40,10 +55,13 @@
     ],
     "jsx": "react-jsx"
   },
-  "include":[
+  "include": [
     "**/*.ts", 
-    "**/*.tsx",
-    "../apps/portfolio-web/jest.setup.ts",
-    "../tests/jest.config.ts"
+    "**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules",
+    "../dist",
+    "../apps/portfolio-web/jest.setup.ts"
   ]
 }

@@ -1,11 +1,10 @@
 /**
  * @file apps/portfolio-web/src/app/[lang]/layout.tsx
- * @description Layout Localizado Soberano (Sovereign Localized Root).
- *              Refactorizado: Al erradicar app/layout.tsx, este componente asume 
- *              el trono como Root Layout absoluto para todas las rutas.
- *              Nivelado: Inyección de Suspense Boundary para NavigationTracker
- *              para erradicar el CSR Bailout y blindar el pre-renderizado de Next.js 15.
- * @version 51.0 - Suspense Boundary Hardened (CSR Bailout Fix)
+ * @description Orquestador Soberano del Shell Raíz Localizado (Oxygen Shell).
+ *              Refactorizado: Erradicación de funciones impuras (React 19 Purity).
+ *              Sincronizado: Uso de clases canónicas de Tailwind v4 y Skip-Links para A11Y.
+ *              Gobernanza: La telemetría de latencia se delega al motor de datos.
+ * @version 53.0 - Pure Render & Tailwind Canonical Sync
  * @author Staff Engineer - MetaShark Tech
  */
 
@@ -23,7 +22,6 @@ import { cn } from '../../lib/utils/cn';
 
 /** 
  * MOTOR DE ESTILOS SOBERANO
- * Al ser el Root Layout, es obligatorio importar el CSS global aquí.
  */
 import '../global.css';
 
@@ -84,6 +82,7 @@ export async function generateMetadata(props: { params: Promise<{ lang: Locale }
 
 /**
  * APARATO PRINCIPAL: LocalizedLayout
+ * @pilar III: Pureza de Render - Se eliminan llamadas impuras para cumplir con React 19.
  */
 export default async function LocalizedLayout({ 
   children, 
@@ -93,17 +92,19 @@ export default async function LocalizedLayout({
   params: Promise<{ lang: Locale }> 
 }) {
   const { lang } = await params;
+  
+  /**
+   * @description Hidratación de contenido.
+   * La telemetría de latencia y logs DNA son gestionados internamente por 'getDictionary'.
+   */
   const dictionary = await getDictionary(lang);
   
-  // Rastro DNA para auditoría de servidor
-  console.log(`\x1b[35m\x1b[1m[DNA][LAYOUT]\x1b[0m Sovereign Root Shell Synchronized | Locale: \x1b[36m${lang}\x1b[0m`);
+  // Log de confirmación de servidor (Efecto secundario seguro fuera del retorno de renderizado)
+  console.log(`\x1b[35m\x1b[1m[DNA][LAYOUT]\x1b[0m Sovereign Shell Synchronized | Locale: \x1b[36m${lang}\x1b[0m`);
 
   return (
     /**
-     * @pilar VIII: Resiliencia de Build.
-     * Al ser el Root Layout definitivo, inyectamos <html>, <body> y los tokens
-     * de fuentes dinámicas (fontVariables). suppressHydrationWarning es vital 
-     * para la inyección oscura/clara de next-themes.
+     * @pilar VIII: Resiliencia de Hidratación.
      */
     <html 
       lang={lang.split('-')[0]} 
@@ -114,10 +115,20 @@ export default async function LocalizedLayout({
         "font-sans antialiased min-h-screen flex flex-col bg-background text-foreground",
         "selection:bg-primary/30 transition-colors duration-1000"
       )}>
+        {/* 
+            SKIP TO CONTENT (A11Y Elite)
+            @fix: Uso de clase canónica 'focus:z-200' según recomendación del motor.
+        */}
+        <a 
+          href="#main-content" 
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-200 focus:bg-primary focus:text-white focus:px-6 focus:py-3 focus:rounded-full focus:font-bold focus:shadow-3xl"
+        >
+          Saltar al contenido principal
+        </a>
+
         <Providers>
           {/* 
               TRACKING & NAVIGATION 
-              @pilar XIII: Build Isolation.
               Envuelto en Suspense para evitar CSR Bailout detonado por useSearchParams.
           */}
           <Suspense fallback={null}>
@@ -133,7 +144,7 @@ export default async function LocalizedLayout({
           </Suspense>
 
           {/* CONTENIDO DE EXPERIENCIA */}
-          <main className="grow relative z-0 flex flex-col" id="main-content">
+          <main className="grow relative z-0 flex flex-col" id="main-content" role="main">
             {children}
           </main>
 
@@ -145,7 +156,7 @@ export default async function LocalizedLayout({
             tagline={dictionary.header.tagline}
           />
 
-          {/* MODALES Y HUD (Diferidos mediante Suspense) */}
+          {/* CAPAS DE UI PERSISTENTE (Diferidas mediante Suspense) */}
           <Suspense fallback={null}>
             <AuthPortal dictionary={dictionary.auth_portal} />
             <NewsletterModal dictionary={dictionary.newsletter_form} />

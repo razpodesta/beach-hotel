@@ -1,20 +1,48 @@
+/**
+ * @file packages/cms/ui/tsconfig.json
+ * @description Orquestador de Tipos para la Librería de Componentes (Oxygen UI).
+ *              Refactorizado: Inyección de "ignoreDeprecations" para estabilidad 
+ *              en TS 5.x/6.x y alineación con el estándar React 19.
+ *              Arquitectura: Project Reference Entry (Source-First Ready).
+ * @version 4.0 - Infrastructure Deprecation Shield
+ * @author Staff Engineer - MetaShark Tech
+ */
 {
   "extends": "../../../tsconfig.base.json",
   "compilerOptions": {
-    "baseUrl": ".",
+    /**
+     * @pilar XIII: Sincronización de Infraestructura.
+     * Silenciamos la advertencia de 'baseUrl' requerida por la resolución 
+     * de paths del monorepo, cumpliendo con el estándar TS 6.0.
+     */
+    "ignoreDeprecations": "5.0",
+
+    /**
+     * @pilar V: Adherencia Arquitectónica.
+     * Mantenemos 'composite' activo para que la App Web pueda realizar 
+     * el seguimiento de cambios en caliente (HMR) sobre los componentes.
+     */
     "composite": true,
-    "rootDir": ".",
-    "noEmit": true,
+    "incremental": true,
+    
+    "baseUrl": ".",
+    "rootDir": "src",
     "module": "esnext",
     "moduleResolution": "bundler",
-    "verbatimModuleSyntax": true,
-    "isolatedModules": true,
-    "esModuleInterop": true,
     "jsx": "react-jsx",
-    "declaration": true,
-    "declarationMap": true,
-    "types": ["node", "react", "react-dom"]
+    
+    "types": ["node", "react", "react-dom"],
+    
+    /**
+     * @pilar XIII: Soberanía de Artefactos.
+     */
+    "tsBuildInfoFile": "../../../dist/packages/cms/ui/tsconfig.tsbuildinfo"
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/global.d.ts"],
-  "exclude": ["node_modules", "dist", "jest.config.ts", "**/*.spec.ts", "**/*.spec.tsx"]
+  "files": [],
+  "include": [],
+  "references": [
+    {
+      "path": "./tsconfig.lib.json"
+    }
+  ]
 }

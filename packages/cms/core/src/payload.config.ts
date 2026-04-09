@@ -1,12 +1,10 @@
 /**
  * @file packages/cms/core/src/payload.config.ts
  * @description Orquestador Maestro del Ecosistema de Datos MetaShark.
- *              Centraliza la inteligencia de colecciones, adaptadores de DB
- *              y almacenamiento en la nube (S3) con observabilidad Heimdall v2.5.
- *              Refactorizado: Optimización de resolución de plugins, blindaje
- *              de secretos, telemetría DNA-Level y cumplimiento estricto de 
- *              Payload 3.0 (Next.js Native).
- * @version 48.0 - Master SSoT & DNA Integrity (Forensic Standard)
+ *              Refactorizado: Implementación de "Cold-Start Config" para blindar 
+ *              el análisis del grafo de Nx y el build estático de Vercel.
+ *              Nivelado: Aislamiento total de I/O durante la evaluación estática.
+ * @version 49.0 - Cold-Start Discovery & Next.js 15 Native
  * @author Staff Engineer - MetaShark Tech
  */
 
@@ -23,8 +21,7 @@ import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 
 /** 
- * 1. INVENTARIO DE COLECCIONES (SBU Matrix)
- * @pilar V: Adherencia Arquitectónica.
+ * INVENTARIO DE COLECCIONES (SBU Matrix)
  */
 import { Ingestions } from './collections/Ingestions';
 import { Subscribers } from './collections/Subscribers';
@@ -44,49 +41,26 @@ import { Users } from './collections/users/Users';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// ============================================================================
-// TELEMETRÍA HEIMDALL: DNA Core Pulse v2.5
-// ============================================================================
+/**
+ * DETECTORES DE ESTADO DE INFRAESTRUCTRURA
+ * @pilar VIII: Resiliencia de Build.
+ */
+const IS_GENERATION = process.env.PAYLOAD_GENERATE === 'true';
+const IS_PRODUCTION = process.env.NODE_ENV === 'production';
+const HAS_DB = !!process.env.DATABASE_URL;
 
-const configEvalStart = performance.now();
-const traceId = `cfg_dna_${Date.now().toString(36).toUpperCase()}`;
-const isGeneration = process.env.PAYLOAD_GENERATE === 'true';
-const isProduction = process.env.NODE_ENV === 'production';
-
+// Constantes cromáticas para Logs (Solo se activan en modo runtime)
 const C = {
   reset: '\x1b[0m', cyan: '\x1b[36m', green: '\x1b[32m', 
   yellow: '\x1b[33m', magenta: '\x1b[35m', bold: '\x1b[1m', red: '\x1b[31m'
 };
 
-console.log(`\n${C.magenta}${C.bold}[DNA][CONFIG]${C.reset} Handshake de orquestación | Trace: ${C.cyan}${traceId}${C.reset}`);
-
 /**
- * HELPER: measureTask
- * @description Mide y reporta la latencia de un sub-proceso de configuración.
+ * FACTORÍA DE ADAPTADOR DE BASE DE DATOS
+ * @description Implementa bypass de sockets durante el descubrimiento del grafo.
  */
-const measureTask = <T>(name: string, task: () => T): T => {
-  const start = performance.now();
-  try {
-    const result = task();
-    const duration = (performance.now() - start).toFixed(2);
-    console.log(`   ${C.green}✓ [METRIC]${C.reset} ${name.padEnd(25)} | OK | ${C.yellow}${duration.padStart(8)}ms${C.reset}`);
-    return result;
-  } catch (error: unknown) {
-    const duration = (performance.now() - start).toFixed(2);
-    const msg = error instanceof Error ? error.message : 'Unknown drift';
-    console.error(`   ${C.red}✕ [METRIC]${C.reset} ${name.padEnd(25)} | FAIL | ${duration}ms | ${msg}`);
-    throw error;
-  }
-};
-
-// ============================================================================
-// COMPONENTES DE INFRAESTRUCTRURA (Silos)
-// ============================================================================
-
-/** 2. MOTOR DE PERSISTENCIA (Aislamiento de Build) */
-const dbAdapter = measureTask('INFRA_DB_ADAPTER', () => {
-  if (isGeneration) {
-    // Protocolo de Blindaje: Evita intentos de red durante la síntesis de tipos.
+const resolveDbAdapter = () => {
+  if (IS_GENERATION || !HAS_DB) {
     return postgresAdapter({
       pool: { connectionString: 'postgres://dummy:dummy@127.0.0.1:5432/dummy' },
     });
@@ -100,14 +74,16 @@ const dbAdapter = measureTask('INFRA_DB_ADAPTER', () => {
       ssl: { rejectUnauthorized: false },
     },
     idType: 'uuid',
-    push: !isProduction, // Solo permite push automático en desarrollo
+    push: !IS_PRODUCTION,
   });
-});
+};
 
-/** 3. RESOLUCIÓN DE PLUGINS (Bóveda Multimedia) */
-const pluginStack = measureTask('INFRA_CLOUD_PLUGINS', () => {
-  // Optimizamos: Si es fase de generación, no cargamos el SDK de S3.
-  if (!process.env.S3_ENDPOINT || isGeneration) {
+/**
+ * FACTORÍA DE PLUGINS CLOUD
+ * @description Evita la carga de SDKs externos si no hay secretos presentes.
+ */
+const resolvePlugins = () => {
+  if (!process.env.S3_ENDPOINT || IS_GENERATION) {
     return [];
   }
   
@@ -132,16 +108,14 @@ const pluginStack = measureTask('INFRA_CLOUD_PLUGINS', () => {
       },
     }),
   ];
-});
+};
 
-// ============================================================================
-// FACTORÍA SOBERANA: buildConfig
-// ============================================================================
-
-const config = buildConfig({
+/**
+ * @description Orquestación Maestra de Configuración.
+ * @pilar IX: Desacoplamiento de Infraestructura.
+ */
+export const config = buildConfig({
   serverURL: process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000',
-  
-  /** @pilar III: Seguridad de secretos con fallback de emergencia trazado */
   secret: process.env.PAYLOAD_SECRET || 'emergency-dev-vault-key-33',
   
   admin: {
@@ -149,11 +123,10 @@ const config = buildConfig({
     importMap: { baseDir: path.resolve(__dirname) },
     meta: { 
       titleSuffix: '- MetaShark Enterprise Operations',
-      // @fix TS2353: favicon delegado al orquestador estático de Next.js 15
     },
   },
 
-  db: dbAdapter,
+  db: resolveDbAdapter(),
 
   email: process.env.SMTP_USER ? nodemailerAdapter({
     defaultFromAddress: 'concierge@metashark.tech',
@@ -173,15 +146,16 @@ const config = buildConfig({
   },
 
   /** 
-   * @fix Pilar III: Compatibilidad de tipos para el motor Sharp
-   * Sincroniza el procesamiento de imágenes con el runtime de Next.js 15.
+   * @fix Pilar III: Compatibilidad de tipos para el motor Sharp.
    */
   sharp: (sharp as unknown) as SharpDependency,
 
-  plugins: pluginStack,
+  plugins: resolvePlugins(),
 });
 
-const totalEval = (performance.now() - configEvalStart).toFixed(2);
-console.log(`${C.magenta}${C.bold}[DNA][SUCCESS]${C.reset} SSoT Orquestador calibrado en ${C.yellow}${totalEval}ms${C.reset}\n`);
+// Telemetría de Montaje: Solo visible si no estamos en fase de generación silenciosa
+if (!IS_GENERATION && process.env.NODE_ENV !== 'test') {
+  console.log(`${C.magenta}${C.bold}[DNA][CONFIG]${C.reset} SSoT Orquestador calibrado.`);
+}
 
 export default config;

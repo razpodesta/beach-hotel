@@ -208,5 +208,104 @@ B. Blindaje Estático del Sitemap (Build Environment Guard)
 El ecosistema MetaShark ahora cuenta con un pipeline de CI/CD inquebrantable. Se alcanzó un estado de 100% de pureza en el Linter y de inmutabilidad total en el renderizado estático de Vercel. La fricción entre el Monorepo y el Edge Serverless ha sido erradicada.
 ---
 
+📝 PUNTO DE BITÁCORA: Implementación de la Arquitectura "Identity Fortress v1.0"
+Fecha: 07 de Abril, 2026
+Estatus: INFRAESTRUCTURA NIVELADA Y DESPLEGADA
+Responsable: Staff Engineer - MetaShark Tech
+1. RESUMEN EJECUTIVO DE LA MISIÓN
+Se ha completado con éxito la transformación del módulo de autenticación genérico en una Fortaleza de Identidad Soberana (Identity Fortress v1.0). La intervención abarcó desde el endurecimiento de los contratos de datos (SSoT) hasta la implementación de una lógica de defensa perimetral activa. El sistema ahora cumple con los estándares de seguridad de grado industrial, inspirándose en arquitecturas de éxito como Clerk y Manus.im.
+2. INTERVENCIONES QUIRÚRGICAS (Detalle Técnico)
+A. Sincronización de Contratos y Globalización (MACS):
+Aparatos: auth_portal.schema.ts y diccionarios i18n (en-US, es-ES, pt-BR).
+Acción: Se nivelaron los esquemas de Zod para incluir campos obligatorios de consentimiento legal (TOS/Newsletter) y telemetría de fortaleza. Se normalizó la estructura de los JSONs al protocolo "Flattening" para evitar fallos en el script de pre-build.
+B. Ingeniería del Lado del Cliente (Oxygen UX):
+Aparatos: AuthPortal.tsx y EmailPasswordForm.tsx.
+Innovación:
+Protocolo de Continuidad (Secuestro de Estado): Implementación de serialización en sessionStorage y paso de parámetros next en la URL de retorno, garantizando que el usuario regrese exactamente a su acción previa tras el login.
+Escudo Anti-Bot: Inyección asíncrona de Google reCAPTCHA v3 (Gratuito/Invisible) con validación obligatoria antes de disparar credenciales.
+Fortaleza Sensorial: Barra de fuerza de contraseña basada en entropía con indicadores visuales en espacio de color OKLCH.
+C. Blindaje del Gateway (Backend & Silos):
+Aparatos: auth/callback/route.ts y auth-security.actions.ts.
+Lógica de Defensa:
+Centinela de Bloqueo Exponencial: Implementación de un algoritmo de backoff que bloquea intentos de fuerza bruta (1h, 4h, hasta 24h) consultando el historial en la base de datos.
+Integración con Silo D (CommsHub): Cada fallo crítico dispara una notificación interna al Ledger de seguridad y una alerta forense mediante dispatchInternalNotification.
+Service Role Privileges: La autenticación en el servidor se realiza mediante un cliente de Supabase con service_role, aislando la lógica administrativa del contexto del navegador.
+3. AUDITORÍA DE PILARES (Higiene de Código)
+Pilar III (Seguridad de Tipos): Erradicación total de any. Uso de interfaces LoginPayload y AuthCredentials. Resolución de TS2305 y TS2339.
+Pilar VIII (Resiliencia): Manejo de errores en el Edge, detección de IS_BUILD_ENV para evitar fallos de DB durante la compilación en Vercel.
+Pilar X (Performance): Uso de useCallback y memo en componentes críticos. Carga diferida de scripts externos.
+4. ESTADO DE LAS "ENVIRONMENT VARIABLES" (Vercel Ready)
+Se han verificado e inyectado las siguientes llaves críticas:
+NEXT_PUBLIC_RECAPTCHA_SITE_KEY
+RECAPTCHA_SECRET_KEY
+SUPABASE_SERVICE_ROLE_KEY
+NEXT_PUBLIC_BASE_URL (Sincronizado con el Middleware para evitar 404 en raíz).
 
+---
+
+📝 PUNTO DE BITÁCORA: Forja de Identidad Soberana v1.0
+Fecha: 08 de Abril, 2026
+Fase: Extracción de Módulos Críticos & Creación de Infraestructura Plug-and-Play.
+Estatus: INFRAESTRUCTRURA SELLADA Y DESACOPLADA
+Arquitecto Responsable: Staff Engineer - MetaShark Tech
+1. RESUMEN EJECUTIVO DE LA MISIÓN
+Se ha ejecutado una cirugía mayor para extraer la lógica de Registro y Autenticación del núcleo de la aplicación (portfolio-web) y encapsularla en un nuevo paquete NPM autónomo: @metashark/identity-gateway. El objetivo principal fue lograr el desacoplamiento total de la infraestructura de datos (Payload CMS) de la infraestructura de acceso (Supabase Auth), permitiendo que la pasarela de identidad sea un bloque "Lego" reutilizable en cualquier proyecto futuro.
+2. ARQUITECTURA DEL NUEVO WORKSPACE (identity-gateway)
+Se ha configurado un contenedor de librería pura (Source-First) bajo estándares de élite:
+Agnosticismo Total: La librería no posee conocimiento de bases de datos externas. Emite eventos mediante el patrón de Inversión de Control (IoC).
+Soberanía i18n: Implementación de diccionarios autónomos (JSON) para en-US, es-ES y pt-BR con lógica de Deep Merge para sobreescritura desde el host.
+Seguridad L0 (Heimdall Injected): Validación invisible de reCAPTCHA v3 y analizador de entropía de contraseñas mediante tokens OKLCH.
+Dual-Mode Resolution: Configuración de tsconfig para permitir la emisión de declaraciones (.d.ts) y metadatos (.tsbuildinfo) sin generar basura de JavaScript, resolviendo conflictos de grafos en Nx.
+3. INTERVENCIONES QUIRÚRGICAS (Log de Aparatos)
+A. Capa de Contratos (SSoT):
+auth.schema.ts: Sustitución de esquemas específicos por contratos de identidad universales (Login/Register/Dictionary).
+recaptcha.ts: Refactorización forense con validación de contrato de respuesta de Google y telemetría de latencia.
+B. Capa de Negocio (Server Side):
+server-auth.ts: Purificación de Server Actions. Se eliminó la dependencia de Payload CMS, delegando la persistencia al Host. Integración nativa con @supabase/ssr.
+oauth-callback.ts: Transformación de la ruta de Next.js en un Handler agnóstico con tipado estricto (Zero Any), resolviendo errores TS7006.
+C. Capa de Experiencia (Luxury UX):
+LoginForm.tsx & RegisterForm.tsx: Componentes puros (React 19) con validación Zod y estados de carga atomizados.
+SocialLogin.tsx: Interfaz de lujo con branding de alta fidelidad (Apple, Google, Facebook) y efectos de resplandor cinemático.
+AuthModal.tsx: Orquestador supremo que gestiona la inyección dinámica de scripts de seguridad y transiciones de estado.
+4. RE-INTEGRACIÓN EN EL HOST (portfolio-web)
+Para cerrar el ciclo de la "Tierra Quemada", se reconstruyó la conexión en la aplicación web:
+Identity Bridge (auth-sync.actions.ts): Nueva Server Action en el host que recibe el éxito de la librería y realiza el Handshake con la colección users de Payload CMS (Aislamiento Multi-Tenant).
+OAuth Entry Point (auth/callback/route.ts): Restauración del puente de red consumiendo el orquestador de la librería.
+Host Wrapper (AuthPortal.tsx): Nuevo componente delgado que conecta el Store de Zustand con el modal de la librería.
+Constitución SSoT: Nivelación de dictionary.schema.ts para importar directamente el contrato de la librería, asegurando integridad en el Build de Vercel.
+5. VEREDICTO TÉCNICO Y CALIDAD
+Pilar III (Seguridad de Tipos): Se alcanzó un estado de Cero "Implicit Any" en todo el flujo de identidad.
+Pilar IX (Desacoplamiento): El portafolio ahora es un cliente liviano; la inteligencia reside en la librería.
+Pilar XIII (Build Isolation): Se erradicaron las colisiones de tsbuildinfo mediante el aislamiento físico de artefactos en el directorio dist/.
+
+---
+
+📝 PUNTO DE BITÁCORA: Saneamiento de Infraestructura y Sellado de Contratos (v5.5)
+Fecha: 08 de Abril, 2026
+Estatus: INFRAESTRUCTURA NIVELADA | LINTER 100% PURE | TYPECHECK RESILIENTE
+Arquitecto Responsable: Staff Engineer - MetaShark Tech
+1. RESUMEN EJECUTIVO DE LA MISIÓN
+Se ha ejecutado una intervención quirúrgica profunda para erradicar los bloqueos críticos detectados tras el nx reset del monorepo. La operación se centró en tres frentes: la purificación del linter en la capa de identidad, la reparación de la jerarquía de TypeScript en el núcleo del CMS y la transición definitiva al paradigma "Pure Source-First", eliminando la fricción de los binarios .d.ts.
+2. INTERVENCIONES ESTRATÉGICAS (Log de Cirugía)
+A. Capa de Calidad (ESLint Flat Config v9):
+Identity Gateway: Se detectó una contaminación de configuración donde archivos de Jest se hacían pasar por reglas de ESLint. Se refactorizaron eslint.config.mjs en todos los paquetes para centralizar Jest exclusivamente en el workspace tests/.
+Higiene de Lógica: Se erradicaron violaciones del Pilar X en LoginForm.tsx y AuthModal.tsx, implementando Optional Catch Binding y resolviendo promesas flotantes mediante el endurecimiento de ciclos async/await.
+B. Capa de Identidad (Identity Fortress v3.2):
+Erradicación de any: Se purgó el uso de tipos genéricos en i18n/index.ts y se inyectaron Type Guards en la UI para validar el handshake con Supabase.
+Blindaje de Servidor: Se eliminaron las aserciones no nulas (!) en server-auth.ts. El sistema ahora valida explícitamente la presencia de NEXT_PUBLIC_SUPABASE_URL antes de instanciar el cliente, evitando fallos silenciosos en el Edge.
+Strict ESM: Se normalizaron todas las importaciones internas de los paquetes añadiendo la extensión .js, garantizando compatibilidad con el motor SWC de Next.js 15.
+C. Infraestructura de Tipos (TSConfig & Monorepo):
+Resolución TS5083 (Rutas Fantasma): Se corrigió la herencia de tsconfig.json en cms-core y cms-ui, apuntando a la raíz absoluta del monorepo (../../../tsconfig.base.json).
+Resolución TS6305 (The Build-First Trap): Se amputó el array de references y se desactivó el modo composite en apps/portfolio-web/tsconfig.json. Esto obliga al compilador a consumir el código fuente vivo (src/*.ts) vía paths, eliminando el error de "Output file has not been built".
+Refactorización de Gamificación: Se niveló @metashark/protocol-33 para exportar el tipo Artifact, resolviendo el error TS2724 y permitiendo tipado estricto en el iterador de ArtifactShowcase.tsx.
+D. Sincronización de Contratos (MACS Engine):
+Handshake de Diccionarios: Se detectó una fractura de contrato en los JSONs de auth_portal. Se inyectaron 12 llaves faltantes (label_name, login_cta, success_registration_title, etc.) en inglés, español y portugués, permitiendo que el script sovereign-prebuild.ts complete la síntesis sin errores de Zod.
+3. VEREDICTO TÉCNICO
+El ecosistema ha pasado de un estado de "Bucle de Errores de Referencia" a un estado de Gobernanza por Fuentes. El compilador TypeScript ahora navega el monorepo como un bloque monolítico de fuentes, acelerando el Cold Start del entorno de desarrollo y blindando el pipeline de CI/CD.
+4. PRÓXIMOS PASOS LÓGICOS (Roadmap Inmediato)
+Refactorización del Silo D (CommsHub UI): Sincronizar el componente CommsHubManager.tsx con el nuevo contrato de transmisiones tipadas.
+Validación de Build Final: Ejecutar pnpm build para confirmar que las importaciones dinámicas del CMS en las Server Actions no filtran efectos secundarios al worker de Vercel.
+Activación de Reputación: Conectar el éxito del login verificado con el motor de inyección de XP en el perfil de usuario.
+
+---
 

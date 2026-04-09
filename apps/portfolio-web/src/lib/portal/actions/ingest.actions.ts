@@ -1,10 +1,10 @@
 /**
  * @file apps/portfolio-web/src/lib/portal/actions/ingest.actions.ts
  * @description Enterprise Data Ingestion Pipeline (Silo C).
- *              Refactorizado: Build-Time Isolation absoluto. Erradicada la importación
- *              estática de configPromise. Implementada lógica de carga dinámica 
- *              para prevenir el envenenamiento de los trabajadores de build.
- * @version 7.1 - Static Build Immunity
+ *              Orquesta la captura, validación y persistencia de datos masivos.
+ *              Refactorizado: Optimización de flujo binario, tipado estricto
+ *              y observabilidad Heimdall v2.5 integrada.
+ * @version 8.0 - Forensic Ingestion Standard
  * @author Raz Podestá -  MetaShark Tech
  */
 
@@ -12,15 +12,23 @@
 
 import { z } from 'zod';
 import { getPayload, type CollectionSlug, type SanitizedConfig } from 'payload';
-import { dataParser, type AudienceNode, type ParserIssue } from '../../services/data-parser';
+import { dataParser, type AudienceNode, type ParserIssue } from '../../services/data-parser.js';
 
 /** 
- * DETECTOR DE ENTORNO DE CONSTRUCCIÓN
- * @pilar XIII: Build Isolation - Previene fugas de lógica de servidor al frontend.
+ * DETECTORES DE ESTADO DE INFRAESTRUCTRURA
+ * @pilar XIII: Build Isolation - Previene la instanciación de DB durante el build.
  */
 const IS_BUILD_ENV = 
   process.env.NEXT_PHASE === 'phase-production-build' || 
   process.env.VERCEL === '1';
+
+/**
+ * PROTOCOLO CROMÁTICO HEIMDALL
+ */
+const C = {
+  reset: '\x1b[0m', magenta: '\x1b[35m', cyan: '\x1b[36m', 
+  green: '\x1b[32m', yellow: '\x1b[33m', red: '\x1b[31m', bold: '\x1b[1m'
+};
 
 /**
  * CONTRATO DE INTEGRIDAD DE INGESTA (SSoT)
@@ -45,33 +53,34 @@ export type IngestionResponse = {
   };
   issues?: ParserIssue[];
   error?: string;
+  traceId: string;
 };
 
 /**
  * MODULE: executeDataIngestion
- * @description Orquesta la ingesta con trazabilidad forense total y persistencia en CMS.
+ * @description Orquesta la transmutación de archivos en nodos de identidad CRM.
+ * @pilar IX: Inversión de Control y Responsabilidad Única.
  */
 export async function executeDataIngestion(
   formData: FormData, 
   rawMetadata: unknown
 ): Promise<IngestionResponse> {
-  // Guardia contra build estático
+  const startTime = performance.now();
+  const traceId = `ingest_${Date.now().toString(36).toUpperCase()}`;
+  
   if (IS_BUILD_ENV) {
-    return { success: false, error: 'BUILD_BYPASS' };
+    return { success: false, error: 'BUILD_BYPASS', traceId };
   }
 
-  const startTime = performance.now();
-  const traceId = `ingest_${Date.now()}`;
-  
-  console.group(`[HEIMDALL][PIPELINE] Transaction Trace: ${traceId}`);
+  console.log(`\n${C.magenta}${C.bold}[DNA][PIPELINE]${C.reset} Handshake Ingestion: ${C.cyan}${traceId}${C.reset}`);
 
   try {
-    // 1. VALIDACIÓN PERIMETRAL
+    // 1. VALIDACIÓN DE CONTRATO PERIMETRAL
     const metadata = dataIngestionSchema.parse(rawMetadata);
     
-    // 2. CARGA DINÁMICA DE CONFIGURACIÓN (Build-Safe)
+    // 2. INICIALIZACIÓN PEREZOSA (Pilar XIII)
     const configModule = await import('@metashark/cms-core/config');
-    const payloadConfig = (await configModule.default) as SanitizedConfig;
+    const payloadConfig = (await configModule.default) as unknown as SanitizedConfig;
     const payload = await getPayload({ config: payloadConfig });
     
     const SUBSCRIBER_COLL = 'subscribers' as CollectionSlug;
@@ -80,23 +89,20 @@ export async function executeDataIngestion(
     let processedJsonData: AudienceNode[] = [];
     let parserIssues: ParserIssue[] = [];
     
-    const finalMetrics = { 
-      nodesInjected: 0, 
-      duplicatesSkipped: 0,
-      failedRows: 0
-    };
-
+    const finalMetrics = { nodesInjected: 0, duplicatesSkipped: 0, failedRows: 0 };
     const file = formData.get('file') as File | null;
 
-    // 3. PROCESAMIENTO DE ACTIVO BINARIO (S3 Sync)
+    // 3. FASE: PERSISTENCIA BINARIA (S3 Vault)
     if (file && file.size > 0) {
-      console.log(`[${traceId}] Handshaking with S3 Cluster: ${file.name}`);
-      const buffer = Buffer.from(await file.arrayBuffer());
+      console.log(`   ${C.cyan}→ [STREAM]${C.reset} Ingesting Binary: ${file.name} (${(file.size / 1024).toFixed(2)} KB)`);
+      
+      const arrayBuffer = await file.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
       
       const mediaRecord = await payload.create({
         collection: 'media',
         data: { 
-          alt: `Trace[${traceId}]: ${metadata.subject}`, 
+          alt: `Ingest_Trace[${traceId}]: ${metadata.subject}`, 
           tenant: metadata.tenant 
         },
         file: { 
@@ -108,16 +114,16 @@ export async function executeDataIngestion(
       });
       linkedMediaId = String(mediaRecord.id);
 
-      // 4. PROCESAMIENTO LÓGICO DE DATOS (Excel/CSV Parser)
+      // 4. FASE: TRASMUTACIÓN DE DATOS (Excel/CSV Parser)
       if (metadata.type === 'document') {
-        const parserResult = await dataParser.parseExcelBuffer(buffer.buffer);
+        const parserResult = await dataParser.parseExcelBuffer(arrayBuffer, traceId);
         
         if (parserResult.success) {
           processedJsonData = parserResult.data;
           parserIssues = parserResult.issues;
           finalMetrics.failedRows = parserResult.metrics.failedRows;
 
-          // 5. DEDUPLICACIÓN DE IDENTIDAD
+          // 5. DEDUPLICACIÓN DE IDENTIDAD (O(n) In-Memory)
           const emails = processedJsonData.map(n => n.email);
           const existing = await payload.find({
             collection: SUBSCRIBER_COLL,
@@ -127,7 +133,8 @@ export async function executeDataIngestion(
                 { tenant: { equals: metadata.tenant } }
               ] 
             },
-            limit: 500
+            limit: 500,
+            depth: 0
           });
 
           const existingEmails = new Set(existing.docs.map(d => d.email));
@@ -135,7 +142,9 @@ export async function executeDataIngestion(
           
           finalMetrics.duplicatesSkipped = processedJsonData.length - validNodes.length;
 
-          // 6. INYECCIÓN ATÓMICA EN CRM (Subscribers)
+          // 6. INYECCIÓN ATÓMICA EN CRM (Transactional Batch Simulation)
+          console.log(`   ${C.cyan}→ [SYNC]${C.reset} Injecting ${validNodes.length} nodes into CRM Perimeter...`);
+          
           await Promise.all(validNodes.map(node => 
             payload.create({
               collection: SUBSCRIBER_COLL,
@@ -143,9 +152,9 @@ export async function executeDataIngestion(
                 email: node.email, 
                 tenant: metadata.tenant, 
                 status: 'active', 
-                source: `ingest_${metadata.subject}_${traceId}` 
+                source: `ingest_${traceId}` 
               }
-            }).catch(e => console.error(`[${traceId}] CRM Injection failed for ${node.email}:`, e))
+            }).catch(e => console.error(`[${traceId}] CRM Breach: ${node.email}`, e))
           ));
           
           finalMetrics.nodesInjected = validNodes.length;
@@ -153,7 +162,7 @@ export async function executeDataIngestion(
       }
     }
 
-    // 7. PERSISTENCIA DE MISION
+    // 7. REGISTRO DE MISIÓN (Ledger Audit)
     const ingestionResult = await payload.create({
       collection: 'ingestions' as CollectionSlug,
       data: {
@@ -170,11 +179,14 @@ export async function executeDataIngestion(
       }
     });
 
-    const totalLatency = (performance.now() - startTime).toFixed(2);
+    const totalLatency = (performance.now() - startTime).toFixed(4);
+    console.log(`${C.green}${C.bold}[GRANTED]${C.reset} Pipeline Complete | Latency: ${totalLatency}ms\n`);
+
     return { 
       success: true, 
       ingestionId: String(ingestionResult.id),
       issues: parserIssues,
+      traceId,
       metrics: { 
         ...finalMetrics, 
         latencyMs: `${totalLatency}ms` 
@@ -183,8 +195,8 @@ export async function executeDataIngestion(
 
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : 'PIPELINE_CATASTROPHIC_DRIFT';
-    console.error(`[${traceId}] Pipeline aborted: ${msg}`);
-    return { success: false, error: msg };
+    console.error(`${C.red}${C.bold}[BREACH] Ingestion Aborted:${C.reset} ${msg}`);
+    return { success: false, error: msg, traceId };
   } finally {
     console.groupEnd();
   }

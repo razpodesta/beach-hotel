@@ -1,13 +1,41 @@
+/**
+ * @file packages/cms/ui/tsconfig.lib.json
+ * @description Configuración de compilación para la librería de UI del CMS.
+ *              Refactorizado: Resolución de TS6304 habilitando la emisión de 
+ *              declaraciones obligatoria para proyectos compuestos.
+ *              Arquitectura: Sincronía con el directorio dist global de Nx.
+ * @version 3.2 - Composite Emission Fixed (TS6304)
+ * @author Staff Engineer - MetaShark Tech
+ */
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "../../../dist/packages/cms/ui",
     "rootDir": "src",
+    /**
+     * @pilar V: Adherencia Arquitectónica.
+     * Al usar 'composite', TypeScript requiere que 'declaration' sea true.
+     * Esto permite que Nx y Next.js entiendan el contrato de la librería 
+     * durante la fase de análisis del grafo.
+     */
     "composite": true,
+    "declaration": true,
+    "declarationMap": true,
     "noEmit": false,
     "emitDeclarationOnly": false,
     "tsBuildInfoFile": "../../../dist/packages/cms/ui/tsconfig.lib.tsbuildinfo"
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/global.d.ts"],
-  "exclude": ["**/*.spec.ts", "**/*.test.ts", "**/*.spec.tsx", "**/*.test.tsx"]
+  "include": [
+    "src/**/*.ts", 
+    "src/**/*.tsx", 
+    "src/global.d.ts"
+  ],
+  "exclude": [
+    "**/*.spec.ts", 
+    "**/*.test.ts", 
+    "**/*.spec.tsx", 
+    "**/*.test.tsx",
+    "node_modules",
+    "dist"
+  ]
 }

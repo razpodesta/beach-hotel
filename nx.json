@@ -77,12 +77,20 @@
     },
     "test": {
       "inputs": ["default", "^production", "{workspaceRoot}/jest.preset.js"],
-      "cache": true
+      "cache": true,
+      "dependsOn": ["^build"]
     },
     "prebuild": {
       "cache": true,
       "inputs": ["{projectRoot}/src/messages/**/*"],
       "outputs": ["{projectRoot}/src/dictionaries/*.json"]
+    }
+  },
+  "generators": {
+    "@nx/react": {
+      "library": {
+        "unitTestRunner": "jest"
+      }
     }
   }
 }

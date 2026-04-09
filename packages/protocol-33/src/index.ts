@@ -1,33 +1,25 @@
 /**
- * @file index.ts
+ * @file packages/protocol-33/src/index.ts
  * @description Fachada Pública Soberana del Protocolo 33 (Gamification Engine).
- *              Orquesta la exposición atómica de tipos, catálogo de artefactos
- *              y motor matemático de ascensión.
- *              Refactorizado: Migración a resolución "Bundler" (Next.js 15),
- *              erradicación de extensiones .js para empaquetado Source-First
- *              sin colisiones en Vercel.
- * @version 4.1 - Bundler Resolution Sync & SWC Ready
+ *              Refactorizado: Exposición del tipo Artifact saneado.
+ * @version 4.2 - Public API Sync
  * @author Raz Podestá -  MetaShark Tech
  */
 
 /**
  * 1. CONTRATOS DE DATOS (Type-Only Exports)
  * @pilar_III: Seguridad de Tipos Absoluta.
- * @description Exportación exclusiva de tipos para garantizar Zero-Runtime overhead
- *              en el bundle del cliente. Cumple con 'verbatimModuleSyntax'.
  */
 export type { 
   House, 
   Rarity, 
-  ArtifactDefinition, 
+  Artifact, // Nivelado: Coincide con la expectativa del consumidor
   LevelDefinition, 
   UserProgress 
 } from './lib/types';
 
 /**
  * 2. EL CÓDICE (Sovereign Assets)
- * @description Catálogo inmutable de artefactos y utilidades de búsqueda.
- *              Fuente de verdad (SSoT) para el patrimonio digital del usuario.
  */
 export { 
   ARTIFACTS, 
@@ -36,8 +28,6 @@ export {
 
 /**
  * 3. MOTOR DE ASCENSIÓN (Math Engine)
- * @description Lógica pura para el cálculo de niveles y progresión de XP.
- *              Optimizado para ejecución en el Edge y Server Actions.
  */
 export { 
   LEVELS, 
@@ -46,5 +36,5 @@ export {
 
 /**
  * @pilar_IV: Observabilidad Forense.
- * Registro de versión del orquestador: P33_ENGINE_V4.1_STABLE
+ * Versión de API sincronizada: P33_ENGINE_V4.2_STABLE
  */

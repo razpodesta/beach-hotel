@@ -1,24 +1,63 @@
+/**
+ * @file packages/cms/core/tsconfig.json
+ * @description Configuración Soberana de TypeScript para el Núcleo del CMS.
+ *              Refactorizado: Erradicación del modo "Composite" para habilitar 
+ *              la arquitectura Pure Source-First (Manifiesto v4.0).
+ *              Elimina el error TS6305 al forzar la resolución directa de fuentes.
+ * @version 5.0 - Pure Source-First Transition
+ * @author Staff Engineer - MetaShark Tech
+ */
 {
   "extends": "../../../tsconfig.base.json",
   "compilerOptions": {
-    /* RESOLUCIÓN DE DEPRECIACIÓN TS 7.0 */
+    /**
+     * @pilar XIII: Sincronización de Infraestructura.
+     * Silenciamos advertencias de baseUrl para compatibilidad con TS 5.9+.
+     */
     "ignoreDeprecations": "5.0",
-    "baseUrl": ".",
-    "composite": true,
-    "noEmit": true,
+
+    /**
+     * @pilar IX: Delegación de Compilación (Pure Source-First).
+     * Desactivamos 'composite' y eliminamos 'references' para que el compilador
+     * resuelva dependencias internas (como @metashark/protocol-33) directamente 
+     * desde sus archivos fuente .ts definidos en los paths de la base.
+     */
+    "composite": false,
+    "incremental": true,
     
+    /**
+     * @description En modo Source-First, este proyecto no emite archivos.
+     * La transpilación final la ejecutan los orquestadores (Next.js o tsx).
+     */
+    "noEmit": true,
+    "declaration": false,
+    "declarationMap": false,
+
+    "baseUrl": ".",
+    "rootDir": "src",
     "module": "esnext",
     "moduleResolution": "bundler",
     "verbatimModuleSyntax": true,
     "isolatedModules": true,
     "esModuleInterop": true,
-    "declaration": true,
-    "declarationMap": true,
-    "types": ["node"]
+    "jsx": "react-jsx",
+
+    "types": ["node", "react", "react-dom"]
   },
-  "include": ["src/**/*.ts", "src/payload-types.ts"],
-  "exclude": ["node_modules", "dist", "jest.config.ts", "src/**/*.spec.ts"],
-  "references": [
-    { "path": "../../protocol-33" }
+  "include": [
+    "src/**/*.ts", 
+    "src/**/*.tsx",
+    "src/payload-types.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "jest.config.ts",
+    "**/*.spec.ts",
+    "**/*.spec.tsx"
   ]
+  /**
+   * @fix TS6305: Se eliminan las 'references'. 
+   * La resolución ahora fluye a través de los 'paths' de tsconfig.base.json.
+   */
 }

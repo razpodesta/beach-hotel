@@ -1,50 +1,47 @@
-// RUTA: /packages/cms/ui/eslint.config.mjs
-// VERSIÓN: 2.0 ("Guardián de la Reutilización")
-// DESCRIPCIÓN: Se completa la configuración para añadir el refuerzo de las reglas
-//              de React Hooks y la validación de archivos de prueba con Jest,
-//              asegurando la máxima calidad para la librería de componentes compartidos.
+/**
+ * @file packages/cms/ui/eslint.config.mjs
+ * @description Constitución de Calidad para la librería de componentes compartidos.
+ *              Refactorizado: Purga total de dependencias de Jest y archivos de prueba.
+ *              Sincronización: Optimizado para React 19 y Oxygen UI Standards.
+ * @version 3.0 - Pure UI Library
+ * @author Staff Engineer - MetaShark Tech
+ */
 
 import baseConfig from '../../../eslint.config.mjs';
 import tseslint from 'typescript-eslint';
 import nxPlugin from '@nx/eslint-plugin';
 import reactHooksPlugin from 'eslint-plugin-react-hooks';
-import jestPlugin from 'eslint-plugin-jest';
 
 export default tseslint.config(
-  // 1. HERENCIA: Hereda la base del monorepo.
+  // 1. HERENCIA: Base del Monorepo y soporte React Nx
   ...baseConfig,
-
-  // 2. CONFIGURACIÓN DE REACT: Utiliza la configuración recomendada de Nx para React.
   ...nxPlugin.configs['flat/react'],
 
-  // 3. CAPA DE REACT HOOKS: Asegura el uso correcto de los hooks.
+  // 2. PERÍMETRO DE INTERFAZ (React & Hooks)
   {
     files: ['src/**/*.ts', 'src/**/*.tsx'],
     plugins: {
-        'react-hooks': reactHooksPlugin,
-    },
-    rules: reactHooksPlugin.configs.recommended.rules,
-  },
-
-  // 4. CAPA DE PRUEBAS (JEST): Configuración para los tests de los componentes.
-  {
-    files: ['src/**/*.spec.ts', 'src/**/*.spec.tsx'],
-    plugins: {
-        jest: jestPlugin,
+      'react-hooks': reactHooksPlugin,
     },
     rules: {
-        ...jestPlugin.configs.recommended.rules,
+      ...reactHooksPlugin.configs.recommended.rules,
+      
+      // @pilar III: Seguridad de Tipos en Componentes
+      '@typescript-eslint/no-explicit-any': 'error',
+      '@typescript-eslint/no-unused-vars': ['error', { 
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^_' 
+      }],
+      
+      // Integridad de la Experiencia (MEA/UX)
+      'react/prop-types': 'off',
+      'react/react-in-jsx-scope': 'off',
+      'react/display-name': 'warn'
     },
-    languageOptions: {
-      globals: {
-        ...jestPlugin.environments.globals.globals,
-      }
-    }
   },
 
-  // 5. REGLAS ADICIONALES/ANULACIONES: Espacio para futuras personalizaciones.
+  // 3. PROTECCIÓN CONTRA ARCHIVOS HUÉRFANOS DE TEST
   {
-    files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
-    rules: {},
-  },
+    ignores: ['**/out-tsc', '**/dist', 'src/**/*.spec.tsx', 'src/**/*.test.tsx'],
+  }
 );

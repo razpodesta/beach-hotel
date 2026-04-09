@@ -1,44 +1,38 @@
-// RUTA: /packages/cms/core/eslint.config.mjs
-// VERSIÓN: 2.0 ("Guardián del Núcleo")
-// DESCRIPCIÓN: Se completa la configuración para añadir la validación de
-//              archivos de prueba con Jest, asegurando la fiabilidad de las
-//              utilidades compartidas.
+/**
+ * @file packages/cms/core/eslint.config.mjs
+ * @description Constitución de Calidad para el motor de datos (Sovereign Data Core).
+ *              Refactorizado: Purga total de configuración de Testing (Manifiesto v1.1).
+ *              Aislamiento: Enfocado exclusivamente en la integridad del CMS y Tipos.
+ * @version 3.0 - Pure Data Node
+ * @author Staff Engineer - MetaShark Tech
+ */
 
 import baseConfig from '../../../eslint.config.mjs';
 import tseslint from 'typescript-eslint';
-import jestPlugin from 'eslint-plugin-jest';
 
 export default tseslint.config(
-  // 1. HERENCIA: Hereda la configuración base del monorepo.
+  // 1. HERENCIA: Constitución Global
   ...baseConfig,
 
-  // 2. CONFIGURACIÓN DE TYPESCRIPT: Aplica reglas al código fuente de la librería.
+  // 2. PERÍMETRO DE DATOS (TypeScript Core)
   {
     files: ['src/**/*.ts'],
     rules: {
-      ...tseslint.configs.recommended.rules,
+      // @pilar III: Seguridad de Tipos Absoluta en el Núcleo
+      '@typescript-eslint/no-explicit-any': 'error',
+      '@typescript-eslint/no-unused-vars': ['error', { 
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^_' 
+      }],
+      
+      // Forzamos el uso de interfaces de Payload robustas
+      '@typescript-eslint/no-empty-interface': 'warn',
+      '@typescript-eslint/consistent-type-definitions': ['error', 'interface'],
     },
   },
 
-  // 3. CAPA DE PRUEBAS (JEST): Configuración para los tests de las funciones core.
+  // 3. AISLAMIENTO DE INFRAESTRUCTRURA
   {
-    files: ['src/**/*.spec.ts', 'src/**/*.test.ts'],
-    plugins: {
-        jest: jestPlugin,
-    },
-    rules: {
-        ...jestPlugin.configs.recommended.rules,
-    },
-    languageOptions: {
-      globals: {
-        ...jestPlugin.environments.globals.globals,
-      }
-    }
-  },
-
-  // 4. REGLAS PARA JSON (si es necesario):
-  {
-    files: ['**/*.json'],
-    rules: {},
+    ignores: ['**/out-tsc', '**/dist', 'src/**/*.spec.ts', 'src/**/*.test.ts'],
   }
 );

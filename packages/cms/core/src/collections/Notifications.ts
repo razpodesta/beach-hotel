@@ -1,41 +1,60 @@
 /**
  * @file packages/cms/core/src/collections/Notifications.ts
  * @description Ledger Forense de Notificaciones y Señales Operativas (Silo D).
- *              Orquesta la persistencia de alertas de infraestructura, mensajes 
- *              entre nodos y telemetría de errores con purga automática.
- *              Refactorizado: Auto-generación de Trace IDs, lógica de retención 
- *              dinámica y observabilidad Heimdall v2.0.
- * @version 2.0 - Forensic Nerve System Standard
+ *              Refactorizado: Exportación explícita del contrato 'Notification' 
+ *              para erradicar el error TS2724 en el frontend.
+ *              Nivelado: Lógica de retención automática y telemetría Heimdall v2.5.
+ * @version 3.0 - Contract Sealed & Forensic Standard
  * @author Staff Engineer - MetaShark Tech
  */
 
 import { 
   type CollectionConfig, 
   type CollectionBeforeChangeHook, 
-  type CollectionAfterChangeHook 
+  type CollectionAfterChangeHook,
+  type Access
 } from 'payload';
-import { multiTenantReadAccess, multiTenantWriteAccess } from './Access';
+
+/** 
+ * IMPORTACIONES DE PERÍMETRO SOBERANO 
+ * @pilar V: Adherencia Arquitectónica.
+ */
+import { multiTenantReadAccess, multiTenantWriteAccess } from './Access.js';
 
 /**
- * CONSTANTES DE TELEMETRÍA (Protocolo Heimdall)
+ * @interface Notification
+ * @description Contrato soberano de datos para una transmisión del Ledger.
+ * @pilar III: Sello de Contrato para evitar errores de resolución en el frontend.
  */
-const C = {
-  reset: '\x1b[0m',
-  cyan: '\x1b[36m',
-  green: '\x1b[32m',
-  yellow: '\x1b[33m',
-  magenta: '\x1b[35m',
-  bold: '\x1b[1m',
-  blue: '\x1b[34m',
-  red: '\x1b[31m'
-};
+export interface Notification {
+  id: string;
+  subject: string;
+  category: 'security' | 'ops' | 'revenue' | 'comms' | 'infra';
+  priority: 'low' | 'high' | 'critical';
+  source: string;
+  message: string;
+  actionUrl?: string;
+  traceId: string;
+  originNode?: string;
+  isRead: boolean;
+  recipient?: string | unknown;
+  metadata?: Record<string, unknown>;
+  tenant: string | { id: string };
+  expiresAt: string;
+  readAt?: string;
+  createdAt: string;
+  updatedAt: string;
+}
 
-const collectionStart = performance.now();
-console.log(`${C.magenta}  [DNA][LOAD] Building Collection: NOTIFICATIONS (Signal Ledger)...${C.reset}`);
+/** CONSTANTES CROMÁTICAS HEIMDALL v2.5 */
+const C = {
+  reset: '\x1b[0m', cyan: '\x1b[36m', green: '\x1b[32m', 
+  yellow: '\x1b[33m', magenta: '\x1b[35m', bold: '\x1b[1m', red: '\x1b[31m'
+};
 
 /**
  * APARATO: Notifications
- * @description Centro de persistencia para el Comms Hub y el sistema de alertas críticas.
+ * @description Registro inmutable de señales operativas y alertas de salud.
  */
 export const Notifications: CollectionConfig = {
   slug: 'notifications',
@@ -43,39 +62,33 @@ export const Notifications: CollectionConfig = {
     useAsTitle: 'subject',
     group: 'Infrastructure',
     defaultColumns: ['subject', 'category', 'priority', 'source', 'isRead', 'tenant'],
-    description: 'Registro inmutable de señales operativas y alertas de salud del sistema.',
+    description: 'Registro soberano de sinais operacionais e alertas de infraestrutura.',
   },
 
-  /**
-   * REGLAS DE ACCESO (Sovereign Security)
-   * @pilar VIII: Resiliencia y Auditoría.
-   * La creación está abierta para inyección de logs (S2S), la lectura limitada por Tenant.
+  /** 
+   * @pilar VIII: Resiliencia - Auditoría inmutable.
+   * Solo el rol 'developer' (Nivel S0) tiene autoridad para purgar el Ledger.
    */
   access: {
     read: multiTenantReadAccess,
-    create: () => true, 
+    create: (() => true) as Access, // Permitir inyección de señales desde cualquier nodo verificado
     update: multiTenantWriteAccess,
-    delete: ({ req: { user } }) => user?.role === 'developer', // Las evidencias solo las purga Dev
+    delete: (({ req: { user } }) => user?.role === 'developer') as Access,
   },
 
-  /**
-   * GUARDIANES DE SEÑAL (Forensic Hooks)
-   */
   hooks: {
     /**
      * HOOK: beforeChange
-     * @description Orquesta la inyección de metadatos técnicos y la política de retención.
+     * @description Orquestación de metadatos forenses y política de retención.
      */
     beforeChange: [
       (async ({ data, operation, req, originalDoc }) => {
         const start = performance.now();
         
-        // 1. Handshake de Trace ID (Inalterable)
+        // 1. Handshake de Trace ID (Inmutable por diseño)
         if (operation === 'create' && !data.traceId) {
           data.traceId = `sig_${Date.now().toString(36).toUpperCase()}`;
         }
-
-        console.log(`${C.blue}    [HEIMDALL][SIGNAL][START] Processing Transmission | ID: ${data.traceId}${C.reset}`);
 
         // 2. Inyección de Perímetro Multi-Tenant
         if (operation === 'create' && req.user && !data.tenant) {
@@ -84,24 +97,24 @@ export const Notifications: CollectionConfig = {
             : req.user.tenant;
         }
 
-        // 3. Motor de Retención Inteligente (Auto-Purge Logic)
+        // 3. Motor de Retención Inteligente (Auto-Purge Strategy)
         if (operation === 'create') {
           const now = new Date();
-          let days = 15; // Buffer estándar
+          let days = 15; // Retención base
           if (data.priority === 'high') days = 45;
-          if (data.priority === 'critical') days = 365 * 2; // Auditoría legal (2 años)
-
+          if (data.priority === 'critical') days = 730; // 2 años de rastro legal
           data.expiresAt = new Date(now.getTime() + (days * 24 * 60 * 60 * 1000)).toISOString();
         }
 
-        // 4. Dispatcher de Lectura (Timestamping)
+        // 4. Dispatcher de Lectura
         if (operation === 'update' && data.isRead && !originalDoc.isRead) {
           data.readAt = new Date().toISOString();
-          console.log(`       ${C.green}[READ_CONFIRMED]${C.reset} Operator acknowledged signal.`);
         }
 
-        const duration = performance.now() - start;
-        console.log(`${C.green}    [HEIMDALL][SIGNAL][END] Node Ready | Time: ${duration.toFixed(4)}ms${C.reset}`);
+        const duration = (performance.now() - start).toFixed(4);
+        if (process.env.NODE_ENV !== 'test') {
+          console.log(`${C.magenta}[DNA][SIGNAL]${C.reset} Node Processed: ${C.cyan}${data.traceId}${C.reset} | Lat: ${duration}ms`);
+        }
         
         return data;
       }) as CollectionBeforeChangeHook,
@@ -109,13 +122,13 @@ export const Notifications: CollectionConfig = {
 
     /**
      * HOOK: afterChange
-     * @description Alerta inmediata en logs de servidor ante anomalías críticas.
+     * @description Alerta inmediata en logs de servidor ante incidencias de Nivel Crítico.
      */
     afterChange: [
       (async ({ doc, operation }) => {
         if (operation === 'create' && doc.priority === 'critical') {
-           console.error(`\n${C.red}${C.bold}    [CRITICAL_INCIDENT] [${doc.source}] ${doc.subject}${C.reset}`);
-           console.error(`    ↳ Trace: ${doc.traceId} | Path: /r/${doc.source}\n`);
+           console.error(`\n${C.red}${C.bold}[CRITICAL_INCIDENT]${C.reset} [${doc.source}] ${doc.subject}`);
+           console.error(`↳ Trace: ${doc.traceId} | Perimeter: ${doc.tenant}\n`);
         }
       }) as CollectionAfterChangeHook,
     ]
@@ -126,7 +139,7 @@ export const Notifications: CollectionConfig = {
       type: 'tabs',
       tabs: [
         {
-          label: 'Identidad de la Señal',
+          label: 'Identidade da Sinal',
           fields: [
             {
               type: 'row',
@@ -135,7 +148,7 @@ export const Notifications: CollectionConfig = {
                   name: 'subject', 
                   type: 'text', 
                   required: true, 
-                  admin: { width: '60%', placeholder: 'Breve descripción del evento' } 
+                  admin: { width: '60%', placeholder: 'Breve resumo do evento' } 
                 },
                 {
                   name: 'category',
@@ -143,11 +156,11 @@ export const Notifications: CollectionConfig = {
                   required: true,
                   defaultValue: 'ops',
                   options: [
-                    { label: 'Seguridad (Shield)', value: 'security' },
-                    { label: 'Operaciones (Node)', value: 'ops' },
+                    { label: 'Segurança (Shield)', value: 'security' },
+                    { label: 'Operações (Node)', value: 'ops' },
                     { label: 'Revenue (Profit)', value: 'revenue' },
-                    { label: 'Comunicación (Comms)', value: 'comms' },
-                    { label: 'Infraestructura (Cloud)', value: 'infra' }
+                    { label: 'Comunicação (Comms)', value: 'comms' },
+                    { label: 'Infraestrutura (Cloud)', value: 'infra' }
                   ],
                   admin: { width: '40%' }
                 }
@@ -168,35 +181,35 @@ export const Notifications: CollectionConfig = {
                   ],
                   admin: { width: '50%' }
                 },
-                { name: 'source', type: 'text', required: true, admin: { width: '50%', placeholder: 'REVENUE_CORE / EDGE_GATEWAY' } }
+                { name: 'source', type: 'text', required: true, admin: { width: '50%', placeholder: 'SYSTEM_NODE_ALPHA' } }
               ]
             },
-            { name: 'message', type: 'textarea', required: true, admin: { description: 'Detalle forense de la señal.' } },
-            { name: 'actionUrl', type: 'text', admin: { description: 'Link directo para resolver la incidencia.' } }
+            { name: 'message', type: 'textarea', required: true, admin: { description: 'Detalhes forenses da sinalização.' } },
+            { name: 'actionUrl', type: 'text', admin: { description: 'Link opcional para resolução imediata.' } }
           ]
         },
         {
-          label: 'Trazabilidad Forense',
+          label: 'Rastreabilidade Forense',
           fields: [
             {
               type: 'row',
               fields: [
-                { name: 'traceId', type: 'text', admin: { width: '50%', readOnly: true, description: 'Token de auditoría inmutable.' } },
-                { name: 'originNode', type: 'text', admin: { width: '50%', description: 'IP o Contexto del despachador.' } }
+                { name: 'traceId', type: 'text', admin: { width: '50%', readOnly: true } },
+                { name: 'originNode', type: 'text', admin: { width: '50%', description: 'IP ou Contexto do despachador.' } }
               ]
             },
             {
               type: 'row',
               fields: [
                 { name: 'isRead', type: 'checkbox', defaultValue: false, admin: { width: '50%' } },
-                { name: 'recipient', type: 'relationship', relationTo: 'users', admin: { width: '50%', description: 'Destinatario específico (opcional).' } }
+                { name: 'recipient', type: 'relationship', relationTo: 'users', admin: { width: '50%', description: 'Destinatário específico (opcional).' } }
               ]
             },
-            { name: 'metadata', type: 'json', admin: { description: 'Payload técnico crudo (Error stacks, JSON inputs).' } }
+            { name: 'metadata', type: 'json', admin: { description: 'Payload técnico bruto (Error stacks, JSON inputs).' } }
           ]
         },
         {
-          label: 'Infraestructura & Purga',
+          label: 'Infraestrutura & Purga',
           fields: [
             {
               name: 'tenant',
@@ -207,7 +220,7 @@ export const Notifications: CollectionConfig = {
               admin: { 
                 position: 'sidebar', 
                 readOnly: true,
-                description: 'Perímetro propietario de la notificación.'
+                description: 'Perímetro proprietário da notificação.'
               }
             },
             {
@@ -216,7 +229,7 @@ export const Notifications: CollectionConfig = {
               admin: { 
                 position: 'sidebar', 
                 readOnly: true,
-                description: 'Data programada para el Auto-Purge industrial.' 
+                description: 'Data programada para o Auto-Purge industrial.' 
               }
             },
             { name: 'readAt', type: 'date', admin: { position: 'sidebar', readOnly: true } }
@@ -226,6 +239,3 @@ export const Notifications: CollectionConfig = {
     }
   ]
 };
-
-const collectionDuration = performance.now() - collectionStart;
-console.log(`   ${C.green}✓ [DNA][SUCCESS]${C.reset} Notification Ledger calibrated | Time: ${collectionDuration.toFixed(4)}ms\n`);

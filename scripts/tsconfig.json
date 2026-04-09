@@ -1,31 +1,61 @@
 /**
  * @file scripts/tsconfig.json
  * @description Orquestador de tipos para utilidades de infraestructura y scripts CLI.
- *              Nivelado: Resolución definitiva de TS6307 mediante globbing 
- *              estricto sobre el código fuente de los paquetes y la app.
- * @version 12.3 - Global Scope Expansion
- * @author Raz Podestá - MetaShark Tech
+ *              Refactorizado: Resolución de conflicto entre "composite" y "noEmit".
+ *              Sincronizado: Inyección de "ignoreDeprecations" para cumplimiento TS 5.0+.
+ *              Arquitectura: Project Reference Node con salida aislada en dist.
+ * @version 13.0 - Composite Emission Fixed & TS 6.0 Ready
+ * @author Staff Engineer - MetaShark Tech
  */
 {
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
+    /**
+     * @pilar XIII: Sincronización de Infraestructura.
+     * Silenciamos la advertencia de 'baseUrl' para cumplir con el estándar TS 5.9+.
+     */
+    "ignoreDeprecations": "5.0",
+
+    /**
+     * @pilar V: Adherencia Arquitectónica.
+     * Mantenemos el nodo como compuesto para permitir la orquestación 
+     * incremental desde la raíz del monorepo Nx.
+     */
     "composite": true,
-    "noEmit": true,
+    "incremental": true,
+    
+    /**
+     * @fix: Resolución de error de Severidad 8.
+     * Activamos la emisión de declaraciones únicamente para satisfacer 
+     * el contrato de proyecto compuesto sin generar binarios de ejecución.
+     */
+    "noEmit": false,
+    "emitDeclarationOnly": true,
+    "declaration": true,
+    "declarationMap": true,
+
+    /**
+     * @pilar XIII: Soberanía de Artefactos.
+     * Redirigimos la salida técnica a la zona de infraestructura centralizada.
+     */
+    "outDir": "../dist/out-tsc/scripts",
+    "tsBuildInfoFile": "../dist/out-tsc/scripts/tsconfig.tsbuildinfo",
+
     "module": "esnext",
     "moduleResolution": "bundler",
     "types": ["node"]
   },
   "include": [
     "**/*.ts",
-    /* 
-       PILAR II: CERO REGRESIONES
-       Ampliamos el scope hacia los esquemas de la app para que el ensamblador
-       pueda validar el contrato dictionarySchema.
-    */
+    "../apps/portfolio-web/scripts/sovereign-prebuild.ts",
+    /** 
+     * @pilar II: Cero Regresiones.
+     * Visibilidad sobre los esquemas para validación de contratos durante el prebuild.
+     */
     "../apps/portfolio-web/src/lib/schemas/**/*.ts",
     "../packages/**/src/**/*.ts",
     "../packages/**/src/**/*.tsx"
-, "../apps/portfolio-web/scripts/sovereign-prebuild.ts"  ],
+  ],
   "exclude": [
     "node_modules",
     "dist"
