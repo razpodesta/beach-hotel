@@ -10,7 +10,7 @@
  */
 
 import { type CollectionConfig, type CollectionBeforeChangeHook } from 'payload';
-import { multiTenantReadAccess, multiTenantWriteAccess } from './Access.js';
+import { multiTenantReadAccess, multiTenantWriteAccess } from './Access';
 
 /** CONSTANTES CROMÁTICAS HEIMDALL v2.5 */
 const C = {

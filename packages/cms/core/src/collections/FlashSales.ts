@@ -22,7 +22,7 @@ import {
  * IMPORTACIONES DE PERÍMETRO SOBERANO
  * @pilar V: Adherencia Arquitectónica. Extensiones .js para rigor ESM.
  */
-import { multiTenantReadAccess, multiTenantWriteAccess } from './Access.js';
+import { multiTenantReadAccess, multiTenantWriteAccess } from './Access';
 
 /** CONSTANTES CROMÁTICAS HEIMDALL v2.5 */
 const C = {

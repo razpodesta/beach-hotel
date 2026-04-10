@@ -15,7 +15,7 @@ import {
   type CollectionBeforeChangeHook, 
   type CollectionAfterChangeHook 
 } from 'payload';
-import { multiTenantReadAccess, multiTenantWriteAccess } from './Access.js';
+import { multiTenantReadAccess, multiTenantWriteAccess } from './Access';
 
 /** 
  * IMPORTACIÓN DE MOTOR LÓGICO (SSoT)

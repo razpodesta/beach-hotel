@@ -2,10 +2,9 @@
  * @file apps/portfolio-web/src/lib/portal/actions/auth-sync.actions.ts
  * @description Orquestador de Sincronización de Identidad y Reactor de Reputación.
  *              Realiza el Handshake final entre Supabase Auth y Payload CMS.
- *              Refactorizado: Unificación de respuesta para nodos recurrentes,
- *              mapeo de identidad extendida y recalibración de nivel P33.
- *              Estándar: Heimdall v2.5 Forensic Trace & DNA Sync.
- * @version 3.1 - Atomic Reputation Sync & Metadata Mapping
+ *              Refactorizado: Idempotencia del Reactor P33, blindaje de metadatos
+ *              OAuth y alineación con el Core Registry v12.0.
+ * @version 4.0 - Atomic Reputation Sync & Metadata Hardened
  * @author Staff Engineer - MetaShark Tech
  */
 
@@ -17,12 +16,14 @@ import { getPayload } from 'payload';
 
 /** 
  * IMPORTACIONES DE INFRAESTRUCTRURA (Nx Boundary Safe)
+ * @pilar V: Adherencia Arquitectónica. Resolución vía Paths de tsconfig.
  */
 import type { SovereignRoleType } from '@metashark/cms-core';
 import { calculateProgress } from '@metashark/protocol-33';
 
 /**
  * DETECTORES DE ESTADO DE INFRAESTRUCTRURA
+ * @pilar XIII: Build Isolation.
  */
 const IS_BUILD_ENV = 
   process.env.NEXT_PHASE === 'phase-production-build' || 
@@ -30,6 +31,7 @@ const IS_BUILD_ENV =
 
 /**
  * IDENTIFICADORES DETERMINISTAS (Génesis Manifest)
+ * @description SSoT para la provisión de nuevas identidades.
  */
 const MASTER_TENANT_ID = '00000000-0000-0000-0000-000000000001';
 const GENESIS_XP = 50;
@@ -68,6 +70,7 @@ const C = {
 /**
  * @function syncIdentityAction
  * @description Punto de entrada para sincronizar la identidad y activar la reputación.
+ * @pilar IX: Inversión de Control. El Host gestiona la persistencia de la librería de identidad.
  */
 export async function syncIdentityAction(
   rawUser: unknown
@@ -86,9 +89,10 @@ export async function syncIdentityAction(
       throw new Error('HANDSHAKE_DATA_MALFORMED');
     }
 
-    const { email, name } = validation.data;
+    const { email, name: providedName } = validation.data;
 
     // 2. INICIALIZACIÓN PEREZOSA DEL CMS (Isolated Synthesis)
+    /** @pilar XIII: Previene la carga de DB en fase de análisis estático. */
     const configModule = await import('@metashark/cms-core/config');
     const payload = await getPayload({ config: configModule.default });
 
@@ -107,12 +111,14 @@ export async function syncIdentityAction(
        * @step Provisioning: Activación del Reactor de Reputación P33.
        * @description Se crea la identidad digital con el bono de Génesis.
        */
-      console.log(`   ${C.yellow}→ [PROVISIONING]${C.reset} Nueva identidad soberana detectada: ${email}`);
+      const initialName = providedName || email.split('@')[0];
+      console.log(`   ${C.yellow}→ [PROVISIONING]${C.reset} Nueva identidad soberana: ${email}`);
       
       profile = await payload.create({
         collection: 'users',
         data: {
           email,
+          name: initialName,
           role: 'guest',
           tenant: MASTER_TENANT_ID,
           password: crypto.randomBytes(32).toString('hex'),
@@ -121,7 +127,8 @@ export async function syncIdentityAction(
           experiencePoints: GENESIS_XP,
           level: 1,
           guestMetadata: {
-             preferredLanguage: 'pt-BR'
+             preferredLanguage: 'pt-BR',
+             discoverySource: 'auth-gateway-v1'
           }
         },
       });
@@ -132,9 +139,16 @@ export async function syncIdentityAction(
     }
 
     // 4. CALIBRACIÓN DE PROGRESIÓN (The Math Shield)
-    // Aseguramos que el nivel devuelto sea siempre el resultado del motor lógico.
+    /** 
+     * @pilar III: Integridad Lógica.
+     * Recalculamos el nivel basándonos en la XP real para detectar drifts.
+     */
     const currentXp = Number(profile.experiencePoints || 0);
     const { currentLevel } = calculateProgress(currentXp);
+
+    if (profile.level !== currentLevel) {
+       console.warn(`${C.yellow}   ![REPUTATION_DRIFT] Correcting level: ${profile.level} -> ${currentLevel}${C.reset}`);
+    }
 
     const totalLatency = (performance.now() - startTime).toFixed(4);
     console.log(`${C.green}${C.bold}[GRANTED]${C.reset} Identity Bridge sincronizado | Latency: ${totalLatency}ms\n`);
@@ -148,12 +162,12 @@ export async function syncIdentityAction(
       traceId,
       user: {
         id: String(profile.id),
-        role: profile.role as SovereignRoleType,
+        role: (profile.role as SovereignRoleType) || 'guest',
         email: profile.email,
-        name: name || profile.email.split('@')[0],
+        name: profile.name || email.split('@')[0],
         xp: currentXp,
         level: currentLevel,
-        // En Fase 5, esto consultará la relación 'Inventory'
+        // En Fase 5, esto consultará la colección relacional 'Inventory'
         artifacts: [INITIAL_ARTIFACT] 
       }
     };

@@ -1,11 +1,10 @@
 /**
  * @file packages/identity-gateway/src/actions/server-auth.ts
  * @description Orquestador de Acceso Soberano (Server Actions).
- *              Encapsula la comunicación con Supabase Auth, validación L0
- *              y gestión de estados de identidad sin dependencias de CMS.
- *              Refactorizado: Erradicación de extensiones .js para compatibilidad 
- *              con resolución "bundler" y éxito de build en Vercel.
- * @version 5.2 - Bundler Resolution Standard (Vercel Fix)
+ *              Encapsula la comunicación con Supabase Auth y validación L0.
+ *              Refactorizado: Resolución de TS-Linter (inferrable types),
+ *              activación de Motor OAuth y blindaje de redirección.
+ * @version 6.1 - Linter Pure & OAuth Hardened
  * @author Staff Engineer - MetaShark Tech
  */
 
@@ -13,11 +12,6 @@
 
 import { cookies } from 'next/headers';
 import { createServerClient } from '@supabase/ssr';
-/** 
- * IMPORTACIONES SANEADAS 
- * @pilar V: Adherencia Arquitectónica. Se eliminan extensiones .js 
- * para permitir la resolución nativa de fuentes .ts.
- */
 import { verifyReCaptcha } from '../security/recaptcha';
 import { 
   loginCredentialsSchema, 
@@ -27,7 +21,6 @@ import {
 
 /**
  * @description Tipo de retorno estandarizado para todas las acciones de identidad.
- * @pilar III: Inferencia de tipos para el manejo de estados en la UI.
  */
 export type AuthActionResult<T = unknown> = {
   success: boolean;
@@ -39,7 +32,6 @@ export type AuthActionResult<T = unknown> = {
 /**
  * @function getSupabaseServerClient
  * @description Inicializa el cliente de Supabase con validación de perímetro.
- * @pilar VIII: Resiliencia de Infraestructura.
  */
 async function getSupabaseServerClient() {
   const cookieStore = await cookies();
@@ -48,7 +40,8 @@ async function getSupabaseServerClient() {
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (!url || !anonKey) {
-    console.error('[HEIMDALL][INFRA] Missing Supabase environment variables.');
+    const missing = !url ? 'SUPABASE_URL' : 'SUPABASE_ANON_KEY';
+    console.error(`[HEIMDALL][CRITICAL] Missing Infrastructure Key: ${missing}`);
     throw new Error('INFRASTRUCTURE_UNSTABLE');
   }
 
@@ -61,7 +54,7 @@ async function getSupabaseServerClient() {
             cookieStore.set(name, value, options)
           );
         } catch {
-          // Capturado para evitar bloqueos en pre-renderizado estático
+          // Bypass para prerendering estático
         }
       },
     },
@@ -69,8 +62,53 @@ async function getSupabaseServerClient() {
 }
 
 /**
+ * ACTION: signInWithOAuthAction
+ * @description Inicia el flujo de autenticación con proveedores externos (Google/Apple).
+ * @pilar IX: Inversión de Control. La librería genera el link, el host redirige.
+ */
+export async function signInWithOAuthAction(
+  provider: 'google' | 'apple' | 'facebook',
+  nextPath = '/portal'
+): Promise<AuthActionResult<{ url: string }>> {
+  const traceId = `oauth_init_${Date.now().toString(36).toUpperCase()}`;
+  console.group(`[HEIMDALL][AUTH] OAuth Handshake: ${traceId} | Provider: ${provider}`);
+
+  try {
+    const supabase = await getSupabaseServerClient();
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:4200';
+    
+    // Construcción del callback URL con propagación del destino final
+    const redirectTo = `${baseUrl}/auth/callback?next=${encodeURIComponent(nextPath)}`;
+
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo,
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent',
+        },
+      },
+    });
+
+    if (error) throw error;
+    if (!data.url) throw new Error('OAUTH_URL_GENERATION_FAILED');
+
+    console.log(`[GRANTED] Redirect URL generated for ${provider}`);
+    return { success: true, data: { url: data.url } };
+
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : 'OAUTH_ENGINE_DRIFT';
+    console.error(`[CRITICAL] OAuth flow aborted: ${msg}`);
+    return { success: false, code: 'SERVER_ERROR', error: msg };
+  } finally {
+    console.groupEnd();
+  }
+}
+
+/**
  * ACTION: loginAction
- * @description Procesa el inicio de sesión con validación anti-bot y sincronía de sesión.
+ * @description Procesa el inicio de sesión con validación anti-bot.
  */
 export async function loginAction(rawCredentials: unknown): Promise<AuthActionResult<IdentityUser>> {
   const traceId = `login_${Date.now().toString(36).toUpperCase()}`;
@@ -84,7 +122,6 @@ export async function loginAction(rawCredentials: unknown): Promise<AuthActionRe
 
     const { email, password, recaptchaToken } = validation.data;
 
-    // Validación Humana L0
     const isHuman = await verifyReCaptcha(recaptchaToken, 0.5, traceId);
     if (!isHuman) {
       return { success: false, code: 'BOT_DETECTED', error: 'Security gate rejected request' };
@@ -98,7 +135,6 @@ export async function loginAction(rawCredentials: unknown): Promise<AuthActionRe
       return { success: false, code: 'AUTH_FAILURE', error: error.message };
     }
 
-    console.log(`[GRANTED] Identity verified: ${email}`);
     return { 
       success: true, 
       data: data.user as unknown as IdentityUser 
@@ -106,7 +142,7 @@ export async function loginAction(rawCredentials: unknown): Promise<AuthActionRe
 
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : 'CORE_ENGINE_DRIFT';
-    console.error(`[CRITICAL] Internal failure in Identity Actions: ${msg}`);
+    console.error(`[CRITICAL] Internal failure: ${msg}`);
     return { success: false, code: 'SERVER_ERROR', error: msg };
   } finally {
     console.groupEnd();
@@ -118,6 +154,7 @@ export async function loginAction(rawCredentials: unknown): Promise<AuthActionRe
  * @description Crea una nueva identidad soberana con metadatos extendidos.
  */
 export async function registerAction(rawCredentials: unknown): Promise<AuthActionResult<IdentityUser>> {
+  /** @fix: Eliminada anotación de tipo innecesaria para satisfacer regla no-inferrable-types */
   const traceId = `reg_${Date.now().toString(36).toUpperCase()}`;
   console.group(`[HEIMDALL][AUTH] Registration Pipeline: ${traceId}`);
 
@@ -143,7 +180,7 @@ export async function registerAction(rawCredentials: unknown): Promise<AuthActio
         data: {
           full_name: name,
           newsletter_opt_in: !!newsletterOptIn,
-          origin_node: 'IDENTITY_GATEWAY_V1',
+          origin_node: 'IDENTITY_GATEWAY_V6',
           trace_id: traceId
         }
       }
@@ -161,7 +198,7 @@ export async function registerAction(rawCredentials: unknown): Promise<AuthActio
 
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : 'CORE_ENGINE_DRIFT';
-    console.error(`[CRITICAL] Internal failure during registration: ${msg}`);
+    console.error(`[CRITICAL] Registration failure: ${msg}`);
     return { success: false, code: 'SERVER_ERROR', error: msg };
   } finally {
     console.groupEnd();
@@ -170,7 +207,6 @@ export async function registerAction(rawCredentials: unknown): Promise<AuthActio
 
 /**
  * ACTION: signOutAction
- * @description Invalida la sesión actual en el clúster de identidad.
  */
 export async function signOutAction(): Promise<AuthActionResult> {
   try {

@@ -3,10 +3,9 @@
  * @description Host Wrapper para el Identity Gateway (The Access Shield).
  *              Actúa como el puente de orquestación entre la librería autónoma
  *              y el ecosistema local (Zustand + Bridge Sync).
- *              Refactorizado: Gestión de errores de sincronización, optimización 
- *              de recarga de sesión (SSR-Safe) y validación de metadatos estricta.
- *              Estándar: Heimdall v2.5 Forensic Logging & React 19 Purity.
- * @version 2.0 - Forensic Handshake & Session Resilience
+ *              Refactorizado: Inyección de continuidad de navegación (nextPath),
+ *              optimización de sincronía de sesión y trazabilidad forense.
+ * @version 3.0 - Navigation Continuity & Session Hardened
  * @author Staff Engineer - MetaShark Tech
  */
 
@@ -17,13 +16,12 @@ import { usePathname } from 'next/navigation';
 
 /**
  * IMPORTACIONES DE LIBRERÍA SOBERANA
- * @pilar IX: Desacoplamiento. Consumimos la fachada limpia.
+ * @pilar IX: Inversión de Control. Consumimos la fachada de identidad.
  */
 import { AuthModal, type IdentityUser } from '@metashark/identity-gateway';
 
 /**
- * IMPORTACIONES DE INFRAESTRUCTRURA LOCAL (Rutas Relativas - Nx Boundary Safe)
- * @pilar V: Adherencia Arquitectónica.
+ * IMPORTACIONES DE INFRAESTRUCTRURA LOCAL (Fronteras Nx)
  */
 import { useUIStore } from '../../lib/store/ui.store';
 import { syncIdentityAction } from '../../lib/portal/actions/auth-sync.actions';
@@ -35,7 +33,7 @@ import type { Dictionary } from '../../lib/schemas/dictionary.schema';
  */
 const C = {
   reset: '\x1b[0m', cyan: '\x1b[36m', green: '\x1b[32m', 
-  yellow: '\x1b[33m', magenta: '\x1b[35m', bold: '\x1b[1m', red: '\x1b[31m'
+  magenta: '\x1b[35m', bold: '\x1b[1m', red: '\x1b[31m'
 };
 
 interface AuthPortalProps {
@@ -44,8 +42,8 @@ interface AuthPortalProps {
 }
 
 /**
- * APARATO: AuthPortal (Host)
- * @description Orquesta el ciclo de vida de la identidad en el portafolio.
+ * APARATO: AuthPortal (Host Orchestrator)
+ * @description Conecta el estado global de la UI con la pasarela de identidad.
  */
 export function AuthPortal({ dictionary }: AuthPortalProps) {
   const pathname = usePathname();
@@ -55,7 +53,7 @@ export function AuthPortal({ dictionary }: AuthPortalProps) {
 
   /**
    * 2. RESOLUCIÓN DE CONTEXTO GEOGRÁFICO (Type-Safe)
-   * @description Extrae y valida el idioma actual contra el Códice SSoT.
+   * @description Determina el idioma para el modal basándose en la ruta activa.
    */
   const currentLang = useMemo(() => {
     const segment = pathname?.split('/')[1];
@@ -63,21 +61,21 @@ export function AuthPortal({ dictionary }: AuthPortalProps) {
   }, [pathname]);
 
   /**
-   * HANDLER: handleAuthSuccess
-   * @description El punto de unión final. Recibe el éxito de Supabase y 
-   *              dispara la sincronización con el núcleo de datos del hotel.
+   * HANDLER: handleAuthSuccess (Credential-based flow)
+   * @description Se dispara cuando el usuario inicia sesión mediante Email/Password.
+   *              Realiza el Bridge Handshake con el núcleo del hotel.
    */
   const handleAuthSuccess = useCallback(async (user: IdentityUser) => {
     const traceId = `hsk_bridge_${Date.now().toString(36).toUpperCase()}`;
     const startTime = performance.now();
     
-    console.group(`${C.magenta}${C.bold}[HEIMDALL][AUTH]${C.reset} Bridge Handshake Initiated | Trace: ${C.cyan}${traceId}${C.reset}`);
-    console.log(`Identity_Node: ${user.email}`);
+    console.group(`${C.magenta}${C.bold}[HEIMDALL][AUTH]${C.reset} Bridge Handshake: ${C.cyan}${traceId}${C.reset}`);
+    console.log(`Identity_Node: ${user.email} | Origin: ${pathname}`);
 
     try {
       /**
-       * @step Extracción Segura de Metadatos
-       * @pilar III: Evitamos 'undefined' asegurando un nombre por defecto.
+       * @step Normalización de Identidad
+       * Extraemos el nombre real desde los metadatos de Supabase.
        */
       const rawMetadata = user.user_metadata || {};
       const identityName = 
@@ -86,9 +84,8 @@ export function AuthPortal({ dictionary }: AuthPortalProps) {
         user.email.split('@')[0];
 
       /**
-       * @step Identity Bridge Sync
-       * Sincronizamos la identidad verificada por la librería con Payload CMS.
-       * Esto activa automáticamente el reactor de reputación (XP inicial).
+       * @step CMS Identity Sync
+       * Vinculamos la identidad verificada con la colección 'users' de Payload.
        */
       const result = await syncIdentityAction({
         id: user.id,
@@ -99,41 +96,34 @@ export function AuthPortal({ dictionary }: AuthPortalProps) {
       const duration = (performance.now() - startTime).toFixed(4);
 
       if (result.success) {
-        console.log(`   ${C.green}✓ [GRANTED]${C.reset} CMS Provisioning successful | Latency: ${duration}ms`);
+        console.log(`   ${C.green}✓ [GRANTED]${C.reset} CMS Sync successful | Latency: ${duration}ms`);
         
         // Protocolo de Cierre de Bóveda
         closeAuthModal();
         
         /** 
-         * @pilar VIII: Resiliencia de Sesión (Browser Safe)
-         * Realizamos un refresco de página para asegurar que las Server Actions 
-         * de Next.js 15 reconozcan la nueva cookie de sesión en el servidor.
+         * @pilar VIII: Resiliencia de Sesión
+         * Refrescamos el árbol de componentes para que el servidor reconozca 
+         * las nuevas cookies de autenticación en la siguiente navegación.
          */
         if (typeof window !== 'undefined') {
           window.location.reload();
         }
       } else {
-        /**
-         * @pilar VIII: Manejo de Errores Forense.
-         * Si el bridge falla, lanzamos el error para que sea capturado 
-         * por el manejador interno de la librería y mostrado en el modal.
-         */
-        console.error(`   ${C.red}✕ [BREACH]${C.reset} Bridge synchronization failed: ${result.error}`);
-        throw new Error(result.error || 'UNKNOWN_SYNC_DRIFT');
+        console.error(`   ${C.red}✕ [BREACH]${C.reset} Identity Bridge failure: ${result.error}`);
+        throw new Error(result.error || 'SYNC_DRIFT');
       }
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'IDENTITY_SYNC_ABORTED';
-      console.error(`   ${C.red}✕ [CRITICAL]${C.reset} Unexpected drift in Identity Bridge: ${msg}`);
-      // Propagamos a la librería para visualización en UI
-      throw err; 
+      const msg = err instanceof Error ? err.message : 'UNEXPECTED_CORE_DRIFT';
+      console.error(`   ${C.red}✕ [CRITICAL]${C.reset} Bridge handshake aborted: ${msg}`);
+      throw err; // Propagamos al modal para feedback visual en UI
     } finally {
       console.groupEnd();
     }
-  }, [closeAuthModal]);
+  }, [closeAuthModal, pathname]);
 
   /**
    * @pilar VIII: Resiliencia de Render.
-   * Si la estructura de diccionarios es nula, el componente aborta silenciosamente.
    */
   if (!dictionary) return null;
 
@@ -144,9 +134,14 @@ export function AuthPortal({ dictionary }: AuthPortalProps) {
       onSuccess={handleAuthSuccess}
       locale={currentLang}
       /**
+       * @pilar XII: Continuidad MEA/UX.
+       * Inyectamos la ruta actual para que los proveedores de OAuth (Google)
+       * sepan exactamente a dónde devolver al huésped tras la validación.
+       */
+      nextPath={pathname}
+      /**
        * @pilar IX: Inversión de Control.
-       * Inyectamos las etiquetas locales del hotel para sobreescribir el 
-       * comportamiento genérico de la librería.
+       * Sobrescribimos el diccionario genérico con el SSoT del hotel.
        */
       dictionaryOverrides={dictionary}
     />

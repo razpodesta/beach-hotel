@@ -19,7 +19,7 @@ import {
  * IMPORTACIONES DE PERÍMETRO SOBERANO
  * @pilar V: Adherencia Arquitectónica. Extensiones .js para rigor ESM.
  */
-import { multiTenantReadAccess, multiTenantWriteAccess } from './Access.js';
+import { multiTenantReadAccess, multiTenantWriteAccess } from './Access';
 
 /**
  * CONTRATOS DE ESTRUCTURA SOBERANA

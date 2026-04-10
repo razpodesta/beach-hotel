@@ -21,8 +21,8 @@ import { calculateProgress } from '@metashark/protocol-33';
  * @pilar V: Adherencia Arquitectónica. Se utilizan extensiones .js para 
  * cumplimiento estricto de ESM en el núcleo del CMS.
  */
-import { multiTenantReadAccess } from '../Access.js';
-import { ROLES_CONFIG, type RoleConfig, } from './roles/config.js';
+import { multiTenantReadAccess } from '../Access';
+import { ROLES_CONFIG, type RoleConfig, } from './roles/config';
 
 /** CONSTANTES CROMÁTICAS HEIMDALL v2.5 */
 const C = {

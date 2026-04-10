@@ -1,11 +1,11 @@
 /**
  * @file packages/identity-gateway/src/ui/AuthModal.tsx
- * @description Orquestador Supremo de Identidad. 
- *              Gestiona transiciones entre Login/Registro, inyección de ReCaptcha v3,
- *              y handshake con las Server Actions de la librería.
- *              Refactorizado: Erradicación de extensiones .js para resolución nativa 
- *              del motor SWC/Webpack en modo "bundler".
- * @version 1.5 - Bundler Resolution Standard
+ * @description Orquestador Supremo de Identidad (The Access Gateway). 
+ *              Gestiona transiciones entre Login/Registro e integra el motor
+ *              de redirección OAuth para proveedores externos.
+ *              Refactorizado: Resolución de TS2322, integración de redirección
+ *              física y blindaje de contexto de retorno (nextPath).
+ * @version 2.0 - OAuth Redirect Ready & Type Contract Sealed
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -15,6 +15,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ShieldCheck, Sparkles } from 'lucide-react';
 
+/** IMPORTACIONES DE INFRAESTRUCTRURA */
 import { resolveIdentityDictionary } from '../i18n/index';
 import { 
   type IdentityDictionary, 
@@ -24,23 +25,36 @@ import {
 import { LoginForm } from './forms/LoginForm';
 import { RegisterForm } from './forms/RegisterForm';
 import { SocialLogin } from './SocialLogin';
-import { loginAction, registerAction } from '../actions/server-auth';
+import { 
+  loginAction, 
+  registerAction, 
+  signInWithOAuthAction 
+} from '../actions/server-auth';
 
 /**
  * @interface AuthModalProps
+ * @pilar III: Seguridad de Tipos Absoluta.
  */
 export interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
+  /** Callback para login exitoso por credenciales */
   onSuccess?: (user: IdentityUser) => void;
+  /** Manejador de errores para feedback en el Host */
   onError?: (error: string) => void;
+  /** Idioma activo del ecosistema */
   locale?: string;
+  /** Rumbo de destino tras la autenticación (Silo context) */
+  nextPath?: string;
+  /** Sobrescritura de diccionarios desde el Host */
   dictionaryOverrides?: Partial<IdentityDictionary>;
+  /** Vista inicial del portal */
   initialView?: 'login' | 'register';
 }
 
 /**
  * APARATO: AuthModal
+ * @description Centro de mando para la orquestación de identidades soberanas.
  */
 export function AuthModal({
   isOpen,
@@ -48,23 +62,29 @@ export function AuthModal({
   onSuccess,
   onError,
   locale = 'en-US',
+  nextPath = '/portal',
   dictionaryOverrides,
   initialView = 'login'
 }: AuthModalProps) {
   const [view, setView] = useState<'login' | 'register'>(initialView);
   const [isProcessing, setIsProcessing] = useState(false);
 
+  // 1. SINCRONIZACIÓN DE CONTENIDO (MACS)
   const dict = useMemo(() => 
     resolveIdentityDictionary(locale, dictionaryOverrides), 
     [locale, dictionaryOverrides]
   );
 
+  /**
+   * 2. PROTOCOLO DE SEGURIDAD L0 (reCAPTCHA v3)
+   * Inyecta dinámicamente el script de Google solo cuando el modal está activo.
+   */
   useEffect(() => {
     if (!isOpen) return;
 
     const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
     if (!siteKey) {
-      console.warn('[HEIMDALL][SECURITY] ReCaptcha SITE_KEY missing.');
+      console.warn('[HEIMDALL][SECURITY] reCAPTCHA Site Key not found in Perimeter.');
       return;
     }
 
@@ -78,34 +98,56 @@ export function AuthModal({
     }
   }, [isOpen]);
 
-  const handleAuthSuccess = useCallback((userData: IdentityUser) => {
-    console.log(`[HEIMDALL][AUTH] Handshake SUCCESS: ${userData.email}`);
-    onSuccess?.(userData);
-  }, [onSuccess]);
+  /**
+   * HANDLER: handleSocialAuth
+   * @description Inicia la negociación de redirección con el motor OAuth.
+   * @fix TS2322: Ahora devuelve Promise<void> para SocialLogin.
+   */
+  const handleSocialAuth = useCallback(async (provider: 'google' | 'apple') => {
+    const traceId = `oauth_hsk_${Date.now()}`;
+    console.log(`[HEIMDALL][AUTH] Negotiating external link: ${provider.toUpperCase()}`);
+    
+    try {
+      const result = await signInWithOAuthAction(provider, nextPath);
+      
+      if (result.success && result.data?.url) {
+        /** 
+         * @pilar IX: Redirección Soberana. 
+         * Abandonamos el árbol de React para ir al flujo de autorización. 
+         */
+        window.location.href = result.data.url;
+      } else {
+        throw new Error(result.error || 'OAUTH_HANDSHAKE_FAILED');
+      }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'CORE_AUTH_DRIFT';
+      console.error(`[CRITICAL] OAuth Handshake Aborted | Trace: ${traceId} | Error: ${msg}`);
+      onError?.(msg);
+      // Re-lanzamos para que SocialLogin libere el spinner interno
+      throw err;
+    }
+  }, [nextPath, onError]);
 
   /**
    * @function isIdentityUser
-   * @description Type Guard para validar la integridad del usuario antes del despacho.
+   * @description Type Guard para validar la integridad del nodo antes del despacho.
    */
   const isIdentityUser = (data: unknown): data is IdentityUser => {
-    return (
-      typeof data === 'object' &&
-      data !== null &&
-      'id' in data &&
-      'email' in data
-    );
+    return typeof data === 'object' && data !== null && 'id' in data && 'email' in data;
   };
 
+  /**
+   * HANDLERS DE FORMULARIO (Credenciales Directas)
+   */
   const handleLoginSubmit = async (credentials: AuthCredentials) => {
     setIsProcessing(true);
     try {
       const result = await loginAction(credentials);
-      
-      // Validación explícita de la forma del dato
       if (result.success && isIdentityUser(result.data)) {
-        handleAuthSuccess(result.data);
+        console.log(`[HEIMDALL][AUTH] Access Granted: ${result.data.email}`);
+        onSuccess?.(result.data);
       } else {
-        onError?.(result.error || 'AUTH_FAILED');
+        onError?.(result.error || 'AUTH_REJECTED');
       }
     } catch {
       onError?.('CORE_SYSTEM_DRIFT');
@@ -118,12 +160,11 @@ export function AuthModal({
     setIsProcessing(true);
     try {
       const result = await registerAction(credentials);
-      
-      // Validación explícita de la forma del dato
       if (result.success && isIdentityUser(result.data)) {
-        handleAuthSuccess(result.data);
+        console.log(`[HEIMDALL][AUTH] New Identity provisioned: ${result.data.email}`);
+        onSuccess?.(result.data);
       } else {
-        onError?.(result.error || 'REGISTRATION_FAILED');
+        onError?.(result.error || 'REGISTRATION_REJECTED');
       }
     } catch {
       onError?.('CORE_SYSTEM_DRIFT');
@@ -196,7 +237,7 @@ export function AuthModal({
 
             <SocialLogin 
               dictionary={dict} 
-              onProviderClick={(p) => console.log(`[AUTH] Provider: ${p}`)} 
+              onProviderClick={handleSocialAuth} 
               disabled={isProcessing}
             />
           </div>

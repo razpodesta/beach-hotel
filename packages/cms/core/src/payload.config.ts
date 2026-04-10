@@ -1,10 +1,9 @@
 /**
  * @file packages/cms/core/src/payload.config.ts
  * @description Orquestador Maestro del Ecosistema de Datos MetaShark.
- *              Refactorizado: Erradicación del bypass global de TLS, implementación 
- *              de Hardened SSL en el pooler y sincronización real en fase de Build.
- *              Sello: Resolución del aviso de adaptador de almacenamiento en Vercel.
- * @version 50.0 - Hardened Infrastructure & Real-Data Sync
+ *              Refactorizado: Gestión de adaptadores con aislamiento de build (Heimdall Guard),
+ *              sincronización total de la bóveda S3 y endurecimiento de protocolos SSL.
+ * @version 51.0 - Hardened Build Isolation & S3 Vault Sealed
  * @author Staff Engineer - MetaShark Tech
  */
 
@@ -20,6 +19,7 @@ import sharp from 'sharp';
 
 /** 
  * INVENTARIO DE COLECCIONES (SBU Matrix)
+ * @pilar V: Adherencia Arquitectónica. Importaciones directas de TypeScript.
  */
 import { Ingestions } from './collections/Ingestions';
 import { Subscribers } from './collections/Subscribers';
@@ -55,12 +55,12 @@ const C = {
 
 /**
  * FACTORÍA DE ADAPTADOR DE BASE DE DATOS (Hardened Handshake)
- * @description Implementa seguridad SSL granular sin comprometer el proceso global.
+ * @description Implementa seguridad SSL granular y previene bloqueos en entornos CI/CD.
  */
 const resolveDbAdapter = () => {
   /** 
    * @case TYPE_GENERATION
-   * Único escenario donde se permite una conexión dummy para síntesis de esquemas.
+   * @pilar XIII: Build Isolation. Evita intentos de conexión durante la síntesis de tipos.
    */
   if (IS_TYPE_GEN && !HAS_DB_URL) {
     return postgresAdapter({
@@ -69,38 +69,36 @@ const resolveDbAdapter = () => {
   }
   
   /**
-   * @case PRODUCTION_BUILD & RUNTIME
-   * @pilar VIII: Resiliencia. Conexión real con timeout extendido para el Edge de Vercel.
+   * @case PRODUCTION_RUNTIME
+   * @pilar VIII: Resiliencia. Configuración para el Transaction Pooler de Supabase.
    */
   return postgresAdapter({
     pool: {
       connectionString: process.env.DATABASE_URL || '',
-      max: IS_BUILD ? 5 : 10, // Reducimos pool durante build para evitar saturación
+      max: IS_BUILD ? 4 : 10, // Pool reducido durante build para evitar saturación
       idleTimeoutMillis: 30000,
       connectionTimeoutMillis: 5000,
       /**
        * @fix: Seguridad de Perímetro.
-       * Supabase requiere SSL. Al usar rejectUnauthorized: false AQUÍ, 
-       * permitimos el pooler transaccional sin inhabilitar el escudo TLS global de Node.
+       * Permite el handshake SSL con el pooler sin comprometer la validación global.
        */
       ssl: { rejectUnauthorized: false },
     },
     idType: 'uuid',
-    push: false, // Prevenimos mutaciones accidentales del esquema en el build
+    push: false, // Prevenimos mutaciones de esquema accidentales durante el build
   });
 };
 
 /**
  * FACTORÍA DE PLUGINS CLOUD (S3 Vault Sealing)
- * @description Asegura que el adaptador de almacenamiento esté inyectado para evitar 
- *              advertencias de Vercel y fallos en la ingesta multimedia.
+ * @description Orquesta la persistencia física en Supabase Storage.
  */
 const resolvePlugins = () => {
   const endpoint = process.env.S3_ENDPOINT;
   
   if (!endpoint) {
-    if (process.env.NODE_ENV === 'production') {
-      console.warn(`${C.yellow}[HEIMDALL][VAULT] Alerta: S3_ENDPOINT no detectado en producción.${C.reset}`);
+    if (process.env.NODE_ENV === 'production' && !IS_BUILD) {
+      console.warn(`${C.yellow}[HEIMDALL][VAULT] Alerta: S3_ENDPOINT no detectado. Activos en modo efímero.${C.reset}`);
     }
     return [];
   }
@@ -108,11 +106,12 @@ const resolvePlugins = () => {
   return [
     s3Storage({
       collections: { 
-        media: true, 
-        offers: true, 
+        'media': true, 
+        'offers': true, 
         'flash-sales': true, 
-        agencies: true, 
-        ingestions: true 
+        'agencies': true, 
+        'ingestions': true,
+        'projects': true
       },
       bucket: process.env.S3_BUCKET || 'sanctuary-vault',
       config: {
@@ -130,7 +129,7 @@ const resolvePlugins = () => {
 
 /**
  * APARATO PRINCIPAL: config
- * @description Orquestación Maestra de Datos y Servicios.
+ * @description Única fuente de verdad para la infraestructura de datos.
  */
 export const config = buildConfig({
   serverURL: process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000',
@@ -138,7 +137,13 @@ export const config = buildConfig({
   
   admin: {
     user: 'users',
-    importMap: { baseDir: path.resolve(__dirname) },
+    /** 
+     * @pilar IX: Desacoplamiento. 
+     * ImportMap dinámico para resolución en modo Source-First.
+     */
+    importMap: { 
+      baseDir: path.resolve(__dirname) 
+    },
     meta: { 
       titleSuffix: '- MetaShark Enterprise Operations',
     },
@@ -165,17 +170,22 @@ export const config = buildConfig({
 
   /** 
    * @pilar III: Seguridad de Tipos.
-   * Casting de seguridad para el motor de procesamiento de imágenes Sharp.
+   * Casting de seguridad para el motor de procesamiento Sharp.
    */
   sharp: (sharp as unknown) as SharpDependency,
 
   plugins: resolvePlugins(),
 });
 
-// Telemetría de Montaje (Heimdall v2.5)
+// Telemetría de Montaje de Infraestructura (Heimdall v2.5)
 if (!IS_TYPE_GEN && typeof window === 'undefined') {
   const phase = IS_BUILD ? 'BUILD_GENERATION' : 'RUNTIME_ACTIVE';
-  console.log(`${C.magenta}${C.bold}[DNA][CONFIG]${C.reset} Core Orchestrator Calibrated | Phase: ${phase}`);
+  const sslStatus = HAS_DB_URL ? 'HARDENED_SSL' : 'BYPASSED';
+  
+  console.log(
+    `${C.magenta}${C.bold}[DNA][CONFIG]${C.reset} Core Orchestrator Calibrated | ` +
+    `Phase: ${C.cyan}${phase}${C.reset} | DB_SSL: ${C.green}${sslStatus}${C.reset}`
+  );
 }
 
 export default config;

@@ -15,7 +15,7 @@ import type { Access, Where } from 'payload';
  * IMPORTACIONES DE CONTRATO (SSoT)
  * @pilar V: Adherencia Arquitectónica. Extensiones .js para cumplimiento ESM.
  */
-import { type SovereignRoleType } from './users/roles/config.js';
+import { type SovereignRoleType } from './users/roles/config';
 
 /**
  * @interface SovereignUser

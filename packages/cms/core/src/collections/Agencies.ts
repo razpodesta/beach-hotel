@@ -21,7 +21,7 @@ import {
  * @pilar V: Adherencia Arquitectónica. 
  * @fix TS2307: Ruta corregida a nivel local (./) para resolución exitosa en el grafo.
  */
-import { multiTenantReadAccess, multiTenantWriteAccess } from './Access.js';
+import { multiTenantReadAccess, multiTenantWriteAccess } from './Access';
 
 /** CONSTANTES CROMÁTICAS HEIMDALL v2.5 */
 const C = {
