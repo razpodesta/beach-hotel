@@ -4,9 +4,14 @@
  *              Orquesta la gestión de activos binarios con optimización agresiva de 
  *              entrega (LCP), aislamiento Multi-Tenant de Grado S0 y telemetría 
  *              forense Heimdall v2.5. Sincronizado con Supabase Storage (S3).
- *              Refactorizado: Resolución ESM (.js), soporte AVIF y blindaje de perímetro.
- * @version 11.1 - AVIF LCP Hardening & ESM Compliance
+ *              Refactorizado: Inyección del contexto 'ai-synth' para orquestación de IA.
+ * 
+ * @version 12.0 - AI Synth Context & Multi-Tenant Shield
  * @author Staff Engineer - MetaShark Tech
+ * 
+ * @pilar III: Seguridad de Tipos - Exportación de la interfaz PayloadMediaDoc.
+ * @pilar IX: Desacoplamiento - Clasificación por contextos para consumo dinámico en UI.
+ * @pilar X: Performance - Optimización LCP mediante formatos AVIF y WebP.
  */
 
 import { 
@@ -18,7 +23,6 @@ import {
 
 /** 
  * IMPORTACIONES DE PERÍMETRO SOBERANO
- * @pilar V: Adherencia Arquitectónica. Extensiones .js para rigor ESM.
  */
 import { multiTenantReadAccess, multiTenantWriteAccess } from './Access';
 
@@ -37,7 +41,8 @@ export interface PayloadMediaDoc {
   filename?: string | null;
   tenant?: string | { id: string } | null; 
   caption?: string | null;
-  assetContext?: 'branding' | 'interior' | 'event' | 'social' | 'system';
+  /** @property assetContext - Define la intención semántica del activo */
+  assetContext?: 'branding' | 'interior' | 'event' | 'social' | 'system' | 'ai-synth';
 }
 
 /**
@@ -65,10 +70,6 @@ const beforeChangeHook: CollectionBeforeChangeHook = async ({ req, data, operati
   const start = performance.now();
   const traceId = `media_hsk_${Date.now().toString(36).toUpperCase()}`;
   
-  if (process.env.NODE_ENV !== 'test') {
-    console.log(`${C.cyan}    [HEIMDALL][VAULT][START] Asset Handshake | ID: ${traceId}${C.reset}`);
-  }
-
   // 1. Handshake de Propiedad (Multi-Tenant Shield)
   if (operation === 'create' && req.user && !data.tenant) {
     data.tenant = typeof req.user.tenant === 'object' && req.user.tenant !== null 
@@ -88,7 +89,7 @@ const beforeChangeHook: CollectionBeforeChangeHook = async ({ req, data, operati
 
   const duration = (performance.now() - start).toFixed(4);
   if (process.env.NODE_ENV !== 'test') {
-    console.log(`${C.green}    [HEIMDALL][VAULT][END] Metadata Sealed | Time: ${duration}ms${C.reset}`);
+    console.log(`${C.green}    [HEIMDALL][VAULT] Metadata Sealed | Trace: ${traceId} | Time: ${duration}ms${C.reset}`);
   }
   return data;
 };
@@ -99,7 +100,7 @@ const afterChangeHook: CollectionAfterChangeHook = async ({ doc, operation }) =>
     if (process.env.NODE_ENV !== 'test') {
       console.log(
         `   ${C.green}✓ [S3_PERSISTED]${C.reset} File: ${C.bold}${doc.filename}${C.reset} | ` +
-        `Payload: ${efficiency}KB | Dim: ${doc.width}x${doc.height}px`
+        `Payload: ${efficiency}KB | Context: ${doc.assetContext}`
       );
     }
   }
@@ -121,7 +122,7 @@ export const Media: CollectionConfig = {
     useAsTitle: 'alt',
     group: 'Infrastructure',
     description: 'Gestão de ativos binários de alta fidelidade sincronizados com S3 Cluster.',
-    defaultColumns: ['alt', 'mimeType', 'filesize', 'tenant'],
+    defaultColumns: ['alt', 'assetContext', 'mimeType', 'tenant'],
     preview: (doc) => doc?.url as string,
   },
   
@@ -134,7 +135,6 @@ export const Media: CollectionConfig = {
 
   /**
    * CONFIGURACIÓN DE INGESTA (LCP Optimization Engine)
-   * @pilar X: Performance - Derivados específicos para dispositivos móviles y 4K.
    */
   upload: {
     staticDir: 'media',
@@ -151,7 +151,6 @@ export const Media: CollectionConfig = {
         width: 768, 
         height: 1024, 
         position: 'centre',
-        /** @fix: AVIF para LCP < 1.0s en dispositivos móviles */
         formatOptions: { format: 'avif', options: { quality: 75 } } 
       },
       { 
@@ -161,13 +160,6 @@ export const Media: CollectionConfig = {
         position: 'centre',
         formatOptions: { format: 'webp', options: { quality: 85 } } 
       },
-      { 
-        name: 'mobile-optimized', 
-        width: 1170, 
-        height: 2532, 
-        position: 'centre',
-        formatOptions: { format: 'avif', options: { quality: 70 } }
-      },
     ],
     adminThumbnail: 'thumbnail',
     mimeTypes: [
@@ -175,8 +167,7 @@ export const Media: CollectionConfig = {
       'image/png', 
       'image/webp', 
       'image/avif', 
-      'video/mp4', 
-      'application/pdf'
+      'video/mp4'
     ],
     focalPoint: true,
   },
@@ -200,12 +191,8 @@ export const Media: CollectionConfig = {
               required: true,
               index: true,
               admin: { 
-                description: 'Crítico para SEO. Texto alternativo descriptivo (mín. 8 caracteres).',
+                description: 'Crítico para SEO. Texto alternativo descriptivo.',
                 placeholder: 'Ej: Suíte Master Alpha - Vista Panorâmica do Mar'
-              },
-              validate: (val: string | null | undefined) => {
-                if (val && val.length >= 8) return true;
-                return 'Handshake SEO Fallido: Descripción insuficiente para indexación de élite.';
               }
             },
             {
@@ -213,20 +200,21 @@ export const Media: CollectionConfig = {
               type: 'select',
               required: true,
               defaultValue: 'interior',
-              index: true, // @fix: Optimización de búsqueda por contexto
+              index: true,
               options: [
                 { label: 'Branding & Identity', value: 'branding' },
                 { label: 'Hotel Interior / Suites', value: 'interior' },
                 { label: 'Festival / Event Signals', value: 'event' },
                 { label: 'Social & Editorial Content', value: 'social' },
+                { label: 'AI Synthetic Content', value: 'ai-synth' }, // @fix: Soporte para Visual Synth
                 { label: 'System Infrastructure', value: 'system' }
               ],
-              admin: { description: 'Categorização para o motor de busca do Silo C.' }
+              admin: { description: 'Categorização para o orquestrador de visuais dinâmicos.' }
             },
             {
               name: 'caption',
               type: 'textarea',
-              admin: { description: 'Informação editorial extendida para o Journal.' },
+              admin: { description: 'Informação editorial extendida.' },
             },
           ]
         },
@@ -241,17 +229,8 @@ export const Media: CollectionConfig = {
               index: true,
               admin: { 
                 position: 'sidebar', 
-                readOnly: true,
-                description: 'Perímetro legal e digital proprietário.' 
+                readOnly: true
               },
-            },
-            {
-              name: 'internalNotes',
-              type: 'textarea',
-              admin: {
-                position: 'sidebar',
-                description: 'Log inalterável de auditoria técnica.'
-              }
             }
           ]
         }
@@ -262,5 +241,5 @@ export const Media: CollectionConfig = {
 
 const collectionDuration = performance.now() - collectionStart;
 if (process.env.NODE_ENV !== 'test') {
-  console.log(`   ${C.green}✓ [DNA][SUCCESS]${C.reset} Media Vault calibrated | Time: ${collectionDuration.toFixed(4)}ms\n`);
+  console.log(`   ${C.green}✓ [DNA][SUCCESS]${C.reset} Media Vault Levelled | Time: ${collectionDuration.toFixed(4)}ms\n`);
 }

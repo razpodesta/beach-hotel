@@ -4,7 +4,8 @@
  *              Orquesta el despacho masivo de misiones y la recuperación de inventario.
  *              Refactorizado: Despacho por lotes (Batch Engine), tipado estricto
  *              de inventario polimórfico y blindaje de aislamiento de build.
- * @version 3.0 - Batch Dispatch Optimized & SSoT Sealed
+ *              Nivelado: Literal Type Narrowing para erradicar el error TS2339.
+ * @version 3.1 - Batch Dispatch Optimized & SSoT Sealed
  * @author Staff Engineer - MetaShark Tech
  */
 
@@ -101,10 +102,15 @@ export async function executeBroadcastCampaign(
     const payload = await getPayload({ config: payloadConfig });
 
     // 2. RECUPERACIÓN DE AUDIENCIA SEGMENTADA (Multi-Tenant Shield)
+    /**
+     * @fix TS2339: Literal Type Narrowing.
+     * Pasamos 'subscribers' de forma explícita sin el cast 'as CollectionSlug'.
+     * Esto permite a TypeScript inferir correctamente las propiedades de la entidad.
+     */
     const { docs: audience } = await payload.find({
-      collection: 'subscribers' as CollectionSlug,
+      collection: 'subscribers',
       where: {
-        and: [
+        and:[
           { tenant: { equals: contract.tenant } },
           { status: { equals: 'active' } }
         ]
@@ -171,7 +177,7 @@ export async function getActiveOffersAction(
   const startTime = performance.now();
   const traceId = `rev_fetch_${Date.now().toString(36).toUpperCase()}`;
 
-  if (IS_BUILD_ENV) return { success: true, data: [] };
+  if (IS_BUILD_ENV) return { success: true, data:[] };
 
   console.log(`${C.magenta}${C.bold}[DNA][REVENUE]${C.reset} Syncing Silo A | View: ${C.cyan}${view.toUpperCase()}${C.reset} | Trace: ${traceId}`);
 
@@ -186,7 +192,7 @@ export async function getActiveOffersAction(
      * Solo recuperamos activos que pertenezcan al perímetro y estén vigentes.
      */
     const whereClause: Where = {
-      and: [
+      and:[
         { tenant: { equals: tenantId } },
         { status: { equals: 'active' } }
       ]
@@ -217,7 +223,7 @@ export async function getActiveOffersAction(
     }));
 
     const duration = (performance.now() - startTime).toFixed(4);
-    console.log(`${C.green}   ✓ [GRANTED]${C.reset} Inventory nodes synchronized: ${docs.length} | Lat: ${duration}ms`);
+    console.log(`${C.green}   ✓[GRANTED]${C.reset} Inventory nodes synchronized: ${docs.length} | Lat: ${duration}ms`);
 
     return { success: true, data: shapedData };
 

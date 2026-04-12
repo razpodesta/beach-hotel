@@ -1,25 +1,25 @@
 {
-  "badge": "Impulsionado por Ideogram 3.0",
-  "title": "Sintetizador Visual IA",
-  "subtitle": "Explore uma coleção curada de ativos gerados algoritmicamente. Fotorrealismo, tipografia perfeita e consistência estilística, orquestrados pelo nosso CMS soberano.",
-  "overlay_indicator": "RENDER AO VIVO • WEBGL 2.0",
-  "drag_label": "ARRASTAR PARA ORBITAR",
-  "item_prefix": "ATIVO",
-  "error_fallback": "MOTOR VISUAL NÃO SUPORTADO NESTE NAVEGADOR",
-  "footer_prompt": "Engenharia de Prompts Avançada",
-  "footer_upscaling": "Upscaling 8K e Otimização",
-  "items": {
-    "neon-typography": { "title": "Cristal Neon", "description": "Renderização 3D de tubos de neon." },
-    "editorial-fashion": { "title": "Alta Costura", "description": "Síntese têxtil fotorrealista." },
-    "tech-badge": { "title": "Titânio Tech", "description": "Visualização macro de produto." },
-    "transparent-gadget": { "title": "Hardware Cristal", "description": "Engenharia de dispositivos futuristas." },
-    "luxury-perfume": { "title": "Essência Ouro", "description": "Fotografia comercial publicitária." },
-    "concept-car": { "title": "Auto Conceito", "description": "Detalhes abstratos de fibra de carbono." },
-    "concrete-workspace": { "title": "Espaço Bruto", "description": "Design de interiores minimalista." },
-    "cyberpunk-street": { "title": "Cidade Noturna", "description": "Atmosfera com luzes volumétricas." },
-    "abstract-geometry": { "title": "Forma Paramétrica", "description": "Arquitetura algorítmica." },
-    "fluid-shapes": { "title": "Fluxo Iridescente", "description": "Simulação 3D de metal líquido." },
-    "mechanical-insect": { "title": "Vida Mecânica", "description": "Macro steampunk de alta precisão." },
-    "neural-network": { "title": "Fluxo de Dados", "description": "Visualização neural abstrata." }
+  "badge": "Arquitetura Sintética",
+  "title": "Síntese Visual",
+  "subtitle": "Explore as fronteiras do design generativo onde a inteligência artificial materializa o luxo de amanhã.",
+  "overlay_indicator": "MOTOR IA: ATIVO",
+  "drag_label": "INTERAJA COM O ORBE",
+  "item_prefix": "PROTÓTIPO",
+  "error_fallback": "Falha na sincronia visual",
+  "footer_prompt": "PROMPT SOBERANO: GERADO",
+  "footer_upscaling": "UPSCALE 4K: FINALIZADO",
+  "items_metadata": {
+    "exterior-night-synth": {
+      "title": "Fachada Crepuscular",
+      "description": "Estudo de iluminação volumétrica gerado para o perímetro norte."
+    },
+    "lobby-zen-concept": {
+      "title": "Átrio de Serenidade",
+      "description": "Síntese de materiais orgânicos e luz zenital automatizada."
+    },
+    "pool-infinite-ai": {
+      "title": "Vórtice Infinito",
+      "description": "Simulação fluida de bordas de água no horizonte de Canasvieiras."
+    }
   }
 }

@@ -1,24 +1,30 @@
 /**
  * @file homepage.schema.ts
  * @description Contrato soberano para la sección de Síntesis Visual (AI Gallery).
- *              Nivelado para la arquitectura plana del diccionario.
- * @version 6.1 - Sovereign Apparatus Sync
+ *              Refactorizado: Arquitectura de Mapeo Editorial. Desacopla la 
+ *              identidad visual (S3) de la narrativa traducida (JSON).
+ * 
+ * @version 7.0 - Data-Driven Mapping & SSoT Hardened
  * @author Raz Podestá - MetaShark Tech
+ * 
+ * @pilar III: Seguridad de Tipos - Validación estricta de metadatos de galería.
+ * @pilar IX: Desacoplamiento - Permite que el orquestador inyecte activos desde el CMS.
  */
 
 import { z } from 'zod';
 
 /**
- * @description Esquema para los activos individuales de la galería.
+ * @description Esquema para los metadatos editoriales de un activo sintético.
+ * No contiene la imagen, solo la capa narrativa.
  */
-const galleryItemSchema = z.object({
+const galleryItemMetadataSchema = z.object({
   title: z.string().min(1, 'Item title is required'),
   description: z.string().min(1, 'Item description is required'),
 });
 
 /**
  * @description Esquema de la Sección de Síntesis Visual (WebGL).
- * Contrato innegociable para ai_gallery_section.json.
+ * Contrato innegociable para ai_gallery.json.
  */
 export const aiGallerySectionSchema = z.object({
   badge: z.string().min(1),
@@ -30,8 +36,13 @@ export const aiGallerySectionSchema = z.object({
   error_fallback: z.string().min(1),
   footer_prompt: z.string().min(1),
   footer_upscaling: z.string().min(1),
-  /** Mapeo dinámico de assets por ID */
-  items: z.record(z.string(), galleryItemSchema),
+
+  /** 
+   * @property items_metadata
+   * @description Diccionario de textos indexado por el 'filename' o 'slug' 
+   * del activo en el CMS. Permite hidratar la UI con traducciones dinámicas.
+   */
+  items_metadata: z.record(z.string(), galleryItemMetadataSchema),
 });
 
 /** 

@@ -1,8 +1,9 @@
 /**
  * @file admin_media.schema.ts
  * @description Contrato soberano para la gestión de activos en el Dashboard.
- *              Valida las etiquetas del uploader y el feedback del cluster S3.
- * @version 1.0 - Media Ops Standard
+ *              Refactorizado: Inyección de etiquetas de filtrado y estados vacíos.
+ * @version 3.0 - Full i18n Orchestration
+ * @author Raz Podestá - MetaShark Tech
  */
 
 import { z } from 'zod';
@@ -20,6 +21,22 @@ export const adminMediaSchema = z.object({
   label_dimensions: z.string().min(1),
   label_file_size: z.string().min(1),
   label_sync_cloud: z.string().min(1),
+  
+  // --- SEGURIDAD: SAFE-DELETE SHIELD ---
+  confirm_delete_title: z.string().min(1),
+  confirm_delete_cta: z.string().min(1),
+  cancel_cta: z.string().min(1),
+
+  // --- FILTRADO: MIME TYPES ---
+  filter_all: z.string().min(1),
+  filter_images: z.string().min(1),
+  filter_videos: z.string().min(1),
+
+  // --- ESTADOS: EMPTY STATES ---
+  empty_state_title: z.string().min(1),
+  label_copy: z.string().min(1),
+  label_view: z.string().min(1),
+  label_delete: z.string().min(1),
 });
 
 export type AdminMediaDictionary = z.infer<typeof adminMediaSchema>;

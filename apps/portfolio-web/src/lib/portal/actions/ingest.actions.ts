@@ -1,16 +1,16 @@
 /**
  * @file apps/portfolio-web/src/lib/portal/actions/ingest.actions.ts
  * @description Enterprise Data Ingestion Pipeline (Silo C).
- *              Refactorizado: Purga de extensión .js para cumplimiento con resolución "bundler".
- * @version 8.1 - Bundler Resolution Standard
+ *              Refactorizado: Erradicación de TS2322 (Schema Drift). Sincronización
+ *              del contrato Zod con el SSoT de la colección 'Ingestions' de Payload.
+ * @version 8.3 - Schema Sync & Linter Pure
  * @author Raz Podestá -  MetaShark Tech
  */
 
 'use server';
 
 import { z } from 'zod';
-import { getPayload, type CollectionSlug, type SanitizedConfig } from 'payload';
-// @fix: Eliminación de extensión .js para resolución nativa bundler
+import { getPayload, type SanitizedConfig } from 'payload';
 import { dataParser, type AudienceNode, type ParserIssue } from '../../services/data-parser';
 
 /** 
@@ -21,9 +21,6 @@ const IS_BUILD_ENV =
   process.env.NEXT_PHASE === 'phase-production-build' || 
   process.env.VERCEL === '1';
 
-/**
- * PROTOCOLO CROMÁTICO HEIMDALL
- */
 const C = {
   reset: '\x1b[0m', magenta: '\x1b[35m', cyan: '\x1b[36m', 
   green: '\x1b[32m', yellow: '\x1b[33m', red: '\x1b[31m', bold: '\x1b[1m'
@@ -31,11 +28,12 @@ const C = {
 
 /**
  * CONTRATO DE INTEGRIDAD DE INGESTA (SSoT)
+ * @fix TS2322: Se purga 'email' del enum para alinear 1:1 con la base de datos.
  */
 const dataIngestionSchema = z.object({
   subject: z.string().min(1, 'SUBJECT_REQUIRED'),
   type: z.enum(['document', 'image', 'audio', 'text']),
-  channel: z.enum(['web', 'whatsapp', 'email', 'api']),
+  channel: z.enum(['web', 'whatsapp', 'api']), // Sincronizado con Ingestions.ts
   tenant: z.string().uuid('INVALID_TENANT_ID'),
   content: z.string().optional(),
   sender: z.record(z.string(), z.unknown()).optional(),
@@ -55,11 +53,6 @@ export type IngestionResponse = {
   traceId: string;
 };
 
-/**
- * MODULE: executeDataIngestion
- * @description Orquesta la transmutación de archivos en nodos de identidad CRM.
- * @pilar IX: Inversión de Control y Responsabilidad Única.
- */
 export async function executeDataIngestion(
   formData: FormData, 
   rawMetadata: unknown
@@ -71,22 +64,18 @@ export async function executeDataIngestion(
     return { success: false, error: 'BUILD_BYPASS', traceId };
   }
 
-  console.log(`\n${C.magenta}${C.bold}[DNA][PIPELINE]${C.reset} Handshake Ingestion: ${C.cyan}${traceId}${C.reset}`);
+  console.group(`\n${C.magenta}${C.bold}[DNA][PIPELINE]${C.reset} Handshake Ingestion: ${C.cyan}${traceId}${C.reset}`);
 
   try {
-    // 1. VALIDACIÓN DE CONTRATO PERIMETRAL
     const metadata = dataIngestionSchema.parse(rawMetadata);
     
-    // 2. INICIALIZACIÓN PEREZOSA (Pilar XIII)
     const configModule = await import('@metashark/cms-core/config');
     const payloadConfig = (await configModule.default) as unknown as SanitizedConfig;
     const payload = await getPayload({ config: payloadConfig });
     
-    const SUBSCRIBER_COLL = 'subscribers' as CollectionSlug;
-    
     let linkedMediaId: string | undefined;
     let processedJsonData: AudienceNode[] = [];
-    let parserIssues: ParserIssue[] = [];
+    let parserIssues: ParserIssue[] =[];
     
     const finalMetrics = { nodesInjected: 0, duplicatesSkipped: 0, failedRows: 0 };
     const file = formData.get('file') as File | null;
@@ -102,7 +91,8 @@ export async function executeDataIngestion(
         collection: 'media',
         data: { 
           alt: `Ingest_Trace[${traceId}]: ${metadata.subject}`, 
-          tenant: metadata.tenant 
+          tenant: metadata.tenant,
+          assetContext: 'system' // @fix: Requerido por SSoT para evitar Draft Fallback
         },
         file: { 
           data: buffer, 
@@ -125,9 +115,9 @@ export async function executeDataIngestion(
           // 5. DEDUPLICACIÓN DE IDENTIDAD (O(n) In-Memory)
           const emails = processedJsonData.map(n => n.email);
           const existing = await payload.find({
-            collection: SUBSCRIBER_COLL,
+            collection: 'subscribers', // @fix: Literal Narrowing
             where: { 
-              and: [
+              and:[
                 { email: { in: emails } }, 
                 { tenant: { equals: metadata.tenant } }
               ] 
@@ -141,17 +131,18 @@ export async function executeDataIngestion(
           
           finalMetrics.duplicatesSkipped = processedJsonData.length - validNodes.length;
 
-          // 6. INYECCIÓN ATÓMICA EN CRM (Transactional Batch Simulation)
           console.log(`   ${C.cyan}→ [SYNC]${C.reset} Injecting ${validNodes.length} nodes into CRM Perimeter...`);
           
+          // 6. INYECCIÓN ATÓMICA EN CRM
           await Promise.all(validNodes.map(node => 
             payload.create({
-              collection: SUBSCRIBER_COLL,
+              collection: 'subscribers',
               data: { 
                 email: node.email, 
                 tenant: metadata.tenant, 
                 status: 'active', 
-                source: `ingest_${traceId}` 
+                source: `ingest_${traceId}`,
+                consentMarketing: true // @fix: Requerido por SSoT CRM
               }
             }).catch(e => console.error(`[${traceId}] CRM Breach: ${node.email}`, e))
           ));
@@ -163,10 +154,14 @@ export async function executeDataIngestion(
 
     // 7. REGISTRO DE MISIÓN (Ledger Audit)
     const ingestionResult = await payload.create({
-      collection: 'ingestions' as CollectionSlug,
+      collection: 'ingestions', // @fix: Literal Narrowing
       data: {
-        ...metadata,
-        asset: linkedMediaId,
+        subject: metadata.subject,
+        type: metadata.type,
+        channel: metadata.channel,
+        tenant: metadata.tenant,
+        // @fix: Mapeamos asset (inexistente) a metadata.
+        senderInfo: { ...metadata.sender, linkedMediaId },
         processedData: processedJsonData,
         pipelineMetrics: { 
           ...finalMetrics, 

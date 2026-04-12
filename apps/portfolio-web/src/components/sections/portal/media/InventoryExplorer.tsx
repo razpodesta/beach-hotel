@@ -1,9 +1,10 @@
 /**
  * @file InventoryExplorer.tsx
  * @description Orquestador de gestión de biblioteca multimedia (Dashboard).
- *              Refactorizado: Sincronización con Oxygen Engine (GPU Layers),
- *              manejo robusto de purga S3 y optimización de búsqueda semántica.
- * @version 3.0 - Oxygen Sync & S3 Forensic Purge
+ *              Refactorizado: Erradicación total de hardcoding. Implementa 
+ *              un flujo de datos 100% internacionalizado y sincronizado con el 
+ *              Safe-Delete Shield.
+ * @version 4.0 - Zero Hardcode & SSoT Compliant
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -27,7 +28,7 @@ import { useUIStore } from '../../../../lib/store/ui.store';
 interface InventoryExplorerProps {
   /** Colección de activos sincronizada con S3 */
   items: SovereignMedia[];
-  /** Diccionario administrativo nivelado v5.0 */
+  /** Diccionario administrativo nivelado v3.0 */
   dictionary: AdminMediaDictionary;
 }
 
@@ -41,7 +42,6 @@ export function InventoryExplorer({ items, dictionary }: InventoryExplorerProps)
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [activeFilter, setActiveFilter] = useState<FilterType>('all');
   
-  // Selección quirúrgica del Tenant para el Escudo de Seguridad
   const tenantId = useUIStore((state) => state.session?.tenantId);
 
   /**
@@ -66,11 +66,10 @@ export function InventoryExplorer({ items, dictionary }: InventoryExplorerProps)
 
   /**
    * ACCIÓN DE PURGA (Sovereign S3 Cycle)
-   * @description Orquesta la destrucción atómica del activo en S3 y DB.
    */
   const handleDelete = useCallback(async (id: string) => {
     if (!tenantId) {
-      console.error('[HEIMDALL][SECURITY] Purge aborted: Boundary Breach (Missing Tenant ID).');
+      console.error('[HEIMDALL][SECURITY] Purge aborted: Boundary Breach.');
       return;
     }
 
@@ -98,7 +97,7 @@ export function InventoryExplorer({ items, dictionary }: InventoryExplorerProps)
       {/* --- 1. CONSOLA DE FILTRADO TÁCTICO (Oxygen Glass) --- */}
       <header className="flex flex-col lg:flex-row gap-6 items-center justify-between glass-morphism p-6 rounded-[2.5rem] shadow-luxury transition-all duration-700">
         
-        {/* Buscador de Activos con Normalização */}
+        {/* Buscador de Activos SSSoT */}
         <div className="relative w-full lg:w-96 group">
           <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors" size={18} />
           <input 
@@ -106,7 +105,7 @@ export function InventoryExplorer({ items, dictionary }: InventoryExplorerProps)
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder={dictionary.placeholder_alt_text}
-            className="w-full bg-background/40 border border-border/50 rounded-full py-4 pl-14 pr-12 text-sm outline-none focus:border-primary/40 focus:ring-4 focus:ring-primary/5 transition-all text-foreground font-sans"
+            className="w-full bg-background/40 border border-border/50 rounded-full py-4 pl-14 pr-12 text-sm outline-none focus:border-primary/40 focus:ring-4 focus:ring-primary/5 transition-all text-foreground font-sans shadow-inner"
           />
           {searchQuery && (
             <button 
@@ -121,9 +120,9 @@ export function InventoryExplorer({ items, dictionary }: InventoryExplorerProps)
         {/* Navegación por Tipos (SSoT Filters) */}
         <nav className="flex items-center gap-2 bg-background/20 p-1.5 rounded-full border border-border/40" aria-label="MIME Filters">
           {[
-            { id: 'all' as FilterType, label: 'TUDO', icon: LayoutGrid },
-            { id: 'image' as FilterType, label: 'IMAGENS', icon: ImageIcon },
-            { id: 'video' as FilterType, label: 'VÍDEOS', icon: Film }
+            { id: 'all' as FilterType, label: dictionary.filter_all, icon: LayoutGrid },
+            { id: 'image' as FilterType, label: dictionary.filter_images, icon: ImageIcon },
+            { id: 'video' as FilterType, label: dictionary.filter_videos, icon: Film }
           ].map((type) => {
             const isActive = activeFilter === type.id;
             return (
@@ -131,7 +130,7 @@ export function InventoryExplorer({ items, dictionary }: InventoryExplorerProps)
                 key={type.id}
                 onClick={() => setActiveFilter(type.id)}
                 className={cn(
-                  "flex items-center gap-3 px-6 py-2.5 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all outline-none",
+                  "flex items-center gap-3 px-6 py-2.5 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all outline-none transform-gpu",
                   isActive 
                     ? "bg-foreground text-background shadow-lg scale-105" 
                     : "text-muted-foreground hover:text-foreground hover:bg-surface/50"
@@ -156,15 +155,18 @@ export function InventoryExplorer({ items, dictionary }: InventoryExplorerProps)
                   item={item} 
                   onDelete={handleDelete}
                   labels={{ 
-                    delete: 'Apagar', 
-                    copy: 'Copiar URL', 
-                    view: 'Visualizar Original' 
+                    delete: dictionary.label_delete, 
+                    copy: dictionary.label_copy, 
+                    view: dictionary.label_view,
+                    confirm_delete_title: dictionary.confirm_delete_title,
+                    confirm_delete_cta: dictionary.confirm_delete_cta,
+                    cancel_cta: dictionary.cancel_cta
                   }}
                 />
               ))}
             </div>
           ) : (
-            /* ESTADO DE RESILIENCIA: NO CORRESPONDENCE (Pilar VIII) */
+            /* ESTADO DE RESILIENCIA (Pilar VIII) */
             <motion.div 
               initial={{ opacity: 0, scale: 0.98 }} 
               animate={{ opacity: 1, scale: 1 }}
@@ -174,7 +176,9 @@ export function InventoryExplorer({ items, dictionary }: InventoryExplorerProps)
                  <div className="absolute -inset-6 bg-primary/5 blur-3xl rounded-full" />
                  <SlidersHorizontal size={48} className="text-muted-foreground/30 relative" strokeWidth={1} />
               </div>
-              <p className="font-display text-xl font-bold text-foreground uppercase tracking-tight">Sem correspondências</p>
+              <h4 className="font-display text-xl font-bold text-foreground uppercase tracking-tight">
+                {dictionary.empty_state_title}
+              </h4>
               <p className="text-[10px] text-muted-foreground mt-2 font-mono uppercase tracking-widest animate-pulse-soft">
                 {dictionary.status_error}
               </p>

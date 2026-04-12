@@ -1,9 +1,9 @@
 /**
  * @file AboutSection.tsx
  * @description Presentación narrativa del Santuario (Fase 3: Trust).
- *              Refactorizado: Sincronización total con el Manifiesto Day-First, 
- *              clases canónicas Tailwind v4 y observabilidad Heimdall.
- * @version 13.0 - Atmosphere Master Edition
+ *              Refactorizado: Erradicación de activos hardcodeados. El componente
+ *              ahora consume su identidad visual dinámicamente desde el SSoT (Tenant Ready).
+ * @version 14.0 - S3 Vault Integrated & Atmosphere Master
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -84,6 +84,13 @@ export function AboutSection({ dictionary }: AboutSectionProps) {
     [currentLang]
   );
 
+  /**
+   * @description Resolución del Activo Visual S3.
+   * Aplica un Fallback local seguro para prevenir colapsos si el JSON aún no ha 
+   * sido actualizado con la llave 'image_url' (Zero Regressions Protocol).
+   */
+  const assetUrl = dictionary?.image_url || "/images/hotel/about-building-front.jpg";
+
   // Guardia de Resiliencia (Pilar VIII)
   if (!dictionary?.paragraphs || dictionary.paragraphs.length === 0) return null;
 
@@ -92,7 +99,7 @@ export function AboutSection({ dictionary }: AboutSectionProps) {
       id="about-sanctuary" 
       /**
        * @pilar VII: Theming Soberano
-       * Sustituimos 'bg-black' por 'bg-background' para habilitar el modo Día.
+       * Habilita el modo Día respondiendo a las variables semánticas del entorno.
        */
       className="relative w-full overflow-hidden py-24 sm:py-40 bg-background transition-colors duration-1000 selection:bg-primary/30"
       aria-labelledby="about-title"
@@ -106,8 +113,9 @@ export function AboutSection({ dictionary }: AboutSectionProps) {
             <FadeIn delay={0.2} yOffset={40}>
               <div className="group relative h-full min-h-[500px] rounded-5xl border border-border/50 bg-surface/30 p-4 backdrop-blur-md transition-all duration-700 hover:border-primary/20 transform-gpu">
                 <div className="relative h-full w-full overflow-hidden rounded-4xl shadow-3xl">
+                  {/* ACTIVO DINÁMICO MULTI-TENANT */}
                   <Image
-                    src="/images/hotel/about-building-front.jpg"
+                    src={assetUrl}
                     alt={dictionary.title}
                     fill
                     className="object-cover transition-transform duration-2000 ease-out group-hover:scale-105"

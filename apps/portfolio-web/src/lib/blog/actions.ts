@@ -1,10 +1,10 @@
 /**
  * @file apps/portfolio-web/src/lib/blog/actions.ts
  * @description Orquestador soberano de datos editoriales y Reactor de Reputación.
- *              Refactorizado: Erradicación de aserciones no nulas (!), sellado
- *              de tipos por estrechamiento de control y pureza de linter.
+ *              Refactorizado: Resolución de TS2322 mediante mapeo dinámico de parámetros.
+ *              Optimizado: Purificación de tipos en el pipeline de Lexical y Mocks.
  *              Estándar: Multi-Tenant Shield & Forensic Reputation Sync.
- * @version 43.4 - Type Narrowing Hardened & Linter Pure
+ * @version 43.5 - TS2322 Fixed & Type Narrowing Hardened
  * @author Staff Engineer - MetaShark Tech
  */
 
@@ -181,7 +181,6 @@ class EditorialDataResolver {
         .map(m => EditorialShaper.shape({ ...m, ogImage: m.ogImageLocal }, dict))
         .filter((p): p is PostWithSlug => p !== null);
       
-      /** @fix: Eliminación de aserción no nula mediante estrechamiento de tipo previo */
       if (slug) return mocks.filter(m => m.slug === slug);
       if (tag) return mocks.filter(m => m.metadata.tags.includes(tag));
       return mocks;
@@ -196,11 +195,18 @@ class EditorialDataResolver {
       if (slug) conditions.push({ slug: { equals: slug } });
       if (tag) conditions.push({ 'tags.tag': { equals: tag } });
 
+      /**
+       * @fix: RESOLUCIÓN DE TS2322
+       * Extraemos dinámicamente el tipo aceptado por la propiedad 'locale' de Payload 
+       * para asegurar que nuestro tipo 'Locale' encaje en el union-type de la librería.
+       */
+      type PayloadLocale = NonNullable<Parameters<Payload['find']>[0]['locale']>;
+
       const { docs } = await payload.find({
         collection: 'blog-posts',
         where: { and: conditions },
         sort: '-publishedDate',
-        locale: options.lang,
+        locale: options.lang as PayloadLocale, // Sincronía técnica con Payload Core
         depth: 2
       });
 
@@ -208,9 +214,10 @@ class EditorialDataResolver {
         .map(doc => EditorialShaper.shape(doc, dict))
         .filter((p): p is PostWithSlug => p !== null);
 
-    } catch {
-      /** @fix: Optional Catch Binding */
-      console.error(`${C.red}[HEIMDALL][EDITORIAL] Fetch failed. Switching to Sanctuary Mocks.${C.reset}`);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Unknown Cluster Drift';
+      console.error(`${C.red}[HEIMDALL][EDITORIAL] Fetch failed: ${msg}. Switching to Sanctuary Mocks.${C.reset}`);
+      
       const mocks = MOCK_POSTS
         .map(m => EditorialShaper.shape({ ...m, ogImage: m.ogImageLocal }, dict))
         .filter((p): p is PostWithSlug => p !== null);
@@ -237,10 +244,6 @@ export async function getPostBySlug(slug: string, lang: Locale = i18n.defaultLoc
   return results[0] || null;
 }
 
-/** 
- * @function getPostsByTag
- * @description Recupera artículos filtrados por taxonomía.
- */
 export async function getPostsByTag(tag: string, lang: Locale = i18n.defaultLocale): Promise<PostWithSlug[]> {
   if (!IS_BUILD) noStore();
   return EditorialDataResolver.fetch({ tag: tag.toLowerCase(), lang });
@@ -248,8 +251,6 @@ export async function getPostsByTag(tag: string, lang: Locale = i18n.defaultLoca
 
 /**
  * REPUTATION BRIDGE: recordReadingXPAction
- * @description Inyecta RazTokens al usuario por completar la lectura de un nodo.
- * @pilar IX: Inversión de Control.
  */
 export async function recordReadingXPAction(
   userId: string, 
@@ -266,17 +267,14 @@ export async function recordReadingXPAction(
     const configModule = await import('@metashark/cms-core/config');
     const payload = await getPayload({ config: configModule.default });
 
-    // 1. Handshake de Identidad
     const user = await payload.findByID({ collection: 'users', id: userId, depth: 0 });
     if (!user) throw new Error('IDENTITY_NOT_FOUND');
 
-    // 2. Cálculo de Recompensa (Sovereign Math)
     const xpBonus = 10; 
     const currentXp = Number(user.experiencePoints || 0);
     const newXp = currentXp + xpBonus;
     const { currentLevel } = calculateProgress(newXp);
 
-    // 3. Mutación Atómica de Reputación
     await payload.update({
       collection: 'users',
       id: userId,
@@ -286,7 +284,6 @@ export async function recordReadingXPAction(
       }
     });
 
-    // 4. Registro en el Ledger Forense (Notifications)
     await payload.create({
       collection: 'notifications' as CollectionSlug,
       data: {

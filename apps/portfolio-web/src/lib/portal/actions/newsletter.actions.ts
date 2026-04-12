@@ -1,16 +1,16 @@
 /**
  * @file apps/portfolio-web/src/lib/portal/actions/newsletter.actions.ts
  * @description Enterprise Data Pipeline for Audience Ingestion (Silo C).
- *              Refactorizado: Resolución estricta de promesas de configuración
- *              (TS2352) y blindaje de tipos para el motor de Payload.
- * @version 5.2 - Build-Safe & Type-Safe Pipeline
+ *              Refactorizado: Literal Type Narrowing y Sincronía de Esquemas 
+ *              para erradicar la trampa de inferencia "draft" de Payload (TS2345).
+ * @version 5.4 - Build-Safe & Type-Safe Pipeline
  * @author Staff Engineer - MetaShark Tech
  */
 
 'use server';
 
 import { z } from 'zod';
-import { getPayload, type CollectionSlug, type SanitizedConfig } from 'payload';
+import { getPayload, type SanitizedConfig } from 'payload';
 import { headers } from 'next/headers';
 
 /** IMPORTACIONES DE INFRAESTRUCTRURA */
@@ -85,13 +85,12 @@ export async function subscribeAction(rawData: unknown): Promise<IngestionRespon
 
     if (!tenantDoc) throw new Error('TENANT_PERIMETER_NOT_FOUND');
 
-    const TARGET_COLLECTION = 'subscribers' as CollectionSlug;
-
     // 3. DETECCIÓN DE COLISIONES
+    /** @fix TS2345: Literal Type Narrowing. No usamos variables genéricas. */
     const existing = await payload.find({
-      collection: TARGET_COLLECTION,
+      collection: 'subscribers',
       where: {
-        and: [{ email: { equals: email } }, { tenant: { equals: tenantId } }]
+        and:[{ email: { equals: email } }, { tenant: { equals: tenantId } }]
       },
       limit: 1
     });
@@ -102,12 +101,14 @@ export async function subscribeAction(rawData: unknown): Promise<IngestionRespon
 
     // 4. PERSISTENCIA EN CORE CRM
     await payload.create({
-      collection: TARGET_COLLECTION,
+      collection: 'subscribers',
       data: {
         email,
         tenant: tenantId,
         status: 'active',
         source: 'enterprise-web-portal',
+        /** @fix TS2345: Inyección de campo obligatorio del SSoT CRM. */
+        consentMarketing: true, 
         metaData: {
           ip: ipOrigin,
           userAgent,

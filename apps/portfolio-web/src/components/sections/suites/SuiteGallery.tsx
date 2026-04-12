@@ -1,41 +1,38 @@
 /**
  * @file apps/portfolio-web/src/components/sections/suites/SuiteGallery.tsx
  * @description Orquestador interactivo del catálogo de activos habitacionales.
- *              Refactorizado: Atomización de componentes, tipado estricto de categorías
- *              y telemetría perimetral Heimdall v2.5.
- *              Estándar: Oxygen UI v4 & React 19 Pure.
- * @version 9.0 - Atomized Architecture & Type Safe Alliances
+ *              Refactorizado: Sincronización con la Taxonomía Dinámica v6.0.
+ *              Erradicación de TS2339 mediante el consumo del mapa 'category_filters'.
+ * 
+ * @version 10.0 - Dynamic SSoT Sync & Linter Pure
  * @author Staff Engineer - MetaShark Tech
+ * 
+ * @pilar III: Seguridad de Tipos - Eliminación de propiedades estáticas inexistentes.
+ * @pilar VI: i18n Nativa - Las etiquetas de filtrado son 100% Data-Driven.
+ * @pilar X: Performance - Filtrado O(n) sobre el inventario de suites.
+ * @pilar XII: MEA/UX - Transiciones concurrentes (useTransition) para evitar bloqueos de UI.
  */
 
 'use client';
 
-import React, { useState, useMemo, useCallback, useEffect } from 'react';
-import { Search, BedDouble, Info, Sparkles, X, LayoutGrid } from 'lucide-react';
+import React, { useState, useMemo, useCallback, useEffect, useTransition } from 'react';
+import { Search, BedDouble, Info, X, LayoutGrid } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 /** IMPORTACIONES DE INFRAESTRUCTRURA (Nx Boundary Safe) */
 import { cn } from '../../../lib/utils/cn';
 import { useUIStore } from '../../../lib/store/ui.store';
 import { SuiteCard } from './SuiteCard';
-import type { Dictionary } from '../../../lib/schemas/dictionary.schema';
-import type { SuiteEntry } from '../../../lib/schemas/suite_gallery.schema';
-
-/**
- * @type SuiteCategory
- * @description Sincronizado con el esquema Zod de suite_gallery.
- */
-type SuiteCategory = 'All' | 'Master' | 'Deluxe' | 'Standard';
+import type { SuiteEntry, SuiteGalleryDictionary } from '../../../lib/schemas/suite_gallery.schema';
 
 /**
  * @interface SuiteGalleryProps
- * @pilar III: Seguridad de Tipos Absoluta.
  */
 interface SuiteGalleryProps {
   /** Colección de unidades habitacionales sincronizadas con el CMS */
   suites: SuiteEntry[];
-  /** Diccionario de interfaz validado por SSoT */
-  dictionary: Dictionary['suite_gallery'];
+  /** Diccionario de interfaz validado por SSoT v6.0 */
+  dictionary: SuiteGalleryDictionary;
   className?: string;
 }
 
@@ -46,43 +43,45 @@ const C = {
 
 /**
  * APARATO: SuiteGallery
- * @description Centro de mando para la exhibición y reserva de suites de lujo.
+ * @description Centro de mando para la exhibición de suites con filtrado inteligente.
  */
 export function SuiteGallery({ suites = [], dictionary, className }: SuiteGalleryProps) {
   const { session } = useUIStore();
   
   // --- ESTADOS DE CONTROL TÁCTICO ---
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [activeCategory, setActiveCategory] = useState<SuiteCategory>('All');
+  const [activeCategory, setActiveCategory] = useState<string>('All');
+  const [isPending, startTransition] = useTransition();
 
   /**
    * PROTOCOLO HEIMDALL: Telemetría de Montaje
-   * @pilar IV: Trazabilidad DNA-Level.
    */
   useEffect(() => {
     const traceId = `catalog_sync_${Date.now().toString(36).toUpperCase()}`;
     if (process.env.NODE_ENV !== 'production') {
       console.log(
         `${C.magenta}${C.bold}[DNA][CATALOG]${C.reset} Suite Cluster Ready | ` +
-        `Items: ${suites.length} | Perimeter: ${C.cyan}${session?.tenantId || 'ROOT'}${C.reset} | ` +
-        `Trace: ${traceId}`
+        `Items: ${suites.length} | Trace: ${traceId}`
       );
     }
-  }, [suites.length, session?.tenantId]);
+  }, [suites.length]);
 
   /**
-   * MEMOIZACIÓN DE FILTROS (Pilar X)
+   * MEMOIZACIÓN DE FILTROS DINÁMICOS (Pilar X)
+   * @description Genera los botones de filtrado iterando sobre 'category_filters'.
+   * Resuelve el error TS2339 al no depender de llaves estáticas.
    */
-  const categoryFilters = useMemo(() => [
-    { id: 'All' as const, label: dictionary.cat_all, icon: LayoutGrid },
-    { id: 'Master' as const, label: dictionary.cat_master, icon: Sparkles },
-    { id: 'Deluxe' as const, label: dictionary.cat_deluxe, icon: BedDouble },
-    { id: 'Standard' as const, label: dictionary.cat_standard, icon: BedDouble }
-  ], [dictionary]);
+  const categoryFilters = useMemo(() => {
+    return Object.entries(dictionary.category_filters).map(([id, label]) => ({
+      id,
+      label,
+      icon: id === 'All' ? LayoutGrid : BedDouble
+    }));
+  }, [dictionary.category_filters]);
 
   /**
    * MOTOR DE FILTRADO SOBERANO
-   * @description Procesa la búsqueda semántica y el gating por categoría en una sola pasada.
+   * @description Procesa la búsqueda semántica y el gating por categoría.
    */
   const filteredSuites = useMemo(() => {
     const query = searchQuery.toLowerCase().trim();
@@ -95,6 +94,16 @@ export function SuiteGallery({ suites = [], dictionary, className }: SuiteGaller
     });
   }, [searchQuery, activeCategory, suites]);
 
+  /**
+   * ACCIÓN: handleCategorySwitch
+   * @description Cambia la categoría activa usando transiciones concurrentes de React 19.
+   */
+  const handleCategorySwitch = useCallback((categoryId: string) => {
+    startTransition(() => {
+      setActiveCategory(categoryId);
+    });
+  }, []);
+
   const handleClear = useCallback(() => {
     setSearchQuery('');
     setActiveCategory('All');
@@ -105,10 +114,10 @@ export function SuiteGallery({ suites = [], dictionary, className }: SuiteGaller
   return (
     <div className={cn("space-y-12 transition-colors duration-1000", className)}>
       
-      {/* --- 1. CONSOLA DE CONTROL TÁCTICO (Accessible Dashboard) --- */}
-      <header 
-        className="sticky top-24 z-30 bg-surface/80 backdrop-blur-3xl p-6 rounded-[3rem] border border-border shadow-3xl flex flex-col xl:flex-row gap-8 items-center justify-between transition-all duration-700"
-      >
+      {/* --- 1. CONSOLA DE CONTROL TÁCTICO (Oxygen Glass) --- */}
+      <header className="sticky top-24 z-30 bg-surface/80 backdrop-blur-3xl p-6 rounded-[3rem] border border-border shadow-3xl flex flex-col xl:flex-row gap-8 items-center justify-between transition-all duration-700">
+        
+        {/* Buscador de Inteligencia SSSoT */}
         <div className="relative w-full xl:w-96 group">
           <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors" size={18} />
           <input
@@ -129,6 +138,7 @@ export function SuiteGallery({ suites = [], dictionary, className }: SuiteGaller
           )}
         </div>
         
+        {/* Navegación por Categorías Dinámicas */}
         <nav className="flex flex-wrap justify-center gap-3 bg-background/20 p-2 rounded-2xl border border-border/40" role="tablist">
             {categoryFilters.map((cat) => {
               const isActive = activeCategory === cat.id;
@@ -138,7 +148,7 @@ export function SuiteGallery({ suites = [], dictionary, className }: SuiteGaller
                   key={cat.id}
                   role="tab"
                   aria-selected={isActive}
-                  onClick={() => setActiveCategory(cat.id)}
+                  onClick={() => handleCategorySwitch(cat.id)}
                   className={cn(
                       "group flex items-center gap-3 px-6 py-3 rounded-xl text-[10px] font-bold transition-all uppercase tracking-widest outline-none whitespace-nowrap",
                       isActive 
@@ -164,7 +174,14 @@ export function SuiteGallery({ suites = [], dictionary, className }: SuiteGaller
       </header>
 
       {/* --- 2. GRID DE ACTIVOS (Aceleración GPU) --- */}
-      <motion.div layout className="relative min-h-[500px] transform-gpu" aria-live="polite">
+      <motion.div 
+        layout 
+        className={cn(
+          "relative min-h-[500px] transform-gpu transition-all duration-500",
+          isPending && "opacity-50 blur-sm"
+        )} 
+        aria-live="polite"
+      >
         <AnimatePresence mode="popLayout">
           {filteredSuites.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 xl:gap-12">
@@ -204,7 +221,7 @@ export function SuiteGallery({ suites = [], dictionary, className }: SuiteGaller
       {/* FOOTER TELEMETRÍA */}
       <footer className="pt-8 opacity-20 hover:opacity-100 transition-opacity duration-1000 border-t border-border/20">
          <span className="font-mono text-[8px] uppercase tracking-[0.6em] text-muted-foreground">
-           MetaShark Hospitality Engine • Suite Signal: NOMINAL • Perimeter: {session?.tenantId || 'ROOT'}
+           MetaShark Hospitality Engine • Dynamic Taxonomy Active • Perimeter: {session?.tenantId || 'ROOT'}
          </span>
       </footer>
     </div>

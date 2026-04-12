@@ -18,74 +18,48 @@
     "title": "Gestão de Ativos Multimedia",
     "dropzone_prompt": "Vincular novo ativo",
     "dropzone_subtext": "Dimensionado para LCP: WebP, AVIF, PNG. Max 5MB.",
-    "label_alt_text": "Metadados SEO",
-    "placeholder_alt_text": "Descreva a imagem para acessibilidade...",
+    "label_alt_text": "Metadatos SEO",
+    "placeholder_alt_text": "Buscar ou descrever ativo...",
     "btn_upload": "Ingerir na Bóveda",
     "status_uploading": "SINCRONIZANDO...",
     "status_success": "Ativo em Nuvem (S3 OK)",
     "status_error": "Falha de Sincronia no Cluster",
     "label_dimensions": "Alvo de Resolução",
     "label_file_size": "Tamanho do Payload",
-    "label_sync_cloud": "Protocolo S3 Ativo"
+    "label_sync_cloud": "Protocolo S3 Ativo",
+    "confirm_delete_title": "Destruir Ativo?",
+    "confirm_delete_cta": "Sim, Excluir",
+    "cancel_cta": "Abortar",
+    "filter_all": "TUDO",
+    "filter_images": "IMAGENS",
+    "filter_videos": "VÍDEOS",
+    "empty_state_title": "Sem correspondências",
+    "label_copy": "Copiar URL",
+    "label_view": "Visualizar Original",
+    "label_delete": "Excluir"
   },
   "ai_gallery_section": {
-    "badge": "Impulsionado por Ideogram 3.0",
-    "title": "Sintetizador Visual IA",
-    "subtitle": "Explore uma coleção curada de ativos gerados algoritmicamente. Fotorrealismo, tipografia perfeita e consistência estilística, orquestrados pelo nosso CMS soberano.",
-    "overlay_indicator": "RENDER AO VIVO • WEBGL 2.0",
-    "drag_label": "ARRASTAR PARA ORBITAR",
-    "item_prefix": "ATIVO",
-    "error_fallback": "MOTOR VISUAL NÃO SUPORTADO NESTE NAVEGADOR",
-    "footer_prompt": "Engenharia de Prompts Avançada",
-    "footer_upscaling": "Upscaling 8K e Otimização",
-    "items": {
-      "neon-typography": {
-        "title": "Cristal Neon",
-        "description": "Renderização 3D de tubos de neon."
+    "badge": "Arquitetura Sintética",
+    "title": "Síntese Visual",
+    "subtitle": "Explore as fronteiras do design generativo onde a inteligência artificial materializa o luxo de amanhã.",
+    "overlay_indicator": "MOTOR IA: ATIVO",
+    "drag_label": "INTERAJA COM O ORBE",
+    "item_prefix": "PROTÓTIPO",
+    "error_fallback": "Falha na sincronia visual",
+    "footer_prompt": "PROMPT SOBERANO: GERADO",
+    "footer_upscaling": "UPSCALE 4K: FINALIZADO",
+    "items_metadata": {
+      "exterior-night-synth": {
+        "title": "Fachada Crepuscular",
+        "description": "Estudo de iluminação volumétrica gerado para o perímetro norte."
       },
-      "editorial-fashion": {
-        "title": "Alta Costura",
-        "description": "Síntese têxtil fotorrealista."
+      "lobby-zen-concept": {
+        "title": "Átrio de Serenidade",
+        "description": "Síntese de materiais orgânicos e luz zenital automatizada."
       },
-      "tech-badge": {
-        "title": "Titânio Tech",
-        "description": "Visualização macro de produto."
-      },
-      "transparent-gadget": {
-        "title": "Hardware Cristal",
-        "description": "Engenharia de dispositivos futuristas."
-      },
-      "luxury-perfume": {
-        "title": "Essência Ouro",
-        "description": "Fotografia comercial publicitária."
-      },
-      "concept-car": {
-        "title": "Auto Conceito",
-        "description": "Detalhes abstratos de fibra de carbono."
-      },
-      "concrete-workspace": {
-        "title": "Espaço Bruto",
-        "description": "Design de interiores minimalista."
-      },
-      "cyberpunk-street": {
-        "title": "Cidade Noturna",
-        "description": "Atmosfera com luzes volumétricas."
-      },
-      "abstract-geometry": {
-        "title": "Forma Paramétrica",
-        "description": "Arquitetura algorítmica."
-      },
-      "fluid-shapes": {
-        "title": "Fluxo Iridescente",
-        "description": "Simulação 3D de metal líquido."
-      },
-      "mechanical-insect": {
-        "title": "Vida Mecânica",
-        "description": "Macro steampunk de alta precisão."
-      },
-      "neural-network": {
-        "title": "Fluxo de Dados",
-        "description": "Visualização neural abstrata."
+      "pool-infinite-ai": {
+        "title": "Vórtice Infinito",
+        "description": "Simulação fluida de bordas de água no horizonte de Canasvieiras."
       }
     }
   },
@@ -833,10 +807,12 @@
   "suite_gallery": {
     "title": "Suítes de Luxo",
     "search_placeholder": "Procure seu santuário...",
-    "cat_all": "Todas as Suítes",
-    "cat_master": "Santuário Master",
-    "cat_deluxe": "Quarto Deluxe",
-    "cat_standard": "Conforto Standard",
+    "category_filters": {
+      "All": "Todas as Suítes",
+      "Master": "Santuário Master",
+      "Deluxe": "Quarto Deluxe",
+      "Standard": "Conforto Standard"
+    },
     "label_from": "A partir de",
     "label_suite_suffix": "Suíte Boutique",
     "empty_state_title": "Nenhum resultado no Santuário",

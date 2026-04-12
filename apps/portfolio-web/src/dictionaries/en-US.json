@@ -19,73 +19,47 @@
     "dropzone_prompt": "Link new asset",
     "dropzone_subtext": "Optimized for LCP: WebP, AVIF, PNG. Max 5MB.",
     "label_alt_text": "SEO Metadata",
-    "placeholder_alt_text": "Describe the image for accessibility...",
+    "placeholder_alt_text": "Search or describe asset...",
     "btn_upload": "Ingest into Vault",
     "status_uploading": "SYNCHRONIZING...",
     "status_success": "Cloud Active (S3 OK)",
     "status_error": "Cluster Sync Failed",
     "label_dimensions": "Resolution Target",
     "label_file_size": "Payload Size",
-    "label_sync_cloud": "S3 Protocol Active"
+    "label_sync_cloud": "S3 Protocol Active",
+    "confirm_delete_title": "Eradicate Asset?",
+    "confirm_delete_cta": "Yes, Delete",
+    "cancel_cta": "Abort",
+    "filter_all": "ALL",
+    "filter_images": "IMAGES",
+    "filter_videos": "VIDEOS",
+    "empty_state_title": "No matches found",
+    "label_copy": "Copy URL",
+    "label_view": "View Original",
+    "label_delete": "Delete"
   },
   "ai_gallery_section": {
-    "badge": "Ideogram 3.0 Powered",
-    "title": "AI Visual Synth",
-    "subtitle": "Explore a curated collection of algorithmically generated assets. Photorealism, perfect typography, and stylistic consistency, orchestrated by our sovereign CMS.",
-    "overlay_indicator": "LIVE RENDER • WEBGL 2.0",
-    "drag_label": "DRAG TO ORBIT",
-    "item_prefix": "ASSET",
-    "error_fallback": "VISUAL ENGINE NOT SUPPORTED ON THIS BROWSER",
-    "footer_prompt": "Advanced Prompt Engineering",
-    "footer_upscaling": "8K Upscaling & Optimization",
-    "items": {
-      "neon-typography": {
-        "title": "Neon Glass",
-        "description": "3D neon tubes rendering."
+    "badge": "Synthetic Architecture",
+    "title": "Visual Synthesis",
+    "subtitle": "Explore the frontiers of generative design where artificial intelligence materializes tomorrow's luxury.",
+    "overlay_indicator": "AI ENGINE: ACTIVE",
+    "drag_label": "INTERACT WITH THE ORB",
+    "item_prefix": "PROTOTYPE",
+    "error_fallback": "Visual synchrony failure",
+    "footer_prompt": "SOVEREIGN PROMPT: GENERATED",
+    "footer_upscaling": "4K UPSCALING: FINALIZED",
+    "items_metadata": {
+      "exterior-night-synth": {
+        "title": "Twilight Façade",
+        "description": "Volumetric lighting study generated for the northern perimeter."
       },
-      "editorial-fashion": {
-        "title": "High Fashion",
-        "description": "Photorealistic textile synthesis."
+      "lobby-zen-concept": {
+        "title": "Atrium of Serenity",
+        "description": "Synthesis of organic materials and automated zenithal light."
       },
-      "tech-badge": {
-        "title": "Titanium Tech",
-        "description": "Macro product visualization."
-      },
-      "transparent-gadget": {
-        "title": "Glass Hardware",
-        "description": "Futuristic device engineering."
-      },
-      "luxury-perfume": {
-        "title": "Gold Scent",
-        "description": "Commercial product photography."
-      },
-      "concept-car": {
-        "title": "Auto Concept",
-        "description": "Abstract carbon fiber details."
-      },
-      "concrete-workspace": {
-        "title": "Raw Workspace",
-        "description": "Minimalist interior design."
-      },
-      "cyberpunk-street": {
-        "title": "Night City",
-        "description": "Volumetric lighting atmosphere."
-      },
-      "abstract-geometry": {
-        "title": "Parametric Form",
-        "description": "Algorithmic architecture."
-      },
-      "fluid-shapes": {
-        "title": "Iridescent Flux",
-        "description": "Liquid metal 3D simulation."
-      },
-      "mechanical-insect": {
-        "title": "Clockwork Life",
-        "description": "Precision steampunk macro."
-      },
-      "neural-network": {
-        "title": "Data Stream",
-        "description": "Abstract neural visualization."
+      "pool-infinite-ai": {
+        "title": "Infinite Vortex",
+        "description": "Fluid simulation of water edges on the Canasvieiras horizon."
       }
     }
   },
@@ -833,10 +807,12 @@
   "suite_gallery": {
     "title": "Luxury Suites",
     "search_placeholder": "Search for your sanctuary...",
-    "cat_all": "All Suites",
-    "cat_master": "Master Sanctuary",
-    "cat_deluxe": "Deluxe Room",
-    "cat_standard": "Standard Comfort",
+    "category_filters": {
+      "All": "All Suites",
+      "Master": "Master Sanctuary",
+      "Deluxe": "Deluxe Room",
+      "Standard": "Standard Comfort"
+    },
     "label_from": "Starting at",
     "label_suite_suffix": "Boutique Suite",
     "empty_state_title": "No results in the Sanctuary",

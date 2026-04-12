@@ -3,13 +3,21 @@
  * @description Unidad atómica de exhibición de activos habitacionales (Suites).
  *              Responsabilidad: Renderizado de ficha técnica de suite con 
  *              inteligencia visual MEA/UX y profundidad física.
- * @version 1.0 - Luxury Unit Materialized
- * @author Staff Engineer - MetaShark Tech
+ *              Refactorizado: Integración del "Sovereign Asset Bridge" para 
+ *              resolución de imágenes desde la Bóveda S3 de Supabase.
+ * 
+ * @version 2.0 - S3 Asset Bridge & Forensic Telemetry Injected
+ * @author Raz Podestá - MetaShark Tech
+ * 
+ * @pilar III: Seguridad de Tipos - Contratos de SuiteEntry sellados por SSoT.
+ * @pilar IV: Observabilidad - Logs Heimdall para trazabilidad de carga de activos.
+ * @pilar IX: Desacoplamiento - Normaliza URLs de Supabase vs Sistema de archivos local.
+ * @pilar XII: MEA/UX - Transiciones físicas fluidas con aceleración por GPU.
  */
 
 'use client';
 
-import React, { memo } from 'react';
+import React, { memo, useCallback, useEffect } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Sparkles, BedDouble, ArrowRight } from 'lucide-react';
@@ -20,12 +28,12 @@ import type { SuiteEntry } from '../../../lib/schemas/suite_gallery.schema';
 
 /**
  * @interface SuiteCardProps
- * @pilar III: Seguridad de Tipos Absoluta.
+ * @description Contrato de propiedades para la unidad de gestión de habitación.
  */
 interface SuiteCardProps {
   /** Entidad de suite validada por el esquema SSoT */
   suite: SuiteEntry;
-  /** Etiqueta "Desde" inyectada por MACS */
+  /** Etiqueta localized "Desde" */
   labelFrom: string;
   /** Sufijo de tipo de unidad (ej: "Suite Boutique") */
   labelSuffix: string;
@@ -35,6 +43,7 @@ interface SuiteCardProps {
 /**
  * APARATO: SuiteCard
  * @description Renderiza una tarjeta de suite con inercia física y branding dinámico.
+ *              Fase de Embudo: Deseo & Conversión (Revenue Silo).
  */
 export const SuiteCard = memo(({ 
   suite, 
@@ -42,6 +51,42 @@ export const SuiteCard = memo(({
   labelSuffix, 
   className 
 }: SuiteCardProps) => {
+
+  /**
+   * PROTOCOLO HEIMDALL: Telemetría de Impresión
+   * @description Registra la presencia del activo en el viewport del huésped.
+   */
+  useEffect(() => {
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(`[HEIMDALL][ASSET] Suite Node Rendered: ${suite.id} | Category: ${suite.category}`);
+    }
+  }, [suite.id, suite.category]);
+
+  /**
+   * @function getAssetUrl
+   * @description Puente de activos (Sovereign Bridge). Detecta y normaliza 
+   *              rutas locales vs URLs absolutas de la Bóveda S3.
+   * @pilar IX: Desacoplamiento de almacenamiento de infraestructura.
+   */
+  const getAssetUrl = useCallback((path: string) => {
+    if (!path) return '';
+    
+    // Caso 1: La URL ya es absoluta (Inyectada desde Supabase S3)
+    if (path.startsWith('http')) return path;
+    
+    // Caso 2: Ruta relativa detectada (Fallback o Local Asset)
+    // Resolvemos contra el bucket de Supabase configurado en el entorno.
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.replace(/\/$/, '');
+    if (supabaseUrl && !path.startsWith('/')) {
+        return `${supabaseUrl}/storage/v1/object/public/sanctuary-vault/${path}`;
+    }
+    
+    // Caso 3: Fallback a sistema de archivos local (/public/images/...)
+    return path.startsWith('/') ? path : `/${path}`;
+  }, []);
+
+  const finalImageUrl = getAssetUrl(suite.imageUrl);
+
   return (
     <motion.article 
       layout
@@ -51,7 +96,7 @@ export const SuiteCard = memo(({
       transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
       className={cn(
         "group relative flex flex-col overflow-hidden rounded-[3.5rem] border",
-        "bg-surface/40 backdrop-blur-xl border-border transition-all duration-700",
+        "bg-surface/40 backdrop-blur-xl border-border transition-all duration-1000",
         "hover:border-primary/40 hover:-translate-y-2 hover:shadow-luxury transform-gpu",
         className
       )}
@@ -59,11 +104,12 @@ export const SuiteCard = memo(({
       {/* 1. VISUAL REPOSITORY LAYER (LCP Awareness) */}
       <div className="relative h-85 w-full overflow-hidden bg-background">
           <Image 
-            src={suite.imageUrl} 
+            src={finalImageUrl} 
             alt={suite.name} 
             fill 
             className="object-cover transition-transform duration-3000 group-hover:scale-110 brightness-100 [data-theme='dark']:brightness-90"
             sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 500px"
+            loading="lazy"
           />
           
           {/* Atmosphere Overlay (Alpha Channel Sync) */}
@@ -71,7 +117,7 @@ export const SuiteCard = memo(({
           
           {/* BADGE DE CATEGORÍA SOBERANA */}
           <div className="absolute top-8 left-8 z-20">
-            <span className="inline-flex items-center gap-2.5 rounded-full bg-background/60 backdrop-blur-2xl border border-border/40 px-5 py-2 text-[9px] font-bold uppercase tracking-[0.25em] text-primary shadow-2xl">
+            <span className="inline-flex items-center gap-2.5 rounded-full bg-background/60 backdrop-blur-2xl border border-border/40 px-5 py-2 text-[9px] font-bold uppercase tracking-[0.25em] text-primary shadow-2xl transition-all group-hover:bg-primary group-hover:text-white">
               <Sparkles size={12} className="animate-pulse" />
               {suite.category}
             </span>
@@ -88,7 +134,7 @@ export const SuiteCard = memo(({
                 <span className="block text-[8px] font-mono text-muted-foreground uppercase tracking-widest mb-1.5 font-bold opacity-60">
                    {labelFrom}
                 </span>
-                <span className="text-2xl md:text-3xl font-display font-bold text-foreground bg-primary/5 border border-primary/10 px-5 py-2 rounded-2xl block shadow-inner">
+                <span className="text-2xl md:text-3xl font-display font-bold text-foreground bg-primary/5 border border-primary/10 px-5 py-2 rounded-2xl block shadow-inner transition-colors group-hover:bg-primary/10 group-hover:border-primary/30">
                    {suite.price}
                 </span>
               </div>

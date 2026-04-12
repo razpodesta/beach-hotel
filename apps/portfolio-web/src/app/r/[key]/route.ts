@@ -1,18 +1,19 @@
 /**
  * @file apps/portfolio-web/src/app/r/[key]/route.ts
- * @description Enterprise Routing Engine (Dynamic Gateway Resolver v3.0).
- *              Refactorizado: Resolución de TS2352 (Promise vs Config). 
- *              Ahora el motor aguarda la resolución completa de la configuración
- *              antes de inicializar el Payload CMS.
- * @version 4.3 - Type-Safe & Build-Hardened
+ * @description Enterprise Routing Engine (Dynamic Gateway Resolver v3.1).
+ *              Refactorizado: Resolución de TS2339 mediante Estrechamiento de Tipo Literal
+ *              (Literal Type Narrowing) en la orquestación de llamadas a Payload, 
+ *              erradicando la ambigüedad del union type de Colecciones.
+ * @version 4.4 - Literal Type Sealed & Build-Hardened
  * @author Raz Podestá -  MetaShark Tech
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getPayload, type CollectionSlug, type SanitizedConfig } from 'payload';
+import { getPayload, type SanitizedConfig } from 'payload';
 import { cookies } from 'next/headers';
 import { createServerClient } from '@supabase/ssr';
 
+/** IMPORTACIONES DE INFRAESTRUCTRURA (Nx Boundary Safe) */
 import { i18n, isValidLocale, type Locale } from '../../../config/i18n.config';
 import { calculateProgress } from '@metashark/protocol-33';
 
@@ -52,9 +53,14 @@ export async function GET(
       resolveSovereignIdentity(payloadConfig)
     ]);
 
-    const TARGET_COLLECTION = 'dynamic-routes' as CollectionSlug;
+    /**
+     * @fix TS2339: Literal Type Narrowing.
+     * Pasamos el literal 'dynamic-routes' directamente en lugar del union type.
+     * Esto fuerza a Payload a devolver el tipo DynamicRoute exacto, 
+     * exponiendo sus propiedades (fallbackUrl, conditionalRules) al compilador.
+     */
     const routeConfig = await payload.find({
-      collection: TARGET_COLLECTION,
+      collection: 'dynamic-routes',
       where: { routeKey: { equals: key } },
       limit: 1,
     });
@@ -69,13 +75,15 @@ export async function GET(
       hour: '2-digit', minute: '2-digit', hour12: false,
     }).format(new Date());
 
+    // El compilador ahora reconoce 'fallbackUrl' como propiedad de DynamicRoute
     let destinationPath = typeof config.fallbackUrl === 'string' ? config.fallbackUrl : '/';
 
+    // El compilador ahora reconoce 'conditionalRules'
     if (Array.isArray(config.conditionalRules)) {
       for (const rule of config.conditionalRules) {
         const isTimeMatch = checkTimeWindow(brTime, rule.startTime as string, rule.endTime as string);
         
-        // --- CORRECCIÓN LINTER: Validación robusta para NaN ---
+        // Validación robusta para NaN (Linter Compliant)
         const reqLevel = typeof rule.requiredLoyaltyLevel === 'number' 
             ? rule.requiredLoyaltyLevel 
             : Number(rule.requiredLoyaltyLevel);
@@ -124,6 +132,11 @@ async function resolveSovereignIdentity(payloadConfig: SanitizedConfig) {
     if (!user) return null;
 
     const payload = await getPayload({ config: payloadConfig });
+    
+    /**
+     * @fix Literal Type Narrowing
+     * Forzamos la colección 'users' para obtener acceso a experiencePoints.
+     */
     const { docs } = await payload.find({
       collection: 'users',
       where: { email: { equals: user.email ?? '' } },
@@ -134,6 +147,7 @@ async function resolveSovereignIdentity(payloadConfig: SanitizedConfig) {
     const profile = docs[0];
     if (!profile) return null;
 
+    // TypeScript ahora sabe que profile es un User
     const xp = typeof profile.experiencePoints === 'number' ? profile.experiencePoints : 0;
     const progress = calculateProgress(xp);
 

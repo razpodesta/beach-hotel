@@ -1,10 +1,12 @@
 {
   "title": "Luxury Suites",
   "search_placeholder": "Search for your sanctuary...",
-  "cat_all": "All Suites",
-  "cat_master": "Master Sanctuary",
-  "cat_deluxe": "Deluxe Room",
-  "cat_standard": "Standard Comfort",
+  "category_filters": {
+    "All": "All Suites",
+    "Master": "Master Sanctuary",
+    "Deluxe": "Deluxe Room",
+    "Standard": "Standard Comfort"
+  },
   "label_from": "Starting at",
   "label_suite_suffix": "Boutique Suite",
   "empty_state_title": "No results in the Sanctuary",

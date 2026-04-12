@@ -1,9 +1,9 @@
 /**
  * @file apps/portfolio-web/src/lib/portal/actions/media.actions.ts
  * @description Motor de Ingesta y Purga Multimedia (Server Actions).
- *              Refactorizado: Resolución de TS2352 mediante doble await y casting seguro.
- *              Integración del Centinela IS_BUILD_ENV para aislamiento estático.
- * @version 4.3 - Build-Safe & Production Elite
+ *              Refactorizado: Resolución de TS2352 y TS2345 (Payload Draft Fallback Trap)
+ *              mediante la inyección de propiedades SSoT obligatorias (assetContext).
+ * @version 4.4 - Build-Safe & Type Sealed
  * @author Raz Podestá -  MetaShark Tech
  */
 
@@ -81,11 +81,17 @@ export async function uploadMediaAction(formData: FormData): Promise<ActionRespo
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
+    /** 
+     * @fix TS2345: Payload Draft Fallback Trap.
+     * La colección 'Media' requiere la propiedad 'assetContext'. 
+     * Al inyectarla, TypeScript reconoce la firma principal.
+     */
     const result = await payload.create({
       collection: 'media',
       data: {
         alt,
         tenant: tenantId,
+        assetContext: 'system' 
       },
       file: {
         data: buffer,

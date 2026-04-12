@@ -3,9 +3,9 @@
  * @description Centinela de Borde e Inteligencia de Acceso Perimetral (RBAC).
  *              Orquesta la validación de autoridad Zero-Latency mediante la
  *              síntesis del "Sovereign Passport" y el Gating jerárquico.
- *              Refactorizado: Sincronización con el motor de Paquetes, purga
- *              de redundancias en Whitelist y sellado TSDoc.
- * @version 12.0 - Immutable Fortress & TSDoc Sealed
+ *              Refactorizado: Sincronización de Caché Edge (Anti-Poisoning),
+ *              extracción algorítmica segura de rutas y preservación de Query Params.
+ * @version 13.0 - Edge Cache Sealed & Param Safe
  * @author Staff Engineer - MetaShark Tech
  */
 
@@ -113,6 +113,17 @@ function resolveSovereignPassport(req: NextRequest, traceId: string): SovereignP
   return { isAuthenticated: false, role: 'anonymous', tenantId: null, traceId };
 }
 
+/**
+ * @function safeEdgeRedirect
+ * @description Inyecta cabeceras Anti-Caché en redirecciones de seguridad (HTTP 307).
+ * @pilar VIII: Previene el envenenamiento del Vercel Edge Cache.
+ */
+function safeEdgeRedirect(url: URL): NextResponse {
+  const response = NextResponse.redirect(url, 307);
+  response.headers.set('Cache-Control', 's-maxage=0, stale-while-revalidate');
+  return response;
+}
+
 // ============================================================================
 // APARATO PRINCIPAL: routeGuard
 // ============================================================================
@@ -123,13 +134,11 @@ function resolveSovereignPassport(req: NextRequest, traceId: string): SovereignP
  * @param {NextRequest} request - Petición entrante desde el middleware.
  * @param {Locale} locale - Idioma resuelto por el orquestador de rumbos.
  * @returns {Promise<NextResponse | null>} Respuesta de redirección o permiso de paso.
- * @pilar IV: Observabilidad - Reporta latencia y auditoría forense.
- * @pilar VIII: Resiliencia - Maneja evacuaciones ante brechas de jerarquía.
  */
 export async function routeGuard(request: NextRequest, locale: Locale): Promise<NextResponse | null> {
   const startTime = performance.now();
   const traceId = `sig_guard_${Date.now().toString(36).toUpperCase()}`;
-  const { pathname } = request.nextUrl;
+  const { pathname, search } = request.nextUrl;
 
   /**
    * @function emitForensicLog
@@ -154,12 +163,18 @@ export async function routeGuard(request: NextRequest, locale: Locale): Promise<
   // 1. FILTRO DE INFRAESTRUCTRURA (Bypass Directo)
   if (INFRA_BYPASS.some((prefix) => pathname.startsWith(prefix))) return null;
 
-  // 2. NORMALIZACIÓN DE RUTA LÓGICA
-  const logicalPath = pathname.replace(`/${locale}`, '') || '/';
+  /**
+   * 2. NORMALIZACIÓN ALGORÍTMICA DE RUTA LÓGICA
+   * @fix Evitamos usar string.replace para prevenir corrupción en sub-rutas homónimas.
+   */
+  const segments = pathname.split('/').filter(Boolean);
+  const logicalPath = segments.length > 1 ? `/${segments.slice(1).join('/')}` : '/';
   
   // 3. VALIDACIÓN DE PERÍMETRO PÚBLICO
-  // Sincronización dinámica con las familias de rutas legales y editoriales
-  const isPublicFamily = logicalPath.startsWith('/blog/') || logicalPath.startsWith('/legal/');
+  const isPublicFamily = 
+    logicalPath === '/blog' || logicalPath.startsWith('/blog/') || 
+    logicalPath === '/legal' || logicalPath.startsWith('/legal/');
+    
   const isPublic = PUBLIC_WHITELIST.has(logicalPath) || isPublicFamily;
 
   if (isPublic) return null;
@@ -170,9 +185,12 @@ export async function routeGuard(request: NextRequest, locale: Locale): Promise<
   // 5. GATING DE IDENTIDAD (Authentication Guard)
   if (!passport.isAuthenticated) {
     emitForensicLog('REDIRECTED', 'Identity required for non-public perimeter', passport);
-    const loginRedirect = new URL(`/${locale}`, request.url);
+    
+    // @fix: Preservamos los query parameters originales y forzamos Safe Redirect
+    const loginRedirect = new URL(`/${locale}${search}`, request.url);
     loginRedirect.searchParams.set('auth', 'required');
-    return NextResponse.redirect(loginRedirect);
+    
+    return safeEdgeRedirect(loginRedirect);
   }
 
   // 6. GATING DE AUTORIDAD (RBAC Protocol)
@@ -186,8 +204,10 @@ export async function routeGuard(request: NextRequest, locale: Locale): Promise<
 
     if (userWeight < requiredWeight) {
       emitForensicLog('REJECTED', `Hierarchy Drift: User(${userWeight}) < Required(${requiredWeight})`, passport);
-      // Evacuación al área base del portal para evitar bucles de redirección
-      return NextResponse.redirect(new URL(`/${locale}/portal`, request.url));
+      
+      // @fix: Preservamos query params en la evacuación al portal base
+      const evacRedirect = new URL(`/${locale}/portal${search}`, request.url);
+      return safeEdgeRedirect(evacRedirect);
     }
   }
 

@@ -2,11 +2,19 @@
  * @file packages/cms/core/src/collections/Tenants.ts
  * @description Orquestador Soberano de Perímetros Multi-Tenant (Root Node).
  *              Define la frontera física, digital, social y estética de cada propiedad.
- *              Refactorizado: Inmutabilidad de slugs, validación OKLCH v4, 
- *              inyección de Social DNA y resolución ESM (.js).
- *              Estándar: Heimdall v2.5 Forensic Logging & Multi-Tenant Shield.
- * @version 5.0 - Master Identity & Social DNA Sealed
+ * 
+ * @version 6.0 - Sovereign Pointer Architecture
  * @author Staff Engineer - MetaShark Tech
+ * 
+ * @pilar III: Seguridad de Tipos - Implementa validaciones estrictas de branding y relaciones.
+ * @pilar IX: Desacoplamiento - Implementa el patrón "Asset Pointer". El Tenant no posee
+ *            los archivos, sino punteros relacionales a la colección 'media'.
+ * @pilar XIII: Build Isolation - Configurado para ser consumido en modo Source-First por Next.js.
+ * 
+ * @description CONTEXTO PARA IA:
+ * Este archivo es el SSoT de la propiedad. Para cambiar el video del Hero, NO se debe 
+ * editar el JSON de traducción; se debe actualizar el campo 'heroVideo' en esta colección.
+ * El frontend resolverá el ID del activo hacia la URL física de Supabase S3.
  */
 
 import { type CollectionConfig, type CollectionBeforeChangeHook } from 'payload';
@@ -29,7 +37,7 @@ if (process.env.NODE_ENV !== 'test') {
 
 /**
  * HOOK: beforeChangePerimeter
- * @description Automatiza la identidad semántica y protege la inmutabilidad.
+ * @description Automatiza la identidad semántica y protege la inmutabilidad de rumbos.
  */
 const beforeChangePerimeter: CollectionBeforeChangeHook = async ({ data, operation, originalDoc }) => {
   const start = performance.now();
@@ -71,7 +79,7 @@ export const Tenants: CollectionConfig = {
   admin: {
     useAsTitle: 'name',
     group: 'Infrastructure',
-    description: 'Gestão centralizada de identidades de propriedade e DNA de marca.',
+    description: 'Gestão centralizada de identidades de propriedade, DNA de marca e ativos vigentes.',
     defaultColumns: ['name', 'slug', 'domain', 'status'],
   },
 
@@ -140,6 +148,52 @@ export const Tenants: CollectionConfig = {
               admin: { position: 'sidebar' }
             }
           ],
+        },
+        {
+          label: 'Multimedia Hub',
+          description: 'Gerenciamento de Punteiros Soberanos para ativos em tempo real.',
+          fields: [
+            {
+              name: 'heroConfig',
+              type: 'group',
+              label: 'Configuração do Hero (Active Assets)',
+              fields: [
+                {
+                  type: 'row',
+                  fields: [
+                    {
+                      name: 'activeHeroVideo',
+                      type: 'relationship',
+                      relationTo: 'media',
+                      required: true,
+                      admin: { 
+                        width: '50%',
+                        description: 'Selecione o vídeo principal da Bóveda S3.' 
+                      }
+                    },
+                    {
+                      name: 'activeHeroPoster',
+                      type: 'relationship',
+                      relationTo: 'media',
+                      required: true,
+                      admin: { 
+                        width: '50%',
+                        description: 'Imagem de fallback (Poster) para o vídeo.' 
+                      }
+                    }
+                  ]
+                },
+                {
+                  name: 'activeHeroAudio',
+                  type: 'relationship',
+                  relationTo: 'media',
+                  admin: { 
+                    description: 'Áudio ambiental para o loop cinematográfico.' 
+                  }
+                }
+              ]
+            }
+          ]
         },
         {
           label: 'Oxygen DNA (Branding)',
@@ -226,5 +280,5 @@ export const Tenants: CollectionConfig = {
 
 const collectionDuration = performance.now() - collectionStart;
 if (process.env.NODE_ENV !== 'test') {
-  console.log(`   ${C.green}✓ [DNA][SUCCESS]${C.reset} Tenants Perimeters levelvelled | Time: ${collectionDuration.toFixed(4)}ms\n`);
+  console.log(`   ${C.green}✓ [DNA][SUCCESS]${C.reset} Tenants Perimeters with Multimedia Hub calibrated | Time: ${collectionDuration.toFixed(4)}ms\n`);
 }

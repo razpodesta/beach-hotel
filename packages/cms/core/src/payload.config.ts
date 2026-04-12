@@ -1,9 +1,10 @@
 /**
  * @file packages/cms/core/src/payload.config.ts
  * @description Orquestador Maestro del Ecosistema de Datos MetaShark.
- *              Refactorizado: Gestión de adaptadores con aislamiento de build (Heimdall Guard),
- *              sincronización total de la bóveda S3 y endurecimiento de protocolos SSL.
- * @version 51.0 - Hardened Build Isolation & S3 Vault Sealed
+ *              Refactorizado: Erradicación de TS2353 (S3 Plugin Type Override).
+ *              Alineación arquitectónica con el patrón "Sovereign Pointers": 
+ *              Solo la colección 'media' actúa como bóveda binaria física S3.
+ * @version 51.1 - S3 Validation Sealed & Build Isolation Hardened
  * @author Staff Engineer - MetaShark Tech
  */
 
@@ -105,13 +106,14 @@ const resolvePlugins = () => {
   
   return [
     s3Storage({
+      /**
+       * @fix TS2353: Sovereign Pointer Architecture.
+       * Solo la colección 'media' es una bóveda binaria física. Las demás colecciones 
+       * interactúan con ella mediante relaciones lógicas, por lo que no requieren 
+       * inyección en el adaptador S3.
+       */
       collections: { 
-        'media': true, 
-        'offers': true, 
-        'flash-sales': true, 
-        'agencies': true, 
-        'ingestions': true,
-        'projects': true
+        'media': true
       },
       bucket: process.env.S3_BUCKET || 'sanctuary-vault',
       config: {

@@ -1,10 +1,12 @@
 {
   "title": "Suítes de Luxo",
   "search_placeholder": "Procure seu santuário...",
-  "cat_all": "Todas as Suítes",
-  "cat_master": "Santuário Master",
-  "cat_deluxe": "Quarto Deluxe",
-  "cat_standard": "Conforto Standard",
+  "category_filters": {
+    "All": "Todas as Suítes",
+    "Master": "Santuário Master",
+    "Deluxe": "Quarto Deluxe",
+    "Standard": "Conforto Standard"
+  },
   "label_from": "A partir de",
   "label_suite_suffix": "Suíte Boutique",
   "empty_state_title": "Nenhum resultado no Santuário",

@@ -1,25 +1,25 @@
 {
-  "badge": "Ideogram 3.0 Powered",
-  "title": "AI Visual Synth",
-  "subtitle": "Explore a curated collection of algorithmically generated assets. Photorealism, perfect typography, and stylistic consistency, orchestrated by our sovereign CMS.",
-  "overlay_indicator": "LIVE RENDER • WEBGL 2.0",
-  "drag_label": "DRAG TO ORBIT",
-  "item_prefix": "ASSET",
-  "error_fallback": "VISUAL ENGINE NOT SUPPORTED ON THIS BROWSER",
-  "footer_prompt": "Advanced Prompt Engineering",
-  "footer_upscaling": "8K Upscaling & Optimization",
-  "items": {
-    "neon-typography": { "title": "Neon Glass", "description": "3D neon tubes rendering." },
-    "editorial-fashion": { "title": "High Fashion", "description": "Photorealistic textile synthesis." },
-    "tech-badge": { "title": "Titanium Tech", "description": "Macro product visualization." },
-    "transparent-gadget": { "title": "Glass Hardware", "description": "Futuristic device engineering." },
-    "luxury-perfume": { "title": "Gold Scent", "description": "Commercial product photography." },
-    "concept-car": { "title": "Auto Concept", "description": "Abstract carbon fiber details." },
-    "concrete-workspace": { "title": "Raw Workspace", "description": "Minimalist interior design." },
-    "cyberpunk-street": { "title": "Night City", "description": "Volumetric lighting atmosphere." },
-    "abstract-geometry": { "title": "Parametric Form", "description": "Algorithmic architecture." },
-    "fluid-shapes": { "title": "Iridescent Flux", "description": "Liquid metal 3D simulation." },
-    "mechanical-insect": { "title": "Clockwork Life", "description": "Precision steampunk macro." },
-    "neural-network": { "title": "Data Stream", "description": "Abstract neural visualization." }
+  "badge": "Synthetic Architecture",
+  "title": "Visual Synthesis",
+  "subtitle": "Explore the frontiers of generative design where artificial intelligence materializes tomorrow's luxury.",
+  "overlay_indicator": "AI ENGINE: ACTIVE",
+  "drag_label": "INTERACT WITH THE ORB",
+  "item_prefix": "PROTOTYPE",
+  "error_fallback": "Visual synchrony failure",
+  "footer_prompt": "SOVEREIGN PROMPT: GENERATED",
+  "footer_upscaling": "4K UPSCALING: FINALIZED",
+  "items_metadata": {
+    "exterior-night-synth": {
+      "title": "Twilight Façade",
+      "description": "Volumetric lighting study generated for the northern perimeter."
+    },
+    "lobby-zen-concept": {
+      "title": "Atrium of Serenity",
+      "description": "Synthesis of organic materials and automated zenithal light."
+    },
+    "pool-infinite-ai": {
+      "title": "Infinite Vortex",
+      "description": "Fluid simulation of water edges on the Canasvieiras horizon."
+    }
   }
 }

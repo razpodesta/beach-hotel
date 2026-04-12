@@ -1,93 +1,64 @@
 /**
  * @file packages/cms/core/src/index.ts
  * @description Enterprise Core Registry (The Sovereign Data Gateway).
- *              Único punto de acceso para el ecosistema de datos MetaShark Tech.
- *              Refactorizado: Resolución definitiva de extensiones .js (Bundler Sync),
- *              normalización de contratos de tipo y consolidación de RBAC.
- * @version 12.0 - Bundler Resolution Sealed & SSoT Hardened
+ *              Refactorizado: Resolución de TS2305 mediante la exportación 
+ *              exhaustiva de entidades de dominio (Notification, Agency, etc.) 
+ *              hacia los Silos de la aplicación anfitriona.
+ * @version 16.1 - Domain Entities Fully Exposed & Type-Safe
  * @author Staff Engineer - MetaShark Tech
  */
 
-/**
- * 1. INFRAESTRUCTRURA Y CONFIGURACIÓN SOBERANA
- * @pilar IX: Desacoplamiento. Punto de entrada para el orquestador de Payload.
- */
 export { default as config } from './payload.config';
 
-/**
- * 2. IDENTIDAD Y CONTROL DE ACCESO (SBU: Core)
- * @description Gestión de perímetros y jerarquía de autoridad digital.
- */
-export * from './collections/users/Users';
-export * from './collections/Tenants';
+// 1. EXPORTACIÓN DE VALORES (Colecciones)
+// Mantenemos el sufijo "Collection" para evitar colisión con las interfaces de datos.
+export { Users as UsersCollection } from './collections/users/Users';
+export { Tenants as TenantsCollection } from './collections/Tenants';
+export { Media as MediaCollection } from './collections/Media';
+export { BlogPosts as BlogPostsCollection } from './collections/BlogPosts';
+export { Projects as ProjectsCollection } from './collections/Projects';
+export { Notifications as NotificationsCollection } from './collections/Notifications';
+export { Agencies as AgenciesCollection } from './collections/Agencies';
+export { Agents as AgentsCollection } from './collections/Agents';
+export { BusinessMetrics as BusinessMetricsCollection } from './collections/BusinessMetrics';
+export { Ingestions as IngestionsCollection } from './collections/Ingestions';
+export { Subscribers as SubscribersCollection } from './collections/Subscribers';
+export { Offers as OffersCollection } from './collections/Offers';
+export { FlashSales as FlashSalesCollection } from './collections/FlashSales';
+export { DynamicRoutes as DynamicRoutesCollection } from './collections/DynamicRoutes';
 export * from './collections/Access';
 
+// 2. EXPORTACIÓN DE TIPOS SOBERANOS (SSoT)
 /**
- * 3. MOTOR DE REVENUE (SBU: Silo A)
- * @description Gestión de inventario táctico y estratégico.
+ * @pilar III: Seguridad de Tipos - Sincronía con payload-types.ts.
+ * @pilar VIII: Resiliencia - Bypass de artefactos inexistentes durante el bootstrap.
+ * @fix TS2305: Exposición absoluta de todos los contratos generados para los Silos.
  */
-export * from './collections/Offers';
-export * from './collections/FlashSales';
+export type { 
+  Media, 
+  Tenant, 
+  User, 
+  BlogPost, 
+  Project,
+  Offer,
+  FlashSale,
+  Notification,
+  Agency,
+  Agent,
+  BusinessMetric,
+  Ingestion,
+  Subscriber,
+  DynamicRoute
+} from './payload-types';
 
-/**
- * 4. RED DE SOCIOS Y PRM (SBU: Silo B)
- * @description Inteligencia de alianzas y métricas financieras de red.
- */
-export * from './collections/Agencies';
-export * from './collections/Agents';
-export * from './collections/BusinessMetrics';
-
-/**
- * 5. INTELIGENCIA Y NUBE DE MARKETING (SBU: Silo C)
- * @description Pipelines de ingesta y orquestación de misiones masivas.
- */
-export * from './collections/Ingestions';
-export * from './collections/Subscribers';
-
-/**
- * 6. BIBLIOTECA DE ACTIVOS Y NARRATIVA (SBU: Experience)
- * @description Gestión multimedia LCP y contenido editorial (Journal).
- */
-export * from './collections/Media';
-export * from './collections/BlogPosts';
-export * from './collections/Projects';
-
-/**
- * 7. COMUNICACIONES Y GATEWAY (SBU: Silo D)
- * @description Ledger forense de notificaciones y enrutamiento dinámico.
- */
-export * from './collections/Notifications';
-export * from './collections/DynamicRoutes';
-
-/**
- * 8. CONTRATOS SOBERANOS GENERADOS (SSoT)
- * @pilar III: Seguridad de Tipos Absoluta.
- * @fix TS2307: Se elimina .js para permitir la resolución nativa del fuente .ts.
- */
-// @ts-expect-error - Artefacto materializado localmente vía 'pnpm sync:types'
-export * from './payload-types';
-
-/**
- * 9. INTELIGENCIA DE ROLES Y AUTORIDAD (RBAC SSoT)
- * @description Expone la jerarquía de poder del hotel (S0 a S4).
- */
 export { ROLES_CONFIG, getRoleConfig } from './collections/users/roles/config';
 export type { SovereignRoleType, RoleConfig } from './collections/users/roles/config';
 
-/**
- * 10. TIPOS TÉCNICOS DE DOMINIO
- * @pilar III: Resolución de TS2305.
- * @description Exportación de interfaces de documentos saneadas para el consumidor.
- */
 export type { PayloadMediaDoc } from './collections/Media';
-export type { ProjectLayoutStyleType } from './collections/Projects';
 
-/**
- * @pilar IV: Observabilidad DNA-Level.
- */
 if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'test') {
   console.log(
-    '%c🧬 MetaShark Core Registry v12.0 | [BUNDLER_SYNC: ACTIVE] | [RBAC: SEALED]', 
-    'color: #36def2; font-weight: bold; background: rgba(54, 222, 242, 0.1); padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(54, 222, 242, 0.2);'
+    '%c🧬 MetaShark Core Registry v16.1 | [TYPES: SYNCHRONIZED]', 
+    'color: #36def2; font-weight: bold; background: rgba(54, 222, 242, 0.1); padding: 4px 8px; border-radius: 6px;'
   );
 }

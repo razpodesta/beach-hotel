@@ -1,12 +1,22 @@
 /**
  * @file apps/portfolio-web/src/components/sections/homepage/HeroCarousel.tsx
  * @description Orquestador Cinemático de la Recepción (Fase 1: Awareness).
- *              Refactorizado: Motor de audio con protección de ciclo de vida,
- *              LCP Optimization (Fetch Priority), telemetría DNA-Level,
- *              normalización de rutas de activos S3 y erradicación de 
- *              funciones vacías (Linter Pure).
- * @version 19.2 - Linter Pure & Next.js 15 Ready
- * @author Raz Podestá -  MetaShark Tech
+ *              Responsabilidad: Presentación de activos de alta fidelidad (Hotel/Festival).
+ *              Refactorizado: Integración con la Arquitectura de Punteros S3.
+ *              Normaliza URLs dinámicas provenientes del CMS Tenant Data.
+ * 
+ * @version 20.0 - Sovereign Pointer Integration & LCP Elite
+ * @author Raz Podestá - MetaShark Tech
+ * 
+ * @pilar III: Seguridad de Tipos - Contratos de activos validados por SSoT.
+ * @pilar IV: Observabilidad - Logs Heimdall que trazan el origen del Stream (S3 vs Local).
+ * @pilar IX: Desacoplamiento - El componente es agnóstico al origen de la data.
+ * @pilar XII: MEA/UX - Gestión de audio con inercia y protección de ciclo de vida.
+ * 
+ * @description CONTEXTO PARA IA:
+ * Este aparato utiliza el patrón "Asset Normalizer". Si el CMS provee una URL absoluta 
+ * de Supabase, el helper la deja pasar. Si es una ruta relativa, la resuelve contra 
+ * la infraestructura configurada.
  */
 
 'use client';
@@ -22,8 +32,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Volume2, VolumeX, Sparkles, ArrowRight } from 'lucide-react';
 
 /**
- * IMPORTACIONES DE INFRAESTRUCTRURA (Rutas Relativas - Nx Boundary Compliance)
- * @pilar V: Adherencia Arquitectónica.
+ * IMPORTACIONES DE INFRAESTRUCTRURA (Nx Boundary Safe)
  */
 import { cn } from '../../../lib/utils/cn';
 import { getLocalizedHref } from '../../../lib/utils/link-helpers';
@@ -31,47 +40,33 @@ import { i18n, type Locale } from '../../../config/i18n.config';
 import type { HeroDictionary } from '../../../lib/schemas/hero.schema';
 
 /**
- * CONSTANTES DE TELEMETRÍA (Protocolo Heimdall)
+ * CONSTANTES CROMÁTICAS HEIMDALL v2.5
  */
 const C = {
   reset: '\x1b[0m', cyan: '\x1b[36m', green: '\x1b[32m', 
   yellow: '\x1b[33m', magenta: '\x1b[35m', bold: '\x1b[1m'
 };
 
-/**
- * @interface HeroCarouselProps
- * @pilar III: Seguridad de Tipos Absoluta.
- */
 interface HeroCarouselProps {
-  /** Diccionario maestro validado por SSoT */
+  /** Diccionario hidratado por el orquestador (puede contener punteros dinámicos) */
   dictionary: HeroDictionary;
 }
 
 /**
- * Hook de Hidratación de Élite (Pilar VIII)
- * @description Detecta si estamos en el cliente de forma segura.
- *              Se inyecta un comentario interno para satisfacer al AST de TypeScript
- *              sin requerir desactivar reglas del linter.
+ * Hook de Hidratación de Élite
  */
 function useIsMounted(): boolean {
   const subscribe = useCallback(() => {
-    return () => {
-      /* Intencionalmente vacío: Estado de montaje estático en cliente */
-    };
+    return () => { /* No-op: Estado estático en cliente */ };
   }, []);
-
   return useSyncExternalStore(subscribe, () => true, () => false);
 }
 
-/**
- * APARATO PRINCIPAL: HeroCarousel
- * @description Motor sensorial de hospitalidad. Orquesta multimedia S3 con resiliencia.
- */
 export function HeroCarousel({ dictionary }: HeroCarouselProps) {
   const isMounted = useIsMounted();
   const pathname = usePathname();
   
-  // Referencias de Control de Infraestructura
+  // Referencias de Infraestructura
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const videoRefs = useRef<Map<number, HTMLVideoElement>>(new Map());
   const mountTime = useRef<number>(0);
@@ -82,21 +77,26 @@ export function HeroCarousel({ dictionary }: HeroCarouselProps) {
   const [loadedAssets, setLoadedAssets] = useState<Record<number, boolean>>({});
 
   /**
-   * PROTOCOLO HEIMDALL: Inicialización de Nodo
+   * PROTOCOLO HEIMDALL: Telemetría de Montaje
    */
   useEffect(() => {
     mountTime.current = performance.now();
-    console.log(`${C.magenta}${C.bold}[DNA][CINEMATIC]${C.reset} Hero Engine Synchronized.`);
+    console.log(`${C.magenta}${C.bold}[DNA][CINEMATIC]${C.reset} Hero Engine synchronized with Active Tenant Pointers.`);
   }, []);
 
   /**
-   * RESOLVER SOBERANO DE ACTIVOS (S3 Normalization)
-   * @description Sanea rutas y vincula con el bucket 'sanctuary-vault'.
+   * RESOLVER SOBERANO DE ACTIVOS (Asset Bridge)
+   * @description Detecta y normaliza rutas locales vs URLs absolutas de S3.
+   * @pilar IX: Desacoplamiento de almacenamiento.
    */
   const getAssetUrl = useCallback((path: string) => {
     if (!path) return '';
+    
+    // Caso 1: La URL ya es absoluta (Inyectada desde Supabase S3)
     if (path.startsWith('http')) return path;
     
+    // Caso 2: Ruta relativa detectada (Fallback o Local Asset)
+    // Resolvemos contra el bucket si no empieza con barra, o asumimos /public si sí empieza.
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.replace(/\/$/, '');
     if (supabaseUrl && !path.startsWith('/')) {
         return `${supabaseUrl}/storage/v1/object/public/sanctuary-vault/${path}`;
@@ -105,9 +105,6 @@ export function HeroCarousel({ dictionary }: HeroCarouselProps) {
     return path.startsWith('/') ? path : `/${path}`;
   }, []);
 
-  /**
-   * RESOLUCIÓN LINGÜÍSTICA
-   */
   const currentLang = useMemo(() => {
     const segments = pathname?.split('/') ?? [];
     const candidate = segments[1] as Locale;
@@ -115,7 +112,8 @@ export function HeroCarousel({ dictionary }: HeroCarouselProps) {
   }, [pathname]);
 
   /**
-   * MATRIZ NARRATIVA (SSoT Sync)
+   * MATRIZ NARRATIVA (Sovereign Hydration)
+   * @description Fusiona el copy del JSON con los activos multimedia vigentes.
    */
   const slides = useMemo(() => [
     {
@@ -144,17 +142,13 @@ export function HeroCarousel({ dictionary }: HeroCarouselProps) {
     }
   ], [dictionary, getAssetUrl]);
 
-  /**
-   * ORQUESTADOR EMBLA (Motion Logic)
-   */
   const [emblaRef, emblaApi] = useEmblaCarousel(
     { loop: true, duration: 40, skipSnaps: false }, 
     [Fade(), Autoplay({ delay: 12000, stopOnInteraction: false })]
   );
 
   /**
-   * MOTOR DE AUDIO: Fade Logic Blindada
-   * @pilar X: Previene race conditions en el control de volumen.
+   * MOTOR DE AUDIO (Luxury Sensory Engine)
    */
   useEffect(() => {
     if (!isMounted || !audioRef.current) return;
@@ -165,7 +159,6 @@ export function HeroCarousel({ dictionary }: HeroCarouselProps) {
     if (!isMuted) {
       audio.volume = 0;
       audio.play().catch((err: unknown) => { 
-        // Linter Pure: Proveemos telemetría en lugar de función vacía.
         const msg = err instanceof Error ? err.message : 'Policy blocked';
         console.warn(`${C.yellow}[HEIMDALL][AUDIO] Autoplay deferred: ${msg}${C.reset}`); 
       });
@@ -187,23 +180,24 @@ export function HeroCarousel({ dictionary }: HeroCarouselProps) {
   }, [isMuted, isMounted]);
 
   /**
-   * HANDLER: onSelect
-   * Sincroniza la reproducción de videos con el viewport activo.
+   * HANDLER: onSelect (Stream Synchronization)
    */
   const onSelect = useCallback(() => {
     if (!emblaApi) return;
     const index = emblaApi.selectedScrollSnap();
     setSelectedIndex(index);
     
-    console.log(`${C.cyan}   → [VIEWPORT]${C.reset} Active Slide: ${index} (${slides[index].id})`);
+    const activeStream = slides[index].assets.video;
+    const isS3 = activeStream.includes('supabase.co');
+    
+    console.log(
+      `${C.cyan}   → [VIEWPORT]${C.reset} Active: ${index} | ` +
+      `Source: ${isS3 ? C.green + 'S3_VAULT' : C.yellow + 'LOCAL_FS'}${C.reset}`
+    );
     
     videoRefs.current.forEach((v, i) => {
       if (i === index) {
-        v.play().catch((err: unknown) => {
-          // @pilar IV: Trazabilidad forense para errores DOM de reproducción interrumpida.
-          const reason = err instanceof Error ? err.name : 'Unknown';
-          console.debug(`[HEIMDALL][VIDEO] Slide ${i} playback interrupted: ${reason}`);
-        });
+        v.play().catch(() => { /* Fallback silencioso */ });
       } else {
         v.pause();
       }
@@ -216,14 +210,11 @@ export function HeroCarousel({ dictionary }: HeroCarouselProps) {
     return () => { emblaApi.off('select', onSelect); };
   }, [emblaApi, onSelect]);
 
-  /**
-   * LCP TELEMETRY: Stream Ready Signal
-   */
   const handleCanPlayThrough = useCallback((index: number) => {
     setLoadedAssets(prev => {
       if (!prev[index]) {
         const loadTime = (performance.now() - mountTime.current).toFixed(2);
-        console.log(`${C.green}   ✓ [LCP_READY]${C.reset} Stream [${index}] synchronized in ${loadTime}ms`);
+        console.log(`${C.green}   ✓ [LCP_READY]${C.reset} Slide [${index}] synchronized in ${loadTime}ms`);
       }
       return { ...prev, [index]: true };
     });
@@ -237,7 +228,7 @@ export function HeroCarousel({ dictionary }: HeroCarouselProps) {
       role="region" 
       aria-label="Experience Showcase"
     >
-      {/* HUD DE CONTROL (Day-First / Surface Semantic) */}
+      {/* HUD DE CONTROL (Oxygen Atmosphere) */}
       <div className="absolute top-32 right-8 z-50 flex flex-col gap-4">
         <motion.button
           whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
@@ -247,7 +238,7 @@ export function HeroCarousel({ dictionary }: HeroCarouselProps) {
             "bg-surface/80 border-border/50 text-foreground hover:border-primary/40",
             !isMuted && "text-primary border-primary/30"
           )}
-          aria-label={isMuted ? "Activar audio ambiental" : "Silenciar audio"}
+          aria-label={isMuted ? "Unmute Ambient" : "Mute Sensory"}
         >
           {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} className="animate-pulse" />}
           {!isMuted && (
@@ -267,7 +258,7 @@ export function HeroCarousel({ dictionary }: HeroCarouselProps) {
             const isActive = index === selectedIndex;
             return (
               <div className="relative flex-[0_0_100%] h-full min-w-0" key={slide.id}>
-                {/* STACK VISUAL: LCP & FETCH PRIORITY */}
+                {/* VISUAL STACK */}
                 <div className="absolute inset-0 z-0 overflow-hidden transform-gpu bg-black">
                   <Image
                     src={slide.assets.poster}
@@ -297,12 +288,11 @@ export function HeroCarousel({ dictionary }: HeroCarouselProps) {
                     )}
                   />
                   
-                  {/* Capas de atmósfera (Vignettes) */}
                   <div className="absolute inset-0 bg-radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.85)_100%) opacity-60" />
                   <div className="absolute inset-0 bg-linear-to-t from-black/90 via-transparent to-transparent" />
                 </div>
 
-                {/* CAPA NARRATIVA (DNA Content) */}
+                {/* NARRATIVE LAYER */}
                 <div className="relative z-10 container mx-auto h-full flex flex-col justify-center px-6 lg:px-12">
                   <AnimatePresence mode="wait">
                     {isActive && (
@@ -344,14 +334,14 @@ export function HeroCarousel({ dictionary }: HeroCarouselProps) {
         </div>
       </div>
 
-      {/* NAVEGACIÓN (Pilar XII - Ergonómica) */}
+      {/* NAVEGACIÓN ERGONÓMICA */}
       <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-50 flex items-center gap-6 bg-surface/60 backdrop-blur-3xl px-8 py-4 rounded-full border border-border/50 shadow-luxury">
         {slides.map((_, i) => (
           <button
             key={i}
             onClick={() => { emblaApi?.scrollTo(i); }}
             className="group relative flex items-center justify-center p-2 outline-none"
-            aria-label={`Ir al slide ${i + 1}`}
+            aria-label={`Go to slide ${i + 1}`}
           >
             <div className={cn(
               "h-1.5 transition-all duration-1000 rounded-full",
@@ -363,10 +353,10 @@ export function HeroCarousel({ dictionary }: HeroCarouselProps) {
         ))}
       </div>
       
-      {/* FOOTER SSSoT */}
+      {/* SSoT FOOTER */}
       <div className="absolute bottom-4 right-8 opacity-20 pointer-events-none select-none">
          <span className="font-mono text-[7px] uppercase tracking-[0.5em] text-muted-foreground">
-           Sovereign Infrastructure v19.2 • S3 Stream Node
+           Sovereign Infrastructure v20.0 • CMS_BEYOND_JSON • S3 Active
          </span>
       </div>
     </section>
