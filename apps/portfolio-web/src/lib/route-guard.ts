@@ -1,10 +1,11 @@
 /**
  * @file apps/portfolio-web/src/lib/route-guard.ts
  * @description Centinela de Borde e Inteligencia de Acceso Perimetral (RBAC).
- *              Refactorizado: Implementación de "Sovereign Passport" para inyección
- *              de identidad en cabeceras y orquestación de autoridad Zero-Latency.
- *              Estándar: Heimdall v2.5 (Forensic Trace & Edge Immunity).
- * @version 11.0 - Sovereign Passport & Edge Immutable Matrix
+ *              Orquesta la validación de autoridad Zero-Latency mediante la
+ *              síntesis del "Sovereign Passport" y el Gating jerárquico.
+ *              Refactorizado: Sincronización con el motor de Paquetes, purga
+ *              de redundancias en Whitelist y sellado TSDoc.
+ * @version 12.0 - Immutable Fortress & TSDoc Sealed
  * @author Staff Engineer - MetaShark Tech
  */
 
@@ -15,8 +16,6 @@ import { mainNavStructure } from './nav-links';
 /** 
  * IMPORTACIONES DE CONTRATO (Pure Types)
  * @pilar III: Seguridad de Tipos Absoluta.
- * El uso de 'import type' es innegociable para evitar fugas de binarios 
- * del CMS hacia el bundle del Edge de Vercel.
  */
 import type { SovereignRoleType } from '@metashark/cms-core';
 
@@ -55,6 +54,7 @@ const PUBLIC_WHITELIST = new Set([
 // Sincronización dinámica de la lista blanca desde el mapa de navegación
 mainNavStructure.forEach((item) => {
   if (item.href && !item.href.startsWith('http')) {
+    // Limpiamos anclas para validar solo el rumbo base
     PUBLIC_WHITELIST.add(item.href.split('#')[0]);
   }
 });
@@ -90,6 +90,9 @@ const AUTHORITY_WEIGHTS: Record<SovereignRoleType | 'anonymous', number> = {
 /**
  * @function resolveSovereignPassport
  * @description Analiza el tráfico y sintetiza el pasaporte de identidad.
+ * @param {NextRequest} req - Petición entrante.
+ * @param {string} traceId - Identificador forense de la petición.
+ * @returns {SovereignPassport} Pasaporte de identidad validado.
  */
 function resolveSovereignPassport(req: NextRequest, traceId: string): SovereignPassport {
   // 1. PROTOCOLO DE BYPASS (Emergencia / Dev Node)
@@ -117,9 +120,11 @@ function resolveSovereignPassport(req: NextRequest, traceId: string): SovereignP
 /**
  * @function routeGuard
  * @description Centinela de tráfico de borde. Orquesta el Gating RBAC y la telemetría.
- * @param {NextRequest} request - Petición entrante.
- * @param {Locale} locale - Idioma resuelto.
+ * @param {NextRequest} request - Petición entrante desde el middleware.
+ * @param {Locale} locale - Idioma resuelto por el orquestador de rumbos.
  * @returns {Promise<NextResponse | null>} Respuesta de redirección o permiso de paso.
+ * @pilar IV: Observabilidad - Reporta latencia y auditoría forense.
+ * @pilar VIII: Resiliencia - Maneja evacuaciones ante brechas de jerarquía.
  */
 export async function routeGuard(request: NextRequest, locale: Locale): Promise<NextResponse | null> {
   const startTime = performance.now();
@@ -134,14 +139,16 @@ export async function routeGuard(request: NextRequest, locale: Locale): Promise<
     const duration = (performance.now() - startTime).toFixed(2);
     const statusColor = status === 'GRANTED' ? C.green : (status === 'REJECTED' ? C.red : C.yellow);
     
-    console.log(
-      `${C.magenta}[DNA][GUARD]${C.reset} ${statusColor}${status.padEnd(10)}${C.reset} | ` +
-      `${pathname.padEnd(30)} | ` +
-      `Role: ${passport.role.padEnd(10)} | ` +
-      `Lat: ${duration}ms | ` +
-      `Trace: ${traceId} | ` +
-      `Audit: ${reason}`
-    );
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(
+        `${C.magenta}[DNA][GUARD]${C.reset} ${statusColor}${status.padEnd(10)}${C.reset} | ` +
+        `${pathname.padEnd(30)} | ` +
+        `Role: ${passport.role.padEnd(10)} | ` +
+        `Lat: ${duration}ms | ` +
+        `Trace: ${traceId} | ` +
+        `Audit: ${reason}`
+      );
+    }
   };
 
   // 1. FILTRO DE INFRAESTRUCTRURA (Bypass Directo)
@@ -151,9 +158,9 @@ export async function routeGuard(request: NextRequest, locale: Locale): Promise<
   const logicalPath = pathname.replace(`/${locale}`, '') || '/';
   
   // 3. VALIDACIÓN DE PERÍMETRO PÚBLICO
-  const isPublic = PUBLIC_WHITELIST.has(logicalPath) || 
-                   logicalPath.startsWith('/blog/') || 
-                   logicalPath.startsWith('/legal/');
+  // Sincronización dinámica con las familias de rutas legales y editoriales
+  const isPublicFamily = logicalPath.startsWith('/blog/') || logicalPath.startsWith('/legal/');
+  const isPublic = PUBLIC_WHITELIST.has(logicalPath) || isPublicFamily;
 
   if (isPublic) return null;
 

@@ -3,23 +3,22 @@
  * @description Enterprise Operations Portal (HopEx v25.1).
  *              Orquestador supremo de la interfaz operativa. Gestiona la convergencia
  *              de identidades, acceso por silos y telemetría Protocolo 33.
- *              Refactorizado: Resolución de violación de frontera Nx (Lazy-load conflict),
- *              aislamiento total de tipos para build estático e inyección Heimdall v2.0.
- * @version 27.0 - Boundary Compliant & Build Resilient
- * @author Raz Podestá -  MetaShark Tech
+ *              Refactorizado: Resolución de TS2307 tras atomización de Silos B/C,
+ *              normalización de rutas de barril y sellado de tipos SSoT.
+ * @version 28.0 - Atomic Silo Integration & Path Sync
+ * @author Staff Engineer - MetaShark Tech
  */
 
 import React from 'react';
 import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import Link from 'next/link';
 import { createServerClient } from '@supabase/ssr';
 import { 
   Terminal, Hotel, Briefcase, User, Settings, LogOut, 
   Activity, LayoutGrid, type LucideIcon,
   Zap, Users, Send, Percent, QrCode, Database, Bell,
-  ShieldCheck, ArrowRight
+  ShieldCheck
 } from 'lucide-react';
 
 /** IMPORTACIONES DE INFRAESTRUCTRURA (Fronteras Nx) */
@@ -27,22 +26,23 @@ import { getDictionary } from '../../../lib/get-dictionary';
 import { type Locale } from '../../../config/i18n.config';
 import { BlurText } from '../../../components/razBits/BlurText';
 import { cn } from '../../../lib/utils/cn';
+import Link from 'next/link';
 
-/** OPERATIONAL MANAGERS (SBU Modules) */
+/** 
+ * OPERATIONAL MANAGERS (SBU Modules)
+ * @pilar V: Adherencia Arquitectónica. Reconexión con Silos atomizados.
+ */
 import { AdminMediaPanel } from '../../../components/sections/portal/AdminMediaPanel';
 import { ArtifactShowcase } from '../../../components/sections/portal/ArtifactShowcase';
 import { IngestionManager } from '../../../components/sections/portal/IngestionManager';
-import { PartnerNetworkManager } from '../../../components/sections/portal/PartnerNetworkManager';
+import { PartnerNetworkManager } from '../../../components/sections/portal/partners'; // @fix: TS2307 Resolved
 import { OffersDashboard } from '../../../components/sections/portal/OffersDashboard';
-import { MarketingCloudManager } from '../../../components/sections/portal/MarketingCloudManager';
+import { MarketingCloudManager } from '../../../components/sections/portal/marketing'; // @fix: TS2307 Resolved
 import { CommsHubManager } from '../../../components/sections/portal/CommsHubManager';
 import type { AgencyEntity } from '../../../components/sections/portal/types';
 
 /** 
  * IMPORTACIONES DE CONTRATO (Pure Types Only)
- * @fix @nx/enforce-module-boundaries: Se utiliza 'import type' de forma estricta.
- * Esto asegura que el compilador no genere dependencias de runtime hacia el CMS
- * permitiendo que el lazy-loading sea efectivo.
  */
 import type { SovereignRoleType } from '@metashark/cms-core';
 
@@ -52,10 +52,6 @@ const C = {
   yellow: '\x1b[33m', magenta: '\x1b[35m', bold: '\x1b[1m', red: '\x1b[31m'
 };
 
-/**
- * DETECTORES DE ESTADO DE INFRAESTRUCTRURA
- * @pilar XIII: Build Isolation Guard.
- */
 const IS_BUILD_ENV = 
   process.env.NEXT_PHASE === 'phase-production-build' || 
   process.env.VERCEL === '1';
@@ -78,7 +74,7 @@ interface EnterpriseSessionData {
 }
 
 /**
- * MODULE: resolveIdentityNode
+ * @function resolveIdentityNode
  * @description Handshake de doble capa (Supabase + Payload) con medición de latencia.
  */
 async function resolveIdentityNode(traceId: string): Promise<EnterpriseSessionData | null> {
@@ -86,7 +82,6 @@ async function resolveIdentityNode(traceId: string): Promise<EnterpriseSessionDa
   
   if (IS_BUILD_ENV) return null;
 
-  // 1. Handshake de Desarrollo (Bypass)
   if (process.env.NEXT_PUBLIC_AUTH_BYPASS === 'true') {
     return { 
       userId: 'S0_ROOT', role: 'developer', email: 'dev-ops@metashark.tech', 
@@ -107,10 +102,6 @@ async function resolveIdentityNode(traceId: string): Promise<EnterpriseSessionDa
   if (!user) return null;
 
   try {
-    /** 
-     * @pilar XIII: Lazy Initialization de Infraestructura.
-     * El core del CMS solo se materializa tras la validación de identidad.
-     */
     const { getPayload } = await import('payload');
     const configModule = await import('@metashark/cms-core/config');
     const payload = await getPayload({ config: configModule.default });
@@ -156,6 +147,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 /**
  * APARATO PRINCIPAL: PortalPage
  * @description Centro de mando para la orquestación de operaciones y reputación.
+ * @pilar IX: Inversión de Control. Delega la lógica de negocio a los Silos Managers.
  */
 export default async function PortalPage(props: PageProps) {
   const pageStart = performance.now();
@@ -175,11 +167,12 @@ export default async function PortalPage(props: PageProps) {
 
   /**
    * RECUPERACIÓN ASÍNCRONA DE RECURSOS (Pilar X)
+   * @description Hidratación táctica basada en la vista activa para minimizar TTFB.
    */
   const [dict, partnerInventory] = await Promise.all([
     getDictionary(lang),
     (async () => {
-      // Lazy load específico para el Silo B si la vista lo requiere
+      // Lazy load del Silo B solo si la vista lo requiere
       if (activeView === 'partner-hub') {
         const { getPayload } = await import('payload');
         const configModule = await import('@metashark/cms-core/config');
@@ -305,7 +298,9 @@ export default async function PortalPage(props: PageProps) {
                           <nav.icon size={16} className={cn("transition-colors", activeView === nav.id ? "text-primary" : "group-hover:text-primary")} /> 
                           {nav.label}
                         </div>
-                        {activeView === nav.id && <ArrowRight size={14} className="animate-in slide-in-from-left-2" />}
+                        {activeView === 'overview' && nav.id === 'overview' && (
+                           <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+                        )}
                       </Link>
                     ))}
                   </nav>
@@ -355,7 +350,7 @@ export default async function PortalPage(props: PageProps) {
 
       <div className="fixed bottom-8 left-1/2 -translate-x-1/2 opacity-20 pointer-events-none">
          <span className="text-[7px] font-mono uppercase tracking-[1em] text-foreground">
-           MetaShark Sovereign Portal v26.0
+           MetaShark Sovereign Portal v28.0
          </span>
       </div>
     </main>

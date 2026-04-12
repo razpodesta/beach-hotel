@@ -1,10 +1,10 @@
 /**
  * @file apps/portfolio-web/src/components/sections/portal/ArtifactShowcase.tsx
  * @description Centro de Mando de Reputación y Exhibición de Artefactos (Protocolo 33).
- *              Refactorizado: Sincronización con el Reactor P33 v3.0, nivelación
- *              de resiliencia perimetral y optimización de atmósfera OKLCH.
- *              Estándar: Heimdall v2.5 Injected & React 19 Pure.
- * @version 5.2 - P33 Reactor Sync & Forensic Alignment
+ *              Refactorizado: Implementación de Milestone Sentinel, sellado de tipos 
+ *              para iconografía interna y optimización de atmósfera Oxygen v4.
+ *              Estándar: Heimdall v2.5 Injected & React 19 Purity.
+ * @version 6.0 - Milestone Sentinel & SVG Type Sealed
  * @author Staff Engineer - MetaShark Tech
  */
 
@@ -21,7 +21,8 @@ import {
   Info,
   ChevronRight,
   Hexagon,
-  type LucideIcon
+  type LucideIcon,
+  type LucideProps
 } from 'lucide-react';
 
 /**
@@ -39,10 +40,10 @@ import { cn } from '../../../lib/utils/cn';
 import { ArtifactCard } from './ArtifactCard';
 import type { GamificationDictionary } from '../../../lib/schemas/gamification.schema';
 
-// --- PROTOCOLO CROMÁTICO HEIMDALL ---
+// --- PROTOCOLO CROMÁTICO HEIMDALL v2.5 ---
 const C = {
   reset: '\x1b[0m', magenta: '\x1b[35m', cyan: '\x1b[36m', 
-  green: '\x1b[32m', yellow: '\x1b[33m', bold: '\x1b[1m'
+  green: '\x1b[32m', yellow: '\x1b[33m', red: '\x1b[31m', bold: '\x1b[1m'
 };
 
 /**
@@ -59,7 +60,26 @@ export interface ArtifactShowcaseProps {
 }
 
 // ============================================================================
-// 1. SUB-APARATO: RankHeader (Progression Intelligence)
+// 1. ÁTOMO: StarIcon (Type Safe SVG)
+// ============================================================================
+/**
+ * @description Icono de estrella tipado bajo el estándar Lucide para coherencia visual.
+ */
+const StarIcon = ({ className, ...props }: LucideProps) => (
+  <svg 
+    xmlns="http://www.w3.org/2000/svg" 
+    viewBox="0 0 24 24" 
+    fill="currentColor" 
+    stroke="none" 
+    className={cn("h-4 w-4", className)}
+    {...props}
+  >
+    <path d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.784 1.4 8.168L12 18.896l-7.334 3.866 1.4-8.168L.132 9.21l8.2-1.192L12 .587z" />
+  </svg>
+);
+
+// ============================================================================
+// 2. SUB-APARATO: RankHeader (Progression Intelligence)
 // ============================================================================
 const RankHeader = memo(({ 
   progress, 
@@ -71,63 +91,81 @@ const RankHeader = memo(({
   rankTitle: string;
   artifactsCount: number;
   dictionary: GamificationDictionary;
-}) => (
-  <header className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-end">
-    <div className="lg:col-span-2 space-y-6">
-      <div className="flex items-center gap-5">
-         <div className="h-14 w-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shadow-luxury">
-            <Zap size={28} className="animate-pulse" />
-         </div>
-         <div>
-            <span className="text-[10px] font-mono font-bold text-muted-foreground uppercase tracking-[0.5em] block mb-1">
-              Level {progress.currentLevel}
-            </span>
-            <h2 className="text-4xl font-display font-bold text-foreground tracking-tighter leading-none uppercase">
-               {rankTitle}
-            </h2>
-         </div>
+}) => {
+  // Milestone Sentinel: Detecta si falta menos del 15% para el siguiente nivel
+  const isNearLevelUp = progress.progressPercent >= 85;
+
+  return (
+    <header className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-end">
+      <div className="lg:col-span-2 space-y-6">
+        <div className="flex items-center gap-5">
+           <div className={cn(
+             "h-14 w-14 rounded-2xl border flex items-center justify-center transition-all duration-700 shadow-luxury",
+             isNearLevelUp ? "bg-accent/10 border-accent/30 text-accent" : "bg-primary/10 border-primary/20 text-primary"
+           )}>
+              <Zap size={28} className={cn(isNearLevelUp ? "animate-bounce" : "animate-pulse")} />
+           </div>
+           <div className="space-y-1">
+              <div className="flex items-center gap-3">
+                <span className="text-[10px] font-mono font-bold text-muted-foreground uppercase tracking-[0.5em]">
+                  Level {progress.currentLevel}
+                </span>
+                {isNearLevelUp && (
+                  <span className="px-2 py-0.5 rounded-md bg-accent/20 text-accent text-[8px] font-bold uppercase tracking-widest animate-pulse">
+                    Milestone Near
+                  </span>
+                )}
+              </div>
+              <h2 className="text-4xl font-display font-bold text-foreground tracking-tighter leading-none uppercase transition-colors">
+                 {rankTitle}
+              </h2>
+           </div>
+        </div>
+
+        <div className="space-y-4">
+           <div className="flex justify-between text-[9px] font-bold uppercase tracking-widest text-muted-foreground/60 font-mono">
+              <span className="flex items-center gap-2">
+                <StarIcon className={isNearLevelUp ? "text-accent" : "text-primary"} /> 
+                XP_ACCUMULATED: {progress.currentXp} RZB
+              </span>
+              <span>Target_Node: {progress.nextLevelXp} RZB</span>
+           </div>
+           <div className="h-2.5 w-full bg-foreground/5 rounded-full overflow-hidden border border-border/50 p-0.5 relative">
+              <motion.div 
+                initial={{ width: 0 }} 
+                animate={{ width: `${progress.progressPercent}%` }} 
+                transition={{ duration: 2, ease: [0.16, 1, 0.3, 1] }}
+                className={cn(
+                  "h-full relative rounded-full transition-colors duration-1000",
+                  isNearLevelUp ? "bg-linear-to-r from-accent via-primary to-accent" : "bg-linear-to-r from-primary via-accent to-primary"
+                )}
+              >
+                 <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
+              </motion.div>
+           </div>
+        </div>
       </div>
 
-      <div className="space-y-4">
-         <div className="flex justify-between text-[9px] font-bold uppercase tracking-widest text-muted-foreground/60">
-            <span className="flex items-center gap-2">
-              <StarIcon className="text-primary h-3 w-3" /> 
-              XP: {progress.currentXp} RZB
+      <div className="bg-surface/40 backdrop-blur-xl border border-border/50 p-8 rounded-[2.5rem] flex items-center justify-between shadow-3xl group/artifacts transition-all hover:border-primary/30">
+         <div className="space-y-2">
+            <span className="block text-[9px] font-mono text-muted-foreground uppercase tracking-widest font-bold">
+              {dictionary.artifacts_title}
             </span>
-            <span>Next Rank: {progress.nextLevelXp} RZB</span>
+            <span className="text-3xl font-display font-bold text-foreground tracking-tighter">
+              {artifactsCount}<span className="text-muted-foreground/30">/33</span>
+            </span>
          </div>
-         <div className="h-2.5 w-full bg-foreground/5 rounded-full overflow-hidden border border-border/50 p-0.5">
-            <motion.div 
-              initial={{ width: 0 }} 
-              animate={{ width: `${progress.progressPercent}%` }} 
-              transition={{ duration: 2, ease: [0.16, 1, 0.3, 1] }}
-              className="h-full bg-linear-to-r from-primary via-accent to-primary relative rounded-full shadow-[0_0_20px_oklch(65%_0.25_270/0.2)]"
-            >
-               <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
-            </motion.div>
+         <div className="h-12 w-12 rounded-full border border-border flex items-center justify-center text-foreground/30 group-hover/artifacts:text-primary group-hover/artifacts:border-primary/40 transition-all cursor-help">
+            <Info size={20} className="group-hover/artifacts:scale-110 transition-transform" />
          </div>
       </div>
-    </div>
-
-    <div className="bg-surface/40 backdrop-blur-xl border border-border/50 p-8 rounded-[2.5rem] flex items-center justify-between shadow-3xl transition-colors duration-1000">
-       <div className="space-y-2">
-          <span className="block text-[9px] font-mono text-muted-foreground uppercase tracking-widest font-bold">
-            {dictionary.artifacts_title}
-          </span>
-          <span className="text-3xl font-display font-bold text-foreground tracking-tighter">
-            {artifactsCount}<span className="text-muted-foreground/50">/33</span>
-          </span>
-       </div>
-       <div className="h-12 w-12 rounded-full border border-border flex items-center justify-center text-foreground/50 hover:text-primary transition-colors cursor-help group">
-          <Info size={20} className="group-hover:scale-110 transition-transform" />
-       </div>
-    </div>
-  </header>
-));
+    </header>
+  );
+});
 RankHeader.displayName = 'RankHeader';
 
 // ============================================================================
-// 2. SUB-APARATO: HouseNav (Context Gating)
+// 3. SUB-APARATO: HouseNav (Silo Selection)
 // ============================================================================
 const HouseNav = memo(({ 
   activeHouse, 
@@ -178,7 +216,9 @@ export function ArtifactShowcase({ userXp, ownedIds = [], dictionary, className 
   /** 1. HANDSHAKE DE PROGRESIÓN (Reactor Core) */
   const progress = useMemo(() => calculateProgress(userXp), [userXp]);
 
-  /** 2. RESOLVER DE RANGO DINÁMICO (i18n Mapping) */
+  /** 2. RESOLVER DE RANGO DINÁMICO (i18n Mapping) 
+   * @pilar X: Performance - Memoizado para evitar lógica condicional innecesaria.
+   */
   const rankTitle = useMemo(() => {
     const lvl = progress.currentLevel;
     const r = dictionary.ranks;
@@ -191,12 +231,14 @@ export function ArtifactShowcase({ userXp, ownedIds = [], dictionary, className 
 
   /** PROTOCOLO HEIMDALL: Telemetría de Reputación */
   useEffect(() => {
-    const traceId = `p33_showcase_${Date.now().toString(36).toUpperCase()}`;
-    console.log(
-      `${C.magenta}${C.bold}[DNA][P33]${C.reset} Artifact Hub Sync | ` +
-      `Rank: ${C.cyan}${rankTitle}${C.reset} | Owned: ${ownedIds.length} | Trace: ${traceId}`
-    );
-  }, [progress.currentLevel, rankTitle, ownedIds.length]);
+    const traceId = `p33_hub_${Date.now().toString(36).toUpperCase()}`;
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(
+        `${C.magenta}${C.bold}[DNA][P33]${C.reset} Artifact Registry Sync | ` +
+        `Level: ${C.cyan}${progress.currentLevel}${C.reset} | Trace: ${traceId}`
+      );
+    }
+  }, [progress.currentLevel]);
 
   /** 3. MOTOR DE FILTRADO TÁCTICO (Data-Driven) */
   const filteredArtifacts = useMemo(() => {
@@ -207,7 +249,6 @@ export function ArtifactShowcase({ userXp, ownedIds = [], dictionary, className 
     setActiveHouse(h);
   }, []);
 
-  // Guardia de Resiliencia Final
   if (!dictionary) return null;
 
   return (
@@ -265,25 +306,16 @@ export function ArtifactShowcase({ userXp, ownedIds = [], dictionary, className 
 
       {/* Footer Informativo (Editorial Guidance) */}
       <footer className="pt-12 border-t border-border/50 flex flex-col md:flex-row items-center justify-between gap-8 opacity-60 hover:opacity-100 transition-all duration-700">
-          <div className="flex items-center gap-4">
-             <Hexagon size={24} className="text-primary animate-spin-slow" strokeWidth={1.5} />
+          <div className="flex items-center gap-4 group/journal cursor-pointer">
+             <Hexagon size={24} className="text-primary animate-spin-slow group-hover/journal:text-accent transition-colors" strokeWidth={1.5} />
              <p className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest leading-relaxed max-w-md">
-                Protocolo 33 activo. Consulte o <span className="text-foreground font-bold underline decoration-primary/30">Journal Editorial</span> para localizar pistas sobre os fragmentos latentes.
+                Protocolo 33 ativo. Consulte o <span className="text-foreground font-bold underline decoration-primary/30 group-hover/journal:decoration-accent transition-all">Journal Editorial</span> para localizar pistas sobre os fragmentos latentes.
              </p>
           </div>
-          <button className="group flex items-center gap-5 px-10 py-5 rounded-full bg-foreground text-background font-bold text-[10px] uppercase tracking-[0.4em] transition-all hover:bg-primary hover:text-white shadow-3xl active:scale-95">
-             Ascension Rank Ledger <ChevronRight size={16} className="transition-transform group-hover:translate-x-2" />
+          <button className="group/ledger flex items-center gap-5 px-10 py-5 rounded-full bg-foreground text-background font-bold text-[10px] uppercase tracking-[0.4em] transition-all hover:bg-primary hover:text-white shadow-3xl active:scale-95 transform-gpu">
+             Ascension Rank Ledger <ChevronRight size={16} className="transition-transform group-hover/ledger:translate-x-2" />
           </button>
       </footer>
     </div>
-  );
-}
-
-// --- ICONOS DE INFRAESTRUCTRURA ---
-function StarIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} fill="currentColor" viewBox="0 0 24 24">
-      <path d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.784 1.4 8.168L12 18.896l-7.334 3.866 1.4-8.168L.132 9.21l8.2-1.192L12 .587z" />
-    </svg>
   );
 }

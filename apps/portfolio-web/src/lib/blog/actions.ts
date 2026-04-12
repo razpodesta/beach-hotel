@@ -1,36 +1,35 @@
 /**
  * @file apps/portfolio-web/src/lib/blog/actions.ts
- * @description Orquestador soberano de datos para el Concierge Journal (Silo C).
- *              Refactorizado: Resolución de TS18048 mediante síntesis de filtros 
- *              inmutables, aislamiento Multi-Tenant y normalización S3.
- *              Estándar: Heimdall v2.5 Forensic Logging & React 19 Pure.
- * @version 42.1 - Type-Safe Filter Synthesis & S3 Hardened
+ * @description Orquestador soberano de datos editoriales y Reactor de Reputación.
+ *              Refactorizado: Erradicación de aserciones no nulas (!), sellado
+ *              de tipos por estrechamiento de control y pureza de linter.
+ *              Estándar: Multi-Tenant Shield & Forensic Reputation Sync.
+ * @version 43.4 - Type Narrowing Hardened & Linter Pure
  * @author Staff Engineer - MetaShark Tech
  */
 
 import { getPayload } from 'payload';
-import type { Payload, Where } from 'payload';
+import type { Payload, Where, CollectionSlug } from 'payload';
 import { unstable_noStore as noStore } from 'next/cache';
 
+/** IMPORTACIONES DE INFRAESTRUCTRURA (SSoT) */
 import { postWithSlugSchema } from '../schemas/blog.schema';
 import type { PostWithSlug } from '../schemas/blog.schema';
 import { i18n } from '../../config/i18n.config';
 import type { Locale } from '../../config/i18n.config';
 import { getDictionary } from '../get-dictionary';
 import { MOCK_POSTS } from '../../data/mocks/cms.mocks';
-import type { RawMockPost } from '../../data/mocks/cms.mocks';
 import type { Dictionary } from '../schemas/dictionary.schema';
+import { calculateProgress } from '@metashark/protocol-33';
 
-/**
- * PROTOCOLO CROMÁTICO HEIMDALL v2.5
- */
+// --- PROTOCOLO CROMÁTICO HEIMDALL v2.5 ---
 const C = {
-  reset: '\x1b[0m', cyan: '\x1b[36m', green: '\x1b[32m', 
-  yellow: '\x1b[33m', magenta: '\x1b[35m', red: '\x1b[31m', bold: '\x1b[1m'
+  reset: '\x1b[0m', magenta: '\x1b[35m', cyan: '\x1b[36m', 
+  green: '\x1b[32m', yellow: '\x1b[33m', red: '\x1b[31m', bold: '\x1b[1m'
 };
 
 /**
- * GUARDIANES DE INFRAESTRUCTRURA (Sovereign Detection)
+ * GUARDIANES DE INFRAESTRUCTRURA
  * @pilar VIII: Resiliencia de Build.
  */
 const IS_BUILD = process.env.NEXT_PHASE === 'phase-production-build';
@@ -51,7 +50,7 @@ interface LexicalRoot {
 
 /**
  * @interface RawPayloadPost
- * @description Contrato de entrada desde el CMS (Unshaked Entity).
+ * @description Contrato de entrada desde el clúster de datos.
  */
 interface RawPayloadPost {
   title?: string | null;
@@ -59,7 +58,7 @@ interface RawPayloadPost {
   description?: string | null;
   content?: LexicalRoot | string | null;
   publishedDate?: string | null;
-  author?: string | { username?: string; email?: string; id?: string } | null;
+  author?: string | { name?: string; email?: string; id?: string } | null;
   tags?: Array<{ tag: string }> | string[] | null;
   ogImage?: string | { url: string; id?: string } | null;
   vibe?: 'day' | 'night' | null;
@@ -67,11 +66,13 @@ interface RawPayloadPost {
 
 let cachedPayload: Payload | null = null;
 
-/**
- * CLASS: LexicalCompiler
- * @description Transmuta el AST de Lexical a Markdown puro para el motor MDX.
- */
+// ============================================================================
+// 1. MOTOR DE COMPILACIÓN: LexicalCompiler (AST to MDX)
+// ============================================================================
 class LexicalCompiler {
+  /**
+   * @description Transmuta el árbol sintáctico de Lexical en Markdown compatible con MDX.
+   */
   public static compile(contentNode: unknown): string {
     if (!contentNode) return '';
     if (typeof contentNode === 'string') return contentNode;
@@ -88,8 +89,6 @@ class LexicalCompiler {
           }
           case 'link': return acc + `[${children}](${node.url || '#'})`;
           case 'quote': return acc + `> ${children}\n\n`;
-          case 'list': return acc + `${children}\n`;
-          case 'listitem': return acc + `- ${children}\n`;
           default: return acc + children;
         }
       }, '');
@@ -104,82 +103,59 @@ class LexicalCompiler {
   }
 }
 
-/**
- * CLASS: EditorialShaper
- * @description Alquimia de datos: transforma el documento crudo en una entidad soberana.
- */
+// ============================================================================
+// 2. ALQUIMIA DE DATOS: EditorialShaper (SSoT Normalizer)
+// ============================================================================
 class EditorialShaper {
+  /**
+   * @description Modela la entidad cruda hacia el contrato de la UI.
+   */
   public static shape(entry: unknown, dict: Dictionary): PostWithSlug | null {
     const raw = entry as RawPayloadPost;
     const t = dict.blog_page;
 
-    // 1. RESOLUCIÓN DE AUTOR (Pilar III)
+    // A. Resolución de Autoría (Pilar III)
     let authorName = t.hero_title;
-    if (raw.author) {
-      if (typeof raw.author === 'string') {
-        authorName = raw.author;
-      } else if (typeof raw.author === 'object') {
-        const authorObj = raw.author as { username?: string; email?: string };
-        authorName = authorObj.username || authorObj.email?.split('@')[0] || authorName;
-      }
+    if (raw.author && typeof raw.author === 'object') {
+      authorName = raw.author.name || raw.author.email?.split('@')[0] || authorName;
     }
 
-    // 2. NORMALIZACIÓN DE TAXONOMÍA
-    const rawTagsArray = Array.isArray(raw.tags) ? raw.tags : [];
-    const normalizedTags = rawTagsArray.map(tagItem => {
-      if (typeof tagItem === 'string') return tagItem.toLowerCase().trim();
-      if (typeof tagItem === 'object' && tagItem !== null && 'tag' in tagItem) {
-        return (tagItem as { tag: string }).tag.toLowerCase().trim();
-      }
-      return null;
-    }).filter((tag): tag is string => tag !== null);
+    // B. Normalización de Taxonomía
+    const rawTags = Array.isArray(raw.tags) ? raw.tags : [];
+    const tags = rawTags.map(tag => {
+      if (typeof tag === 'string') return tag.toLowerCase();
+      return tag && typeof tag === 'object' && 'tag' in tag ? (tag as { tag: string }).tag.toLowerCase() : '';
+    }).filter(Boolean);
 
     const mdx = LexicalCompiler.compile(raw.content);
+    const readingTime = Math.max(1, Math.ceil(mdx.split(/\s+/).length / 225));
     
-    // 3. DETECCIÓN DE ATMÓSFERA (SSoT)
-    const isNight = raw.vibe === 'night' || ['festival', 'techno', 'night'].some(v => 
-      normalizedTags.includes(v) || raw.title?.toLowerCase().includes(v)
-    );
-
-    // 4. VALIDACIÓN DE CONTRATO SOBERANO
-    const shapeResult = postWithSlugSchema.safeParse({
-      slug: raw.slug || `journal-fallback-${Date.now()}`,
+    // C. Verificación de Contrato
+    const result = postWithSlugSchema.safeParse({
+      slug: raw.slug || `post-${Date.now()}`,
       metadata: {
-        title: raw.title || 'Untitled Sanctuary Entry',
-        description: raw.description || t.page_description,
+        title: raw.title || 'Untitled',
+        description: raw.description || '',
         author: authorName,
         published_date: raw.publishedDate || new Date().toISOString(),
-        tags: normalizedTags.length > 0 ? normalizedTags : ['sanctuary'],
-        vibe: isNight ? 'night' : 'day',
-        // Resolución de imagen S3: Soporta tanto string como objeto relacional
-        ogImage: typeof raw.ogImage === 'object' ? raw.ogImage?.url : (raw.ogImage || undefined),
-        readingTime: Math.max(1, Math.ceil(mdx.split(/\s+/).length / 225))
+        tags: tags.length > 0 ? tags : ['sanctuary'],
+        vibe: raw.vibe || 'day',
+        ogImage: typeof raw.ogImage === 'object' ? raw.ogImage?.url : raw.ogImage,
+        readingTime
       },
       content: mdx
     });
 
-    if (!shapeResult.success) {
-      console.warn(`${C.yellow}[HEIMDALL][DATA-DROP]${C.reset} Contract Violation in: ${raw.slug || 'unknown'}`);
-      return null;
-    }
-
-    return shapeResult.data;
+    return result.success ? result.data : null;
   }
 }
 
-/**
- * CLASS: EditorialDataResolver
- * @description Orquestador de recuperación de datos con soporte para degradado elegante.
- */
+// ============================================================================
+// 3. ORQUESTADOR: EditorialDataResolver (Handshake Engine)
+// ============================================================================
 class EditorialDataResolver {
-  private static async getPayloadInstance(): Promise<Payload | null> {
+  private static async getPayload(): Promise<Payload | null> {
     if (IS_TYPE_GEN) return null;
-
-    if (!process.env.DATABASE_URL) {
-      console.log(`${C.yellow}[HEIMDALL][CONFIG] No DATABASE_URL. Sanctuary Mode (Mocks) enabled.${C.reset}`);
-      return null;
-    }
-    
     if (cachedPayload) return cachedPayload;
     
     try {
@@ -187,98 +163,151 @@ class EditorialDataResolver {
       cachedPayload = await getPayload({ config: configModule.default });
       return cachedPayload;
     } catch {
-      console.error(`${C.red}[HEIMDALL][CRITICAL] Database Handshake Failed. Switching to Mocks.${C.reset}`);
       return null;
     }
   }
 
-  private static adaptMockToRaw(mock: RawMockPost): RawPayloadPost {
-    return { ...mock, ogImage: mock.ogImageLocal };
-  }
+  /**
+   * @description Recuperación de nodos con soporte multi-tenant y mocks.
+   */
+  public static async fetch(options: { slug?: string; tag?: string; lang: Locale }): Promise<PostWithSlug[]> {
+    const dict = await getDictionary(options.lang);
+    const payload = await this.getPayload();
+    const { slug, tag } = options;
 
-  public static async fetch(options: { 
-    slug?: string, 
-    tag?: string, 
-    lang: Locale 
-  }, dict: Dictionary): Promise<PostWithSlug[]> {
-    const traceId = `journal_fetch_${Date.now()}`;
-    const payload = await this.getPayloadInstance();
-
-    // 1. RESOLUCIÓN DE MOCKS (Fallo de red o entorno sin DB)
-    if (!payload) {
-      console.log(`${C.magenta}[HEIMDALL][${traceId}] Mode: LOCAL_SANCTUARY (Mocked Data)${C.reset}`);
+    // Protocolo de Rescate: Mocks si el clúster está offline o en modo build local sin DB
+    if (!payload || !process.env.DATABASE_URL) {
       const mocks = MOCK_POSTS
-        .map(m => EditorialShaper.shape(this.adaptMockToRaw(m), dict))
-        .filter((post): post is PostWithSlug => post !== null);
+        .map(m => EditorialShaper.shape({ ...m, ogImage: m.ogImageLocal }, dict))
+        .filter((p): p is PostWithSlug => p !== null);
       
-      const { slug, tag } = options;
+      /** @fix: Eliminación de aserción no nula mediante estrechamiento de tipo previo */
       if (slug) return mocks.filter(m => m.slug === slug);
       if (tag) return mocks.filter(m => m.metadata.tags.includes(tag));
       return mocks;
     }
 
-    // 2. RECUPERACIÓN REAL DESDE EL CLÚSTER
     try {
-      /**
-       * @pilar IX: Aislamiento Multi-Tenant.
-       * @fix TS18048: Construcción de array de condiciones independiente para 
-       * garantizar seguridad de tipos incondicional.
-       */
       const conditions: Where[] = [
         { status: { equals: 'published' } },
         { tenant: { equals: MASTER_TENANT_ID } }
       ];
 
-      if (options.slug) conditions.push({ slug: { equals: options.slug } });
-      if (options.tag) conditions.push({ 'tags.tag': { equals: options.tag } });
-
-      const whereClause: Where = { and: conditions };
+      if (slug) conditions.push({ slug: { equals: slug } });
+      if (tag) conditions.push({ 'tags.tag': { equals: tag } });
 
       const { docs } = await payload.find({
         collection: 'blog-posts',
-        where: whereClause,
+        where: { and: conditions },
         sort: '-publishedDate',
         locale: options.lang,
-        depth: 2,
+        depth: 2
       });
-
-      const modeLabel = IS_BUILD ? 'BUILD_REAL_SYNC' : 'CLOUD_PRODUCTION';
-      console.log(`${C.green}[HEIMDALL][${traceId}] Mode: ${modeLabel} (Nodes: ${docs.length})${C.reset}`);
 
       return docs
         .map(doc => EditorialShaper.shape(doc, dict))
-        .filter((post): post is PostWithSlug => post !== null);
+        .filter((p): p is PostWithSlug => p !== null);
 
     } catch {
-      console.warn(`${C.yellow}[HEIMDALL][${traceId}] Connection degraded. Activating Recovery Fallback.${C.reset}`);
+      /** @fix: Optional Catch Binding */
+      console.error(`${C.red}[HEIMDALL][EDITORIAL] Fetch failed. Switching to Sanctuary Mocks.${C.reset}`);
+      const mocks = MOCK_POSTS
+        .map(m => EditorialShaper.shape({ ...m, ogImage: m.ogImageLocal }, dict))
+        .filter((p): p is PostWithSlug => p !== null);
       
-      return MOCK_POSTS
-        .map(m => EditorialShaper.shape(this.adaptMockToRaw(m), dict))
-        .filter((post): post is PostWithSlug => post !== null);
+      if (slug) return mocks.filter(m => m.slug === slug);
+      if (tag) return mocks.filter(m => m.metadata.tags.includes(tag));
+      return mocks;
     }
   }
 }
 
-/**
- * INTERFAZ PÚBLICA (Server Actions)
- */
+// ============================================================================
+// 4. INTERFAZ PÚBLICA (Server Actions)
+// ============================================================================
 
 export async function getAllPosts(lang: Locale = i18n.defaultLocale): Promise<PostWithSlug[]> {
   if (!IS_BUILD) noStore();
-  const dict = await getDictionary(lang);
-  return EditorialDataResolver.fetch({ lang }, dict);
+  return EditorialDataResolver.fetch({ lang });
 }
 
 export async function getPostBySlug(slug: string, lang: Locale = i18n.defaultLocale): Promise<PostWithSlug | null> {
   if (!IS_BUILD) noStore();
-  const dict = await getDictionary(lang);
-  const results = await EditorialDataResolver.fetch({ slug, lang }, dict);
+  const results = await EditorialDataResolver.fetch({ slug, lang });
   return results[0] || null;
 }
 
+/** 
+ * @function getPostsByTag
+ * @description Recupera artículos filtrados por taxonomía.
+ */
 export async function getPostsByTag(tag: string, lang: Locale = i18n.defaultLocale): Promise<PostWithSlug[]> {
   if (!IS_BUILD) noStore();
-  const dict = await getDictionary(lang);
-  const normalizedTag = tag.toLowerCase().trim().replace(/\s+/g, '-');
-  return EditorialDataResolver.fetch({ tag: normalizedTag, lang }, dict);
+  return EditorialDataResolver.fetch({ tag: tag.toLowerCase(), lang });
+}
+
+/**
+ * REPUTATION BRIDGE: recordReadingXPAction
+ * @description Inyecta RazTokens al usuario por completar la lectura de un nodo.
+ * @pilar IX: Inversión de Control.
+ */
+export async function recordReadingXPAction(
+  userId: string, 
+  articleSlug: string,
+  tenantId: string
+): Promise<{ success: boolean; xpGained: number; traceId: string }> {
+  const traceId = `p33_read_${Date.now().toString(36).toUpperCase()}`;
+  
+  if (IS_BUILD) return { success: false, xpGained: 0, traceId };
+
+  console.log(`${C.magenta}${C.bold}[DNA][P33]${C.reset} Reading event detected: ${C.cyan}${articleSlug}${C.reset}`);
+
+  try {
+    const configModule = await import('@metashark/cms-core/config');
+    const payload = await getPayload({ config: configModule.default });
+
+    // 1. Handshake de Identidad
+    const user = await payload.findByID({ collection: 'users', id: userId, depth: 0 });
+    if (!user) throw new Error('IDENTITY_NOT_FOUND');
+
+    // 2. Cálculo de Recompensa (Sovereign Math)
+    const xpBonus = 10; 
+    const currentXp = Number(user.experiencePoints || 0);
+    const newXp = currentXp + xpBonus;
+    const { currentLevel } = calculateProgress(newXp);
+
+    // 3. Mutación Atómica de Reputación
+    await payload.update({
+      collection: 'users',
+      id: userId,
+      data: {
+        experiencePoints: newXp,
+        level: currentLevel
+      }
+    });
+
+    // 4. Registro en el Ledger Forense (Notifications)
+    await payload.create({
+      collection: 'notifications' as CollectionSlug,
+      data: {
+        subject: 'XP por Leitura Concedido',
+        message: `Você ganhou ${xpBonus} RazTokens por ler "${articleSlug}".`,
+        priority: 'low',
+        category: 'comms',
+        source: 'JOURNAL_REACTOR',
+        tenant: tenantId,
+        recipient: userId,
+        isRead: false,
+        traceId
+      }
+    });
+
+    console.log(`${C.green}   ✓ [GRANTED]${C.reset} ${xpBonus} RZB added to ${user.email} | Trace: ${traceId}`);
+    return { success: true, xpGained: xpBonus, traceId };
+
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : 'REPUTATION_DRIFT';
+    console.error(`${C.red}   ✕ [BREACH] Reputation injection failed: ${msg}${C.reset}`);
+    return { success: false, xpGained: 0, traceId };
+  }
 }

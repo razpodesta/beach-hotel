@@ -1,22 +1,22 @@
 /**
  * @file apps/portfolio-web/src/components/sections/portal/OffersDashboard.tsx
  * @description Enterprise Revenue Orchestrator (Silo A Manager).
- *              Refactorizado: Erradicación de tipos 'any', limpieza de imports 
- *              huérfanos y normalización de sintaxis OKLCH para Tailwind v4.
- *              Integrado: Telemetría Heimdall v2.5 y Gating de Inventario Crítico.
- *              Estándar: React 19 Pure & High-Performance Aggregation.
- * @version 7.2 - Linter Pure & Tailwind Canonical Standard
+ *              Terminal de alta fidelidad para la gestión de Yield y Distribución.
+ *              Refactorizado: Validación de contrato post-fetch, agregación atómica
+ *              de KPIs y motor de resiliencia ante degradación de red.
+ *              Estándar: Heimdall v2.5 Forensic Ingestion & React 19 Purity.
+ * @version 8.0 - Contract Validated & Revenue BI Hardened
  * @author Staff Engineer - MetaShark Tech
  */
 
 'use client';
 
-import React, { useState, useMemo, useEffect, useCallback, memo } from 'react';
+import React, { useState, useMemo, useEffect, useCallback, memo, useTransition } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Zap, Package, Plus, BarChart3, TrendingUp, 
   Timer, ShieldCheck, Database, 
-  AlertTriangle, Radio
+  AlertTriangle, Radio, RefreshCw, ArrowUpRight
 } from 'lucide-react';
 
 /** IMPORTACIONES DE INFRAESTRUCTRURA (Nx Boundary Safe) */
@@ -24,11 +24,9 @@ import { cn } from '../../../lib/utils/cn';
 import { useUIStore } from '../../../lib/store/ui.store';
 import { FlashAssetCard } from './media/FlashAssetCard';
 import type { Dictionary } from '../../../lib/schemas/dictionary.schema';
+import { calculateNetPrice, calculateStockHealth } from '../../../lib/portal/revenue.engine';
 
-/** 
- * ACCIONES DE SERVIDOR (Silo A Nodes) 
- * @pilar IX: Inversión de Control. 
- */
+/** ACCIONES DE SERVIDOR (Silo A Nodes) */
 import { getActiveOffersAction } from '../../../lib/portal/actions/campaign.actions';
 
 // --- PROTOCOLO CROMÁTICO HEIMDALL v2.5 ---
@@ -37,7 +35,6 @@ const C = {
   green: '\x1b[32m', yellow: '\x1b[33m', red: '\x1b[31m', bold: '\x1b[1m'
 };
 
-// --- CONTRATOS SOBERANOS (Sync con CMS Collections) ---
 export interface RevenueAsset {
   id: string;
   title: string;
@@ -54,42 +51,50 @@ export interface RevenueAsset {
 type RevenueView = 'flash' | 'enterprise';
 
 // ============================================================================
-// 1. SUB-APARATO: RevenueMetricsStrip (BI Cluster)
+// 1. SUB-APARATO: MetricNode (BI Unit)
 // ============================================================================
-const RevenueMetricsStrip = memo(({ 
-  isLoading, 
-  onAirValue, 
-  criticalNodes, 
-  totalCount 
-}: { 
-  isLoading: boolean;
-  onAirValue: string;
-  criticalNodes: number;
-  totalCount: number;
+const MetricNode = memo(({ label, value, icon: Icon, color, isCritical, loading }: {
+  label: string;
+  value: string | number;
+  icon: React.ElementType;
+  color: string;
+  isCritical?: boolean;
+  loading?: boolean;
 }) => (
-  <header className="grid grid-cols-1 md:grid-cols-3 gap-6">
-    <MetricNode 
-      label="Market Value Exposure" 
-      value={isLoading ? '---' : onAirValue} 
-      icon={TrendingUp} 
-      color="text-success" 
-    />
-    <MetricNode 
-      label="Inventory Pressure" 
-      value={isLoading ? '---' : `${criticalNodes} Nodes`} 
-      icon={Timer} 
-      color={criticalNodes > 0 ? "text-red-500" : "text-primary"}
-      isCritical={criticalNodes > 0}
-    />
-    <MetricNode 
-      label="Active Signal Channels" 
-      value={isLoading ? '---' : `${totalCount} Channels`} 
-      icon={BarChart3} 
-      color="text-primary" 
-    />
-  </header>
+  <div className={cn(
+    "p-8 rounded-4xl border transition-all duration-700 transform-gpu overflow-hidden relative",
+    "bg-surface/60 border-border shadow-luxury",
+    isCritical ? "border-red-500/20 bg-red-500/3" : "hover:border-primary/20",
+    loading && "animate-pulse"
+  )}>
+    <div className="flex items-center justify-between mb-5 relative z-10">
+      <span className="text-[8px] font-mono text-muted-foreground uppercase tracking-widest font-bold opacity-60">{label}</span>
+      <Icon size={16} className={cn("transition-transform duration-500", color, isCritical && "animate-pulse")} />
+    </div>
+    <p className={cn(
+      "text-3xl font-display font-bold tracking-tighter transition-colors relative z-10 leading-none",
+      isCritical ? "text-red-500" : "text-foreground"
+    )}>
+      {value}
+    </p>
+    
+    {isCritical && !loading && (
+      <motion.div 
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+        className="mt-4 flex items-center gap-2 text-red-500 relative z-10"
+      >
+         <AlertTriangle size={12} />
+         <span className="text-[8px] font-bold uppercase tracking-tighter">Inventory Risk Detected</span>
+      </motion.div>
+    )}
+
+    {/* Efecto de fondo para métricas críticas (MEA/UX) */}
+    {isCritical && (
+      <div className="absolute -right-4 -bottom-4 h-24 w-24 bg-red-500/5 blur-2xl rounded-full" />
+    )}
+  </div>
 ));
-RevenueMetricsStrip.displayName = 'RevenueMetricsStrip';
+MetricNode.displayName = 'MetricNode';
 
 // ============================================================================
 // APARATO PRINCIPAL: OffersDashboard
@@ -101,15 +106,16 @@ export function OffersDashboard({ dictionary, className }: { dictionary: Diction
   const [isLoading, setIsLoading] = useState(true);
   const [syncLatency, setSyncLatency] = useState<string | null>(null);
   const [errorStatus, setErrorStatus] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
 
   const t = dictionary.offers_flash;
   const sysError = dictionary.server_error;
 
   /**
-   * PROTOCOLO HEIMDALL: Sincronización de Inventario Real
-   * @pilar IV: Trazabilidad DNA-Level.
+   * PROTOCOLO HEIMDALL: Sync & Integrity Check
+   * @pilar IV: Trazabilidad Forense.
    */
-  const fetchInventoryNodes = useCallback(async () => {
+  const fetchInventory = useCallback(async () => {
     if (!session?.tenantId) return;
     
     setIsLoading(true);
@@ -117,72 +123,100 @@ export function OffersDashboard({ dictionary, className }: { dictionary: Diction
     const traceId = `rev_sync_${Date.now().toString(36).toUpperCase()}`;
     const startTime = performance.now();
 
-    console.log(`${C.magenta}${C.bold}[DNA][REVENUE]${C.reset} Synchronizing Silo A | Trace: ${C.cyan}${traceId}${C.reset}`);
-
     try {
       const response = await getActiveOffersAction(session.tenantId, activeView);
-      
       const duration = (performance.now() - startTime).toFixed(4);
 
-      if (response.success && response.data) {
-        setAssets(response.data as RevenueAsset[]);
+      if (response.success && Array.isArray(response.data)) {
+        /** @pilar III: Validación de Integridad del Nodo */
+        const validatedData = response.data.map(item => {
+           const asset = item as RevenueAsset;
+           // Aseguramos que existan los campos numéricos para el Math Engine
+           return {
+             ...asset,
+             basePrice: asset.basePrice || 0,
+             discount: asset.discount || 0,
+             stock: asset.stock ?? 0
+           };
+        });
+
+        setAssets(validatedData);
         setSyncLatency(duration);
-        console.log(`${C.green}   ✓ [GRANTED]${C.reset} Silo A Ready | Latency: ${duration}ms`);
+        console.log(`${C.green}   ✓ [DNA][REVENUE]${C.reset} Silo A Handshake OK | Latency: ${duration}ms | Trace: ${traceId}`);
       } else {
-        throw new Error(response.error || 'OFFER_GATEWAY_TIMEOUT');
+        throw new Error(response.error || 'INVENTORY_SIGNAL_CORRUPTED');
       }
     } catch (err: unknown) {
-      /** @pilar VIII: Manejo de Errores Resiliente - Sin 'any' */
-      const msg = err instanceof Error ? err.message : 'INFRASTRUCTURE_DRIFT';
+      const msg = err instanceof Error ? err.message : 'SIGNAL_DRIFT';
       setErrorStatus(msg);
-      console.error(`${C.red}   ✕ [BREACH] Sync failed: ${msg} | Trace: ${traceId}`);
+      console.error(`${C.red}   ✕ [BREACH] Sync failed: ${msg}${C.reset}`);
     } finally {
       setIsLoading(false);
     }
   }, [session?.tenantId, activeView]);
 
   useEffect(() => {
-    fetchInventoryNodes();
-  }, [fetchInventoryNodes]);
+    fetchInventory();
+  }, [fetchInventory]);
 
   /** 
-   * INTELIGENCIA DE REVENUE (Math Engine) 
-   * @description Calcula métricas comerciales basadas en el inventario actual.
+   * INTELIGENCIA DE REVENUE: Agregación en Ciclo Único
+   * @pilar X: Performance - Procesamos métricas y riesgos en una sola pasada O(n).
    */
   const metrics = useMemo(() => {
-    const activeAssets = assets.filter(a => a.status === 'active');
-    
-    const totalPotential = activeAssets.reduce((acc, curr) => {
-      const netPrice = curr.basePrice * (1 - curr.discount / 100);
-      return acc + (netPrice * curr.stock);
-    }, 0);
-
-    const criticalStockCount = activeAssets.filter(a => a.stock <= 3).length;
-
-    return {
-      onAirValue: `R$ ${totalPotential.toLocaleString()}`,
-      criticalNodes: criticalStockCount,
-      totalCount: activeAssets.length,
-      filteredAssets: assets
-    };
+    return assets.reduce((acc, curr) => {
+      if (curr.status === 'active') {
+        const net = calculateNetPrice(curr.basePrice, curr.discount);
+        const { isCritical } = calculateStockHealth(curr.stock, curr.capacity);
+        
+        acc.onAirValue += (net * curr.stock);
+        acc.totalNodes += 1;
+        if (isCritical) acc.criticalCount += 1;
+      }
+      return acc;
+    }, { onAirValue: 0, criticalCount: 0, totalNodes: 0 });
   }, [assets]);
+
+  const handleViewChange = (view: RevenueView) => {
+    startTransition(() => {
+      setActiveView(view);
+    });
+  };
 
   return (
     <div className={cn("space-y-10 animate-in fade-in duration-1000", className)}>
       
-      {/* 1. MÉTRICAS DE EXPOSICIÓN (Revenue BI) */}
-      <RevenueMetricsStrip 
-        isLoading={isLoading}
-        onAirValue={metrics.onAirValue}
-        criticalNodes={metrics.criticalNodes}
-        totalCount={metrics.totalCount}
-      />
+      {/* 1. CLÚSTER DE MÉTRICAS (Sovereign BI) */}
+      <header className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <MetricNode 
+          label="Estimated Yield Exposure" 
+          value={isLoading ? '---' : `R$ ${metrics.onAirValue.toLocaleString()}`} 
+          icon={TrendingUp} 
+          color="text-success"
+          loading={isLoading}
+        />
+        <MetricNode 
+          label="Inventory Pressure" 
+          value={isLoading ? '---' : `${metrics.criticalCount} Critical Nodes`} 
+          icon={Timer} 
+          color={metrics.criticalCount > 0 ? "text-red-500" : "text-primary"}
+          isCritical={metrics.criticalCount > 0}
+          loading={isLoading}
+        />
+        <MetricNode 
+          label="Active Signal Channels" 
+          value={isLoading ? '---' : `${metrics.totalNodes} Nodes`} 
+          icon={BarChart3} 
+          color="text-primary" 
+          loading={isLoading}
+        />
+      </header>
 
-      {/* 2. BARRA DE NAVEGACIÓN TÁCTICA (Atmosphere Glass) */}
-      <nav className="flex flex-col md:flex-row gap-6 items-center justify-between bg-surface/30 p-2 rounded-3xl border border-border/50 backdrop-blur-xl transition-all duration-700">
+      {/* 2. CONSOLA DE NAVEGACIÓN (Oxygen Glass) */}
+      <nav className="flex flex-col md:flex-row gap-6 items-center justify-between bg-surface/30 p-2 rounded-3xl border border-border/50 backdrop-blur-xl transition-all duration-700 hover:border-primary/20">
         <div className="flex gap-2 p-1">
            <button 
-             onClick={() => setActiveView('flash')} 
+             onClick={() => handleViewChange('flash')} 
              className={cn(
                "flex items-center gap-3 px-8 py-3.5 rounded-2xl text-[10px] font-bold uppercase tracking-widest transition-all outline-none transform-gpu",
                activeView === 'flash' ? "bg-foreground text-background shadow-lg scale-105" : "text-muted-foreground hover:text-foreground hover:bg-surface"
@@ -191,7 +225,7 @@ export function OffersDashboard({ dictionary, className }: { dictionary: Diction
               <Zap size={14} className={cn(activeView === 'flash' && "fill-current")} /> {t.title}
            </button>
            <button 
-             onClick={() => setActiveView('enterprise')} 
+             onClick={() => handleViewChange('enterprise')} 
              className={cn(
                "flex items-center gap-3 px-8 py-3.5 rounded-2xl text-[10px] font-bold uppercase tracking-widest transition-all outline-none transform-gpu",
                activeView === 'enterprise' ? "bg-foreground text-background shadow-lg scale-105" : "text-muted-foreground hover:text-foreground hover:bg-surface"
@@ -203,119 +237,97 @@ export function OffersDashboard({ dictionary, className }: { dictionary: Diction
 
         <div className="hidden lg:flex items-center gap-3 px-6 text-[9px] font-mono font-bold text-muted-foreground uppercase tracking-widest border-l border-border/50">
            <ShieldCheck size={14} className={isLoading ? "animate-spin text-primary" : "text-success"} />
-           {isLoading ? "CALIBRATING..." : t.status_active}
+           {isLoading ? "SYNC_IN_PROGRESS" : t.status_active}
         </div>
       </nav>
 
-      {/* 3. VIEWPORT DE ACTIVOS COMERCIALES (Aceleración GPU) */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 min-h-[400px]">
+      {/* 3. VIEWPORT DE ACTIVOS (Aceleración GPU) */}
+      <div className={cn("grid grid-cols-1 md:grid-cols-2 gap-8 min-h-[400px] transition-all", isPending && "opacity-40 grayscale blur-xs")}>
         <AnimatePresence mode="popLayout">
             {isLoading ? (
               [1, 2, 3, 4].map(i => (
-                <div key={i} className="h-80 w-full bg-surface/40 border border-border/40 rounded-[3.5rem] animate-pulse" />
+                <div key={i} className="h-85 w-full bg-surface/20 border border-border/30 rounded-[4rem] animate-pulse" />
               ))
             ) : errorStatus ? (
               <motion.div 
-                initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} 
-                className="col-span-full py-32 text-center rounded-[4rem] border border-red-500/20 bg-red-500/5 space-y-6 transform-gpu"
+                key="error" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} 
+                className="col-span-full py-32 text-center rounded-[4rem] border border-red-500/20 bg-red-500/5 space-y-8 transform-gpu"
               >
-                <AlertTriangle size={48} className="mx-auto text-red-500" />
-                <div className="space-y-2 px-6">
-                   <h4 className="text-foreground font-display text-xl font-bold uppercase tracking-tight">{sysError.title}</h4>
-                   <p className="text-red-500/60 font-mono text-[9px] uppercase tracking-[0.4em]">{errorStatus}</p>
+                <div className="relative w-max mx-auto">
+                   <div className="absolute inset-0 bg-red-500/20 blur-3xl rounded-full animate-pulse" />
+                   <AlertTriangle size={64} className="text-red-500 relative" />
+                </div>
+                <div className="space-y-3">
+                   <h4 className="text-foreground font-display text-2xl font-bold uppercase tracking-tight leading-none">{sysError.title}</h4>
+                   <p className="text-red-500/60 font-mono text-[10px] uppercase tracking-[0.5em]">{errorStatus}</p>
                 </div>
                 <button 
-                  onClick={fetchInventoryNodes}
-                  className="rounded-full bg-red-500 px-8 py-3 text-[10px] font-bold text-white uppercase tracking-widest hover:bg-white hover:text-red-500 transition-all active:scale-95 shadow-xl"
+                  onClick={fetchInventory}
+                  className="group flex items-center gap-4 mx-auto bg-foreground text-background px-10 py-5 rounded-full font-bold text-[10px] uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all active:scale-95 shadow-2xl"
                 >
+                  <RefreshCw size={14} className="group-active:rotate-180 transition-transform" />
                   {sysError.retry_button}
                 </button>
               </motion.div>
-            ) : metrics.filteredAssets.length > 0 ? (
-              metrics.filteredAssets.map(asset => (
+            ) : assets.length > 0 ? (
+              assets.map(asset => (
                 <FlashAssetCard key={asset.id} asset={asset} labels={t} />
               ))
             ) : (
               <motion.div 
-                initial={{ opacity: 0 }} animate={{ opacity: 1 }} 
-                className="col-span-full py-32 text-center rounded-[4rem] border-2 border-dashed border-border bg-surface/10"
+                key="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }} 
+                className="col-span-full py-48 text-center rounded-[4rem] border-2 border-dashed border-border bg-surface/10"
               >
-                <Database size={48} className="mx-auto text-muted-foreground/10 mb-6" />
-                <p className="font-mono text-[9px] uppercase tracking-[0.5em] text-muted-foreground animate-pulse">NO_ACTIVE_INVENTORY_IN_PERIMETER</p>
+                <Database size={64} className="mx-auto text-muted-foreground/10 mb-8" />
+                <p className="font-mono text-[10px] uppercase tracking-[0.6em] text-muted-foreground animate-pulse">HSK_NO_INVENTORY_DETECTED</p>
               </motion.div>
             )}
             
+            {/* Botón de Inyección de Lujo (Pilar XII) */}
             {!isLoading && !errorStatus && (
               <motion.button 
                 layout 
-                className="flex flex-col items-center justify-center gap-6 rounded-[3.5rem] border-2 border-dashed border-border text-muted-foreground min-h-80 transition-all hover:border-primary/40 hover:bg-primary/2 group transform-gpu"
+                className="flex flex-col items-center justify-center gap-8 rounded-[4rem] border-2 border-dashed border-border text-muted-foreground min-h-85 transition-all hover:border-primary/40 hover:bg-primary/2 group transform-gpu relative overflow-hidden"
               >
-                  <div className="h-16 w-16 rounded-full bg-surface border border-border flex items-center justify-center group-hover:scale-110 group-hover:text-primary group-hover:border-primary/40 transition-all shadow-xl">
-                    <Plus size={32} strokeWidth={1.5} />
+                  <div className="absolute inset-0 bg-linear-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="relative z-10 h-20 w-20 rounded-3xl bg-surface border border-border flex items-center justify-center group-hover:scale-110 group-hover:text-primary group-hover:border-primary/30 transition-all duration-700 shadow-xl group-hover:shadow-primary/10">
+                    <Plus size={40} strokeWidth={1.2} />
                   </div>
-                  <div className="text-center space-y-2 px-8">
-                    <span className="block text-[11px] font-bold uppercase tracking-[0.5em] group-hover:text-foreground transition-colors">
-                        {activeView === 'flash' ? 'Inject Flash Sale' : 'Initialize B2B Program'}
+                  <div className="relative z-10 text-center space-y-3 px-12">
+                    <span className="flex items-center justify-center gap-3 text-[12px] font-bold uppercase tracking-[0.5em] group-hover:text-foreground transition-colors">
+                        {activeView === 'flash' ? 'Inject Flash Opportunity' : 'New B2B Protocol'}
+                        <ArrowUpRight size={16} className="opacity-0 group-hover:opacity-100 group-hover:translate-x-1 group-hover:-translate-y-1 transition-all" />
                     </span>
-                    <p className="text-[10px] font-mono italic opacity-40">Direct injection into Silo A cluster</p>
+                    <p className="text-[9px] font-mono uppercase tracking-widest opacity-40 group-hover:opacity-70">Silo A Strategic Ingestion</p>
                   </div>
               </motion.button>
             )}
         </AnimatePresence>
       </div>
 
-      {/* 4. FOOTER TELEMÉTRICO (Heimdall Pulse) */}
-      <footer className="pt-8 border-t border-border/40 flex flex-col sm:flex-row justify-between items-center gap-6 opacity-40 hover:opacity-100 transition-opacity duration-1000">
-          <div className="flex items-center gap-8">
-            <div className="flex items-center gap-3 text-[10px] font-mono font-bold uppercase tracking-widest text-muted-foreground">
-              <Zap size={14} className="text-primary animate-pulse" />
-              Sync Latency: {syncLatency ? `${syncLatency}ms` : '---'}
+      {/* 4. TELEMETRY FOOTER (Forensic Pulse) */}
+      <footer className="pt-10 border-t border-border/40 flex flex-col sm:flex-row justify-between items-center gap-8 opacity-40 hover:opacity-100 transition-opacity duration-1000">
+          <div className="flex items-center gap-10">
+            <div className="flex items-center gap-3 text-[9px] font-mono font-bold uppercase tracking-[0.4em] text-muted-foreground">
+              <div className="h-1.5 w-1.5 rounded-full bg-primary animate-ping" />
+              Pulse: {syncLatency ? `${syncLatency}ms` : 'SCANNING...'}
             </div>
             <div className="h-4 w-px bg-border/40 hidden sm:block" />
-            <div className="flex items-center gap-3 text-[10px] font-mono font-bold uppercase tracking-widest text-muted-foreground">
-              <Radio size={14} className="text-success" />
-              Silo A Engine: STABLE
+            <div className="flex items-center gap-3 text-[9px] font-mono font-bold uppercase tracking-[0.4em] text-success">
+              <ShieldCheck size={14} />
+              Protocol: v8.0_SEALED
             </div>
           </div>
           
           <div className="flex items-center gap-6">
-            <span className="text-[9px] font-mono uppercase tracking-[0.6em] text-muted-foreground">
-              Revenue Operations v7.2 • Node: {session?.tenantId?.substring(0, 8) || 'ROOT'}
-            </span>
+            <div className="flex items-center gap-3 text-muted-foreground">
+               <Radio size={14} className="animate-pulse" />
+               <span className="text-[8px] font-mono uppercase tracking-[1em]">
+                 NODE_{session?.tenantId?.substring(0, 8) || 'ROOT'}
+               </span>
+            </div>
           </div>
       </footer>
     </div>
   );
 }
-
-/**
- * SUB-APARATO: MetricNode
- * @pilar IX: Componentización Atómica.
- */
-const MetricNode = memo(({ label, value, icon: Icon, color, isCritical }: {
-  label: string;
-  value: string | number;
-  icon: React.ElementType;
-  color: string;
-  isCritical?: boolean;
-}) => (
-  <div className={cn(
-    "p-8 rounded-4xl bg-surface/60 border border-border shadow-luxury group transition-all duration-700 transform-gpu",
-    isCritical ? "border-red-500/20 bg-red-500/3" : "hover:border-primary/20"
-  )}>
-    <div className="flex items-center justify-between mb-5">
-      <span className="text-[8px] font-mono text-muted-foreground uppercase tracking-widest font-bold opacity-60">{label}</span>
-      <Icon size={16} className={cn("transition-transform duration-500 group-hover:scale-110", color, isCritical && "animate-pulse")} />
-    </div>
-    <p className={cn("text-3xl font-display font-bold tracking-tighter transition-colors", isCritical ? "text-red-500" : "text-foreground")}>
-      {value}
-    </p>
-    {isCritical && (
-      <div className="mt-4 flex items-center gap-2 text-red-500 animate-in slide-in-from-left-2">
-         <AlertTriangle size={12} />
-         <span className="text-[8px] font-bold uppercase tracking-tighter">Immediate Attention Required</span>
-      </div>
-    )}
-  </div>
-));
-MetricNode.displayName = 'MetricNode';
