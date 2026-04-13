@@ -1,9 +1,10 @@
 /**
  * @file apps/portfolio-web/scripts/sovereign-prebuild.ts
  * @description Sovereign Infrastructure Orchestrator (MACS & Schema Engine).
- *              Sincroniza diccionarios y sintetiza tipos de Payload CMS,
- *              garantizando la integridad total del contrato SSoT antes del build.
- * @version 17.0 - Hardened Synthesis & Forensic Logging
+ *              Refactorizado: Protección contra Build-Deadlock en Vercel.
+ *              La síntesis de tipos ahora es un proceso de desarrollo local/CI explícito,
+ *              bloqueado en Vercel para evitar fallos de ejecución en entorno estático.
+ * @version 18.0 - Vercel Build Immune
  * @author Staff Engineer - MetaShark Tech
  */
 
@@ -21,7 +22,7 @@ const __dirname = dirname(__filename);
 const ROOT_DIR = resolve(__dirname, '../../..');
 const APP_DIR = resolve(__dirname, '..');
 
-// --- PROTOCOLO CROMÁTICO HEIMDALL v3.5 ---
+// --- PROTOCOLO CROMÁTICO HEIMDALL v3.6 ---
 const C = {
   reset: '\x1b[0m', magenta: '\x1b[35m', cyan: '\x1b[36m', 
   green: '\x1b[32m', yellow: '\x1b[33m', red: '\x1b[31m', 
@@ -31,19 +32,22 @@ const C = {
 /**
  * @function synthesizePayloadTypes
  * @description Fase 1: Generación imperativa del contrato de tipos TS.
- * @pilar VII: Resiliencia - Implementa Fail-Fast y Watchdog.
+ * @pilar VII: Resiliencia - Implementa Fail-Fast y Guardia de Entorno Vercel.
  */
 async function synthesizePayloadTypes(): Promise<void> {
   const start = performance.now();
+  
+  // Guardián de aislamiento: Vercel build es estático, no debe ejecutar CLI de Payload
+  if (process.env.VERCEL === '1') {
+    console.log(`${C.magenta}${C.bold}[DNA][SCHEMA]${C.reset} Entorno Vercel detectado. Saltando síntesis de tipos.`);
+    return;
+  }
+
   console.log(`${C.magenta}${C.bold}[DNA][SCHEMA]${C.reset} Iniciando síntesis de tipos de Payload...`);
   
   try {
     const configPath = 'packages/cms/core/src/payload.generate.config.ts';
     
-    /**
-     * @note Orquestación del subproceso.
-     * timeout: 180000 (3 min) para prevenir cuelgues en Vercel.
-     */
     execSync('pnpm payload generate:types', {
       stdio: 'inherit',
       cwd: ROOT_DIR,
@@ -73,7 +77,6 @@ async function synthesizePayloadTypes(): Promise<void> {
 /**
  * @function buildDictionaries
  * @description Fase 2: Ensamblaje de la narrativa (MACS Engine).
- * @pilar X: Performance - Procesamiento concurrente de perímetros.
  */
 async function buildDictionaries(): Promise<void> {
   const start = performance.now();
@@ -101,7 +104,6 @@ async function buildDictionaries(): Promise<void> {
 
       fileContents.forEach(({ name, data }) => { accumulator[name] = data; });
 
-      // Auditoría de Contrato con reporte forense
       const validation = dictionarySchema.safeParse(accumulator);
       if (!validation.success) {
         console.error(`\n${C.red}${C.bold}✖ ERROR DE CONTRATO EN [${locale}]:${C.reset}`);
@@ -117,7 +119,6 @@ async function buildDictionaries(): Promise<void> {
 
     const duration = (performance.now() - start).toFixed(2);
     console.log(`${C.green}   ✓ [OK] MACS completada | Latencia: ${duration}ms${C.reset}`);
-
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : 'Unknown Content Drift';
     console.error(`\n${C.red}${C.bold}✖ [CRITICAL] FALLO EN SÍNTESIS DE CONTENIDO:${C.reset}`);
@@ -127,19 +128,16 @@ async function buildDictionaries(): Promise<void> {
 }
 
 /**
- * MOTOR SUPREMO (Entry Point)
+ * MOTOR SUPREMO
  */
 async function runSovereignPrebuild() {
   const engineStart = performance.now();
   
   console.log(`\n${C.cyan}${C.bold}====================================================${C.reset}`);
-  console.log(`${C.cyan}${C.bold}       SOVEREIGN PREBUILD ENGINE v17.0              ${C.reset}`);
+  console.log(`${C.cyan}${C.bold}       SOVEREIGN PREBUILD ENGINE v18.0              ${C.reset}`);
   console.log(`${C.cyan}${C.bold}====================================================${C.reset}`);
 
-  // 1. Sello de Contrato (Tipos)
   await synthesizePayloadTypes();
-  
-  // 2. Sello de Narrativa (Diccionarios)
   await buildDictionaries();
 
   const total = (performance.now() - engineStart).toFixed(2);
