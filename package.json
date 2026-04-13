@@ -13,7 +13,7 @@
   "scripts": {
     "dev": "nx serve portfolio-web",
     "build": "nx build portfolio-web --configuration=production",
-    "vercel-build": "pnpm run build",
+    "vercel-build": "nx vercel-build portfolio-web",
     "prebuild:web": "tsx apps/portfolio-web/scripts/sovereign-prebuild.ts",
     "sync:types": "tsx scripts/sync-payload-types.ts",
     "lint": "nx run-many --target=lint --all --parallel=1",
