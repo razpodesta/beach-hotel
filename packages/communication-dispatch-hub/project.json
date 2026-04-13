@@ -1,9 +1,22 @@
 {
-  "name": "communication-dispatch-hub",
+  "name": "@metashark/communication-dispatch-hub",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/communication-dispatch-hub/src",
   "projectType": "library",
-  "tags": ["scope:shared", "layer:infrastructure", "domain:communications"],
-  "// targets": "to see all targets run: nx show project communication-dispatch-hub --web",
-  "targets": {}
+  "tags": [
+    "scope:shared", 
+    "layer:infrastructure", 
+    "domain:communications"
+  ],
+  "targets": {
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc -p packages/communication-dispatch-hub/tsconfig.lib.json --noEmit"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
 }

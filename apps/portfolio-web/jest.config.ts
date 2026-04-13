@@ -65,7 +65,7 @@ export default {
     '^@metashark/cms-ui$': '<rootDir>/../../packages/cms/ui/src/index.ts',
     
     // --- LÓGICA COMPARTIDA ---
-    '^@metashark/protocol-33$': '<rootDir>/../../packages/protocol-33/src/index.ts',
+    '^@metashark/reputation-engine$': '<rootDir>/../../packages/protocol-33/src/index.ts',
     '^@metashark/auth-shield$': '<rootDir>/../../packages/auth-shield/src/index.ts',
     
     // --- SEGURIDAD E INFRAESTRUCTURA ---

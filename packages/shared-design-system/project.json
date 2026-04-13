@@ -1,0 +1,22 @@
+{
+  "name": "@metashark/shared-design-system",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/shared-design-system/src",
+  "projectType": "library",
+  "tags": [
+    "scope:shared", 
+    "layer:presentation", 
+    "type:ui-kit"
+  ],
+  "targets": {
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc -p packages/shared-design-system/tsconfig.lib.json --noEmit"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

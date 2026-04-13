@@ -20,7 +20,7 @@ import type { Locale } from '../../config/i18n.config';
 import { getDictionary } from '../get-dictionary';
 import { MOCK_POSTS } from '../../data/mocks/cms.mocks';
 import type { Dictionary } from '../schemas/dictionary.schema';
-import { calculateProgress } from '@metashark/protocol-33';
+import { calculateProgress } from '@metashark/reputation-engine';
 
 // --- PROTOCOLO CROMÁTICO HEIMDALL v2.5 ---
 const C = {

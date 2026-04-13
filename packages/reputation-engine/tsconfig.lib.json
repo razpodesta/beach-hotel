@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    /**
+     * @description Redireccionamos la salida técnica al perímetro correcto en /dist.
+     */
+    "outDir": "../../dist/packages/reputation-engine",
+    "rootDir": "src",
+    "composite": true,
+    "noEmit": false,
+    "emitDeclarationOnly": false,
+    "tsBuildInfoFile": "../../dist/packages/reputation-engine/tsconfig.lib.tsbuildinfo"
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["**/*.spec.ts", "**/*.test.ts"]
+}

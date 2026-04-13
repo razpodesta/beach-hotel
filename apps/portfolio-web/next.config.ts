@@ -28,7 +28,7 @@ const nextConfig: NextConfig = {
   transpilePackages: [
     '@metashark/cms-core',
     '@metashark/cms-ui',
-    '@metashark/protocol-33',
+    '@metashark/reputation-engine',
     '@metashark/auth-shield',
     '@metashark/identity-gateway',
   ],

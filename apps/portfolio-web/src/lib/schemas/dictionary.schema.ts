@@ -5,7 +5,7 @@
  *              Refactorizado: Sincronización con las versiones niveladas de los 
  *              sub-esquemas (About v3, AdminMedia v3, AI Synth v7, Suites v6).
  * 
- * @version 31.0 - SSoT Type-Safe Final Seal
+ * @version 32.0 - IAM Module Link Restored
  * @author Staff Engineer - MetaShark Tech
  * 
  * @pilar III: Seguridad de Tipos - Inferencia obligatoria desde contratos de Silo.
@@ -23,11 +23,13 @@ import { systemStatusSchema } from './system_status.schema';
 import { visitorHudSchema } from './visitor_hud.schema';
 import { languageSwitcherSchema } from './language_switcher.schema';
 import { portalSchema } from './portal.schema';
-import { adminMediaSchema } from './admin_media.schema'; // Nivelado v3.0
+import { adminMediaSchema } from './admin_media.schema';
 import { gamificationSchema } from './gamification.schema';
 
-/** 2. EXTERNAL SOVEREIGN SCHEMAS (Library Driven) */
-import { identityDictionarySchema } from '@metashark/identity-gateway';
+/** 2. EXTERNAL AUTHENTICATED SCHEMAS (Library Driven) 
+ * @fix TS2307: Enlace actualizado al nuevo nodo industrial IAM.
+ */
+import { identityDictionarySchema } from '@metashark/identity-access-management';
 
 /** 3. SILO A: REVENUE & SALES ENGINE */
 import { flashSalesSchema } from './offers/flash_sales.schema';
@@ -47,14 +49,14 @@ import { commsHubSchema } from './comms/hub.schema';
 /** 7. EXPERIENCE APPARATUS & NARRATIVES */
 import { heroSchema } from './hero.schema';
 import { blogPageSchema } from './blog.schema';
-import { suiteGallerySchema } from './suite_gallery.schema'; // Nivelado v6.0
+import { suiteGallerySchema } from './suite_gallery.schema';
 import { quienesSomosSchema } from './quienes_somos.schema';
 import { legalPageSchema } from './legal_page.schema';
 import { notFoundSchema, maintenanceSchema, serverErrorSchema } from './not_found.schema';
-import { aboutSectionSchema } from './about_section.schema'; // Nivelado v3.0
+import { aboutSectionSchema } from './about_section.schema';
 import { historySectionSchema } from './history_section.schema';
 import { valuePropositionSectionSchema } from './value_proposition.schema';
-import { aiGallerySectionSchema } from './homepage.schema'; // Nivelado v7.0
+import { aiGallerySectionSchema } from './homepage.schema';
 import { festivalPageSchema } from './festival_experience.schema';
 import { missionVisionSchema } from './mission_vision.schema';
 import { contactMessagesSchema } from './contact.schema';
@@ -76,7 +78,7 @@ export const dictionarySchema = z.object({
   visitor_hud: visitorHudSchema,
   language_switcher: languageSwitcherSchema,
   portal: portalSchema,
-  admin_media: adminMediaSchema, // Sync: Confirm Delete, MIME Filters & Empty States.
+  admin_media: adminMediaSchema,
   gamification: gamificationSchema,
   newsletter_form: newsletterFormSchema, 
 
@@ -100,9 +102,9 @@ export const dictionarySchema = z.object({
   
   // --- EXPERIENCE DOMAINS (The Sanctuary) ---
   hero: heroSchema,
-  about: aboutSectionSchema, // Sync: image_url support.
+  about: aboutSectionSchema,
   value_proposition: valuePropositionSectionSchema,
-  ai_gallery_section: aiGallerySectionSchema, // Sync: items_metadata Mapping logic.
+  ai_gallery_section: aiGallerySectionSchema,
   history: historySectionSchema,
   festival: festivalPageSchema,
   quienes_somos: quienesSomosSchema,
@@ -110,7 +112,7 @@ export const dictionarySchema = z.object({
   contact: contactMessagesSchema,
   contact_page: contactPageSchema,
   blog_page: blogPageSchema,
-  suite_gallery: suiteGallerySchema, // Sync: Dynamic category_filters.
+  suite_gallery: suiteGallerySchema,
   profile_page: profilePageSchema,
   lucide_page: libraryPageSchema,
   project_details: projectDetailsDictionarySchema,

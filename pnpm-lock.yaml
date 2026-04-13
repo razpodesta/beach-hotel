@@ -387,12 +387,12 @@ importers:
       '@metashark/cms-ui':
         specifier: workspace:*
         version: link:../../packages/cms/ui
-      '@metashark/identity-gateway':
+      '@metashark/identity-access-management':
         specifier: workspace:*
-        version: link:../../packages/identity-gateway
-      '@metashark/protocol-33':
+        version: link:../../packages/identity-access-management
+      '@metashark/reputation-engine':
         specifier: workspace:*
-        version: link:../../packages/protocol-33
+        version: link:../../packages/reputation-engine
       next:
         specifier: 15.2.9
         version: 15.2.9(@babel/core@7.29.0)(@playwright/test@1.59.1)(babel-plugin-macros@3.1.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(sass@1.99.0)
@@ -426,9 +426,9 @@ importers:
 
   packages/cms/core:
     dependencies:
-      '@metashark/protocol-33':
+      '@metashark/reputation-engine':
         specifier: workspace:*
-        version: link:../../protocol-33
+        version: link:../../reputation-engine
       '@payloadcms/db-postgres':
         specifier: 3.80.0
         version: 3.80.0(payload@3.80.0(graphql@16.13.2)(typescript@5.9.3))
@@ -466,7 +466,31 @@ importers:
         specifier: ^2.3.0
         version: 2.8.1
 
-  packages/identity-gateway:
+  packages/communication-dispatch-hub:
+    dependencies:
+      tslib:
+        specifier: ^2.3.0
+        version: 2.8.1
+
+  packages/customer-relationship-logic:
+    dependencies:
+      tslib:
+        specifier: ^2.3.0
+        version: 2.8.1
+
+  packages/data-ingestion-service:
+    dependencies:
+      tslib:
+        specifier: ^2.3.0
+        version: 2.8.1
+
+  packages/hospitality-business-logic:
+    dependencies:
+      tslib:
+        specifier: ^2.3.0
+        version: 2.8.1
+
+  packages/identity-access-management:
     dependencies:
       '@hookform/resolvers':
         specifier: ^3.3.4
@@ -499,7 +523,67 @@ importers:
         specifier: ^4.1.12
         version: 4.3.6
 
-  packages/protocol-33:
+  packages/internationalization-registry:
+    dependencies:
+      tslib:
+        specifier: ^2.3.0
+        version: 2.8.1
+
+  packages/partner-management-system:
+    dependencies:
+      tslib:
+        specifier: ^2.3.0
+        version: 2.8.1
+
+  packages/reputation-engine:
+    dependencies:
+      tslib:
+        specifier: ^2.3.0
+        version: 2.8.1
+
+  packages/revenue-engine:
+    dependencies:
+      tslib:
+        specifier: ^2.3.0
+        version: 2.8.1
+
+  packages/seo-metadata-orchestrator:
+    dependencies:
+      tslib:
+        specifier: ^2.3.0
+        version: 2.8.1
+
+  packages/shared-design-system:
+    dependencies:
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
+      framer-motion:
+        specifier: ^12.0.0
+        version: 12.38.0(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      lucide-react:
+        specifier: ^0.474.0
+        version: 0.474.0(react@19.2.4)
+      react:
+        specifier: ^19.0.0
+        version: 19.2.4
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.2.4(react@19.2.4)
+      tailwind-merge:
+        specifier: ^3.0.0
+        version: 3.5.0
+      tslib:
+        specifier: ^2.3.0
+        version: 2.8.1
+
+  packages/storage-adapter-layer:
+    dependencies:
+      tslib:
+        specifier: ^2.3.0
+        version: 2.8.1
+
+  packages/telemetry-observability-service:
     dependencies:
       tslib:
         specifier: ^2.3.0
@@ -525,6 +609,24 @@ importers:
       react-dom:
         specifier: ^19.0.0
         version: 19.2.4(react@19.2.4)
+      tslib:
+        specifier: ^2.3.0
+        version: 2.8.1
+
+  packages/webgl-rendering-engine:
+    dependencies:
+      gl-matrix:
+        specifier: ^3.4.3
+        version: 3.4.4
+      postprocessing:
+        specifier: '>=6.30.0'
+        version: 6.39.0(three@0.181.2)
+      react:
+        specifier: ^19.0.0
+        version: 19.2.4
+      three:
+        specifier: '>=0.170.0'
+        version: 0.181.2
       tslib:
         specifier: ^2.3.0
         version: 2.8.1
@@ -8901,6 +9003,11 @@ packages:
   lru-cache@7.18.3:
     resolution: {integrity: sha512-jumlc0BIUrS3qJGgIkWZsyfAM7NCWiBcCDhnd+3NNM5KbBmLTgHVfWBcg6W+rLUsIpzpERPsvwUP7CckAQSOoA==}
     engines: {node: '>=12'}
+
+  lucide-react@0.474.0:
+    resolution: {integrity: sha512-CmghgHkh0OJNmxGKWc0qfPJCYHASPMVSyGY8fj3xgk4v84ItqDg64JNKFZn5hC6E0vHi6gxnbCgwhyVB09wQtA==}
+    peerDependencies:
+      react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
   lucide-react@0.552.0:
     resolution: {integrity: sha512-g9WCjmfwqbexSnZE+2cl21PCfXOcqnGeWeMTNAOGEfpPbm/ZF4YIq77Z8qWrxbu660EKuLB4nSLggoKnCb+isw==}
@@ -23024,6 +23131,10 @@ snapshots:
       yallist: 3.1.1
 
   lru-cache@7.18.3: {}
+
+  lucide-react@0.474.0(react@19.2.4):
+    dependencies:
+      react: 19.2.4
 
   lucide-react@0.552.0(react@19.2.4):
     dependencies:

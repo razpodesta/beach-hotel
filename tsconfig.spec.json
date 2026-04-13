@@ -1,33 +1,63 @@
+/**
+ * @file tsconfig.spec.json (Root)
+ * @description Orquestador de Tipos para la Infraestructura de Calidad y Scripts.
+ *              Versión 9.0 - Build Isolation & Conflict Resolution.
+ * 
+ * @pilar V: Adherencia Arquitectónica - Sincronía con la red de 12 nodos @metashark.
+ * @pilar XIII: Soberanía de Artefactos - Aislamiento de metadatos de validación.
+ */
 {
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    /* 
-       ENTORNO DE PRUEBAS GLOBAL
-       Configuración específica para que el IDE y Jest procesen los 
-       archivos de orquestación de pruebas en la raíz del monorepo.
-    */
+    /* --- 1. ENTORNO DE EJECUCIÓN (JEST/NODE) --- */
     "module": "commonjs",
     "moduleResolution": "node",
-    "types": ["jest", "node"],
+    "target": "es2022",
+    "types": ["jest", "node", "react", "react-dom"],
     "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "allowJs": true,
-    
-    /* 
-       PILAR XIII: PUREZA DE SOURCE
-       Bloqueamos la emisión física para evitar la creación de la carpeta 
-       redundante 'dist/out-tsc/jest' desde la raíz. La compilación de 
-       tests se gestiona de forma atómica en cada proyecto.
-    */
+    "jsx": "react-jsx",
+
+    /* --- 2. GOBERNANZA DE EMISIÓN (Pilar XIII) --- */
+    /**
+     * @fix: Resolución de conflicto estructural.
+     * Desactivamos 'composite' en este nodo de utilidad para permitir 'noEmit: true'
+     * y evitar la generación de basura técnica en el directorio raíz.
+     */
+    "composite": false,
     "noEmit": true,
-    "composite": true
+    "incremental": true,
+    
+    /**
+     * @description Redirección de telemetría de compilación a la zona industrial.
+     */
+    "tsBuildInfoFile": "./dist/out-tsc/root-tests.tsbuildinfo",
+    
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true
   },
+  
+  /* --- 3. PERÍMETRO DE COBERTURA --- */
   "include": [
     "jest.config.ts",
     "jest.preset.js",
-    "scripts/debug-test-paths.js"
+    "scripts/**/*.ts",
+    "scripts/**/*.mjs",
+    "tests/**/*.ts",
+    "tests/**/*.tsx",
+    /**
+     * @description Visibilidad sobre los contratos de los Silos para 
+     * validación cruzada en el motor de pruebas.
+     */
+    "packages/**/src/**/*.ts",
+    "packages/**/src/**/*.tsx"
   ],
+
   "exclude": [
     "node_modules", 
-    "dist"
+    "dist",
+    "apps/portfolio-web/.next"
   ]
 }

@@ -1,0 +1,25 @@
+{
+  "name": "@metashark/identity-access-management",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/identity-access-management/src",
+  "projectType": "library",
+  "tags": [
+    "scope:shared", 
+    "layer:security", 
+    "domain:identity",
+    "type:ui-kit"
+  ],
+  "targets": {
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc -p packages/identity-access-management/tsconfig.lib.json --noEmit",
+        "forwardAllArgs": true
+      },
+      "dependsOn": ["^typecheck"]
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

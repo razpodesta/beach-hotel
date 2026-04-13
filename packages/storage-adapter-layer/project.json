@@ -1,0 +1,22 @@
+{
+  "name": "@metashark/storage-adapter-layer",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/storage-adapter-layer/src",
+  "projectType": "library",
+  "tags": [
+    "scope:shared", 
+    "layer:infrastructure", 
+    "type:storage"
+  ],
+  "targets": {
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc -p packages/storage-adapter-layer/tsconfig.lib.json --noEmit"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

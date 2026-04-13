@@ -1,0 +1,22 @@
+{
+  "name": "@metashark/partner-management-system",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/partner-management-system/src",
+  "projectType": "library",
+  "tags": [
+    "scope:shared", 
+    "layer:domain", 
+    "domain:partners"
+  ],
+  "targets": {
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc -p packages/partner-management-system/tsconfig.lib.json --noEmit"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

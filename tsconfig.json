@@ -1,39 +1,58 @@
+/**
+ * @file tsconfig.json (Root)
+ * @description Orquestador Maestro de Referencias del Monorepo MetaShark.
+ *              Versión 9.0 - Lego Infrastructure & Solution-Style Orchestration.
+ * 
+ * @pilar V: Adherencia Arquitectónica - Grafo de dependencias 100% sincronizado.
+ * @pilar IX: Desacoplamiento - Estructura por capas (Domain, Infra, UI).
+ * @pilar XIII: Soberanía de Artefactos - Bloqueo de emisión en el nodo raíz.
+ */
 {
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
     "baseUrl": ".",
     "rootDir": ".",
-    "noEmit": true
+    /**
+     * @description No emitimos código desde la raíz para mantener la pureza 
+     * del directorio /dist segmentado por proyecto.
+     */
+    "noEmit": true,
+    "composite": false
   },
   "files": [],
   "include": [],
   "references": [
-    {
-      "path": "./packages/auth-shield"
-    },
-    {
-      "path": "./packages/protocol-33"
-    },
-    {
-      "path": "./packages/testing-utils"
-    },
-    {
-      "path": "./packages/cms/core"
-    },
-    {
-      "path": "./packages/cms/ui"
-    },
-    {
-      "path": "./apps/portfolio-web"
-    },
-    {
-      "path": "./tests"
-    },
-    {
-      "path": "./scripts"
-    },
-    {
-      "path": "./packages/identity-gateway"
-    }
+    /* --- 1. APLICACIONES & ORQUESTADORES --- */
+    { "path": "./apps/portfolio-web" },
+    { "path": "./scripts" },
+    { "path": "./tests" },
+
+    /* --- 2. NÚCLEO DE DATOS Y EXPERIENCIA (CMS) --- */
+    { "path": "./packages/cms/core" },
+    { "path": "./packages/cms/ui" },
+
+    /* --- 3. LÓGICA DE NEGOCIO (DOMAIN LAYER) --- */
+    { "path": "./packages/customer-relationship-logic" },
+    { "path": "./packages/hospitality-business-logic" },
+    { "path": "./packages/reputation-engine" },
+    { "path": "./packages/revenue-engine" },
+    { "path": "./packages/partner-management-system" },
+
+    /* --- 4. INFRAESTRUCTRURA Y ADAPTADORES (INFRA LAYER) --- */
+    { "path": "./packages/auth-shield" },
+    { "path": "./packages/identity-access-management" },
+    { "path": "./packages/communication-dispatch-hub" },
+    { "path": "./packages/data-ingestion-service" },
+    { "path": "./packages/seo-metadata-orchestrator" },
+    { "path": "./packages/internationalization-registry" },
+    { "path": "./packages/storage-adapter-layer" },
+    { "path": "./packages/telemetry-observability-service" },
+
+    /* --- 5. PRESENTACIÓN Y VISUALES (UI LAYER) --- */
+    { "path": "./packages/shared-design-system" },
+    { "path": "./packages/webgl-rendering-engine" },
+
+    /* --- 6. UTILITIES & TESTING --- */
+    { "path": "./packages/testing-utils" }
   ]
 }

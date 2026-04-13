@@ -1,0 +1,22 @@
+{
+  "name": "@metashark/seo-metadata-orchestrator",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/seo-metadata-orchestrator/src",
+  "projectType": "library",
+  "tags": [
+    "scope:shared", 
+    "layer:infrastructure", 
+    "type:seo"
+  ],
+  "targets": {
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc -p packages/seo-metadata-orchestrator/tsconfig.lib.json --noEmit"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

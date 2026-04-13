@@ -1,5 +1,5 @@
 {
-  "name": "tests",
+  "name": "@metashark/tests",
   "$schema": "../node_modules/nx/schemas/project-schema.json",
   "projectType": "library",
   "tags": ["scope:tests", "type:testing"],
@@ -18,6 +18,9 @@
         "command": "tsc -p tests/tsconfig.json --noEmit",
         "forwardAllArgs": true
       }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
     }
   }
 }

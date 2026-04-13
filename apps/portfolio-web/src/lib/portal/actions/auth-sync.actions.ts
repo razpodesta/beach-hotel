@@ -19,7 +19,7 @@ import { getPayload } from 'payload';
  * @pilar V: Adherencia Arquitectónica. Resolución vía Paths de tsconfig.
  */
 import type { SovereignRoleType } from '@metashark/cms-core';
-import { calculateProgress } from '@metashark/protocol-33';
+import { calculateProgress } from '@metashark/reputation-engine';
 
 /**
  * DETECTORES DE ESTADO DE INFRAESTRUCTRURA

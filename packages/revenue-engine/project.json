@@ -1,0 +1,22 @@
+{
+  "name": "@metashark/revenue-engine",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/revenue-engine/src",
+  "projectType": "library",
+  "tags": [
+    "scope:shared", 
+    "layer:domain", 
+    "domain:revenue"
+  ],
+  "targets": {
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc -p packages/revenue-engine/tsconfig.lib.json --noEmit"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

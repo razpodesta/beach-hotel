@@ -297,7 +297,7 @@ Strict ESM: Se normalizaron todas las importaciones internas de los paquetes añ
 C. Infraestructura de Tipos (TSConfig & Monorepo):
 Resolución TS5083 (Rutas Fantasma): Se corrigió la herencia de tsconfig.json en cms-core y cms-ui, apuntando a la raíz absoluta del monorepo (../../../tsconfig.base.json).
 Resolución TS6305 (The Build-First Trap): Se amputó el array de references y se desactivó el modo composite en apps/portfolio-web/tsconfig.json. Esto obliga al compilador a consumir el código fuente vivo (src/*.ts) vía paths, eliminando el error de "Output file has not been built".
-Refactorización de Gamificación: Se niveló @metashark/protocol-33 para exportar el tipo Artifact, resolviendo el error TS2724 y permitiendo tipado estricto en el iterador de ArtifactShowcase.tsx.
+Refactorización de Gamificación: Se niveló @metashark/reputation-engine para exportar el tipo Artifact, resolviendo el error TS2724 y permitiendo tipado estricto en el iterador de ArtifactShowcase.tsx.
 D. Sincronización de Contratos (MACS Engine):
 Handshake de Diccionarios: Se detectó una fractura de contrato en los JSONs de auth_portal. Se inyectaron 12 llaves faltantes (label_name, login_cta, success_registration_title, etc.) en inglés, español y portugués, permitiendo que el script sovereign-prebuild.ts complete la síntesis sin errores de Zod.
 3. VEREDICTO TÉCNICO

@@ -1,0 +1,22 @@
+{
+  "name": "@metashark/internationalization-registry",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/internationalization-registry/src",
+  "projectType": "library",
+  "tags": [
+    "scope:shared", 
+    "layer:infrastructure", 
+    "type:i18n"
+  ],
+  "targets": {
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc -p packages/internationalization-registry/tsconfig.lib.json --noEmit"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

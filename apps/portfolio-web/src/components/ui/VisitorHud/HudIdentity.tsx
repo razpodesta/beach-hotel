@@ -13,7 +13,7 @@
 import React, { useMemo, useEffect, memo } from 'react';
 import { motion } from 'framer-motion';
 import { User, Trophy, Star, TrendingUp } from 'lucide-react';
-import { calculateProgress } from '@metashark/protocol-33';
+import { calculateProgress } from '@metashark/reputation-engine';
 
 /**
  * IMPORTACIONES DE INFRAESTRUCTRURA (Nx Boundary Safe)

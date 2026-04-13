@@ -15,7 +15,7 @@ import { createServerClient } from '@supabase/ssr';
 
 /** IMPORTACIONES DE INFRAESTRUCTRURA (Nx Boundary Safe) */
 import { i18n, isValidLocale, type Locale } from '../../../config/i18n.config';
-import { calculateProgress } from '@metashark/protocol-33';
+import { calculateProgress } from '@metashark/reputation-engine';
 
 const IS_BUILD_ENV = 
   process.env.NEXT_PHASE === 'phase-production-build' || 

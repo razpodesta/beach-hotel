@@ -1,0 +1,22 @@
+{
+  "name": "@metashark/telemetry-observability-service",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/telemetry-observability-service/src",
+  "projectType": "library",
+  "tags": [
+    "scope:shared", 
+    "layer:infrastructure", 
+    "type:telemetry"
+  ],
+  "targets": {
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc -p packages/telemetry-observability-service/tsconfig.lib.json --noEmit"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

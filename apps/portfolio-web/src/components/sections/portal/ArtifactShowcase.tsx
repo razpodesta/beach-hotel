@@ -34,7 +34,7 @@ import {
   calculateProgress, 
   type House,
   type Artifact 
-} from '@metashark/protocol-33';
+} from '@metashark/reputation-engine';
 
 import { cn } from '../../../lib/utils/cn';
 import { ArtifactCard } from './ArtifactCard';

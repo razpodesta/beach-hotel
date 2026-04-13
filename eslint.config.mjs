@@ -1,26 +1,24 @@
 /**
  * @file eslint.config.mjs
- * @description Constitución de Calidad Estática y Gobernanza del Monorepo.
- *              Refactorizado para Build-Time Isolation y Boundary Compliance.
- *              Implementa:
- *              1. Definición estricta de Scopes reales (metashark, cms, shared).
- *              2. Permisos explícitos para dependencias inter-capa (gamification, security).
- *              3. Blindaje del Espejo de Calidad (Tests).
- * @version 7.0 - Identity Gateway Frontier Sync
- * @author Raz Podestá - MetaShark Tech
+ * @description Constitución de Calidad Estática y Gobernanza del Monorepo MetaShark.
+ *              Versión 10.0 - Lego Architecture & Multi-Layer Security.
+ * 
+ * @pilar V: Adherencia Arquitectónica - Control de fronteras entre Silos.
+ * @pilar IX: Desacoplamiento - Aislamiento estricto de capas de presentación.
+ * @pilar X: Higiene de Código - Erradicación de tipos laxos y variables huérfanas.
  */
 
 import nxPlugin from '@nx/eslint-plugin';
 
 export default [
-  // --- CAPA 1: FUNDACIÓN ---
+  // --- CAPA 1: FUNDACIÓN (Nx Ecosystem) ---
   ...nxPlugin.configs['flat/base'],
   ...nxPlugin.configs['flat/typescript'],
   ...nxPlugin.configs['flat/javascript'],
 
-  // --- CAPA 2: EXCLUSIONES GLOBALES ---
+  // --- CAPA 2: EXCLUSIONES GLOBALES (Higiene de Build & Asset Protection) ---
   {
-    ignores:[
+    ignores: [
       '**/node_modules',
       '**/dist',
       '**/.next',
@@ -28,85 +26,131 @@ export default [
       '**/coverage',
       '**/test-output',
       '**/tmp',
-      '**/*.d.ts'
+      '**/*.d.ts',
+      'apps/portfolio-web/public/video',
+      'apps/portfolio-web/public/fonts'
     ],
   },
 
-  // --- CAPA 3: EL GUARDIÁN DE LA ARQUITECTURA (FRONTERAS SOBERANAS) ---
+  // --- CAPA 3: EL GUARDIÁN DE FRONTERAS SOBERANAS (RBAC para Código) ---
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
     rules: {
-      '@nx/enforce-module-boundaries':[
+      '@nx/enforce-module-boundaries': [
         'error',
         {
           enforceBuildableLibDependency: true,
-          // Autorización explícita para dependencias fundamentales del ecosistema
-          allow:[
+          // Lista Blanca de Protocolos Externos Autorizados (SSoT)
+          allow: [
             'react', 
             'react-dom', 
             'next', 
             'payload', 
             'zod', 
             'framer-motion',
-            // @fix: Autorizamos a Supabase a cruzar fronteras sin fricción del Linter
+            'lucide-react',
             '@supabase/supabase-js',
-            '@supabase/ssr'
+            '@supabase/ssr',
+            'gl-matrix', // Motor WebGL
+            'xlsx',      // Ingestión de Datos (Alchemy)
+            'sharp'      // Procesamiento de Imágenes
           ],
-          depConstraints:[
-            // 1. FRONTEND WEB (App)
-            // Sincronizado con project.json -> "tags":["scope:metashark"]
+          depConstraints: [
+            // 1. APLICACIÓN WEB (Orquestador Supremo)
+            // Posee autoridad total sobre todas las capas del ecosistema.
             {
               sourceTag: 'scope:metashark',
-              onlyDependOnLibsWithTags:[
+              onlyDependOnLibsWithTags: [
                 'scope:shared', 
                 'scope:cms',
-                'layer:data', 
-                'layer:security',     // Consumo autorizado para @metashark/identity-gateway
+                'layer:domain', 
+                'layer:infrastructure', 
                 'layer:presentation',
-                'layer:gamification',
-                'layer:infrastructure'
+                'layer:security'
               ],
             },
-            // 2. NÚCLEO CMS (Data & UI)
-            // Sincronizado con project.json -> "tags": ["scope:cms"]
+
+            // 2. CAPA DE SEGURIDAD (IAM - Identity & Access Management)
+            // Solo depende de infraestructura base para comunicación con Supabase/Auth.
             {
-              sourceTag: 'scope:cms',
-              onlyDependOnLibsWithTags:[
-                'scope:shared',
-                'scope:cms',          // Permite la comunicación entre cms-core y cms-ui
-                'layer:data',
-                'layer:security',     // Requerido por cms-core para auth-shield & identity-gateway
-                'layer:gamification', // Requerido por cms-core para protocol-33
-                'layer:presentation'
-              ],
-            },
-            // 3. LIBRERÍAS COMPARTIDAS (Shared - Ej: Identity Gateway)
-            // Sincronizado con project.json -> "tags": ["scope:shared"]
-            {
-              sourceTag: 'scope:shared',
-              onlyDependOnLibsWithTags:[
+              sourceTag: 'layer:security',
+              onlyDependOnLibsWithTags: [
                 'scope:shared',
                 'layer:infrastructure',
-                'layer:security',     // Permite que identity-gateway consuma auth-shield
-                'layer:gamification',
-                'layer:presentation', // @fix: Permite que librerías compartidas consuman UI pura
                 'layer:util'
               ],
             },
-            // 4. ESPEJO DE CALIDAD (Tests)
-            // Permite que la infraestructura de testing audite cualquier capa
+
+            // 3. CAPA DE PRESENTACIÓN (UI Kit / WebGL Rendering Engine)
+            // Aislamiento Total: Solo puede depender de sí misma o de utilidades.
+            // Prohibido importar de Domain o Infrastructure para asegurar portabilidad extrema.
+            {
+              sourceTag: 'layer:presentation',
+              onlyDependOnLibsWithTags: [
+                'scope:shared',
+                'layer:presentation',
+                'layer:util'
+              ],
+            },
+
+            // 4. CAPA DE DOMINIO (Business Logic: Revenue, Reputation, CRM, Hospitality)
+            // Puede consumir infraestructura (Adaptadores) y el perímetro de seguridad.
+            {
+              sourceTag: 'layer:domain',
+              onlyDependOnLibsWithTags: [
+                'scope:shared',
+                'layer:domain',
+                'layer:infrastructure',
+                'layer:security'
+              ],
+            },
+
+            // 5. CAPA DE INFRAESTRUCTRURA (Adapters: Comms, Storage, SEO, I18n, Telemetry)
+            // Es la base del sistema. No puede depender de capas superiores.
+            {
+              sourceTag: 'layer:infrastructure',
+              onlyDependOnLibsWithTags: [
+                'scope:shared',
+                'layer:infrastructure',
+                'layer:util'
+              ],
+            },
+
+            // 6. NÚCLEO DE DATOS (CMS Core Registry)
+            {
+              sourceTag: 'scope:cms',
+              onlyDependOnLibsWithTags: [
+                'scope:shared',
+                'scope:cms',
+                'layer:data',
+                'layer:security',
+                'layer:domain'
+              ],
+            },
+
+            // 7. ESPEJO DE CALIDAD (Tests)
+            // El auditor tiene visibilidad de 360 grados sobre el monorepo.
             {
               sourceTag: 'scope:tests',
-              onlyDependOnLibsWithTags:[
-                'scope:metashark',
-                'scope:cms',
-                'scope:shared',
-                'type:testing'
-              ],
+              onlyDependOnLibsWithTags: ['*'], 
             }
           ],
         },
       ],
+      
+      // --- REGLAS DE RIGOR TÉCNICO METASHARK (Pilar III & X) ---
+      '@typescript-eslint/no-explicit-any': 'error',
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { 
+          'argsIgnorePattern': '^_', 
+          'varsIgnorePattern': '^_' 
+        }
+      ],
+      // Autorizamos logs jerárquicos para el Protocolo Heimdall
+      'no-console': ['warn', { 
+        allow: ['warn', 'error', 'info', 'group', 'groupEnd', 'table'] 
+      }]
     },
   },
 ];

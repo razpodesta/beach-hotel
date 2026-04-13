@@ -19,7 +19,7 @@
     /**
      * @pilar IX: Delegación de Compilación (Pure Source-First).
      * Desactivamos 'composite' y eliminamos 'references' para que el compilador
-     * resuelva dependencias internas (como @metashark/protocol-33) directamente 
+     * resuelva dependencias internas (como @metashark/reputation-engine) directamente 
      * desde sus archivos fuente .ts definidos en los paths de la base.
      */
     "composite": false,

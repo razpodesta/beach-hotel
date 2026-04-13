@@ -42,6 +42,6 @@
   ]
   /**
    * @fix TS6305: Se eliminan las 'references'.
-   * La resolución de @metashark/protocol-33 ahora es 100% via paths (Source-First).
+   * La resolución de @metashark/reputation-engine ahora es 100% via paths (Source-First).
    */
 }

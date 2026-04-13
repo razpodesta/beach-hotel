@@ -14,7 +14,7 @@ import {
   type Where, 
   type CollectionBeforeChangeHook 
 } from 'payload';
-import { calculateProgress } from '@metashark/protocol-33';
+import { calculateProgress } from '@metashark/reputation-engine';
 
 /** 
  * IMPORTACIONES DE PERÍMETRO SOBERANO

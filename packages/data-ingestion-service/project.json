@@ -1,0 +1,22 @@
+{
+  "name": "@metashark/data-ingestion-service",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/data-ingestion-service/src",
+  "projectType": "library",
+  "tags": [
+    "scope:shared", 
+    "layer:infrastructure", 
+    "domain:intelligence"
+  ],
+  "targets": {
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc -p packages/data-ingestion-service/tsconfig.lib.json --noEmit"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

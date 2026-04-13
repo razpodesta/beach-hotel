@@ -1,62 +1,73 @@
 /**
- * @file jest.config.ts
+ * @file jest.config.ts (Root)
  * @description Orquestador Maestro de Pruebas (The Quality Mirror Hub).
- *              Refactorizado: Migración a "Async Configuration" para compatibilidad 
- *              con Nx 22+ y resolución del error de tipos TS2724.
- *              Soberanía: Delegación total del descubrimiento de proyectos al 
- *              motor dinámico de Nx para evitar registros huérfanos.
- * @version 9.0 - Async Discovery & SSoT Project Mapping
- * @author Staff Engineer - MetaShark Tech
+ *              Versión 10.0 - Lego Infrastructure & Async Discovery Engine.
+ * 
+ * @pilar I: Visión Holística - Punto de entrada único para la validación del ecosistema.
+ * @pilar V: Adherencia Arquitectónica - Sincronía total con el Espejo de Calidad.
+ * @pilar IX: Desacoplamiento - Delegación del grafo de proyectos a Nx.
+ * @pilar X: Performance - Resolución paralela de configuraciones de proyecto.
  */
 
 import { getJestProjectsAsync } from '@nx/jest';
 
 /**
  * @function rootJestConfig
- * @description Factoría de configuración asíncrona para Jest.
- * @pilar X: Performance - Permite que Nx resuelva el grafo de proyectos en paralelo.
+ * @description Factoría de configuración asíncrona innegociable para MetaShark Tech.
  */
 export default async () => ({
   /**
-   * @pilar I: Visión Holística.
-   * Identificador único para el reporte consolidado del monorepo.
+   * @description Identificador único para el reporte consolidado de auditoría.
    */
-  displayName: '@metashark/monorepo',
+  displayName: '@metashark/monorepo-validator',
   
   /**
-   * @pilar V: Adherencia Arquitectónica.
-   * Hereda las transformaciones SWC y mapeos de alias del preset central.
+   * @description Herencia de transformaciones SWC y mapeos de la Constitución de Caminos.
    */
   preset: './jest.preset.js',
 
   /**
-   * @pilar IV: Observabilidad (Heimdall).
-   * Los artefactos de cobertura se centralizan para auditorías de CI/CD.
+   * @description Centralización de artefactos de cobertura (SSoT de Calidad).
+   * Facilita la inyección de reportes en herramientas de auditoría externa.
    */
   coverageDirectory: './test-output/jest/coverage',
 
   /**
-   * @description Estrategia de búsqueda de especificaciones.
-   * Mantiene soporte para el "Espejo de Calidad" y pruebas atómicas internas.
+   * @description Estrategia de búsqueda de especificaciones (The Mirror Logic).
+   * 1. Busca tests internos en apps y paquetes (Unitarios).
+   * 2. Busca tests en la carpeta raíz /tests (Integración / Espejo).
    */
   testMatch: [
-    '<rootDir>/src/**/__tests__/**/*.[jt]s?(x)',
-    '<rootDir>/src/**/*(*.)@(spec|test).[jt]s?(x)',
+    '<rootDir>/apps/**/*(*.)@(spec|test).[jt]s?(x)',
+    '<rootDir>/packages/**/*(*.)@(spec|test).[jt]s?(x)',
     '<rootDir>/tests/**/*(*.)@(spec|test).[jt]s?(x)'
   ],
 
   /**
    * @description Matriz Dinámica de Proyectos.
-   * @pilar IX: Desacoplamiento de Infraestructura.
-   * @fix TS2724: Uso de la API asíncrona requerida por Nx 22.
-   * Eliminamos la lista manual para que Nx descubra automáticamente 
-   * todos los jest.config.ts (incluyendo el nuevo identity-gateway).
+   * @pilar IX: Inversión de Control.
+   * Nx descubre automáticamente todos los jest.config.ts de los 12 nuevos nodos,
+   * incluyendo 'identity-access-management' y 'reputation-engine' renombrados.
    */
   projects: await getJestProjectsAsync(),
 
   /**
    * @pilar VIII: Resiliencia de Infraestructura.
-   * Evita fallos si un nodo del grafo aún no posee archivos de prueba.
+   * Evita el colapso del pipeline si un nodo del grafo aún es una cáscara sin tests.
    */
   passWithNoTests: true,
+
+  /**
+   * @description Reporte de ejecución.
+   */
+  reporters: [
+    'default',
+    [
+      'jest-junit',
+      {
+        outputDirectory: './test-output/jest',
+        outputName: 'results.xml',
+      },
+    ],
+  ],
 });

@@ -1,0 +1,53 @@
+/**
+ * @file packages/identity-access-management/tsconfig.json
+ * @description Orquestador de Tipos Soberano para Identity & Access Management (IAM).
+ *              Refactorizado: Sincronización de rutas físicas post-renombramiento.
+ * @version 2.0 - IAM Path Synchronized & TS 6.0 Compliance
+ * @author Staff Engineer - MetaShark Tech
+ */
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    /**
+     * @pilar XIII: Sincronización de Infraestructura.
+     * Silenciamos advertencias de baseUrl para compatibilidad con TS 5.9+.
+     */
+    "ignoreDeprecations": "5.0",
+    
+    /* PILAR V: ADHERENCIA ARQUITECTÓNICA (Grafo Soberano) */
+    "composite": true,
+    "incremental": true,
+    
+    /**
+     * @pilar XIII: Soberanía de Artefactos.
+     * Aislamiento físico de metadatos en la zona industrial /dist.
+     */
+    "tsBuildInfoFile": "../../dist/packages/identity-access-management/tsconfig.tsbuildinfo",
+    
+    /**
+     * PILAR IX: DELEGACIÓN DE COMPILACIÓN (Dual-Mode)
+     * Emitimos declaraciones (.d.ts) para que el IDE y los procesos de fondo 
+     * reconozcan el contrato de IAM sin procesar binarios JS.
+     */
+    "noEmit": false,
+    "emitDeclarationOnly": true,
+    "declaration": true,
+    "declarationMap": true,
+
+    "baseUrl": ".",
+    "rootDir": "src",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "types": ["node", "react", "react-dom"],
+
+    "noFallthroughCasesInSwitch": true
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "exclude": [
+    "node_modules", 
+    "dist", 
+    "jest.config.ts", 
+    "**/*.spec.ts", 
+    "**/*.spec.tsx"
+  ]
+}

@@ -18,7 +18,7 @@ import type { StateStorage } from 'zustand/middleware';
  * IMPORTACIONES DE INFRAESTRUCTRURA (SSoT)
  * @pilar V: Adherencia Arquitectónica.
  */
-import { calculateProgress } from '@metashark/protocol-33';
+import { calculateProgress } from '@metashark/reputation-engine';
 import type { SovereignRoleType } from '@metashark/cms-core';
 
 /**

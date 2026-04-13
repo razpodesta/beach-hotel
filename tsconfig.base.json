@@ -9,6 +9,11 @@
     "moduleResolution": "bundler",
     "moduleDetection": "force",
     "verbatimModuleSyntax": true,
+    /**
+     * @pilar III: Seguridad de Tipos y Motores Gráficos.
+     * Garantiza comportamiento estándar de campos de clase (Crucial para WebGL 2.0).
+     */
+    "useDefineForClassFields": true,
     "lib": ["esnext", "dom", "dom.iterable"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
@@ -32,17 +37,36 @@
     "noFallthroughCasesInSwitch": true,
     "baseUrl": ".",
     "paths": {
+      /* --- 1. APLICACIÓN PRINCIPAL --- */
       "@/*": ["apps/portfolio-web/src/*"],
+
+      /* --- 2. NÚCLEO DE DATOS Y EXPERIENCIA (Estables) --- */
       "@metashark/cms-core": ["packages/cms/core/src/index.ts"],
       "@metashark/cms-core/config": ["packages/cms/core/src/payload.config.ts"],
       "@metashark/cms-ui": ["packages/cms/ui/src/index.ts"],
-      "@metashark/protocol-33": ["packages/protocol-33/src/index.ts"],
+
+      /* --- 3. LÓGICA DE NEGOCIO (Domain Layer) --- */
+      "@metashark/customer-relationship-logic": ["packages/customer-relationship-logic/src/index.ts"],
+      "@metashark/hospitality-business-logic": ["packages/hospitality-business-logic/src/index.ts"],
+      "@metashark/reputation-engine": ["packages/reputation-engine/src/index.ts"],
+      "@metashark/revenue-engine": ["packages/revenue-engine/src/index.ts"],
+
+      /* --- 4. INFRAESTRUCTRURA Y ADAPTADORES (Infra Layer) --- */
       "@metashark/auth-shield": ["packages/auth-shield/src/index.ts"],
-      "@metashark/identity-gateway": ["packages/identity-gateway/src/index.ts"],
-      "@metashark/testing-utils": ["packages/testing-utils/src/index.ts"],
-      "@metashark/communication-dispatch-hub": [
-        "packages/communication-dispatch-hub/src/index.ts"
-      ]
+      "@metashark/communication-dispatch-hub": ["packages/communication-dispatch-hub/src/index.ts"],
+      "@metashark/data-ingestion-service": ["packages/data-ingestion-service/src/index.ts"],
+      "@metashark/identity-access-management-management": ["packages/identity-access-management/src/index.ts"],
+      "@metashark/internationalization-registry": ["packages/internationalization-registry/src/index.ts"],
+      "@metashark/seo-metadata-orchestrator": ["packages/seo-metadata-orchestrator/src/index.ts"],
+      "@metashark/storage-adapter-layer": ["packages/storage-adapter-layer/src/index.ts"],
+      "@metashark/telemetry-observability-service": ["packages/telemetry-observability-service/src/index.ts"],
+
+      /* --- 5. PRESENTACIÓN Y VISUALES (UI Layer) --- */
+      "@metashark/shared-design-system": ["packages/shared-design-system/src/index.ts"],
+      "@metashark/webgl-rendering-engine": ["packages/webgl-rendering-engine/src/index.ts"],
+
+      /* --- 6. CALIDAD Y TESTING (Estable) --- */
+      "@metashark/testing-utils": ["packages/testing-utils/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp", "dist", ".nx"]

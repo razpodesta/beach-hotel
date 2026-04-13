@@ -20,7 +20,7 @@ import { multiTenantReadAccess, multiTenantWriteAccess } from './Access';
 /** 
  * IMPORTACIÓN DE MOTOR LÓGICO (SSoT)
  */
-import { calculateProgress } from '@metashark/protocol-33';
+import { calculateProgress } from '@metashark/reputation-engine';
 
 /** CONSTANTES CROMÁTICAS HEIMDALL v2.5 */
 const C = {

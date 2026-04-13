@@ -21,7 +21,7 @@ code
 JSON
 "paths": {
   "@metashark/auth-shield":["packages/auth-shield/src/index.ts"],
-  "@metashark/protocol-33":["packages/protocol-33/src/index.ts"]
+  "@metashark/reputation-engine":["packages/protocol-33/src/index.ts"]
 }
 III. Contratos de Paquete Limpios (Higiene de package.json)
 Dado que Node.js y Next.js resolverán las librerías a través del tsconfig.base.json, el package.json de cada librería se reduce a su mínima expresión estructural.

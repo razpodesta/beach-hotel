@@ -19,7 +19,7 @@
  
   "sideEffects": false,
   "dependencies": {
-    "@metashark/protocol-33": "workspace:*",
+    "@metashark/reputation-engine": "workspace:*",
     "@payloadcms/db-postgres": "3.80.0",
     "@payloadcms/email-nodemailer": "3.80.0",
     "@payloadcms/richtext-lexical": "3.80.0",

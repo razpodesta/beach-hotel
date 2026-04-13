@@ -14,6 +14,7 @@ tmp
 .vscode/*
 !.vscode/extensions.json
 !.vscode/settings.json
+!packages/cms/core/src/payload-types.ts
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*

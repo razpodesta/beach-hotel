@@ -1,0 +1,22 @@
+{
+  "name": "@metashark/customer-relationship-logic",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/customer-relationship-logic/src",
+  "projectType": "library",
+  "tags": [
+    "scope:shared", 
+    "layer:domain", 
+    "domain:crm"
+  ],
+  "targets": {
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc -p packages/customer-relationship-logic/tsconfig.lib.json --noEmit"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

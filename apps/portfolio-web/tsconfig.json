@@ -61,7 +61,7 @@
       "@metashark/cms-core": ["../../packages/cms/core/src/index.ts"],
       "@metashark/cms-core/config": ["../../packages/cms/core/src/payload.config.ts"],
       "@metashark/cms-ui": ["../../packages/cms/ui/src/index.ts"],
-      "@metashark/protocol-33": ["../../packages/protocol-33/src/index.ts"],
+      "@metashark/reputation-engine": ["../../packages/protocol-33/src/index.ts"],
       "@metashark/auth-shield": ["../../packages/auth-shield/src/index.ts"],
       "@metashark/identity-gateway": ["../../packages/identity-gateway/src/index.ts"],
       "@metashark/testing-utils": ["../../packages/testing-utils/src/index.ts"]

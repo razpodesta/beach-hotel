@@ -1,10 +1,11 @@
 /**
  * @file apps/portfolio-web/scripts/sovereign-prebuild.ts
- * @description Sovereign Infrastructure Orchestrator (MACS & Schema Engine).
- *              Refactorizado: Protección contra Build-Deadlock en Vercel.
- *              La síntesis de tipos ahora es un proceso de desarrollo local/CI explícito,
- *              bloqueado en Vercel para evitar fallos de ejecución en entorno estático.
- * @version 18.0 - Vercel Build Immune
+ * @description Enterprise Infrastructure Orchestrator (MACS v21.0).
+ *              Implementa el "Isolated Synthesis Mode" y el "Workspace Discovery Engine".
+ *              Refactorizado: Cumplimiento estricto de reglas de logging (Pilar IV).
+ *              Optimizado: Jerarquía de logs forenses mediante grupos de consola.
+ * 
+ * @version 21.0 - Lint Pure & Structural Logging Injected
  * @author Staff Engineer - MetaShark Tech
  */
 
@@ -22,7 +23,26 @@ const __dirname = dirname(__filename);
 const ROOT_DIR = resolve(__dirname, '../../..');
 const APP_DIR = resolve(__dirname, '..');
 
-// --- PROTOCOLO CROMÁTICO HEIMDALL v3.6 ---
+/** 
+ * REGISTRO DE NODOS LEGO (Workspace Inventory)
+ * Estos nodos serán escaneados en busca de narrativa propia (/src/lib/i18n).
+ */
+const SOVEREIGN_NODES = [
+  'communication-dispatch-hub',
+  'revenue-engine',
+  'partner-management-system',
+  'data-ingestion-service',
+  'hospitality-business-logic',
+  'customer-relationship-logic',
+  'shared-design-system',
+  'webgl-rendering-engine',
+  'seo-metadata-orchestrator',
+  'internationalization-registry',
+  'storage-adapter-layer',
+  'telemetry-observability-service'
+];
+
+// --- PROTOCOLO CROMÁTICO HEIMDALL v4.0 ---
 const C = {
   reset: '\x1b[0m', magenta: '\x1b[35m', cyan: '\x1b[36m', 
   green: '\x1b[32m', yellow: '\x1b[33m', red: '\x1b[31m', 
@@ -31,19 +51,17 @@ const C = {
 
 /**
  * @function synthesizePayloadTypes
- * @description Fase 1: Generación imperativa del contrato de tipos TS.
- * @pilar VII: Resiliencia - Implementa Fail-Fast y Guardia de Entorno Vercel.
+ * @description Fase 1: Síntesis de contratos TS en modo aislado.
  */
 async function synthesizePayloadTypes(): Promise<void> {
   const start = performance.now();
   
-  // Guardián de aislamiento: Vercel build es estático, no debe ejecutar CLI de Payload
-  if (process.env.VERCEL === '1') {
-    console.log(`${C.magenta}${C.bold}[DNA][SCHEMA]${C.reset} Entorno Vercel detectado. Saltando síntesis de tipos.`);
+  if (process.env.VERCEL === '1' || process.env.SKIP_TYPEGEN === 'true') {
+    console.info(`${C.magenta}${C.bold}[DNA][SCHEMA]${C.reset} Entorno estático detectado. Usando contrato persistido.`);
     return;
   }
 
-  console.log(`${C.magenta}${C.bold}[DNA][SCHEMA]${C.reset} Iniciando síntesis de tipos de Payload...`);
+  console.info(`${C.magenta}${C.bold}[DNA][SCHEMA]${C.reset} Iniciando síntesis de tipos (Isolated Mode)...`);
   
   try {
     const configPath = 'packages/cms/core/src/payload.generate.config.ts';
@@ -51,12 +69,13 @@ async function synthesizePayloadTypes(): Promise<void> {
     execSync('pnpm payload generate:types', {
       stdio: 'inherit',
       cwd: ROOT_DIR,
-      timeout: 180000, 
+      timeout: 120000, 
       env: {
         ...process.env,
         PAYLOAD_CONFIG_PATH: configPath,
         PAYLOAD_GENERATE: 'true',
-        NODE_ENV: 'production'
+        NODE_ENV: 'production',
+        DATABASE_URL: 'postgresql://ghost:ghost@localhost:5432/ghost'
       }
     });
 
@@ -64,46 +83,60 @@ async function synthesizePayloadTypes(): Promise<void> {
     await access(typesPath);
 
     const duration = (performance.now() - start).toFixed(2);
-    console.log(`${C.green}   ✓ [OK] Contrato de tipos sellado | Latencia: ${duration}ms${C.reset}`);
+    console.info(`${C.green}   ✓ [OK] Contrato de datos sellado | Latencia: ${duration}ms${C.reset}`);
   } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : 'Unknown Schema Drift';
+    const msg = err instanceof Error ? err.message : 'Schema Collision';
     console.error(`\n${C.red}${C.bold}✖ [CRITICAL] FALLO EN SÍNTESIS DE TIPOS:${C.reset}`);
-    console.error(`   ${C.red}↳ Motivo: ${msg}${C.reset}`);
-    console.error(`   ${C.red}↳ El build no puede continuar sin el contrato de datos.${C.reset}\n`);
+    console.error(`   ${C.red}↳ Motivo: ${msg}${C.reset}\n`);
     process.exit(1); 
   }
 }
 
 /**
  * @function buildDictionaries
- * @description Fase 2: Ensamblaje de la narrativa (MACS Engine).
+ * @description Fase 2: Ensamblaje de narrativa (Workspace Discovery Engine).
  */
 async function buildDictionaries(): Promise<void> {
   const start = performance.now();
-  console.log(`\n${C.magenta}${C.bold}[DNA][MACS]${C.reset} Iniciando síntesis de diccionarios...`);
+  console.group(`${C.magenta}${C.bold}[DNA][MACS]${C.reset} Iniciando descubrimiento de narrativa...`);
 
-  const msgDir = resolve(APP_DIR, 'src/messages');
+  const localMsgDir = resolve(APP_DIR, 'src/messages');
   const dictDir = resolve(APP_DIR, 'src/dictionaries');
   
   try {
     await mkdir(dictDir, { recursive: true });
-    const locales = (await readdir(msgDir)).filter(d => !d.startsWith('.'));
-    console.log(`   ${C.dim}→ Perímetros detectados: ${locales.join(', ')}${C.reset}`);
+    const locales = (await readdir(localMsgDir)).filter(d => !d.startsWith('.'));
+    console.info(`   ${C.dim}→ Perímetros activos: ${locales.join(', ')}${C.reset}`);
 
     await Promise.all(locales.map(async (locale) => {
-      const localePath = join(msgDir, locale);
+      console.group(`${C.cyan}→ Procesando Perímetro: [${locale}]${C.reset}`);
       const accumulator: Record<string, unknown> = {};
-      const files = (await readdir(localePath)).filter(f => f.endsWith('.json'));
 
-      const fileContents = await Promise.all(
-        files.map(async (file) => {
-          const content = await readFile(join(localePath, file), 'utf-8');
-          return { name: parse(file).name, data: JSON.parse(content) };
-        })
-      );
+      // 1. Descubrimiento en App Local (portfolio-web)
+      const localPath = join(localMsgDir, locale);
+      const localFiles = (await readdir(localPath)).filter(f => f.endsWith('.json'));
+      
+      for (const file of localFiles) {
+        const content = await readFile(join(localPath, file), 'utf-8');
+        accumulator[parse(file).name] = JSON.parse(content);
+      }
 
-      fileContents.forEach(({ name, data }) => { accumulator[name] = data; });
+      // 2. Descubrimiento en Workspaces (@metashark/*)
+      for (const node of SOVEREIGN_NODES) {
+        const nodeI18nPath = resolve(ROOT_DIR, `packages/${node}/src/lib/i18n/${locale}.json`);
+        try {
+          await access(nodeI18nPath);
+          const nodeContent = await readFile(nodeI18nPath, 'utf-8');
+          // El nombre del nodo se convierte en la llave del diccionario (ej: comms_hub)
+          const key = node.replace(/-/g, '_');
+          accumulator[key] = JSON.parse(nodeContent);
+          console.info(`      ${C.green}↳ Nodo [${node}] inyectado.${C.reset}`);
+        } catch {
+          // El nodo no tiene i18n para este locale o no ha sido migrado aún.
+        }
+      }
 
+      // 3. Validación de Contrato Global (SSoT)
       const validation = dictionarySchema.safeParse(accumulator);
       if (!validation.success) {
         console.error(`\n${C.red}${C.bold}✖ ERROR DE CONTRATO EN [${locale}]:${C.reset}`);
@@ -114,13 +147,15 @@ async function buildDictionaries(): Promise<void> {
       }
 
       await writeFile(join(dictDir, `${locale}.json`), JSON.stringify(accumulator, null, 2));
-      console.log(`   ${C.cyan}→ Nodo ${locale} [${Object.keys(accumulator).length} features] persistido.${C.reset}`);
+      console.groupEnd();
     }));
 
     const duration = (performance.now() - start).toFixed(2);
-    console.log(`${C.green}   ✓ [OK] MACS completada | Latencia: ${duration}ms${C.reset}`);
+    console.groupEnd();
+    console.info(`${C.green}   ✓ [OK] MACS Discovery completada | Latencia: ${duration}ms${C.reset}`);
   } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : 'Unknown Content Drift';
+    console.groupEnd();
+    const msg = err instanceof Error ? err.message : 'Content Drift';
     console.error(`\n${C.red}${C.bold}✖ [CRITICAL] FALLO EN SÍNTESIS DE CONTENIDO:${C.reset}`);
     console.error(`   ${C.red}↳ Motivo: ${msg}${C.reset}\n`);
     process.exit(1);
@@ -128,21 +163,21 @@ async function buildDictionaries(): Promise<void> {
 }
 
 /**
- * MOTOR SUPREMO
+ * MOTOR SUPREMO: runSovereignPrebuild
  */
 async function runSovereignPrebuild() {
   const engineStart = performance.now();
   
-  console.log(`\n${C.cyan}${C.bold}====================================================${C.reset}`);
-  console.log(`${C.cyan}${C.bold}       SOVEREIGN PREBUILD ENGINE v18.0              ${C.reset}`);
-  console.log(`${C.cyan}${C.bold}====================================================${C.reset}`);
+  console.info(`\n${C.cyan}${C.bold}====================================================${C.reset}`);
+  console.info(`${C.cyan}${C.bold}       SOVEREIGN PREBUILD ENGINE v21.0              ${C.reset}`);
+  console.info(`${C.cyan}${C.bold}====================================================${C.reset}`);
 
   await synthesizePayloadTypes();
   await buildDictionaries();
 
   const total = (performance.now() - engineStart).toFixed(2);
-  console.log(`\n${C.green}${C.bold}✨ INFRAESTRUCTRURA SELLADA Y LISTA PARA BUILD${C.reset}`);
-  console.log(`${C.green}   Total Pipeline Time: ${C.yellow}${total}ms${C.reset}\n`);
+  console.info(`\n${C.green}${C.bold}✨ INFRAESTRUCTRURA SELLADA Y LISTA PARA BUILD${C.reset}`);
+  console.info(`${C.green}   Total Pipeline Time: ${C.yellow}${total}ms${C.reset}\n`);
 }
 
 runSovereignPrebuild();

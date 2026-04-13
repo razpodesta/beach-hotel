@@ -1,0 +1,33 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    /**
+     * @pilar XIII: Sincronización de Infraestructura.
+     * Silenciamos advertencias de baseUrl para compatibilidad con TS 5.9+.
+     */
+    "ignoreDeprecations": "5.0",
+    "baseUrl": ".",
+    "composite": true,
+    "incremental": true,
+    
+    /**
+     * @pilar XIII: Soberanía de Artefactos.
+     * Aislamiento físico de metadatos en la zona industrial /dist.
+     */
+    "tsBuildInfoFile": "../../dist/packages/reputation-engine/tsconfig.tsbuildinfo",
+    
+    "noEmit": false,
+    "emitDeclarationOnly": true,
+    
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "declaration": true,
+    "declarationMap": true,
+    "types": ["node"]
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "dist", "jest.config.ts", "**/*.spec.ts"]
+}
