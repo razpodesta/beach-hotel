@@ -63,7 +63,7 @@
       "@metashark/cms-ui": ["../../packages/cms/ui/src/index.ts"],
       "@metashark/reputation-engine": ["../../packages/protocol-33/src/index.ts"],
       "@metashark/auth-shield": ["../../packages/auth-shield/src/index.ts"],
-      "@metashark/identity-gateway": ["../../packages/identity-gateway/src/index.ts"],
+      "@metashark/identity-access-management": ["../../packages/identity-gateway/src/index.ts"],
       "@metashark/testing-utils": ["../../packages/testing-utils/src/index.ts"]
     }
   },

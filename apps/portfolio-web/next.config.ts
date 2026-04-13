@@ -3,7 +3,7 @@
  * @description Orquestador Soberano Next.js 15 (Oxygen Engine).
  *              Refactorizado: Implementación de "Graph-Safe Configuration" para 
  *              evitar errores de procesamiento en el Daemon de Nx.
- *              Sincronizado: Inclusión de @metashark/identity-gateway en el
+ *              Sincronizado: Inclusión de @metashark/identity-access-management en el
  *              pipeline de transpilación y purga de configuraciones obsoletas.
  * @version 8.0 - Graph-Safe & Next.js 15 Ready
  * @author Staff Engineer - MetaShark Tech
@@ -30,7 +30,7 @@ const nextConfig: NextConfig = {
     '@metashark/cms-ui',
     '@metashark/reputation-engine',
     '@metashark/auth-shield',
-    '@metashark/identity-gateway',
+    '@metashark/identity-access-management',
   ],
 
   images: {

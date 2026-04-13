@@ -1,5 +1,5 @@
 # Manifiesto de Arquitectura: Identity Gateway (The Sovereign Access)
-**Paquete:** `@metashark/identity-gateway`
+**Paquete:** `@metashark/identity-access-management`
 **Versión:** 1.0 (NPM Publish Ready)
 **Estatus:** OBLIGATORIO Y SSoT
 **Autor:** Raz Podestá - MetaShark Tech

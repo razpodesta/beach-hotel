@@ -3,7 +3,7 @@
  * @description Punto de entrada soberano para retornos de identidad (OAuth).
  *              Actúa como el puente de red entre Supabase Auth y el Identity Bridge.
  *              Refactorizado: Sincronización con el nuevo puerto de servidor de
- *              la librería (@metashark/identity-gateway/server) y erradicación
+ *              la librería (@metashark/identity-access-management/server) y erradicación
  *              de extensiones .js para resolución "bundler" (Next.js 15).
  * @version 6.4 - Server Export & Bundler Sync
  * @author Raz Podestá - MetaShark Tech
@@ -14,7 +14,7 @@
  * @description Importamos exclusivamente desde el entry point de servidor de la librería,
  * garantizando que Next.js no arrastre este código al entorno del cliente.
  */
-import { handleOAuthCallback } from '@metashark/identity-gateway/server';
+import { handleOAuthCallback } from '@metashark/identity-access-management/server';
 
 /**
  * IMPORTACIÓN DE CONTRATOS E INFRAESTRUCTURA LOCAL
@@ -41,7 +41,7 @@ export async function GET(request: Request) {
   console.group(`[HEIMDALL][AUTH] Incoming OAuth Handshake | Trace: ${requestTraceId}`);
 
   /**
-   * Delegamos el handshake técnico a la librería @metashark/identity-gateway.
+   * Delegamos el handshake técnico a la librería @metashark/identity-access-management.
    * La librería verifica la identidad humana y criptográfica.
    */
   return handleOAuthCallback(request, {

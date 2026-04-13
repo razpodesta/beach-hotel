@@ -1,11 +1,12 @@
 /**
  * @file apps/portfolio-web/src/components/ui/AuthPortal.tsx
- * @description Host Wrapper para el Identity Gateway (The Access Shield).
- *              Actúa como el puente de orquestación entre la librería autónoma
+ * @description Host Wrapper para el Identity & Access Management (IAM).
+ *              Actúa como el puente de orquestación entre la librería industrial
  *              y el ecosistema local (Zustand + Bridge Sync).
- *              Refactorizado: Inyección de continuidad de navegación (nextPath),
- *              optimización de sincronía de sesión y trazabilidad forense.
- * @version 3.0 - Navigation Continuity & Session Hardened
+ *              Refactorizado: Sincronización con el nuevo workspace IAM.
+ *              Nivelado: Cumplimiento estricto de reglas de logging (Pilar IV).
+ * 
+ * @version 4.0 - IAM Workspace Sync & Lint Pure
  * @author Staff Engineer - MetaShark Tech
  */
 
@@ -15,10 +16,11 @@ import React, { useCallback, useMemo } from 'react';
 import { usePathname } from 'next/navigation';
 
 /**
- * IMPORTACIONES DE LIBRERÍA SOBERANA
- * @pilar IX: Inversión de Control. Consumimos la fachada de identidad.
+ * IMPORTACIONES DE LIBRERÍA INDUSTRIAL (SSoT)
+ * @pilar IX: Inversión de Control. Consumimos la fachada del módulo IAM.
+ * @fix: Nombre de paquete actualizado tras la nivelación estructural.
  */
-import { AuthModal, type IdentityUser } from '@metashark/identity-gateway';
+import { AuthModal, type IdentityUser } from '@metashark/identity-access-management';
 
 /**
  * IMPORTACIONES DE INFRAESTRUCTRURA LOCAL (Fronteras Nx)
@@ -29,7 +31,7 @@ import { i18n, isValidLocale, type Locale } from '../../config/i18n.config';
 import type { Dictionary } from '../../lib/schemas/dictionary.schema';
 
 /**
- * CONSTANTES DE TELEMETRÍA (Protocolo Heimdall)
+ * CONSTANTES DE TELEMETRÍA (Protocolo Heimdall v2.5)
  */
 const C = {
   reset: '\x1b[0m', cyan: '\x1b[36m', green: '\x1b[32m', 
@@ -43,7 +45,7 @@ interface AuthPortalProps {
 
 /**
  * APARATO: AuthPortal (Host Orchestrator)
- * @description Conecta el estado global de la UI con la pasarela de identidad.
+ * @description Conecta el estado global de la UI con la pasarela de identidad y acceso.
  */
 export function AuthPortal({ dictionary }: AuthPortalProps) {
   const pathname = usePathname();
@@ -70,7 +72,9 @@ export function AuthPortal({ dictionary }: AuthPortalProps) {
     const startTime = performance.now();
     
     console.group(`${C.magenta}${C.bold}[HEIMDALL][AUTH]${C.reset} Bridge Handshake: ${C.cyan}${traceId}${C.reset}`);
-    console.log(`Identity_Node: ${user.email} | Origin: ${pathname}`);
+    
+    /** @fix: console.log -> console.info para cumplimiento de reglas de linter v10.0 */
+    console.info(`Identity_Node: ${user.email} | Origin: ${pathname}`);
 
     try {
       /**
@@ -96,7 +100,8 @@ export function AuthPortal({ dictionary }: AuthPortalProps) {
       const duration = (performance.now() - startTime).toFixed(4);
 
       if (result.success) {
-        console.log(`   ${C.green}✓ [GRANTED]${C.reset} CMS Sync successful | Latency: ${duration}ms`);
+        /** @fix: console.log -> console.info */
+        console.info(`   ${C.green}✓ [GRANTED]${C.reset} CMS Sync successful | Latency: ${duration}ms`);
         
         // Protocolo de Cierre de Bóveda
         closeAuthModal();

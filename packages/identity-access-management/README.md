@@ -1,4 +1,4 @@
-# 🛡️ @metashark/identity-gateway: The Sovereign Access
+# 🛡️ @metashark/identity-access-management: The Sovereign Access
 **Versión:** 1.0 (NPM Publish Ready)
 **Tipo:** Gateway de Identidad & Autenticación / UI Component
 **Agnóstico:** Sí (Next.js / React 19)

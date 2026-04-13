@@ -249,7 +249,7 @@ Fase: Extracción de Módulos Críticos & Creación de Infraestructura Plug-and-
 Estatus: INFRAESTRUCTRURA SELLADA Y DESACOPLADA
 Arquitecto Responsable: Staff Engineer - MetaShark Tech
 1. RESUMEN EJECUTIVO DE LA MISIÓN
-Se ha ejecutado una cirugía mayor para extraer la lógica de Registro y Autenticación del núcleo de la aplicación (portfolio-web) y encapsularla en un nuevo paquete NPM autónomo: @metashark/identity-gateway. El objetivo principal fue lograr el desacoplamiento total de la infraestructura de datos (Payload CMS) de la infraestructura de acceso (Supabase Auth), permitiendo que la pasarela de identidad sea un bloque "Lego" reutilizable en cualquier proyecto futuro.
+Se ha ejecutado una cirugía mayor para extraer la lógica de Registro y Autenticación del núcleo de la aplicación (portfolio-web) y encapsularla en un nuevo paquete NPM autónomo: @metashark/identity-access-management. El objetivo principal fue lograr el desacoplamiento total de la infraestructura de datos (Payload CMS) de la infraestructura de acceso (Supabase Auth), permitiendo que la pasarela de identidad sea un bloque "Lego" reutilizable en cualquier proyecto futuro.
 2. ARQUITECTURA DEL NUEVO WORKSPACE (identity-gateway)
 Se ha configurado un contenedor de librería pura (Source-First) bajo estándares de élite:
 Agnosticismo Total: La librería no posee conocimiento de bases de datos externas. Emite eventos mediante el patrón de Inversión de Control (IoC).
@@ -319,7 +319,7 @@ Transición Pure Source-First: Se ha erradicado el modo Project References y el 
 Resolución de Grafo Nx: Se eliminaron los errores de procesamiento del grafo (undefined en configuraciones) mediante la implementación de patrones Graph-Safe y Cold-Start en los orquestadores de Next.js y Payload 3.0.
 Sincronización de Tipos (Isolated Synthesis): Se ha respetado el protocolo de la bitácora del 06/04. La generación de tipos de Payload (payload-types.ts) se trata como un artefacto estático local. El pipeline de Vercel es ahora inmune a los deadlocks de SWC.
 2. 🛡️ SEGURIDAD E IDENTIDAD (IDENTITY FORTRESS V2.0)
-Desacoplamiento de Gateway: La librería @metashark/identity-gateway ha sido nivelada al estándar Bundler Resolution. Se eliminaron las extensiones .js manuales que bloqueaban el build de producción, permitiendo la resolución nativa de Next.js 15.
+Desacoplamiento de Gateway: La librería @metashark/identity-access-management ha sido nivelada al estándar Bundler Resolution. Se eliminaron las extensiones .js manuales que bloqueaban el build de producción, permitiendo la resolución nativa de Next.js 15.
 Identity Bridge & Reactor P33: El puente de sincronización (auth-sync.actions.ts) no solo vincula identidades, sino que actúa como el Iniciador de Reputación. Se inyectan automáticamente 50 XP (RazTokens) y el artefacto "Monólito de Obsidiana" en el momento del registro.
 Sovereign Passport: Se implementó la inyección de cabeceras de identidad (X-Sovereign-Role, X-Heimdall-Trace) en el Route Guard, permitiendo que todo el árbol de componentes conozca el nivel de autoridad del usuario con latencia cero.
 3. 🚦 SILOS OPERATIVOS Y UX (OXYGEN ENGINE)

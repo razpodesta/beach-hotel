@@ -69,7 +69,7 @@ export default {
     '^@metashark/auth-shield$': '<rootDir>/../../packages/auth-shield/src/index.ts',
     
     // --- SEGURIDAD E INFRAESTRUCTURA ---
-    '^@metashark/identity-gateway$': '<rootDir>/../../packages/identity-gateway/src/index.ts', // Sincronizado
+    '^@metashark/identity-access-management$': '<rootDir>/../../packages/identity-gateway/src/index.ts', // Sincronizado
     '^@metashark/testing-utils$': '<rootDir>/../../packages/testing-utils/src/index.ts',
   },
 
