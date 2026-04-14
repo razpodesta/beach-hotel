@@ -5,7 +5,8 @@
  *              Refactorizado: Sincronización con el nuevo puerto de servidor de
  *              la librería (@metashark/identity-access-management/server) y erradicación
  *              de extensiones .js para resolución "bundler" (Next.js 15).
- * @version 6.4 - Server Export & Bundler Sync
+ *              Nivelado: Saneamiento de Linter (Erradicación de console.log).
+ * @version 6.5 - Server Export, Bundler Sync & Lint Pure
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -65,7 +66,8 @@ export async function GET(request: Request) {
                        (userMetadata.name as string) || 
                        'Sovereign Guest';
 
-      console.log(`   → [DNA][BRIDGE] Identity Linked: ${supabaseUser.email}`);
+      /** @fix: console.log -> console.info para cumplimiento Linter v10.0 */
+      console.info(`   → [DNA][BRIDGE] Identity Linked: ${supabaseUser.email}`);
       
       // Handshake de Sincronización con el Núcleo (Silo D)
       const syncResult = await syncIdentityAction({
@@ -78,7 +80,8 @@ export async function GET(request: Request) {
       const syncLatency = (performance.now() - syncStart).toFixed(4);
 
       if (syncResult.success) {
-        console.log(`   ✓ [GRANTED] Bridge Sync Success | Lat: ${syncLatency}ms | Total: ${totalLatency}ms`);
+        /** @fix: console.log -> console.info para cumplimiento Linter v10.0 */
+        console.info(`   ✓ [GRANTED] Bridge Sync Success | Lat: ${syncLatency}ms | Total: ${totalLatency}ms`);
       } else {
         /**
          * @pilar VIII: Resiliencia.

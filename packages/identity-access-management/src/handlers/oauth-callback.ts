@@ -1,50 +1,54 @@
 /**
- * @file packages/identity-gateway/src/handlers/oauth-callback.ts
+ * @file packages/identity-access-management/src/handlers/oauth-callback.ts
  * @description Orquestador Agnóstico de Intercambio de Código (OAuth Bridge).
  *              Refactorizado: Normalización de resolución de módulos para Next.js 15.
- *              Estabilizado: Gestión de cookies persistente para entornos Edge.
- *              Sincronizado: Protocolo Heimdall v2.5 para auditoría de handshakes.
- * @version 1.3 - Bundler Resolution Standard (Vercel Fix)
+ *              Estabilizado: Gestión de cookies persistente para entornos Edge,
+ *              alineación SSoT de dominio base y cumplimiento estricto del linter
+ *              (erradicación de console.log).
+ * @version 2.0 - Bundler Resolution & Domain SSoT
  * @author Staff Engineer - MetaShark Tech
  */
 
 import { NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 
 /** 
  * IMPORTACIÓN DE CONTRATOS EXTERNOS 
  */
 import type { User } from '@supabase/supabase-js';
 
-/**
- * @interface OAuthHandlerOptions
- * @description Configuración inyectable para el comportamiento del puente.
- */
 export interface OAuthHandlerOptions {
-  /** Callback disparado tras la verificación criptográfica exitosa */
   onIdentityVerified?: (user: User, traceId: string) => Promise<void>;
-  /** Ruta de retorno por defecto si no se especifica en el estado */
   defaultRedirect?: string;
-  /** Idioma de fallback para redirecciones de error */
   defaultLocale?: string;
-  /** Función de validación de perímetros de idioma */
   isValidLocale?: (locale: string) => boolean;
 }
 
 /**
  * @function handleOAuthCallback
  * @description Punto de entrada para procesar el intercambio de código de Supabase.
- * @pilar IX: Inversión de Control. La lógica técnica reside aquí, la persistencia en el host.
+ * @pilar IX: Inversión de Control.
  */
 export async function handleOAuthCallback(
   request: Request,
   options: OAuthHandlerOptions
 ) {
-  const { searchParams, origin } = new URL(request.url);
-  const code = searchParams.get('code');
-  const next = searchParams.get('next') ?? options.defaultRedirect ?? '/';
+  const requestUrl = new URL(request.url);
+  const code = requestUrl.searchParams.get('code');
+  const next = requestUrl.searchParams.get('next') ?? options.defaultRedirect ?? '/';
   const traceId = `oauth_bridge_${Date.now().toString(36).toUpperCase()}`;
+
+  /**
+   * SSoT DOMAIN RESOLUTION
+   * @description Fuerza la redirección al NEXT_PUBLIC_BASE_URL para evitar
+   * Domain Mismatch si Vercel asigna un host dinámico durante la carga.
+   */
+  const headerList = await headers();
+  const host = headerList.get('host');
+  const protocol = host?.includes('localhost') ? 'http' : 'https';
+  const dynamicOrigin = host ? `${protocol}://${host}` : requestUrl.origin;
+  const baseOrigin = process.env.NEXT_PUBLIC_BASE_URL?.replace(/\/$/, '') || dynamicOrigin;
 
   // 1. RESOLUCIÓN DE CONTEXTO GEOGRÁFICO
   const pathSegments = next.split('/').filter(Boolean);
@@ -54,7 +58,7 @@ export async function handleOAuthCallback(
   // 2. GUARDIA DE PROTOCOLO: Fallo por ausencia de código
   if (!code) {
     console.error(`[HEIMDALL][AUTH] ${traceId} | Breach: Missing exchange code.`);
-    return NextResponse.redirect(`${origin}/${locale}?auth=error&reason=no_code`);
+    return NextResponse.redirect(`${baseOrigin}/${locale}?auth=error&reason=no_code`);
   }
 
   // 3. INICIALIZACIÓN DE INFRAESTRUCTURA (Safe Sync)
@@ -64,13 +68,9 @@ export async function handleOAuthCallback(
 
   if (!supabaseUrl || !supabaseAnonKey) {
     console.error(`[HEIMDALL][CRITICAL] ${traceId} | Infrastructure Missing: Supabase Config.`);
-    return NextResponse.redirect(`${origin}/${locale}/server-error?code=AUTH_MISCONFIG`);
+    return NextResponse.redirect(`${baseOrigin}/${locale}/server-error?code=AUTH_MISCONFIG`);
   }
 
-  /**
-   * CLIENTE SOBERANO (Server-Side Context)
-   * @pilar VIII: Resiliencia - Manejo seguro de cookies en el worker de borde.
-   */
   const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
     cookies: {
       getAll() { return cookieStore.getAll(); },
@@ -98,21 +98,21 @@ export async function handleOAuthCallback(
 
     // 5. DISPACHO DE EVENTO SOBERANO
     if (options.onIdentityVerified) {
-      console.log(`   → [DNA] Verifying identity for node: ${data.user.email}`);
+      console.info(`   → [DNA] Verifying identity for node: ${data.user.email}`);
       await options.onIdentityVerified(data.user, traceId);
     }
 
     // 6. REDIRECCIÓN DETERMINISTA
     const finalPath = next.startsWith('/') ? next : `/${next}`;
-    const finalUrl = `${origin}${finalPath}`;
+    const finalUrl = `${baseOrigin}${finalPath}`;
     
-    console.log(`   ✓ [GRANTED] Access verified. Target: ${finalUrl}`);
+    console.info(`   ✓ [GRANTED] Access verified. Target: ${finalUrl}`);
     return NextResponse.redirect(finalUrl);
 
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : 'Unknown Identity Drift';
     console.error(`   ✕ [REJECTED] Handshake failed: ${msg} | Trace: ${traceId}`);
-    return NextResponse.redirect(`${origin}/${locale}?auth=error&reason=exchange_failed`);
+    return NextResponse.redirect(`${baseOrigin}/${locale}?auth=error&reason=exchange_failed`);
   } finally {
     console.groupEnd();
   }

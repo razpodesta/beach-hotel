@@ -4,8 +4,8 @@
  *              Orquesta la validación de autoridad Zero-Latency mediante la
  *              síntesis del "Sovereign Passport" y el Gating jerárquico.
  *              Refactorizado: Sincronización de Caché Edge (Anti-Poisoning),
- *              extracción algorítmica segura de rutas y preservación de Query Params.
- * @version 13.0 - Edge Cache Sealed & Param Safe
+ *              extracción algorítmica de cookies Supabase SSR y Linter Pure (no-console).
+ * @version 14.1 - Linter Pure (Console.info Enforced)
  * @author Staff Engineer - MetaShark Tech
  */
 
@@ -32,7 +32,7 @@ const C = {
  * @constant PROTECTION_MAP
  * @description Mapa de Gating Jerárquico. Las rutas se evalúan por especificidad.
  */
-const PROTECTION_MAP: Array<{ path: string; minRole: SovereignRoleType }> = [
+const PROTECTION_MAP: Array<{ path: string; minRole: SovereignRoleType }> =[
   { path: '/portal/dev', minRole: 'developer' },
   { path: '/portal/admin', minRole: 'admin' },
   { path: '/portal/b2b', minRole: 'operator' },
@@ -42,7 +42,7 @@ const PROTECTION_MAP: Array<{ path: string; minRole: SovereignRoleType }> = [
 ];
 
 /** @constant INFRA_BYPASS Recursos exentos de escrutinio por el centinela */
-const INFRA_BYPASS = ['/admin', '/_payload', '/api/payload', '/auth/callback', '/r/'];
+const INFRA_BYPASS =['/admin', '/_payload', '/api/payload', '/auth/callback', '/r/'];
 
 /** @constant PUBLIC_WHITELIST Perímetros de libre circulación */
 const PUBLIC_WHITELIST = new Set([
@@ -105,10 +105,17 @@ function resolveSovereignPassport(req: NextRequest, traceId: string): SovereignP
 
   // 2. EXTRACCIÓN DE TOKENS CRIPTOGRÁFICOS
   const payloadToken = req.cookies.get('payload-token')?.value;
-  const supabaseToken = req.cookies.get('sb-access-token')?.value;
+  
+  /**
+   * @fix Detección Dinámica de Identidad Supabase SSR.
+   * Escaneamos algorítmicamente para encontrar la firma de sesión de Supabase.
+   */
+  const hasSupabaseToken = req.cookies.getAll().some(cookie => 
+    cookie.name.startsWith('sb-') && cookie.name.includes('-auth-token')
+  );
 
   if (payloadToken) return { isAuthenticated: true, role: 'developer', tenantId: 'ROOT_INFRA', traceId };
-  if (supabaseToken) return { isAuthenticated: true, role: 'guest', tenantId: null, traceId };
+  if (hasSupabaseToken) return { isAuthenticated: true, role: 'guest', tenantId: null, traceId };
 
   return { isAuthenticated: false, role: 'anonymous', tenantId: null, traceId };
 }
@@ -128,13 +135,6 @@ function safeEdgeRedirect(url: URL): NextResponse {
 // APARATO PRINCIPAL: routeGuard
 // ============================================================================
 
-/**
- * @function routeGuard
- * @description Centinela de tráfico de borde. Orquesta el Gating RBAC y la telemetría.
- * @param {NextRequest} request - Petición entrante desde el middleware.
- * @param {Locale} locale - Idioma resuelto por el orquestador de rumbos.
- * @returns {Promise<NextResponse | null>} Respuesta de redirección o permiso de paso.
- */
 export async function routeGuard(request: NextRequest, locale: Locale): Promise<NextResponse | null> {
   const startTime = performance.now();
   const traceId = `sig_guard_${Date.now().toString(36).toUpperCase()}`;
@@ -143,13 +143,14 @@ export async function routeGuard(request: NextRequest, locale: Locale): Promise<
   /**
    * @function emitForensicLog
    * @description Reporta la decisión del centinela al log de infraestructura.
+   * @fix: Se reemplaza console.log por console.info para cumplir regla 'no-console'.
    */
   const emitForensicLog = (status: 'GRANTED' | 'REJECTED' | 'REDIRECTED', reason: string, passport: SovereignPassport) => {
     const duration = (performance.now() - startTime).toFixed(2);
     const statusColor = status === 'GRANTED' ? C.green : (status === 'REJECTED' ? C.red : C.yellow);
     
     if (process.env.NODE_ENV !== 'production') {
-      console.log(
+      console.info(
         `${C.magenta}[DNA][GUARD]${C.reset} ${statusColor}${status.padEnd(10)}${C.reset} | ` +
         `${pathname.padEnd(30)} | ` +
         `Role: ${passport.role.padEnd(10)} | ` +
@@ -163,10 +164,7 @@ export async function routeGuard(request: NextRequest, locale: Locale): Promise<
   // 1. FILTRO DE INFRAESTRUCTRURA (Bypass Directo)
   if (INFRA_BYPASS.some((prefix) => pathname.startsWith(prefix))) return null;
 
-  /**
-   * 2. NORMALIZACIÓN ALGORÍTMICA DE RUTA LÓGICA
-   * @fix Evitamos usar string.replace para prevenir corrupción en sub-rutas homónimas.
-   */
+  // 2. NORMALIZACIÓN ALGORÍTMICA DE RUTA LÓGICA
   const segments = pathname.split('/').filter(Boolean);
   const logicalPath = segments.length > 1 ? `/${segments.slice(1).join('/')}` : '/';
   
@@ -185,11 +183,8 @@ export async function routeGuard(request: NextRequest, locale: Locale): Promise<
   // 5. GATING DE IDENTIDAD (Authentication Guard)
   if (!passport.isAuthenticated) {
     emitForensicLog('REDIRECTED', 'Identity required for non-public perimeter', passport);
-    
-    // @fix: Preservamos los query parameters originales y forzamos Safe Redirect
     const loginRedirect = new URL(`/${locale}${search}`, request.url);
     loginRedirect.searchParams.set('auth', 'required');
-    
     return safeEdgeRedirect(loginRedirect);
   }
 
@@ -204,8 +199,6 @@ export async function routeGuard(request: NextRequest, locale: Locale): Promise<
 
     if (userWeight < requiredWeight) {
       emitForensicLog('REJECTED', `Hierarchy Drift: User(${userWeight}) < Required(${requiredWeight})`, passport);
-      
-      // @fix: Preservamos query params en la evacuación al portal base
       const evacRedirect = new URL(`/${locale}/portal${search}`, request.url);
       return safeEdgeRedirect(evacRedirect);
     }

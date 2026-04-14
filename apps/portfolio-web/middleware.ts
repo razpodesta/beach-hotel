@@ -3,9 +3,10 @@
  * @description Orquestador Soberano de Tráfico de Borde (Edge Orchestrator).
  *              Refactorizado: Arquitectura SEO-First para negociación de idiomas.
  *              Nivelado: Telemetría Verbosa Heimdall v2.5 (Lint Pure).
- *              Sincronizado: Inyección de cabeceras de auditoría y anti-caché.
+ *              Sincronizado: Inyección de cabeceras de auditoría y protección Regex
+ *              contra tormentas de 404s en recursos estáticos.
  * 
- * @version 26.0 - Forensic Telemetry & Lint Pure Standard
+ * @version 27.0 - Static Extension Gating & Forensic Telemetry
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -27,11 +28,18 @@ const C = {
   bold: '\x1b[1m'
 } as const;
 
-const EXCLUDED_PREFIXES = [
+const EXCLUDED_PREFIXES =[
   '/_next', '/api', '/_payload', '/static', '/images', '/video', 
   '/audio', '/fonts', '/icons', '/favicon.ico', '/robots.txt', 
   '/sitemap.xml', '/manifest.json', '/auth', '/r/'
 ];
+
+/**
+ * @constant HAS_EXTENSION
+ * @description Patrón Regex para detectar si la ruta solicita un archivo físico (ej: .png, .xml).
+ * @pilar VIII: Resiliencia - Evita que el middleware intente inyectar idiomas en archivos estáticos.
+ */
+const HAS_EXTENSION = /\.[a-z0-9]+$/i;
 
 /**
  * MODULE: getPreferredLocale
@@ -65,7 +73,11 @@ export async function middleware(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
 
   // I. BYPASS DE ACTIVOS E INFRAESTRUCTRURA (Optimización de latencia)
-  if (EXCLUDED_PREFIXES.some((prefix) => pathname.startsWith(prefix))) {
+  // Se evalúan prefijos excluidos Y extensiones de archivo estáticas
+  if (
+    EXCLUDED_PREFIXES.some((prefix) => pathname.startsWith(prefix)) ||
+    HAS_EXTENSION.test(pathname)
+  ) {
     return NextResponse.next();
   }
 
@@ -82,7 +94,7 @@ export async function middleware(request: NextRequest) {
       const locale = getPreferredLocale(request, traceId);
       
       /** @fix: console.log -> console.info */
-      console.info(`${C.green}   → [REDIRECT]${C.reset} Root node found. Targeted to: /${locale}`);
+      console.info(`${C.green}   →[REDIRECT]${C.reset} Root node found. Targeted to: /${locale}`);
       
       const redirectUrl = new URL(`/${locale}${search}`, request.url);
       const response = NextResponse.redirect(redirectUrl, 307);
@@ -124,7 +136,7 @@ export async function middleware(request: NextRequest) {
 
     response.headers.set('X-Heimdall-Trace', traceId);
     response.headers.set('X-Edge-Latency', `${duration}ms`);
-    response.headers.set('X-Enterprise-Orchestrator', 'v26.0-Forensic');
+    response.headers.set('X-Enterprise-Orchestrator', 'v27.0-Forensic');
 
     console.info(`${C.green}   ✓ [GRANTED]${C.reset} Clearance verified | Latency: ${duration}ms`);
     console.groupEnd();
@@ -148,5 +160,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|images|video|audio|fonts|favicon.ico|manifest.json|admin|_payload).*)'],
+  matcher:['/((?!api|_next/static|_next/image|images|video|audio|fonts|favicon.ico|manifest.json|admin|_payload).*)'],
 };

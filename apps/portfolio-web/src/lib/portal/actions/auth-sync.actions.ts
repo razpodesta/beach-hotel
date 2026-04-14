@@ -4,7 +4,8 @@
  *              Realiza el Handshake final entre Supabase Auth y Payload CMS.
  *              Refactorizado: Idempotencia del Reactor P33, blindaje de metadatos
  *              OAuth y alineación con el Core Registry v12.0.
- * @version 4.0 - Atomic Reputation Sync & Metadata Hardened
+ *              Nivelado: Erradicación de console.log (Linter Pure).
+ * @version 4.1 - Linter Pure & Atomic Reputation Sync
  * @author Staff Engineer - MetaShark Tech
  */
 
@@ -61,12 +62,6 @@ export type SyncActionResult = {
   traceId: string;
 };
 
-// Protocolo Cromático Heimdall v2.5
-const C = {
-  reset: '\x1b[0m', cyan: '\x1b[36m', green: '\x1b[32m', 
-  yellow: '\x1b[33m', magenta: '\x1b[35m', bold: '\x1b[1m', red: '\x1b[31m'
-};
-
 /**
  * @function syncIdentityAction
  * @description Punto de entrada para sincronizar la identidad y activar la reputación.
@@ -80,7 +75,7 @@ export async function syncIdentityAction(
   
   if (IS_BUILD_ENV) return { success: true, traceId };
 
-  console.log(`\n${C.magenta}${C.bold}[DNA][BRIDGE]${C.reset} Handshake detectado | Trace: ${C.cyan}${traceId}${C.reset}`);
+  console.group(`[DNA][BRIDGE] Handshake detectado | Trace: ${traceId}`);
 
   try {
     // 1. VALIDACIÓN DE CONTRATO SOBERANO
@@ -92,7 +87,6 @@ export async function syncIdentityAction(
     const { email, name: providedName } = validation.data;
 
     // 2. INICIALIZACIÓN PEREZOSA DEL CMS (Isolated Synthesis)
-    /** @pilar XIII: Previene la carga de DB en fase de análisis estático. */
     const configModule = await import('@metashark/cms-core/config');
     const payload = await getPayload({ config: configModule.default });
 
@@ -109,10 +103,9 @@ export async function syncIdentityAction(
     if (!profile) {
       /**
        * @step Provisioning: Activación del Reactor de Reputación P33.
-       * @description Se crea la identidad digital con el bono de Génesis.
        */
       const initialName = providedName || email.split('@')[0];
-      console.log(`   ${C.yellow}→ [PROVISIONING]${C.reset} Nueva identidad soberana: ${email}`);
+      console.info(`   → [PROVISIONING] Nueva identidad soberana: ${email}`);
       
       profile = await payload.create({
         collection: 'users',
@@ -123,7 +116,6 @@ export async function syncIdentityAction(
           tenant: MASTER_TENANT_ID,
           password: crypto.randomBytes(32).toString('hex'),
           _verified: true,
-          // REPUTATION REACTOR INITIAL STATE
           experiencePoints: GENESIS_XP,
           level: 1,
           guestMetadata: {
@@ -133,30 +125,22 @@ export async function syncIdentityAction(
         },
       });
 
-      console.log(`   ${C.green}✓ [P33_REACTOR]${C.reset} Genesis Bonus granted: ${C.bold}+${GENESIS_XP} XP${C.reset}`);
+      console.info(`   ✓ [P33_REACTOR] Genesis Bonus granted: +${GENESIS_XP} XP`);
     } else {
-      console.log(`   ${C.green}✓ [IDENTIFIED]${C.reset} Nodo de identidad vinculado: ${email}`);
+      console.info(`   ✓ [IDENTIFIED] Nodo de identidad vinculado: ${email}`);
     }
 
     // 4. CALIBRACIÓN DE PROGRESIÓN (The Math Shield)
-    /** 
-     * @pilar III: Integridad Lógica.
-     * Recalculamos el nivel basándonos en la XP real para detectar drifts.
-     */
     const currentXp = Number(profile.experiencePoints || 0);
     const { currentLevel } = calculateProgress(currentXp);
 
     if (profile.level !== currentLevel) {
-       console.warn(`${C.yellow}   ![REPUTATION_DRIFT] Correcting level: ${profile.level} -> ${currentLevel}${C.reset}`);
+       console.warn(`   ![REPUTATION_DRIFT] Correcting level: ${profile.level} -> ${currentLevel}`);
     }
 
     const totalLatency = (performance.now() - startTime).toFixed(4);
-    console.log(`${C.green}${C.bold}[GRANTED]${C.reset} Identity Bridge sincronizado | Latency: ${totalLatency}ms\n`);
+    console.info(`   ✓ [GRANTED] Identity Bridge sincronizado | Latency: ${totalLatency}ms`);
 
-    /**
-     * @returns {SyncActionResult} Payload purificado para la hidratación de la UI.
-     * @pilar III: Inferencia de tipos y normalización de salida.
-     */
     return {
       success: true,
       traceId,
@@ -167,19 +151,20 @@ export async function syncIdentityAction(
         name: profile.name || email.split('@')[0],
         xp: currentXp,
         level: currentLevel,
-        // En Fase 5, esto consultará la colección relacional 'Inventory'
         artifacts: [INITIAL_ARTIFACT] 
       }
     };
 
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : 'UNEXPECTED_SYNC_DRIFT';
-    console.error(`${C.red}${C.bold}[BREACH] Handshake abortado:${C.reset} ${msg}`);
+    console.error(`   ✕ [BREACH] Handshake abortado: ${msg}`);
     
     return {
       success: false,
       error: msg,
       traceId
     };
+  } finally {
+    console.groupEnd();
   }
 }

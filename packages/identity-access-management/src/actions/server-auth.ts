@@ -2,10 +2,11 @@
  * @file packages/identity-access-management/src/actions/server-auth.ts
  * @description Orquestador de Acceso Autenticado (IAM Server Actions).
  *              Encapsula la comunicación con Supabase Auth y validación L0.
- *              Refactorizado: Resolución dinámica de BASE_URL para Vercel.
+ *              Refactorizado: Resolución estricta de NEXT_PUBLIC_BASE_URL para 
+ *              evitar Mismatch de Dominio en callbacks OAuth.
  *              Nivelado: Sincronización con el Puerto Soberano 4200 y Linter Pure.
  * 
- * @version 7.0 - Vercel Production Ready & Port 4200 Sync
+ * @version 8.0 - OAuth Mismatch Hardened
  * @author Staff Engineer - MetaShark Tech
  */
 
@@ -20,6 +21,11 @@ import {
   type IdentityUser
 } from '../schemas/auth.schema';
 
+// --- PROTOCOLO CROMÁTICO HEIMDALL v2.5 ---
+const C_MAGENTA = '\x1b[35m';
+const C_CYAN = '\x1b[36m';
+const C_RESET = '\x1b[0m';
+
 /**
  * @description Tipo de retorno estandarizado para todas las acciones de identidad.
  */
@@ -33,6 +39,7 @@ export type AuthActionResult<T = unknown> = {
 /**
  * @function getSupabaseServerClient
  * @description Inicializa el cliente de Supabase con validación de perímetro.
+ * @pilar VIII: Resiliencia de Build - Manejo silencioso de cookies en entorno estático.
  */
 async function getSupabaseServerClient() {
   const cookieStore = await cookies();
@@ -65,7 +72,7 @@ async function getSupabaseServerClient() {
 /**
  * ACTION: signInWithOAuthAction
  * @description Inicia el flujo de autenticación con proveedores externos (Google/Apple).
- * @fix Erradica redirección a localhost:3000 priorizando el dominio de Vercel.
+ * @fix Erradica redirección a localhost:3000 priorizando el dominio de Vercel (SSoT).
  */
 export async function signInWithOAuthAction(
   provider: 'google' | 'apple' | 'facebook',
@@ -78,22 +85,27 @@ export async function signInWithOAuthAction(
     const supabase = await getSupabaseServerClient();
     
     /** 
-     * RESOLUCIÓN SOBERANA DE URL 
+     * RESOLUCIÓN SOBERANA DE URL (OAuth Mismatch Fix)
      * @pilar VIII: Resiliencia - Si NEXT_PUBLIC_BASE_URL no está en el .env, 
-     * intentamos extraer el host real de la petición actual en Vercel.
+     * intentamos extraer el host real de la petición actual, pero priorizando la variable SSoT.
      */
-    const headerList = await headers();
-    const host = headerList.get('host');
-    const protocol = host?.includes('localhost') ? 'http' : 'https';
-    
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL 
-      || (host ? `${protocol}://${host}` : 'http://localhost:4200');
+    let baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+
+    if (!baseUrl) {
+      console.warn(`   [WARNING] NEXT_PUBLIC_BASE_URL is missing. Attempting dynamic resolution.`);
+      const headerList = await headers();
+      const host = headerList.get('host');
+      const protocol = host?.includes('localhost') ? 'http' : 'https';
+      baseUrl = host ? `${protocol}://${host}` : 'http://localhost:4200';
+    }
+
+    // Limpieza de URL: Erradicación de la barra final (Trailing Slash)
+    baseUrl = baseUrl.replace(/\/$/, '');
     
     // Construcción del callback URL con propagación del destino final
     const redirectTo = `${baseUrl}/auth/callback?next=${encodeURIComponent(nextPath)}`;
 
-    /** @fix: console.log -> console.info */
-    console.info(`   → [DOMAIN_SYNC] Base: ${baseUrl}`);
+    console.info(`   → [DOMAIN_SYNC] Callback Target: ${redirectTo}`);
     console.info(`   → [PROVIDER] Initiating flow with ${provider.toUpperCase()}`);
 
     const { data, error } = await supabase.auth.signInWithOAuth({
@@ -159,7 +171,7 @@ export async function loginAction(rawCredentials: unknown): Promise<AuthActionRe
 
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : 'CORE_ENGINE_DRIFT';
-    console.error(`   ✕ [CRITICAL] Internal failure: ${msg}`);
+    console.error(`   ✕[CRITICAL] Internal failure: ${msg}`);
     return { success: false, code: 'SERVER_ERROR', error: msg };
   } finally {
     console.groupEnd();
@@ -206,7 +218,6 @@ export async function registerAction(rawCredentials: unknown): Promise<AuthActio
       return { success: false, code: 'AUTH_FAILURE', error: error.message };
     }
 
-    /** @fix: console.log -> console.info */
     console.info(`   ✓ [SUCCESS] New identity provisioned: ${email}`);
     return { 
       success: true, 
@@ -215,7 +226,7 @@ export async function registerAction(rawCredentials: unknown): Promise<AuthActio
 
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : 'CORE_ENGINE_DRIFT';
-    console.error(`   ✕ [CRITICAL] Registration failure: ${msg}`);
+    console.error(`   ✕[CRITICAL] Registration failure: ${msg}`);
     return { success: false, code: 'SERVER_ERROR', error: msg };
   } finally {
     console.groupEnd();
@@ -235,8 +246,3 @@ export async function signOutAction(): Promise<AuthActionResult> {
     return { success: false, error: err instanceof Error ? err.message : 'SIGNOUT_FAILED' };
   }
 }
-
-// Auxiliares de color para terminal (Heimdall v2.5)
-const C_MAGENTA = '\x1b[35m';
-const C_CYAN = '\x1b[36m';
-const C_RESET = '\x1b[0m';
