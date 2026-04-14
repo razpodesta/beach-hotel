@@ -1,11 +1,11 @@
 /**
  * @file apps/portfolio-web/src/app/[lang]/portal/page.tsx
- * @description Enterprise Operations Portal (HopEx v25.1).
- *              Orquestador supremo de la interfaz operativa. Gestiona la convergencia
- *              de identidades, acceso por silos y telemetría Protocolo 33.
- *              Refactorizado: Resolución de TS2307 tras atomización de Silos B/C,
- *              normalización de rutas de barril y sellado de tipos SSoT.
- * @version 28.0 - Atomic Silo Integration & Path Sync
+ * @description Enterprise Operations Portal (HopEx v25.2).
+ *              Orquestador supremo de la interfaz operativa.
+ *              Refactorizado: Erradicación de importaciones huérfanas de HUD, 
+ *              sello de Linter (ESLint no-console) e integración de Silos B/C.
+ * 
+ * @version 29.0 - Module Resolution Fixed & Linter Pure
  * @author Staff Engineer - MetaShark Tech
  */
 
@@ -35,9 +35,9 @@ import Link from 'next/link';
 import { AdminMediaPanel } from '../../../components/sections/portal/AdminMediaPanel';
 import { ArtifactShowcase } from '../../../components/sections/portal/ArtifactShowcase';
 import { IngestionManager } from '../../../components/sections/portal/IngestionManager';
-import { PartnerNetworkManager } from '../../../components/sections/portal/partners'; // @fix: TS2307 Resolved
+import { PartnerNetworkManager } from '../../../components/sections/portal/partners';
 import { OffersDashboard } from '../../../components/sections/portal/OffersDashboard';
-import { MarketingCloudManager } from '../../../components/sections/portal/marketing'; // @fix: TS2307 Resolved
+import { MarketingCloudManager } from '../../../components/sections/portal/marketing';
 import { CommsHubManager } from '../../../components/sections/portal/CommsHubManager';
 import type { AgencyEntity } from '../../../components/sections/portal/types';
 
@@ -46,7 +46,7 @@ import type { AgencyEntity } from '../../../components/sections/portal/types';
  */
 import type { SovereignRoleType } from '@metashark/cms-core';
 
-// --- PROTOCOLO DE OBSERVABILIDAD CROMÁTICA ---
+// --- PROTOCOLO DE OBSERVABILIDAD CROMÁTICA HEIMDALL v2.5 ---
 const C = {
   reset: '\x1b[0m', cyan: '\x1b[36m', green: '\x1b[32m', 
   yellow: '\x1b[33m', magenta: '\x1b[35m', bold: '\x1b[1m', red: '\x1b[31m'
@@ -82,6 +82,7 @@ async function resolveIdentityNode(traceId: string): Promise<EnterpriseSessionDa
   
   if (IS_BUILD_ENV) return null;
 
+  // Protocolo de Bypass para desarrollo local
   if (process.env.NEXT_PUBLIC_AUTH_BYPASS === 'true') {
     return { 
       userId: 'S0_ROOT', role: 'developer', email: 'dev-ops@metashark.tech', 
@@ -116,7 +117,8 @@ async function resolveIdentityNode(traceId: string): Promise<EnterpriseSessionDa
     const profile = docs[0];
     const duration = (performance.now() - start).toFixed(2);
     
-    console.log(`${C.green}   ✓ [DNA][AUTH]${C.reset} Trace: ${traceId} | Identity Linked | Lat: ${duration}ms`);
+    // @fix: console.info para cumplimiento Linter
+    console.info(`${C.green}   ✓ [DNA][AUTH]${C.reset} Trace: ${traceId} | Identity Linked | Lat: ${duration}ms`);
     
     return {
       userId: user.id,
@@ -147,7 +149,6 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 /**
  * APARATO PRINCIPAL: PortalPage
  * @description Centro de mando para la orquestación de operaciones y reputación.
- * @pilar IX: Inversión de Control. Delega la lógica de negocio a los Silos Managers.
  */
 export default async function PortalPage(props: PageProps) {
   const pageStart = performance.now();
@@ -226,7 +227,9 @@ export default async function PortalPage(props: PageProps) {
   ];
 
   const pageDuration = (performance.now() - pageStart).toFixed(2);
-  console.log(`${C.magenta}[DNA][PORTAL]${C.reset} View ready: ${activeView} | Trace: ${traceId} | Time: ${pageDuration}ms`);
+  
+  // @fix: console.info para cumplimiento Linter
+  console.info(`${C.magenta}[DNA][PORTAL]${C.reset} View ready: ${activeView} | Trace: ${traceId} | Time: ${pageDuration}ms`);
 
   return (
     <main className="min-h-screen bg-background text-foreground pt-32 pb-24 selection:bg-primary/20 transition-colors duration-1000">
@@ -350,7 +353,7 @@ export default async function PortalPage(props: PageProps) {
 
       <div className="fixed bottom-8 left-1/2 -translate-x-1/2 opacity-20 pointer-events-none">
          <span className="text-[7px] font-mono uppercase tracking-[1em] text-foreground">
-           MetaShark Sovereign Portal v28.0
+           MetaShark Sovereign Portal v29.0
          </span>
       </div>
     </main>

@@ -1,11 +1,11 @@
 /**
  * @file packages/cms/core/src/payload.config.ts
  * @description Orquestador Maestro del Ecosistema de Datos MetaShark.
- *              Refactorizado: Blindaje contra 'SELF_SIGNED_CERT_IN_CHAIN' en Vercel.
- *              Sincronizado: Uso de console.info para cumplimiento de Linter v10.0.
- *              Alineación: Patrón "Sovereign Pointers" para Bóveda S3.
+ *              Refactorizado: Blindaje contra 'SELF_SIGNED_CERT_IN_CHAIN' mediante
+ *              la sanitización del Connection String (SSL Override Trap).
+ *              Sincronizado: Cumplimiento de Linter v10.0 (console.info).
  * 
- * @version 52.0 - Postgres SSL Hardened & Zero-Noise Build
+ * @version 53.0 - SSL String Sanitizer & Zero-Noise Build
  * @author Staff Engineer - MetaShark Tech
  */
 
@@ -19,9 +19,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 
-/** 
- * INVENTARIO DE COLECCIONES (SBU Matrix)
- */
+/** INVENTARIO DE COLECCIONES (SBU Matrix) */
 import { Ingestions } from './collections/Ingestions';
 import { Subscribers } from './collections/Subscribers';
 import { Agencies } from './collections/Agencies';
@@ -40,63 +38,60 @@ import { Users } from './collections/users/Users';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-/**
- * DETECTORES DE ESTADO DE INFRAESTRUCTRURA
- * @pilar VIII: Resiliencia de Build.
- */
 const IS_TYPE_GEN = process.env.PAYLOAD_GENERATE === 'true';
 const IS_BUILD = process.env.NEXT_PHASE === 'phase-production-build';
 const HAS_DB_URL = !!process.env.DATABASE_URL;
 
-// Protocolo Cromático Heimdall v2.5
 const C = {
   reset: '\x1b[0m', cyan: '\x1b[36m', green: '\x1b[32m', 
   yellow: '\x1b[33m', magenta: '\x1b[35m', bold: '\x1b[1m', red: '\x1b[31m'
 };
 
 /**
- * FACTORÍA DE ADAPTADOR DE BASE DE DATOS (Hardened Handshake)
- * @description Implementa seguridad SSL granular. 
- * @fix Erradica el error de certificado autofirmado en Vercel Build.
+ * @function getSanitizedDbUrl
+ * @description Purificador de Cadena de Conexión (SSL Override Shield).
+ *              Evita que parámetros de la URL como 'sslmode=require' sobrescriban
+ *              la configuración granular del pool en la librería 'pg'.
  */
-const resolveDbAdapter = () => {
-  /** 
-   * @case TYPE_GENERATION
-   * @pilar XIII: Build Isolation. Evita conexiones durante la síntesis de tipos local.
-   */
-  if (IS_TYPE_GEN && !HAS_DB_URL) {
-    return postgresAdapter({
-      pool: { connectionString: 'postgres://dummy:dummy@127.0.0.1:5432/dummy' },
-    });
+const getSanitizedDbUrl = (): string => {
+  const rawUrl = process.env.DATABASE_URL || '';
+  if (!rawUrl) return '';
+
+  try {
+    const url = new URL(rawUrl);
+    // Erradicamos sslmode para que no sobreescriba { rejectUnauthorized: false }
+    url.searchParams.delete('sslmode');
+    // Inyectamos compatibilidad para Supabase Transaction Pooler (Puerto 6543)
+    url.searchParams.set('uselibpqcompat', 'true');
+    return url.toString();
+  } catch {
+    return rawUrl; // Fallback silencioso si la URL es inválida
   }
-  
-  /**
-   * @case PRODUCTION_RUNTIME / BUILD_GENERATION
-   * @description Configuración optimizada para el Transaction Pooler de Supabase.
-   */
-  return postgresAdapter({
-    pool: {
-      connectionString: process.env.DATABASE_URL || '',
-      max: IS_BUILD ? 2 : 10, // Minimizamos sockets durante el build para evitar saturación
-      idleTimeoutMillis: 30000,
-      connectionTimeoutMillis: 10000,
-      /**
-       * @fix: Seguridad de Perímetro Vercel.
-       * Durante el build, forzamos la aceptación de certificados de la cadena de Supabase
-       * para prevenir el error 'self-signed certificate in certificate chain'.
-       */
-      ssl: IS_BUILD || process.env.VERCEL === '1' 
-        ? { rejectUnauthorized: false } 
-        : { rejectUnauthorized: false }, // Mantenemos coherencia para evitar drift
-    },
-    idType: 'uuid',
-    push: false, // Innegociable: Las mutaciones solo se hacen vía Migraciones manuales
-  });
 };
 
 /**
- * FACTORÍA DE PLUGINS CLOUD (S3 Vault Sealing)
+ * FACTORÍA DE ADAPTADOR DE BASE DE DATOS (Hardened Handshake)
  */
+const resolveDbAdapter = () => {
+  if (IS_TYPE_GEN && !HAS_DB_URL) {
+    return postgresAdapter({
+      pool: { connectionString: 'postgres://ghost:ghost@127.0.0.1:5432/ghost' },
+    });
+  }
+  
+  return postgresAdapter({
+    pool: {
+      connectionString: getSanitizedDbUrl(),
+      max: IS_BUILD ? 2 : 10, // Minimizamos sockets durante el build para evitar saturación
+      idleTimeoutMillis: 30000,
+      connectionTimeoutMillis: 10000,
+      ssl: { rejectUnauthorized: false }, 
+    },
+    idType: 'uuid',
+    push: false, 
+  });
+};
+
 const resolvePlugins = () => {
   const endpoint = process.env.S3_ENDPOINT;
   
@@ -104,14 +99,12 @@ const resolvePlugins = () => {
     if (process.env.NODE_ENV === 'production' && !IS_BUILD) {
       console.warn(`${C.yellow}[HEIMDALL][VAULT] Alerta: S3_ENDPOINT no detectado. Activos en modo efímero.${C.reset}`);
     }
-    return [];
+    return[];
   }
   
-  return [
+  return[
     s3Storage({
-      collections: { 
-        'media': true
-      },
+      collections: { 'media': true },
       bucket: process.env.S3_BUCKET || 'sanctuary-vault',
       config: {
         endpoint: endpoint,
@@ -126,21 +119,14 @@ const resolvePlugins = () => {
   ];
 };
 
-/**
- * APARATO PRINCIPAL: config
- */
 export const config = buildConfig({
   serverURL: process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:4200',
   secret: process.env.PAYLOAD_SECRET || 'emergency-dev-vault-key-33',
   
   admin: {
     user: 'users',
-    importMap: { 
-      baseDir: path.resolve(__dirname) 
-    },
-    meta: { 
-      titleSuffix: '- MetaShark Enterprise Operations',
-    },
+    importMap: { baseDir: path.resolve(__dirname) },
+    meta: { titleSuffix: '- MetaShark Enterprise Operations' },
   },
 
   db: resolveDbAdapter(),
@@ -150,30 +136,18 @@ export const config = buildConfig({
     defaultFromName: 'Enterprise Hospitality Concierge',
   }) : undefined,
 
-  collections: [
+  collections:[
     Offers, FlashSales, Agencies, Agents, BusinessMetrics,
     Ingestions, Subscribers, Tenants, Users, Notifications,
     DynamicRoutes, Media, BlogPosts, Projects,
   ],
   
   editor: lexicalEditor({}),
-  
-  typescript: {
-    outputFile: path.resolve(__dirname, 'payload-types.ts'),
-  },
-
-  /** 
-   * @pilar III: Seguridad de Tipos.
-   */
+  typescript: { outputFile: path.resolve(__dirname, 'payload-types.ts') },
   sharp: (sharp as unknown) as SharpDependency,
-
   plugins: resolvePlugins(),
 });
 
-/**
- * TELEMETRÍA DE MONTAJE DE INFRAESTRUCTURA
- * @fix console.log -> console.info para cumplimiento de Linter v10.0
- */
 if (!IS_TYPE_GEN && typeof window === 'undefined') {
   const phase = IS_BUILD ? 'BUILD_GENERATION' : 'RUNTIME_ACTIVE';
   const sslStatus = HAS_DB_URL ? 'HARDENED_SSL' : 'BYPASSED';

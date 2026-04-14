@@ -67,6 +67,11 @@ export interface Config {
   };
   blocks: {};
   collections: {
+    tenants: Tenant;
+    users: User;
+    media: Media;
+    'blog-posts': BlogPost;
+    projects: Project;
     offers: Offer;
     'flash-sales': FlashSale;
     agencies: Agency;
@@ -74,13 +79,8 @@ export interface Config {
     'business-metrics': BusinessMetric;
     ingestions: Ingestion;
     subscribers: Subscriber;
-    tenants: Tenant;
-    users: User;
     notifications: Notification;
     'dynamic-routes': DynamicRoute;
-    media: Media;
-    'blog-posts': BlogPost;
-    projects: Project;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -88,6 +88,11 @@ export interface Config {
   };
   collectionsJoins: {};
   collectionsSelect: {
+    tenants: TenantsSelect<false> | TenantsSelect<true>;
+    users: UsersSelect<false> | UsersSelect<true>;
+    media: MediaSelect<false> | MediaSelect<true>;
+    'blog-posts': BlogPostsSelect<false> | BlogPostsSelect<true>;
+    projects: ProjectsSelect<false> | ProjectsSelect<true>;
     offers: OffersSelect<false> | OffersSelect<true>;
     'flash-sales': FlashSalesSelect<false> | FlashSalesSelect<true>;
     agencies: AgenciesSelect<false> | AgenciesSelect<true>;
@@ -95,13 +100,8 @@ export interface Config {
     'business-metrics': BusinessMetricsSelect<false> | BusinessMetricsSelect<true>;
     ingestions: IngestionsSelect<false> | IngestionsSelect<true>;
     subscribers: SubscribersSelect<false> | SubscribersSelect<true>;
-    tenants: TenantsSelect<false> | TenantsSelect<true>;
-    users: UsersSelect<false> | UsersSelect<true>;
     notifications: NotificationsSelect<false> | NotificationsSelect<true>;
     'dynamic-routes': DynamicRoutesSelect<false> | DynamicRoutesSelect<true>;
-    media: MediaSelect<false> | MediaSelect<true>;
-    'blog-posts': BlogPostsSelect<false> | BlogPostsSelect<true>;
-    projects: ProjectsSelect<false> | ProjectsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -140,56 +140,6 @@ export interface UserAuthOperations {
     email: string;
     password: string;
   };
-}
-/**
- * Gestão estratégica de pacotes turísticos e programas de hospitalidade.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "offers".
- */
-export interface Offer {
-  id: string;
-  title: string;
-  /**
-   * Ruta SEO inmutable.
-   */
-  slug?: string | null;
-  type: 'package' | 'program' | 'promo';
-  audience: 'public' | 'agents' | 'elite';
-  status: 'draft' | 'published' | 'sold_out';
-  /**
-   * Resumo da proposta de valor comercial.
-   */
-  description: string;
-  /**
-   * Mínimo de noites.
-   */
-  nightsCount?: number | null;
-  /**
-   * Preço base net.
-   */
-  basePrice: number;
-  currency?: ('BRL' | 'USD' | 'ARS') | null;
-  /**
-   * Vagas totais (0 = ilimitado).
-   */
-  maxCapacity?: number | null;
-  inclusions?:
-    | {
-        item: string;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * Propriedade proprietária desta oferta.
-   */
-  tenant: string | Tenant;
-  /**
-   * Imagem de impacto para o card (LCP Optimized).
-   */
-  heroAsset: string | Media;
-  updatedAt: string;
-  createdAt: string;
 }
 /**
  * Gestão centralizada de identidades de propriedade, DNA de marca e ativos vigentes.
@@ -313,6 +263,268 @@ export interface Media {
   };
 }
 /**
+ * Gestão de identidades soberanas e reactor de reputação P33.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "users".
+ */
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: 'developer' | 'admin' | 'operator' | 'sponsor' | 'guest';
+  /**
+   * Perímetro soberano de propriedade.
+   */
+  tenant: string | Tenant;
+  /**
+   * Calculado pelo Math Engine.
+   */
+  level?: number | null;
+  /**
+   * Total de RazTokens (XP) acumulados.
+   */
+  experiencePoints: number;
+  operatorMetadata?: {
+    agency: string | Agency;
+    accessLevel?: ('manager' | 'consultant') | null;
+  };
+  guestMetadata?: {
+    preferredLanguage?: string | null;
+    discoverySource?: string | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+  resetPasswordToken?: string | null;
+  resetPasswordExpiration?: string | null;
+  salt?: string | null;
+  hash?: string | null;
+  _verified?: boolean | null;
+  _verificationToken?: string | null;
+  loginAttempts?: number | null;
+  lockUntil?: string | null;
+  sessions?:
+    | {
+        id: string;
+        createdAt?: string | null;
+        expiresAt: string;
+      }[]
+    | null;
+  password?: string | null;
+  collection: 'users';
+}
+/**
+ * Diretório central de operadoras e agências de viagens verificadas.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "agencies".
+ */
+export interface Agency {
+  id: string;
+  brandName: string;
+  legalName: string;
+  jurisdiction: 'BR' | 'CL' | 'INTL';
+  taxId: string;
+  iataCode?: string | null;
+  /**
+   * Isotipo para co-branding y flyers.
+   */
+  logo: string | Media;
+  /**
+   * Valor total de reservas geradas (R$).
+   */
+  totalYield?: number | null;
+  /**
+   * Comissões devengadas pendentes de pagamento.
+   */
+  pendingCommission?: number | null;
+  /**
+   * Índice de credibilidade (0-100).
+   */
+  trustScore?: number | null;
+  tier: 'platinum' | 'gold' | 'silver' | 'bronze';
+  status: 'active' | 'review' | 'blocked';
+  tenant: string | Tenant;
+  /**
+   * Registro inalterável de notas técnicas.
+   */
+  internalObservations?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Gestão da narrativa e inteligência editorial do Santuário.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "blog-posts".
+ */
+export interface BlogPost {
+  id: string;
+  /**
+   * Propriedade detentora desta narrativa.
+   */
+  tenant: string | Tenant;
+  title: string;
+  /**
+   * Permalink inalterável após publicação.
+   */
+  slug: string;
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  /**
+   * Resumo crítico para meta-tags SEO.
+   */
+  description: string;
+  author: string | User;
+  publishedDate: string;
+  status: 'draft' | 'published';
+  /**
+   * Define o tema visual no Portal.
+   */
+  vibe: 'day' | 'night';
+  /**
+   * Taxonomia indexada por busca semântica.
+   */
+  tags?:
+    | {
+        tag: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Asset visual de alta fidelidade para LCP.
+   */
+  ogImage: string | Media;
+  /**
+   * Cálculo de densidade (wpm: 225).
+   */
+  readingTime?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Catálogo de infraestruturas digitais e ativos de alta engenharia.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "projects".
+ */
+export interface Project {
+  id: string;
+  title: string;
+  slug: string;
+  description: string;
+  /**
+   * Ativo visual de alta fidelidade (S3 Vault).
+   */
+  mainImage: string | Media;
+  liveUrl?: string | null;
+  codeUrl?: string | null;
+  tags: {
+    tag: string;
+    id?: string | null;
+  }[];
+  introduction: {
+    heading: string;
+    body: string;
+  };
+  tech_stack: {
+    technology: string;
+    id?: string | null;
+  }[];
+  elite_options?:
+    | {
+        name: string;
+        detail: string;
+        id?: string | null;
+      }[]
+    | null;
+  backend_architecture: {
+    title: string;
+    description?: string | null;
+    features?:
+      | {
+          feature: string;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  branding: {
+    /**
+     * Cor de acento (Space OKLCH support).
+     */
+    primary_color: string;
+    layout_style: 'minimal' | 'immersive' | 'editorial' | 'corporate' | 'brutalist';
+  };
+  reputationWeight: number;
+  tenant: string | Tenant;
+  status: 'draft' | 'published';
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Gestão estratégica de pacotes turísticos e programas de hospitalidade.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "offers".
+ */
+export interface Offer {
+  id: string;
+  title: string;
+  /**
+   * Ruta SEO inmutable.
+   */
+  slug?: string | null;
+  type: 'package' | 'program' | 'promo';
+  audience: 'public' | 'agents' | 'elite';
+  status: 'draft' | 'published' | 'sold_out';
+  /**
+   * Resumo da proposta de valor comercial.
+   */
+  description: string;
+  /**
+   * Mínimo de noites.
+   */
+  nightsCount?: number | null;
+  /**
+   * Preço base net.
+   */
+  basePrice: number;
+  currency?: ('BRL' | 'USD' | 'ARS') | null;
+  /**
+   * Vagas totais (0 = ilimitado).
+   */
+  maxCapacity?: number | null;
+  inclusions?:
+    | {
+        item: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Propriedade proprietária desta oferta.
+   */
+  tenant: string | Tenant;
+  /**
+   * Imagem de impacto para o card (LCP Optimized).
+   */
+  heroAsset: string | Media;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * Gestão automatizada de ofertas de curta duração e alta conversão.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -357,45 +569,6 @@ export interface FlashSale {
    */
   heroAsset: string | Media;
   tenant: string | Tenant;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * Diretório central de operadoras e agências de viagens verificadas.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "agencies".
- */
-export interface Agency {
-  id: string;
-  brandName: string;
-  legalName: string;
-  jurisdiction: 'BR' | 'CL' | 'INTL';
-  taxId: string;
-  iataCode?: string | null;
-  /**
-   * Isotipo para co-branding y flyers.
-   */
-  logo: string | Media;
-  /**
-   * Valor total de reservas geradas (R$).
-   */
-  totalYield?: number | null;
-  /**
-   * Comissões devengadas pendentes de pagamento.
-   */
-  pendingCommission?: number | null;
-  /**
-   * Índice de credibilidade (0-100).
-   */
-  trustScore?: number | null;
-  tier: 'platinum' | 'gold' | 'silver' | 'bronze';
-  status: 'active' | 'review' | 'blocked';
-  tenant: string | Tenant;
-  /**
-   * Registro inalterável de notas técnicas.
-   */
-  internalObservations?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -471,57 +644,6 @@ export interface BusinessMetric {
     | null;
   updatedAt: string;
   createdAt: string;
-}
-/**
- * Gestão de identidades soberanas e reactor de reputação P33.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "users".
- */
-export interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: 'developer' | 'admin' | 'operator' | 'sponsor' | 'guest';
-  /**
-   * Perímetro soberano de propriedade.
-   */
-  tenant: string | Tenant;
-  /**
-   * Calculado pelo Math Engine.
-   */
-  level?: number | null;
-  /**
-   * Total de RazTokens (XP) acumulados.
-   */
-  experiencePoints: number;
-  operatorMetadata?: {
-    agency: string | Agency;
-    accessLevel?: ('manager' | 'consultant') | null;
-  };
-  guestMetadata?: {
-    preferredLanguage?: string | null;
-    discoverySource?: string | null;
-  };
-  updatedAt: string;
-  createdAt: string;
-  resetPasswordToken?: string | null;
-  resetPasswordExpiration?: string | null;
-  salt?: string | null;
-  hash?: string | null;
-  _verified?: boolean | null;
-  _verificationToken?: string | null;
-  loginAttempts?: number | null;
-  lockUntil?: string | null;
-  sessions?:
-    | {
-        id: string;
-        createdAt?: string | null;
-        expiresAt: string;
-      }[]
-    | null;
-  password?: string | null;
-  collection: 'users';
 }
 /**
  * Pipeline central de captura e processamento de inteligência de dados.
@@ -735,128 +857,6 @@ export interface DynamicRoute {
   createdAt: string;
 }
 /**
- * Gestão da narrativa e inteligência editorial do Santuário.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "blog-posts".
- */
-export interface BlogPost {
-  id: string;
-  /**
-   * Propriedade detentora desta narrativa.
-   */
-  tenant: string | Tenant;
-  title: string;
-  /**
-   * Permalink inalterável após publicação.
-   */
-  slug: string;
-  content: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  };
-  /**
-   * Resumo crítico para meta-tags SEO.
-   */
-  description: string;
-  author: string | User;
-  publishedDate: string;
-  status: 'draft' | 'published';
-  /**
-   * Define o tema visual no Portal.
-   */
-  vibe: 'day' | 'night';
-  /**
-   * Taxonomia indexada por busca semântica.
-   */
-  tags?:
-    | {
-        tag: string;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * Asset visual de alta fidelidade para LCP.
-   */
-  ogImage: string | Media;
-  /**
-   * Cálculo de densidade (wpm: 225).
-   */
-  readingTime?: number | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * Catálogo de infraestruturas digitais e ativos de alta engenharia.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "projects".
- */
-export interface Project {
-  id: string;
-  title: string;
-  slug: string;
-  description: string;
-  /**
-   * Ativo visual de alta fidelidade (S3 Vault).
-   */
-  mainImage: string | Media;
-  liveUrl?: string | null;
-  codeUrl?: string | null;
-  tags: {
-    tag: string;
-    id?: string | null;
-  }[];
-  introduction: {
-    heading: string;
-    body: string;
-  };
-  tech_stack: {
-    technology: string;
-    id?: string | null;
-  }[];
-  elite_options?:
-    | {
-        name: string;
-        detail: string;
-        id?: string | null;
-      }[]
-    | null;
-  backend_architecture: {
-    title: string;
-    description?: string | null;
-    features?:
-      | {
-          feature: string;
-          id?: string | null;
-        }[]
-      | null;
-  };
-  branding: {
-    /**
-     * Cor de acento (Space OKLCH support).
-     */
-    primary_color: string;
-    layout_style: 'minimal' | 'immersive' | 'editorial' | 'corporate' | 'brutalist';
-  };
-  reputationWeight: number;
-  tenant: string | Tenant;
-  status: 'draft' | 'published';
-  updatedAt: string;
-  createdAt: string;
-}
-/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
@@ -880,6 +880,26 @@ export interface PayloadKv {
 export interface PayloadLockedDocument {
   id: string;
   document?:
+    | ({
+        relationTo: 'tenants';
+        value: string | Tenant;
+      } | null)
+    | ({
+        relationTo: 'users';
+        value: string | User;
+      } | null)
+    | ({
+        relationTo: 'media';
+        value: string | Media;
+      } | null)
+    | ({
+        relationTo: 'blog-posts';
+        value: string | BlogPost;
+      } | null)
+    | ({
+        relationTo: 'projects';
+        value: string | Project;
+      } | null)
     | ({
         relationTo: 'offers';
         value: string | Offer;
@@ -909,32 +929,12 @@ export interface PayloadLockedDocument {
         value: string | Subscriber;
       } | null)
     | ({
-        relationTo: 'tenants';
-        value: string | Tenant;
-      } | null)
-    | ({
-        relationTo: 'users';
-        value: string | User;
-      } | null)
-    | ({
         relationTo: 'notifications';
         value: string | Notification;
       } | null)
     | ({
         relationTo: 'dynamic-routes';
         value: string | DynamicRoute;
-      } | null)
-    | ({
-        relationTo: 'media';
-        value: string | Media;
-      } | null)
-    | ({
-        relationTo: 'blog-posts';
-        value: string | BlogPost;
-      } | null)
-    | ({
-        relationTo: 'projects';
-        value: string | Project;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -977,6 +977,225 @@ export interface PayloadMigration {
   batch?: number | null;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tenants_select".
+ */
+export interface TenantsSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  domain?: T;
+  status?: T;
+  heroConfig?:
+    | T
+    | {
+        activeHeroVideo?: T;
+        activeHeroPoster?: T;
+        activeHeroAudio?: T;
+      };
+  primaryColor?: T;
+  accentColor?: T;
+  logo?: T;
+  favicon?: T;
+  socialDNA?:
+    | T
+    | {
+        instagram?: T;
+        facebook?: T;
+        whatsapp?: T;
+      };
+  seoMaster?:
+    | T
+    | {
+        globalMetaTitle?: T;
+        globalMetaDescription?: T;
+      };
+  enableGamification?: T;
+  baseExperienceMultiplier?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "users_select".
+ */
+export interface UsersSelect<T extends boolean = true> {
+  name?: T;
+  email?: T;
+  role?: T;
+  tenant?: T;
+  level?: T;
+  experiencePoints?: T;
+  operatorMetadata?:
+    | T
+    | {
+        agency?: T;
+        accessLevel?: T;
+      };
+  guestMetadata?:
+    | T
+    | {
+        preferredLanguage?: T;
+        discoverySource?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  resetPasswordToken?: T;
+  resetPasswordExpiration?: T;
+  salt?: T;
+  hash?: T;
+  _verified?: T;
+  _verificationToken?: T;
+  loginAttempts?: T;
+  lockUntil?: T;
+  sessions?:
+    | T
+    | {
+        id?: T;
+        createdAt?: T;
+        expiresAt?: T;
+      };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media_select".
+ */
+export interface MediaSelect<T extends boolean = true> {
+  alt?: T;
+  assetContext?: T;
+  caption?: T;
+  tenant?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+  sizes?:
+    | T
+    | {
+        thumbnail?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        card?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        'hero-cinematic'?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+      };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "blog-posts_select".
+ */
+export interface BlogPostsSelect<T extends boolean = true> {
+  tenant?: T;
+  title?: T;
+  slug?: T;
+  content?: T;
+  description?: T;
+  author?: T;
+  publishedDate?: T;
+  status?: T;
+  vibe?: T;
+  tags?:
+    | T
+    | {
+        tag?: T;
+        id?: T;
+      };
+  ogImage?: T;
+  readingTime?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "projects_select".
+ */
+export interface ProjectsSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  description?: T;
+  mainImage?: T;
+  liveUrl?: T;
+  codeUrl?: T;
+  tags?:
+    | T
+    | {
+        tag?: T;
+        id?: T;
+      };
+  introduction?:
+    | T
+    | {
+        heading?: T;
+        body?: T;
+      };
+  tech_stack?:
+    | T
+    | {
+        technology?: T;
+        id?: T;
+      };
+  elite_options?:
+    | T
+    | {
+        name?: T;
+        detail?: T;
+        id?: T;
+      };
+  backend_architecture?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        features?:
+          | T
+          | {
+              feature?: T;
+              id?: T;
+            };
+      };
+  branding?:
+    | T
+    | {
+        primary_color?: T;
+        layout_style?: T;
+      };
+  reputationWeight?: T;
+  tenant?: T;
+  status?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1152,85 +1371,6 @@ export interface SubscribersSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "tenants_select".
- */
-export interface TenantsSelect<T extends boolean = true> {
-  name?: T;
-  slug?: T;
-  domain?: T;
-  status?: T;
-  heroConfig?:
-    | T
-    | {
-        activeHeroVideo?: T;
-        activeHeroPoster?: T;
-        activeHeroAudio?: T;
-      };
-  primaryColor?: T;
-  accentColor?: T;
-  logo?: T;
-  favicon?: T;
-  socialDNA?:
-    | T
-    | {
-        instagram?: T;
-        facebook?: T;
-        whatsapp?: T;
-      };
-  seoMaster?:
-    | T
-    | {
-        globalMetaTitle?: T;
-        globalMetaDescription?: T;
-      };
-  enableGamification?: T;
-  baseExperienceMultiplier?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "users_select".
- */
-export interface UsersSelect<T extends boolean = true> {
-  name?: T;
-  email?: T;
-  role?: T;
-  tenant?: T;
-  level?: T;
-  experiencePoints?: T;
-  operatorMetadata?:
-    | T
-    | {
-        agency?: T;
-        accessLevel?: T;
-      };
-  guestMetadata?:
-    | T
-    | {
-        preferredLanguage?: T;
-        discoverySource?: T;
-      };
-  updatedAt?: T;
-  createdAt?: T;
-  resetPasswordToken?: T;
-  resetPasswordExpiration?: T;
-  salt?: T;
-  hash?: T;
-  _verified?: T;
-  _verificationToken?: T;
-  loginAttempts?: T;
-  lockUntil?: T;
-  sessions?:
-    | T
-    | {
-        id?: T;
-        createdAt?: T;
-        expiresAt?: T;
-      };
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "notifications_select".
  */
 export interface NotificationsSelect<T extends boolean = true> {
@@ -1269,146 +1409,6 @@ export interface DynamicRoutesSelect<T extends boolean = true> {
         id?: T;
       };
   tenant?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media_select".
- */
-export interface MediaSelect<T extends boolean = true> {
-  alt?: T;
-  assetContext?: T;
-  caption?: T;
-  tenant?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  url?: T;
-  thumbnailURL?: T;
-  filename?: T;
-  mimeType?: T;
-  filesize?: T;
-  width?: T;
-  height?: T;
-  focalX?: T;
-  focalY?: T;
-  sizes?:
-    | T
-    | {
-        thumbnail?:
-          | T
-          | {
-              url?: T;
-              width?: T;
-              height?: T;
-              mimeType?: T;
-              filesize?: T;
-              filename?: T;
-            };
-        card?:
-          | T
-          | {
-              url?: T;
-              width?: T;
-              height?: T;
-              mimeType?: T;
-              filesize?: T;
-              filename?: T;
-            };
-        'hero-cinematic'?:
-          | T
-          | {
-              url?: T;
-              width?: T;
-              height?: T;
-              mimeType?: T;
-              filesize?: T;
-              filename?: T;
-            };
-      };
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "blog-posts_select".
- */
-export interface BlogPostsSelect<T extends boolean = true> {
-  tenant?: T;
-  title?: T;
-  slug?: T;
-  content?: T;
-  description?: T;
-  author?: T;
-  publishedDate?: T;
-  status?: T;
-  vibe?: T;
-  tags?:
-    | T
-    | {
-        tag?: T;
-        id?: T;
-      };
-  ogImage?: T;
-  readingTime?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "projects_select".
- */
-export interface ProjectsSelect<T extends boolean = true> {
-  title?: T;
-  slug?: T;
-  description?: T;
-  mainImage?: T;
-  liveUrl?: T;
-  codeUrl?: T;
-  tags?:
-    | T
-    | {
-        tag?: T;
-        id?: T;
-      };
-  introduction?:
-    | T
-    | {
-        heading?: T;
-        body?: T;
-      };
-  tech_stack?:
-    | T
-    | {
-        technology?: T;
-        id?: T;
-      };
-  elite_options?:
-    | T
-    | {
-        name?: T;
-        detail?: T;
-        id?: T;
-      };
-  backend_architecture?:
-    | T
-    | {
-        title?: T;
-        description?: T;
-        features?:
-          | T
-          | {
-              feature?: T;
-              id?: T;
-            };
-      };
-  branding?:
-    | T
-    | {
-        primary_color?: T;
-        layout_style?: T;
-      };
-  reputationWeight?: T;
-  tenant?: T;
-  status?: T;
   updatedAt?: T;
   createdAt?: T;
 }

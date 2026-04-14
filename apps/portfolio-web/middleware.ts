@@ -1,9 +1,12 @@
 /**
  * @file apps/portfolio-web/middleware.ts
- * @description Orquestador Soberano de Tráfico de Borde (Edge Orchestrator).
+ * @description Orquestador Soberano de Tráfico de Borde (Edge Gateway).
  *              Optimizado para Next.js 15 y Vercel Edge Network.
+ *              Refactorizado: Erradicación de colisión de enrutamiento 404,
+ *              inyección de directivas 'must-revalidate' anti-envenenamiento 
+ *              de caché y Flat Logging para estabilidad del Edge Worker.
  * 
- * @version 28.0 - Direct Flow Optimization & Forensic Telemetry
+ * @version 29.0 - Vercel Edge Hardened & 404 Root Fix
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -12,7 +15,7 @@ import { i18n, isValidLocale, type Locale } from './src/config/i18n.config';
 import { routeGuard } from './src/lib/route-guard';
 
 /**
- * CONSTANTES DE TELEMETRÍA (Protocolo Heimdall)
+ * CONSTANTES DE TELEMETRÍA (Protocolo Heimdall v2.5 - Edge Safe)
  */
 const C = {
   reset: '\x1b[0m',
@@ -25,7 +28,7 @@ const C = {
 } as const;
 
 /**
- * PREFIJOS EXCLUIDOS (Rutas de infraestructura y activos)
+ * PREFIJOS EXCLUIDOS (Bypass de latencia cero)
  */
 const EXCLUDED_PREFIXES = [
   '/_next', '/api', '/_payload', '/static', '/images', '/video', 
@@ -34,32 +37,53 @@ const EXCLUDED_PREFIXES = [
 ];
 
 /**
- * Regex para detección de archivos físicos (extensiones).
+ * Regex para detección de activos físicos.
  */
 const HAS_EXTENSION = /\.[a-z0-9]+$/i;
 
 /**
  * MODULE: getPreferredLocale
- * Negocia el idioma basado en Cookies (Persistencia) o Headers (Preferencia de Navegador).
+ * @description Negocia el idioma (Cookie > Browser > Default).
+ * @pilar X: Algoritmo defensivo contra headers malformados.
  */
 function getPreferredLocale(request: NextRequest, traceId: string): Locale {
-  // 1. Prioridad: Cookie persistente
-  const cookieLocale = request.cookies.get(i18n.cookieName)?.value;
-  if (cookieLocale && isValidLocale(cookieLocale)) return cookieLocale as Locale;
-
-  // 2. Fallback: Negociación por cabecera Accept-Language
-  const acceptLang = request.headers.get('accept-language');
-  if (acceptLang) {
-    const preferred = acceptLang.split(',')[0].split('-')[0];
-    const matched = i18n.locales.find(l => l.startsWith(preferred));
-    if (matched) {
-      console.info(`${C.cyan}[DNA][I18N]${C.reset} Resolved via Browser: ${matched} | Trace: ${traceId}`);
-      return matched as Locale;
+  try {
+    // 1. Prioridad Absoluta: Cookie persistente de sesión
+    const cookieLocale = request.cookies.get(i18n.cookieName)?.value;
+    if (cookieLocale && isValidLocale(cookieLocale)) {
+      return cookieLocale as Locale;
     }
+
+    // 2. Inteligencia de Navegador: Accept-Language
+    const acceptLang = request.headers.get('accept-language');
+    if (acceptLang) {
+      // Extrae 'en', 'es', 'pt' de strings complejos como 'es-ES,es;q=0.9,en;q=0.8'
+      const preferred = acceptLang.split(',')[0].split('-')[0].toLowerCase();
+      const matched = i18n.locales.find(l => l.toLowerCase().startsWith(preferred));
+      
+      if (matched) {
+        console.info(`${C.cyan}[DNA][I18N]${C.reset} Auto-resolved via Browser: ${matched} | Trace: ${traceId}`);
+        return matched as Locale;
+      }
+    }
+  } catch {
+    console.warn(`${C.yellow}[DNA][I18N]${C.reset} Header parsing failed. Engaging default fallback.`);
   }
 
-  // 3. Fallback Final: Idioma por defecto (pt-BR)
+  // 3. Fallback Innegociable: Portugués de Brasil
   return i18n.defaultLocale;
+}
+
+/**
+ * MODULE: safeEdgeRedirect
+ * @description Construye la redirección inyectando bloqueadores de caché.
+ * @pilar VIII: Resiliencia contra el Edge Cache Poisoning de Vercel CDN.
+ */
+function safeEdgeRedirect(url: URL): NextResponse {
+  const response = NextResponse.redirect(url, 307);
+  response.headers.set('Cache-Control', 'no-store, max-age=0, must-revalidate');
+  response.headers.set('X-Edge-Routing', 'Sovereign_Bypass');
+  return response;
 }
 
 /**
@@ -70,7 +94,7 @@ export async function middleware(request: NextRequest) {
   const traceId = `edge_pulse_${Date.now().toString(36).toUpperCase()}`;
   const { pathname, search } = request.nextUrl;
 
-  // I. BYPASS DE ACTIVOS (Optimización de latencia)
+  // I. BYPASS DE ACTIVOS (O(1) Exit)
   if (
     EXCLUDED_PREFIXES.some((prefix) => pathname.startsWith(prefix)) ||
     HAS_EXTENSION.test(pathname)
@@ -78,74 +102,68 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  console.group(`${C.magenta}${C.bold}[DNA][EDGE]${C.reset} Incoming Request | Trace: ${traceId}`);
+  // Edge-Safe Flat Logging
+  console.info(`${C.magenta}${C.bold}[DNA][EDGE]${C.reset} Incoming Request: ${pathname} | Trace: ${traceId}`);
   
   try {
-    // II. REDIRECCIÓN DE RAÍZ SOBERANA
-    // Gracias a app/page.tsx, esto es ahora un segundo nivel de seguridad.
+    // II. ERRADICACIÓN DEL 404 RAÍZ (Sovereign Root)
     if (pathname === '/') {
       const locale = getPreferredLocale(request, traceId);
       const redirectUrl = new URL(`/${locale}${search}`, request.url);
       
-      console.info(`${C.green}   → [REDIRECT]${C.reset} Root node targeted to: /${locale}`);
-      console.groupEnd();
-      
-      const response = NextResponse.redirect(redirectUrl, 307);
-      response.headers.set('Cache-Control', 'no-store, max-age=0'); // Vital para no cachear rumbos antiguos
-      return response;
+      console.info(`${C.green}   → [ROOT_REDIRECT]${C.reset} Targeted to: /${locale} | Trace: ${traceId}`);
+      return safeEdgeRedirect(redirectUrl);
     }
 
-    // III. NORMALIZACIÓN DE SEGMENTOS I18N
+    // III. AUTO-REPARACIÓN DE RUMBOS (Invalid Locale Detection)
     const segments = pathname.split('/').filter(Boolean);
     const potentialLocale = segments[0];
 
-    if (!isValidLocale(potentialLocale)) {
+    if (!potentialLocale || !isValidLocale(potentialLocale)) {
       const locale = getPreferredLocale(request, traceId);
-      const redirectUrl = new URL(`/${locale}${pathname}${search}`, request.url);
+      // Garantiza que no se generen barras dobles '//'
+      const cleanPathname = pathname.startsWith('/') ? pathname : `/${pathname}`;
+      const redirectUrl = new URL(`/${locale}${cleanPathname}${search}`, request.url);
       
-      console.info(`${C.yellow}   → [RE-ROUTE]${C.reset} Invalid locale segment: /${potentialLocale} -> /${locale}`);
-      console.groupEnd();
-      
-      const response = NextResponse.redirect(redirectUrl, 307);
-      response.headers.set('Cache-Control', 'no-store, max-age=0');
-      return response;
+      console.info(`${C.yellow}   → [RE-ROUTE]${C.reset} Invalid segment -> /${locale} | Trace: ${traceId}`);
+      return safeEdgeRedirect(redirectUrl);
     }
 
-    // IV. GUARDIÁN DE AUTORIDAD (RBAC)
+    // IV. GUARDIÁN DE AUTORIDAD (RBAC & P33)
     const guardResponse = await routeGuard(request, potentialLocale as Locale);
     if (guardResponse) {
-      console.info(`${C.yellow}   → [GUARD] INTERCEPTED`);
-      console.groupEnd();
+      console.info(`${C.yellow}   → [GUARD_INTERCEPT]${C.reset} Perimeter shield engaged | Trace: ${traceId}`);
+      // El routeGuard ya devuelve una respuesta sanitizada
       return guardResponse;
     }
 
-    // V. CONCESIÓN DE PASAJE
+    // V. CONCESIÓN DE PASAJE (Granted)
     const response = NextResponse.next();
     const duration = (performance.now() - start).toFixed(2);
 
-    // Inyección de Telemetría en Cabeceras
     response.headers.set('X-Heimdall-Trace', traceId);
     response.headers.set('X-Edge-Latency', `${duration}ms`);
     
     console.info(`${C.green}   ✓ [GRANTED]${C.reset} Trace: ${traceId} | Latency: ${duration}ms`);
-    console.groupEnd();
+    
     return response;
 
   } catch (error: unknown) {
     const msg = error instanceof Error ? error.message : 'Unknown Edge Drift';
-    console.error(`\n${C.red}${C.bold}✖ [CRITICAL][EDGE] Middleware Aborted:${C.reset} ${msg}`);
-    console.groupEnd();
-
-    return NextResponse.next(); // Fallback a Next para no matar la app
+    console.error(`${C.red}${C.bold}✖ [CRITICAL][EDGE] Middleware Aborted:${C.reset} ${msg} | Trace: ${traceId}`);
+    // Failsafe: Permite el paso para no tumbar la aplicación
+    return NextResponse.next();
   }
 }
 
 /**
- * CONFIGURACIÓN DEL MATCHER
- * Se excluyen las rutas de administración y los payloads de datos para evitar colisiones.
+ * CONFIGURACIÓN DEL MATCHER SOBERANO
+ * @description Ahora incluye explícitamente '/' para forzar a Vercel a ejecutarlo
+ * siempre, independientemente de la generación estática.
  */
 export const config = {
   matcher: [
+    '/',
     '/((?!api|_next/static|_next/image|images|video|audio|fonts|favicon.ico|manifest.json|admin|_payload).*)',
   ],
 };

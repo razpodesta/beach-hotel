@@ -1,13 +1,15 @@
 /**
  * @file packages/cms/core/src/payload.generate.config.ts
- * @description Motor de Síntesis de Tipos (Heimdall v5.2).
- *              Refactorizado para Build Estático Puro: Bypass de base de datos
- *              y eliminación de dependencias de runtime.
- * @version 5.2 - Forensic Observability & Strict Type Synthesis
+ * @description Motor de Síntesis de Tipos (Heimdall v5.3).
+ *              Refactorizado para Build Estático Puro: Se inyecta un "Phantom Adapter"
+ *              para satisfacer el requerimiento de 'defaultIDType' de Payload 3.0
+ *              sin abrir sockets de red. Linter purificado.
+ * @version 5.3 - Phantom Adapter Injection & Linter Pure
  * @author Raz Podestá - MetaShark Tech
  */
 
 import { buildConfig, type Config } from 'payload';
+import { postgresAdapter } from '@payloadcms/db-postgres';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import * as dotenv from 'dotenv';
@@ -20,7 +22,7 @@ const C = {
 
 const traceId = process.env.HEIMDALL_TRACE_ID || `DNA_${Date.now().toString(36).toUpperCase()}`;
 
-console.log(`\n${C.magenta}${C.bold}[${traceId}] 🧬 INICIANDO SÍNTESIS DE TIPOS${C.reset}`);
+console.info(`\n${C.magenta}${C.bold}[${traceId}] 🧬 INICIANDO SÍNTESIS DE TIPOS${C.reset}`);
 
 // 2. CONFIGURACIÓN DE ENTORNO
 dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
@@ -52,12 +54,16 @@ const config: Config = {
   secret: process.env.PAYLOAD_SECRET || 'static-dna-vault-key-33',
   
   /**
-   * @pilar VIII: Resiliencia de Build.
-   * Bypass total del adaptador. En fase de generación, Payload no debe
-   * inicializar Sockets de PostgreSQL.
+   * @pilar VIII: Resiliencia de Build (Phantom Adapter).
+   * Inyectamos un adaptador falso para que Payload pueda extraer el 'defaultIDType'
+   * requerido para la generación de tipos (TS AST), sin intentar conectarse.
    */
-  // @ts-expect-error: DB Adapter bypass required for static type generation
-  db: undefined,
+  db: postgresAdapter({
+    pool: {
+      connectionString: 'postgres://ghost:ghost@127.0.0.1:5432/ghost',
+    },
+    idType: 'uuid',
+  }),
   
   collections: [
     Tenants,
@@ -85,8 +91,8 @@ const config: Config = {
   admin: { autoLogin: false },
 };
 
-console.log(`   ${C.cyan}[${traceId}] [BUILD]${C.reset} Ensamblando configuración de síntesis...`);
+console.info(`   ${C.cyan}[${traceId}] [BUILD]${C.reset} Ensamblando configuración de síntesis...`);
 
 export default buildConfig(config);
 
-console.log(`${C.magenta}${C.bold}[${traceId}] 🏁 CONFIGURACIÓN ENTREGADA AL COMPILADOR.\n${C.reset}`);
+console.info(`${C.magenta}${C.bold}[${traceId}] 🏁 CONFIGURACIÓN ENTREGADA AL COMPILADOR.\n${C.reset}`);

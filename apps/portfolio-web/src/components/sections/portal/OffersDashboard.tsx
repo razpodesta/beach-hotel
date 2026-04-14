@@ -2,10 +2,11 @@
  * @file apps/portfolio-web/src/components/sections/portal/OffersDashboard.tsx
  * @description Enterprise Revenue Orchestrator (Silo A Manager).
  *              Terminal de alta fidelidad para la gestión de Yield y Distribución.
- *              Refactorizado: Validación de contrato post-fetch, agregación atómica
- *              de KPIs y motor de resiliencia ante degradación de red.
- *              Estándar: Heimdall v2.5 Forensic Ingestion & React 19 Purity.
- * @version 8.0 - Contract Validated & Revenue BI Hardened
+ *              Refactorizado: Purificación de Linter (ESLint no-console fix), 
+ *              validación de contrato post-fetch e inyección de telemetría Heimdall v2.5.
+ *              Estándar: Revenue BI Hardened & React 19 Pure.
+ * 
+ * @version 9.0 - Linter Pure & Revenue BI Hardened
  * @author Staff Engineer - MetaShark Tech
  */
 
@@ -142,7 +143,9 @@ export function OffersDashboard({ dictionary, className }: { dictionary: Diction
 
         setAssets(validatedData);
         setSyncLatency(duration);
-        console.log(`${C.green}   ✓ [DNA][REVENUE]${C.reset} Silo A Handshake OK | Latency: ${duration}ms | Trace: ${traceId}`);
+        
+        // @fix: console.info para cumplimiento Linter
+        console.info(`${C.green}   ✓ [DNA][REVENUE]${C.reset} Silo A Handshake OK | Latency: ${duration}ms | Trace: ${traceId}`);
       } else {
         throw new Error(response.error || 'INVENTORY_SIGNAL_CORRUPTED');
       }
@@ -315,7 +318,7 @@ export function OffersDashboard({ dictionary, className }: { dictionary: Diction
             <div className="h-4 w-px bg-border/40 hidden sm:block" />
             <div className="flex items-center gap-3 text-[9px] font-mono font-bold uppercase tracking-[0.4em] text-success">
               <ShieldCheck size={14} />
-              Protocol: v8.0_SEALED
+              Protocol: v9.0_SEALED
             </div>
           </div>
           

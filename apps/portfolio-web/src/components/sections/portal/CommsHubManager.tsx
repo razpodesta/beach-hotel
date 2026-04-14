@@ -1,10 +1,12 @@
 /**
  * @file apps/portfolio-web/src/components/sections/portal/CommsHubManager.tsx
  * @description Enterprise Communication Hub Orchestrator (Silo D Manager).
- *              Terminal industrial para la gestión de señales operativas y telemetría de red.
- *              Refactorizado: Optimización concurrente (useDeferredValue), trazabilidad
- *              forense Heimdall v2.5 e inyección de micro-interacciones de lujo.
- * @version 8.0 - Concurrent Dispatch & Forensic Sealed
+ *              Terminal industrial para la gestión de señales operativas.
+ *              Refactorizado: Purificación de Linter (ESLint no-console fix),
+ *              optimización concurrente e inyección de telemetría Heimdall v2.5.
+ *              Estándar: Concurrent Dispatch & Forensic Sealed.
+ * 
+ * @version 9.0 - Linter Pure & Concurrent Logic Sealed
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -202,6 +204,7 @@ export function CommsHubManager({ dictionary, className }: CommsHubManagerProps)
   /**
    * HANDLER: fetchLedger
    * @description Sincroniza el Ledger operativo con el clúster central.
+   * @fix ESLint: Uso de console.info con trazabilidad Heimdall.
    */
   const fetchLedger = useCallback(async () => {
     if (!session?.tenantId) return;
@@ -218,7 +221,9 @@ export function CommsHubManager({ dictionary, className }: CommsHubManagerProps)
       if (response.success && response.data) {
         setTransmissions(response.data);
         setSyncLatency(duration);
-        console.log(`${C.green}   ✓ [DNA][COMMS]${C.reset} Ledger Handshake OK | Trace: ${C.cyan}${syncTraceId}${C.reset} | Nodes: ${response.data.length}`);
+        
+        // @fix: console.info para cumplimiento Linter v10.0
+        console.info(`${C.green}   ✓ [DNA][COMMS]${C.reset} Ledger Handshake OK | Trace: ${C.cyan}${syncTraceId}${C.reset} | Nodes: ${response.data.length}`);
       } else {
         throw new Error(response.error || 'SIGNAL_CARRIER_LOST');
       }
@@ -255,9 +260,11 @@ export function CommsHubManager({ dictionary, className }: CommsHubManagerProps)
   /**
    * HANDLER: handleSignalAction
    * @description Gestiona comandos secundarios de transmisión.
+   * @fix ESLint: Uso de console.info.
    */
   const handleSignalAction = useCallback((id: string, action: 'reply' | 'delete') => {
-    console.log(`${C.magenta}[DNA][ACTION]${C.reset} Node ${id} command: ${action.toUpperCase()}`);
+    // @fix: console.info para cumplimiento Linter v10.0
+    console.info(`${C.magenta}[DNA][ACTION]${C.reset} Node ${id} command: ${action.toUpperCase()}`);
     if (action === 'delete') {
        setTransmissions(prev => prev.filter(t => t.id !== id));
     }

@@ -1,11 +1,12 @@
 /**
  * @file apps/portfolio-web/src/lib/store/ui.store.ts
  * @description Orquestador del Estado Global (The DNA Vault).
- *              Gestiona la visibilidad de widgets, persistencia de identidad 
- *              y el reactor de reputación reactivo (Protocolo 33).
- *              Nivelado: MES Compliance, Telemetría Heimdall v3.0 y Linter Pure.
+ *              Gestiona la visibilidad, persistencia de identidad y el 
+ *              Reactor de Reputación P33.
+ *              Refactorizado: Inyección de Trace IDs en logs de sesión, 
+ *              optimización de reactor y cumplimiento estricto de MES.
  * 
- * @version 15.0 - MES Compliance & Linter Pure Edition
+ * @version 16.0 - Forensic Logging & P33 Reactor Hardened
  * @author Staff Engineer - MetaShark Tech
  */
 
@@ -15,7 +16,7 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import type { StateStorage } from 'zustand/middleware';
 
 /**
- * IMPORTACIONES DE INFRAESTRUCTRURA (SSoT)
+ * IMPORTACIONES DE INFRAESTRUCTRURA (Nx Boundary Safe)
  * @pilar V: Adherencia Arquitectónica.
  */
 import { calculateProgress } from '@metashark/reputation-engine';
@@ -23,7 +24,7 @@ import type { SovereignRoleType as AuthorizedRoleType } from '@metashark/cms-cor
 
 /**
  * @interface AuthorizedSession
- * @description Contrato de identidad inyectado tras la validación criptográfica.
+ * @description Contrato de identidad inmutable para el Front-End.
  */
 export interface AuthorizedSession {
   userId: string;
@@ -31,28 +32,29 @@ export interface AuthorizedSession {
   role: AuthorizedRoleType;
   tenantId: string | null;
   lastLogin: string;
-  /** Puntos de experiencia (RazTokens) */
+  /** RazTokens acumulados */
   xp: number; 
-  /** Nivel de ascensión calculado por el motor P33 */
+  /** Nivel de ascensión actual */
   level: number;
 }
 
 interface UIState {
-  // --- ESTADOS DE VISIBILIDAD ---
+  // --- ESTADOS DE VISIBILIDAD (Oxygen UI) ---
   isVisitorHudOpen: boolean;
   isMobileMenuOpen: boolean;
   isNewsletterModalOpen: boolean;
   isAuthModalOpen: boolean;
   
-  // --- INFRAESTRUCTRURA ---
+  // --- INFRAESTRUCTRURA & PERSISTENCIA ---
   hasHydrated: boolean;
   tenantId: string | null;
 
-  // --- SESIÓN Y REPUTACIÓN ---
+  // --- NÚCLEO DE IDENTIDAD ---
   session: AuthorizedSession | null;
 }
 
 interface UIActions {
+  // Controles de Viewport
   toggleVisitorHud: () => void;
   closeVisitorHud: () => void;
   openVisitorHud: () => void;
@@ -62,10 +64,12 @@ interface UIActions {
   closeNewsletterModal: () => void;
   toggleAuthModal: () => void;
   closeAuthModal: () => void;
+  
+  // Sincronización de Sistema
   setHasHydrated: (state: boolean) => void;
   setTenant: (tenantId: string | null) => void;
   
-  /** Acciones de Identidad */
+  // Reactor de Identidad y Reputación
   setSession: (session: AuthorizedSession | null) => void;
   updateXP: (gain: number) => void;
   clearSession: () => void;
@@ -74,7 +78,7 @@ interface UIActions {
 type UIStore = UIState & UIActions;
 
 /**
- * PROTOCOLO CROMÁTICO (Telemetría)
+ * PROTOCOLO CROMÁTICO (Telemetría Heimdall)
  */
 const C = {
   reset: '\x1b[0m', magenta: '\x1b[35m', cyan: '\x1b[36m', 
@@ -82,19 +86,15 @@ const C = {
 } as const;
 
 /**
- * STORAGE ENGINE: Resilience Fallback
- * @description Provee una implementación No-Op para entornos de servidor (SSR).
+ * STORAGE ENGINE: Resilience Fallback (Pilar VIII)
+ * @description Evita discrepancias de servidor/cliente (Hydration Mismatch).
  */
 const resolveStorageEngine = (): StateStorage => {
   if (typeof window === 'undefined') {
     return {
       getItem: () => null,
-      setItem: () => { 
-        /** @note Handshake de escritura omitido en servidor para evitar desincronización */ 
-      },
-      removeItem: () => { 
-        /** @note Handshake de purga omitido en servidor */ 
-      }
+      setItem: () => { /* No-op SSR */ },
+      removeItem: () => { /* No-op SSR */ }
     };
   }
   return window.localStorage;
@@ -102,9 +102,10 @@ const resolveStorageEngine = (): StateStorage => {
 
 /**
  * FACTORÍA DE ESTADO (DNA Creator)
+ * @pilar IX: Inversión de Control.
  */
 const stateCreator: StateCreator<UIStore, [["zustand/persist", unknown]]> = (set, get) => ({
-  // Estados Iniciales
+  // --- VALORES POR DEFECTO (Day-First) ---
   isVisitorHudOpen: true,
   isMobileMenuOpen: false,
   isNewsletterModalOpen: false,
@@ -118,17 +119,18 @@ const stateCreator: StateCreator<UIStore, [["zustand/persist", unknown]]> = (set
 
   /**
    * @action setSession
-   * @description Handshake final de identidad. Normaliza el nivel según XP.
+   * @description Handshake de Identidad. Sincroniza el perfil con el motor de niveles.
    */
   setSession: (sessionData) => {
     if (sessionData) {
+      const traceId = `vault_link_${Date.now().toString(36).toUpperCase()}`;
       const { currentLevel } = calculateProgress(sessionData.xp || 0);
       const normalizedSession = { ...sessionData, level: currentLevel };
       
       console.info(
-        `${C.magenta}${C.bold}[DNA][SESSION]${C.reset} Identity Linked | ` +
+        `${C.magenta}${C.bold}● [DNA][VAULT]${C.reset} Identity Linked | ` +
         `Role: ${C.cyan}${normalizedSession.role}${C.reset} | ` +
-        `XP: ${C.green}${normalizedSession.xp}${C.reset}`
+        `Trace: ${traceId}`
       );
       
       set({ session: normalizedSession });
@@ -139,7 +141,7 @@ const stateCreator: StateCreator<UIStore, [["zustand/persist", unknown]]> = (set
 
   /**
    * @action updateXP
-   * @description Reactor de Reputación. Inyecta XP y dispara telemetría de ascensión.
+   * @description Reactor de Reputación (P33 Core).
    */
   updateXP: (gain) => {
     const current = get().session;
@@ -148,12 +150,14 @@ const stateCreator: StateCreator<UIStore, [["zustand/persist", unknown]]> = (set
     const newXP = current.xp + gain;
     const { currentLevel } = calculateProgress(newXP);
 
-    // Detección de Ascensión (Level Up)
+    // Detección Forense de Ascensión
     if (currentLevel > current.level) {
       console.info(
-        `%c[P33][ASCENSION] Nivel ${current.level} → ${currentLevel} | RZB Delta: +${gain}`, 
-        'color: #a855f7; font-weight: bold; font-size: 12px;'
+        `%c[P33][ASCENSION] Nivel ${current.level} → ${currentLevel} | RZB Concedidos: +${gain}`, 
+        'color: #a855f7; font-weight: bold; padding: 4px; border: 1px solid #a855f7; border-radius: 4px;'
       );
+    } else if (process.env.NODE_ENV !== 'production') {
+      console.info(`${C.green}[P33][GAIN]${C.reset} +${gain} RazTokens (Total: ${newXP})`);
     }
 
     set({
@@ -167,14 +171,14 @@ const stateCreator: StateCreator<UIStore, [["zustand/persist", unknown]]> = (set
 
   /**
    * @action clearSession
-   * @description Protocolo de seguridad para purga de la bóveda.
+   * @description Purga de seguridad de la Bóveda.
    */
   clearSession: () => {
-    console.warn(`${C.yellow}[TELEMETRY][SECURITY] Session Severed. Purging Vault.${C.reset}`);
-    set({ session: null, isAuthModalOpen: false });
+    console.warn(`${C.yellow}[DNA][SECURITY] Access Severed. Purging State Vault.${C.reset}`);
+    set({ session: null, isAuthModalOpen: false, isVisitorHudOpen: true });
   },
 
-  // Controles de Visibilidad
+  // --- CONTROLES DE VISIBILIDAD (Oxygen UI) ---
   toggleVisitorHud: () => set((s) => ({ isVisitorHudOpen: !s.isVisitorHudOpen })),
   closeVisitorHud: () => set({ isVisitorHudOpen: false }),
   openVisitorHud: () => set({ isVisitorHudOpen: true }),
@@ -188,22 +192,30 @@ const stateCreator: StateCreator<UIStore, [["zustand/persist", unknown]]> = (set
 
 /**
  * @hook useUIStore
- * @description Único punto de acceso al estado reactivo y persistente del ecosistema.
+ * @description Punto de acceso único al estado soberano.
  */
 export const useUIStore = create<UIStore>()(
   persist(
     stateCreator,
     {
-      name: 'hotel-beach-vault',
+      name: 'hotel-beach-vault-v16', // Versión de esquema actualizada
       storage: createJSONStorage(resolveStorageEngine),
+      /**
+       * @pilar X: Performance (Partialization)
+       * Solo persistimos lo que el usuario espera recuperar tras un refresh.
+       */
       partialize: (state) => ({
         isVisitorHudOpen: state.isVisitorHudOpen,
         session: state.session,
+        tenantId: state.tenantId
       }),
       onRehydrateStorage: () => (state) => {
         state?.setHasHydrated(true);
+        if (process.env.NODE_ENV !== 'production') {
+          console.info(`${C.cyan}[DNA][VAULT]${C.reset} State Rehydrated from Disk.`);
+        }
       },
-      version: 12, // MES Compliance Bump
+      version: 16, // Alineado con la versión del archivo
     }
   )
 );

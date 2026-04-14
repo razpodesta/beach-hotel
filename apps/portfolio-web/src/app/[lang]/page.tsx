@@ -2,15 +2,11 @@
  * @file apps/portfolio-web/src/app/[lang]/page.tsx
  * @description Orquestador Soberano de la Recepción (Landing Page).
  *              Responsabilidad: Hidratación dinámica del Hero y Síntesis Visual.
- *              Refactorizado: Resolución de TS2724 (Tenant Sync) y TS2741 (AI Items).
- *              Implementa Join Lógico entre Media Vault S3 y Diccionarios MACS.
+ *              Refactorizado: Resolución de Linter (Heimdall v2.5), purificación
+ *              de castings y optimización del Sovereign Join Architecture.
  * 
- * @version 7.0 - Sovereign Join Architecture & Naming Sync
+ * @version 8.0 - Linter Pure & Sovereign Join Hardened
  * @author Staff Engineer - MetaShark Tech
- * 
- * @pilar III: Seguridad de Tipos - Sincronía con la interfaz 'Tenant' nivelada v16.0.
- * @pilar IX: Desacoplamiento - La lógica de ensamble IA reside exclusivamente aquí.
- * @pilar XIII: Build Isolation - Centinela de fase para evitar fallos en el CI/CD de Vercel.
  */
 
 import React from 'react';
@@ -24,11 +20,10 @@ import { cn } from '../../lib/utils/cn';
 
 /** 
  * IMPORTACIONES DE CONTRATO (SSoT) 
- * @fix TS2724: Sincronización con el Core v16.0 (Tenant en singular).
  */
 import type { Media, Tenant } from '@metashark/cms-core';
 
-/** APARATOS DE SECCIÓN (Oxygen Engine) */
+/** APARATO DE SECCIÓN (Oxygen Engine) */
 import { HeroCarousel } from '../../components/sections/homepage/HeroCarousel';
 import { AboutSection } from '../../components/sections/homepage/AboutSection';
 import { ValuePropositionSection } from '../../components/sections/homepage/ValuePropositionSection';
@@ -38,12 +33,21 @@ import type { OrbitalGalleryItem } from '../../components/razBits/OrbitalGallery
 
 /**
  * CONFIGURACIÓN DE INFRAESTRUCTRURA
+ * @pilar X: Performance - Revalidación incremental para frescura de datos.
  */
 export const dynamic = 'force-static';
-export const revalidate = 3600; // Refresco de activos IA cada 60 minutos.
+export const revalidate = 3600; 
 
 const MASTER_TENANT_ID = '00000000-0000-0000-0000-000000000001';
 const IS_BUILD_ENV = process.env.NEXT_PHASE === 'phase-production-build' || process.env.VERCEL === '1';
+
+/**
+ * PROTOCOLO CROMÁTICO HEIMDALL v2.5
+ */
+const C = {
+  reset: '\x1b[0m', magenta: '\x1b[35m', cyan: '\x1b[36m', 
+  green: '\x1b[32m', red: '\x1b[31m', bold: '\x1b[1m'
+};
 
 /**
  * @function isMediaExpanded
@@ -59,6 +63,8 @@ function isMediaExpanded(media: string | Media | null | undefined): media is Med
  * @pilar VIII: Resiliencia - Fallback a colecciones vacías si el Handshake falla.
  */
 async function getDynamicPageData() {
+  const traceId = `page_hsk_${Date.now().toString(36).toUpperCase()}`;
+  
   if (IS_BUILD_ENV) return { tenant: null, aiItems: [] };
 
   try {
@@ -85,12 +91,16 @@ async function getDynamicPageData() {
       })
     ]);
 
+    if (process.env.NODE_ENV !== 'production') {
+      console.info(`${C.magenta}${C.bold}[DNA][CMS]${C.reset} Page Handshake OK | Trace: ${traceId}`);
+    }
+
     return { 
       tenant: tenant as unknown as Tenant, 
       aiItems: (aiMedia.docs as unknown) as Media[] 
     };
   } catch (error) {
-    console.error('[HEIMDALL][CMS] Handshake failed during Page Orchestration.', error);
+    console.error(`${C.red}   ✕ [BREACH] Handshake failed during Page Orchestration.${C.reset}`, error);
     return { tenant: null, aiItems: [] };
   }
 }
@@ -123,6 +133,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 
 /**
  * APARATO PRINCIPAL: HomePage
+ * @pilar IX: Desacoplamiento - Realiza el Join Lógico entre CMS y MACS.
  */
 export default async function HomePage(props: PageProps) {
   const { lang } = await props.params;
@@ -156,13 +167,12 @@ export default async function HomePage(props: PageProps) {
   /** 
    * 3. JOIN LÓGICO: AI CONTENT RECONCILIATION
    * @description Cruza imágenes dinámicas (S3) con la narrativa editorial (JSON).
-   * @fix TS2741: Provisión del array 'items' requerido por AiContentSection.
    */
   const galleryItems: OrbitalGalleryItem[] = aiItems.map((media) => {
     // Extraemos la llave técnica del filename (ej: "lobby-synth.webp" -> "lobby-synth")
     const filenameKey = media.filename?.split('.')[0] || '';
     
-    // Buscamos correspondencia en el diccionario nivelado v7.0
+    // Buscamos correspondencia en el diccionario nivelado v8.0
     const metadata = dict.ai_gallery_section.items_metadata[filenameKey] || {
       title: media.alt,
       description: media.caption || ''
@@ -177,26 +187,27 @@ export default async function HomePage(props: PageProps) {
 
   return (
     <>
+      {/* 4. DATOS ESTRUCTURADOS (SEO Elite) */}
       <JsonLdScript data={{ "@context": "https://schema.org", "@type": "Hotel", "name": dict.header.personal_portfolio }} />
       
       <main className={cn("flex flex-col w-full overflow-x-hidden bg-background selection:bg-primary/20")}>
         
-        {/* FASE 1: AWARENESS */}
+        {/* FASE 1: AWARENESS (Branding & Impact) */}
         <HeroCarousel dictionary={{ ...dict.hero, assets: dynamicHeroAssets }} />
         
-        {/* FASE 2: TRUST */}
+        {/* FASE 2: TRUST (Narrativa & Herencia) */}
         <AboutSection dictionary={dict.about} />
         
-        {/* FASE 3: VALUE PROPOSITION */}
+        {/* FASE 3: VALUE PROPOSITION (Diferenciación) */}
         <ValuePropositionSection dictionary={dict.value_proposition} />
         
-        {/* FASE 4: VISUAL SYNTH (Silo C Dynamic Handshake) */}
+        {/* FASE 4: VISUAL SYNTH (Diferenciación Tecnológica - WebGL) */}
         <AiContentSection 
           dictionary={dict.ai_gallery_section} 
           items={galleryItems} 
         />
         
-        {/* FASE 5: LEGACY */}
+        {/* FASE 5: LEGACY (Identidad de Autor) */}
         <HistorySection dictionary={dict.history} />
       </main>
     </>

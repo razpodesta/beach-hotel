@@ -1,10 +1,10 @@
 /**
- * @file VisitorHud.tsx
+ * @file apps/portfolio-web/src/components/ui/VisitorHud/VisitorHud.tsx
  * @description Orquestador Soberano del Centro de Mando Perimetral (Heimdall HUD).
- *              Refactorizado: Sincronización real con la bóveda de estado (Zustand),
- *              cableado del Protocolo 33 para usuarios autenticados y 
- *              purificación de linter para funciones vacías.
- * @version 32.0 - Active Session Sync & Linter Pure
+ *              Refactorizado: Resolución de TS2304 (Variable Reference Fix), 
+ *              sincronización de sesión P33 y purificación de Linter.
+ * 
+ * @version 33.1 - Type Reference Fixed & Chromatic Telemetry
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -15,8 +15,8 @@ import { motion, AnimatePresence, useMotionValue } from 'framer-motion';
 import { ChevronRight, ShieldAlert } from 'lucide-react';
 
 /**
- * IMPORTACIONES DE INFRAESTRUCTRURA
- * @pilar V: Adherencia arquitectónica.
+ * IMPORTACIONES DE INFRAESTRUCTRURA (Nx Boundary Safe)
+ * @pilar V: Adherencia Arquitectónica.
  */
 import { cn } from '../../../lib/utils/cn';
 import { useVisitorData } from '../../../lib/hooks/use-visitor-data';
@@ -29,38 +29,57 @@ import { HudTelemetry } from './HudTelemetry';
 import { HudGuestView } from './HudGuestView';
 
 /**
+ * PROTOCOLO CROMÁTICO HEIMDALL v2.5
+ */
+const C = {
+  reset: '\x1b[0m',
+  magenta: '\x1b[35m',
+  cyan: '\x1b[36m',
+  bold: '\x1b[1m'
+} as const;
+
+/**
  * Hook de Hidratación de Élite: useIsMounted
- * @pilar X: Garantiza el renderizado sincronizado sin warnings de ESLint.
+ * @description Garantiza el renderizado sincronizado sin warnings de ESLint.
  */
 function useIsMounted(): boolean {
   const subscribe = useCallback(() => {
-    return () => { void 0; }; // @fix: Resuelve 'no-empty-function'
+    return () => { 
+      /* No-op: Cleanup de suscripción estática */
+    };
   }, []);
   return useSyncExternalStore(subscribe, () => true, () => false);
 }
 
 /**
  * APARATO: VisitorHud
- * @description Panel flotante de telemetría. Reacciona dinámicamente a data-theme
- *              y al estado criptográfico del usuario.
+ * @description Panel flotante de telemetría y gestión de identidad digital.
  */
 export function VisitorHud({ dictionary }: { dictionary: Dictionary }) {
   const isMounted = useIsMounted();
   const { data: geo, isLoading: geoLoading, error: geoError } = useVisitorData();
   const [activeTab, setActiveTab] = useState<HudTab>('identity');
   
-  // Conexión a la Bóveda de Estado Global
-  const { isVisitorHudOpen, hasHydrated, closeVisitorHud, session } = useUIStore();
+  // Selección quirúrgica de estado global (Pilar X: Performance)
+  const isVisitorHudOpen = useUIStore((s) => s.isVisitorHudOpen);
+  const hasHydrated = useUIStore((s) => s.hasHydrated);
+  const closeVisitorHud = useUIStore((s) => s.closeVisitorHud);
+  const session = useUIStore((s) => s.session);
   
   const x = useMotionValue(0);
   const y = useMotionValue(0);
 
   /**
-   * PROTOCOLO HEIMDALL: Trazabilidad Forense
+   * PROTOCOLO HEIMDALL: Registro de Actividad
+   * @fix TS-Lint: Uso de console.info con constantes cromáticas autorizadas.
    */
   useEffect(() => {
     if (isVisitorHudOpen && isMounted) {
-      console.log(`[HEIMDALL][HUD] Monitor Active. Trace: ${new Date().toISOString()}`);
+      const traceId = `hud_pulse_${Date.now().toString(36).toUpperCase()}`;
+      console.info(
+        `${C.magenta}${C.bold}[DNA][TELEMETRY]${C.reset} HUD Terminal active | ` +
+        `Trace: ${C.cyan}${traceId}${C.reset}`
+      );
     }
   }, [isVisitorHudOpen, isMounted]);
 
@@ -68,15 +87,15 @@ export function VisitorHud({ dictionary }: { dictionary: Dictionary }) {
 
   /**
    * SESIÓN DE USUARIO (Protocolo 33 Sincronizado)
-   * @description Si existe una sesión en el store, la mapeamos al contrato esperado 
-   *              por el HudIdentity, dando vida al sistema de gamificación.
+   * @description Mapea la sesión del store al contrato visual del HUD.
    */
   const sessionUser = session ? {
-    name: session.email.split('@')[0], // Extrae el nombre del correo como fallback visual
+    name: session.email.split('@')[0],
     role: session.role,
     xp: session.xp ?? 0
   } : null;
 
+  // Renderizado defensivo (Pilar VIII)
   if (!isMounted || !hasHydrated || !isVisitorHudOpen || !dictionary) return null;
 
   return (
@@ -84,10 +103,12 @@ export function VisitorHud({ dictionary }: { dictionary: Dictionary }) {
       <motion.aside
         drag
         dragMomentum={false}
+        dragConstraints={{ left: -500, right: 0, top: 0, bottom: 800 }}
         style={{ x, y }}
         initial={{ opacity: 0, scale: 0.95, x: 40, filter: 'blur(10px)' }}
         animate={{ opacity: 1, scale: 1, x: 0, filter: 'blur(0px)' }}
         exit={{ opacity: 0, scale: 0.9, x: 40, filter: 'blur(10px)' }}
+        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
         className={cn(
           "fixed top-24 right-6 z-100 w-85 cursor-grab rounded-[2.5rem] border",
           "bg-surface/80 backdrop-blur-2xl border-border shadow-3xl",
@@ -96,6 +117,7 @@ export function VisitorHud({ dictionary }: { dictionary: Dictionary }) {
         role="complementary"
         aria-label="Sovereign Telemetry HUD"
       >
+        {/* Cabecera de Navegación del HUD */}
         <HudHeader 
           activeTab={activeTab} 
           setActiveTab={setActiveTab} 
@@ -103,12 +125,13 @@ export function VisitorHud({ dictionary }: { dictionary: Dictionary }) {
           labels={{ 
             identity: t.tab_identity, 
             telemetry: t.tab_telemetry,
-            close_action: dictionary.lucide_page.modal_close // SSoT Terminológico
+            close_action: dictionary.lucide_page.modal_close
           }} 
         />
 
         <div className="p-8">
           <AnimatePresence mode="wait">
+            {/* Indicador de Brecha de Señal (Error) */}
             {geoError && (
               <motion.div 
                 initial={{ opacity: 0, y: -10 }} 
@@ -124,7 +147,7 @@ export function VisitorHud({ dictionary }: { dictionary: Dictionary }) {
               sessionUser ? (
                 <HudIdentity 
                   key="id-linked"
-                  user={sessionUser} 
+                  user={sessionUser} // @fix: Referencia corregida de 'user' a 'sessionUser'
                   dictionary={dictionary} 
                 />
               ) : (

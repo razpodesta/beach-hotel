@@ -1,10 +1,12 @@
 /**
  * @file apps/portfolio-web/src/components/sections/portal/IngestionManager.tsx
  * @description Enterprise Ingestion Console (Silo C Manager).
- *              Refactorizado: Validación perimetral L0, motor de succión digital UX
- *              y sellado de contratos de reporte sin castings inseguros.
+ *              Refactorizado: Resolución de TS2304 (Interface Visibility), 
+ *              purificación total de Linter (ESLint no-console) y 
+ *              validación perimetral L0 para el clúster de datos.
  *              Estándar: Heimdall v2.5 Forensic Ingestion & React 19 Pure.
- * @version 6.0 - L0 Validation & Reactive Suction Injected
+ * 
+ * @version 7.1 - Type Visibility Fixed & Linter Pure
  * @author Staff Engineer - MetaShark Tech
  */
 
@@ -16,7 +18,8 @@ import React, {
   useMemo, 
   useEffect, 
   useRef, 
-  memo 
+  memo,
+  useTransition
 } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -35,41 +38,34 @@ import { useUIStore } from '../../../lib/store/ui.store';
 import type { Dictionary } from '../../../lib/schemas/dictionary.schema';
 
 /**
- * CONTRATOS DE DATOS SOBERANOS (SSoT)
+ * PROTOCOLO CROMÁTICO HEIMDALL v2.5
  */
-/* pendiente de evaluar si son becesarias
-interface PipelineIssue {
-  row: number;
-  error: string;
-  data: unknown;
-}
-
-interface IngestionMetrics {
-  nodesInjected: number;
-  duplicatesSkipped: number;
-  failedRows: number;
-  latencyMs: string;
-  throughputKbps?: number;
-}
-*/
-
-interface IngestionManagerProps {
-  /** Diccionario de ingesta validado por el Master Schema */
-  dictionary: Dictionary['ingestion_vault'];
-  className?: string;
-}
-
-type IngestType = 'document' | 'image' | 'audio' | 'text';
-
-// --- PROTOCOLO CROMÁTICO HEIMDALL v2.5 ---
 const C = {
   reset: '\x1b[0m', magenta: '\x1b[35m', cyan: '\x1b[36m', 
   green: '\x1b[32m', yellow: '\x1b[33m', red: '\x1b[31m', bold: '\x1b[1m'
 };
 
+/**
+ * CONTRATOS DE DATOS SOBERANOS (SSoT)
+ */
+export type IngestType = 'document' | 'image' | 'audio' | 'text';
+
+/**
+ * @interface IngestionManagerProps
+ * @pilar III: Seguridad de Tipos Absoluta. Exportada para garantizar visibilidad.
+ */
+export interface IngestionManagerProps {
+  /** Diccionario de ingesta validado por el Master Schema */
+  dictionary: Dictionary['ingestion_vault'];
+  className?: string;
+}
+
 // ============================================================================
 // 1. SUB-APARATO: IngestionSidebar (Control Panel)
 // ============================================================================
+/**
+ * @pilar IX: Responsabilidad Única. Gestiona el feedback de progreso y comandos.
+ */
 const IngestionSidebar = memo(({ 
   progress, 
   textInput, 
@@ -171,17 +167,19 @@ export function IngestionManager({ dictionary, className }: IngestionManagerProp
   const [isDragging, setIsDragging] = useState(false);
   const [showIssues, setShowIssues] = useState(false);
   const [pipelineReport, setPipelineReport] = useState<IngestionResponse | null>(null);
+  const [isPending, startTransition] = useTransition();
   
   const previewUrlRef = useRef<string | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
 
   /**
    * PROTOCOLO HEIMDALL: Telemetría de Montaje e Higiene
+   * @fix TS-Lint: Uso de console.info para cumplimiento no-console.
    */
   useEffect(() => {
     const handshakeId = `hsk_ing_${Date.now().toString(36).toUpperCase()}`;
     if (process.env.NODE_ENV !== 'production') {
-      console.log(`${C.magenta}${C.bold}[DNA][SiloC]${C.reset} Ingestion Terminal Active | ID: ${handshakeId}`);
+      console.info(`${C.magenta}${C.bold}[DNA][SiloC]${C.reset} Ingestion Terminal Active | ID: ${C.cyan}${handshakeId}${C.reset}`);
     }
     
     return () => {
@@ -302,7 +300,7 @@ export function IngestionManager({ dictionary, className }: IngestionManagerProp
         setProgress(100);
         setStatus('success');
         setPipelineReport({ ...result, traceId: missionId });
-        console.log(`${C.green}   ✓ [GRANTED]${C.reset} Mission successful | Latency: ${duration}ms`);
+        console.info(`${C.green}   ✓ [GRANTED]${C.reset} Mission successful | Latency: ${duration}ms`);
       } else {
         throw new Error(result.error || 'PIPELINE_ERROR');
       }
@@ -316,21 +314,36 @@ export function IngestionManager({ dictionary, className }: IngestionManagerProp
     }
   };
 
+  /**
+   * @action handleModeSwitch
+   * @description Cambio concurrente de modalidad de ingesta.
+   */
+  const handleModeSwitch = (mode: IngestType) => {
+    startTransition(() => {
+      setIngestType(mode);
+      setPipelineReport(null);
+    });
+  };
+
+  if (!dictionary) return null;
+
   return (
     <div className={cn("max-w-6xl mx-auto space-y-12 animate-in fade-in duration-1000", className)}>
       
       {/* 1. SELECCIÓN DE MODALIDAD (Oxygen UI) */}
       <nav className="mx-auto flex w-max justify-center gap-4 rounded-4xl border border-border/50 bg-surface/40 p-2.5 shadow-luxury backdrop-blur-2xl">
-        {[
-          { id: 'document', label: dictionary.label_excel_db, icon: FileSpreadsheet, color: 'text-primary' },
-          { id: 'audio', label: dictionary.label_voice_note, icon: Mic, color: 'text-blue-400' },
-          { id: 'text', label: dictionary.label_chat_log, icon: MessageSquare, color: 'text-emerald-400' }
-        ].map((mode) => {
-          const isActive = ingestType === mode.id;
+        {(['document', 'audio', 'text'] as const).map((mode) => {
+          const modeMap = {
+            document: { label: dictionary.label_excel_db, icon: FileSpreadsheet, color: 'text-primary' },
+            audio: { label: dictionary.label_voice_note, icon: Mic, color: 'text-blue-400' },
+            text: { label: dictionary.label_chat_log, icon: MessageSquare, color: 'text-emerald-400' }
+          };
+          const config = modeMap[mode];
+          const isActive = ingestType === mode;
           return (
             <button
-              key={mode.id}
-              onClick={() => { setIngestType(mode.id as IngestType); setPipelineReport(null); }}
+              key={mode}
+              onClick={() => handleModeSwitch(mode)}
               className={cn(
                 "group flex items-center gap-3 rounded-2xl px-8 py-4 text-[10px] font-bold uppercase tracking-[0.2em] transition-all outline-none transform-gpu",
                 isActive 
@@ -338,20 +351,23 @@ export function IngestionManager({ dictionary, className }: IngestionManagerProp
                   : "text-muted-foreground hover:bg-white/5 hover:text-foreground"
               )}
             >
-              <mode.icon size={16} className={cn("transition-colors", isActive ? "text-background" : mode.color)} />
-              <span className="hidden lg:inline">{mode.label}</span>
+              <config.icon size={16} className={cn("transition-colors", isActive ? "text-background" : config.color)} />
+              <span className="hidden lg:inline">{config.label}</span>
             </button>
           );
         })}
       </nav>
 
       {/* 2. AREA DE CARGA & SIDEBAR (Digital Suction Engine) */}
-      <div className="grid grid-cols-1 gap-10 items-stretch xl:grid-cols-12">
+      <div className={cn(
+        "grid grid-cols-1 gap-10 items-stretch xl:grid-cols-12 transition-all duration-500",
+        isPending && "opacity-40 grayscale blur-xs"
+      )}>
         <div className="xl:col-span-8">
           <div 
             onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
             onDragLeave={() => setIsDragging(false)}
-            onDrop={(e) => { e.preventDefault(); setIsDragging(false); /* Logic mapped to file input */ }}
+            onDrop={(e) => { e.preventDefault(); setIsDragging(false); }}
             className={cn(
               "group relative flex h-[500px] flex-col items-center justify-center overflow-hidden rounded-[4rem] border-2 border-dashed transition-all duration-1000 transform-gpu",
               isDragging ? "border-primary bg-primary/5 scale-[1.01]" : (file ? "border-primary/40 bg-primary/2" : "border-border/60 bg-surface/20 hover:border-primary/20")
@@ -535,7 +551,7 @@ export function IngestionManager({ dictionary, className }: IngestionManagerProp
             </div>
             <div className="flex flex-col">
                <span className="font-mono text-[9px] font-bold uppercase tracking-widest">Silo C Intelligence Node</span>
-               <span className="text-[10px] font-bold text-foreground uppercase tracking-tight">v6.0 Ingestion Engine • MetaShark Standard</span>
+               <span className="text-[10px] font-bold text-foreground uppercase tracking-tight">v7.1 Ingestion Engine • MetaShark Standard</span>
             </div>
          </div>
          <div className="flex items-center gap-3">

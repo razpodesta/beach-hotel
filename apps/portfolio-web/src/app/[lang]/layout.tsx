@@ -1,9 +1,11 @@
 /**
  * @file apps/portfolio-web/src/app/[lang]/layout.tsx
  * @description Orquestador del Shell Localizado (Oxygen Shell).
- *              Responsable de la inyección de diccionarios y UI operativa.
+ *              Responsable de la hidratación de diccionarios y UI operativa.
+ *              Refactorizado: Mejora en la resiliencia de metadatos SEO y 
+ *              aislamiento de capas persistentes mediante Suspense.
  * 
- * @version 55.0 - Structure Normalization & 404 Prevention
+ * @version 56.0 - Forensic SEO & UI Layer Grouping
  * @author Staff Engineer - MetaShark Tech
  */
 
@@ -11,12 +13,13 @@ import React, { Suspense } from 'react';
 import type { Metadata } from 'next';
 
 /** 
- * IMPORTACIONES DE INFRAESTRUCTRURA 
+ * IMPORTACIONES DE INFRAESTRUCTRURA (Fronteras Nx)
+ * @pilar V: Adherencia Arquitectónica.
  */
 import { i18n, type Locale } from '../../config/i18n.config';
 import { getDictionary } from '../../lib/get-dictionary';
 
-/** APARATOS DE INFRAESTRUCTRURA DE UI */
+/** APARATOS DE INFRAESTRUCTRURA DE UI (Oxygen Engine) */
 import { Header } from '../../components/layout/Header';
 import { Footer } from '../../components/layout/Footer';
 import { SystemStatusTicker } from '../../components/ui/SystemStatusTicker';
@@ -26,37 +29,53 @@ import { NavigationTracker } from '../../components/layout/NavigationTracker';
 import { VisitorHud } from '../../components/ui/VisitorHud';
 
 /**
- * GENERACIÓN DE PARÁMETROS ESTÁTICOS
+ * @function generateStaticParams
+ * @description Pre-renderiza los perímetros de idioma en tiempo de construcción.
  */
 export async function generateStaticParams() {
   return i18n.locales.map((locale) => ({ lang: locale }));
 }
 
 /**
- * METADATOS DINÁMICOS Y SEO (E-E-A-T)
+ * METADATOS DINÁMICOS Y SEO (E-E-A-T Excellence)
+ * @pilar VIII: Resiliencia - Fallback determinista si el motor de contenido falla.
  */
 export async function generateMetadata(props: { params: Promise<{ lang: Locale }> }): Promise<Metadata> {
   const { lang } = await props.params;
-  const dict = await getDictionary(lang);
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://beachhotelcanasvieiras.com';
   
-  return {
-    metadataBase: new URL(baseUrl),
-    title: { 
-      template: `%s | ${dict.header.personal_portfolio}`, 
-      default: dict.header.tagline 
-    },
-    description: dict.hero.page_description,
-    manifest: '/manifest.json',
-    icons: { apple: '/images/hotel/icon-192x192.png' },
-    openGraph: {
-      type: 'website',
-      siteName: dict.header.personal_portfolio,
-      locale: lang,
-    }
-  };
+  try {
+    const dict = await getDictionary(lang);
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://beachhotelcanasvieiras.com';
+    
+    return {
+      title: { 
+        template: `%s | ${dict.header.personal_portfolio}`, 
+        default: dict.header.tagline 
+      },
+      description: dict.hero.page_description,
+      alternates: {
+        canonical: `${baseUrl}/${lang}`,
+        languages: i18n.locales.reduce((acc, loc) => ({
+          ...acc,
+          [loc]: `${baseUrl}/${loc}`,
+        }), {}),
+      },
+      openGraph: {
+        type: 'website',
+        siteName: dict.header.personal_portfolio,
+        locale: lang,
+        url: `${baseUrl}/${lang}`,
+      }
+    };
+  } catch {
+    return { title: 'Beach Hotel Canasvieiras' };
+  }
 }
 
+/**
+ * APARATO: LocalizedLayout
+ * @description Orquestador soberano de la UI operativa basada en idioma.
+ */
 export default async function LocalizedLayout({ 
   children, 
   params 
@@ -65,48 +84,45 @@ export default async function LocalizedLayout({
   params: Promise<{ lang: Locale }> 
 }) {
   const { lang } = await params;
+  
+  // Handshake de Diccionario (MACS)
   const dictionary = await getDictionary(lang);
   
   /**
-   * PROTOCOLO HEIMDALL: Sincronización de Shell
+   * PROTOCOLO HEIMDALL: Registro de Sincronización
    */
-  console.info(`\x1b[35m\x1b[1m[DNA][LAYOUT]\x1b[0m Localized Context Injected | Locale: \x1b[36m${lang}\x1b[0m`);
+  if (process.env.NODE_ENV !== 'production') {
+    console.info(`\x1b[35m\x1b[1m[DNA][LAYOUT]\x1b[0m Oxygen Context Synchronized | Locale: \x1b[36m${lang}\x1b[0m`);
+  }
 
   return (
     <>
-      {/* 
-          SKIP TO CONTENT (A11Y Elite)
-          Inyectado en el fragmento para que sea el primer elemento enfocable del body.
-      */}
+      {/* ACCESIBILIDAD ELITE: Skip Link */}
       <a 
         href="#main-content" 
-        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-200 focus:bg-primary focus:text-white focus:px-6 focus:py-3 focus:rounded-full focus:font-bold focus:shadow-3xl"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-6 focus:left-6 focus:z-200 focus:bg-primary focus:text-white focus:px-8 focus:py-4 focus:rounded-full focus:font-bold focus:shadow-3xl"
       >
-        Saltar al contenido principal
+        Saltar al contenido
       </a>
 
-      {/* 
-          TRACKING & NAVIGATION 
-          Sincronización silenciosa del hilo de Ariadna.
-      */}
+      {/* TRACKING SILENCIOSO (Edge Safe) */}
       <Suspense fallback={null}>
         <NavigationTracker />
       </Suspense>
       
-      {/* CABECERA OPERATIVA */}
+      {/* 1. NIVEL: CABECERA Y TELEMETRÍA */}
       <Header dictionary={dictionary} />
       
-      {/* TELEMETRÍA PERIMETRAL */}
-      <Suspense fallback={<div className="h-[41px] w-full bg-background border-b border-border animate-pulse" />}>
+      <Suspense fallback={<div className="h-[41px] w-full bg-background border-b border-border" />}>
         <SystemStatusTicker dictionary={dictionary.system_status} />
       </Suspense>
 
-      {/* CONTENIDO DE EXPERIENCIA */}
+      {/* 2. NIVEL: VIEWPORT DE EXPERIENCIA */}
       <main className="grow relative z-0 flex flex-col" id="main-content" role="main">
         {children}
       </main>
 
-      {/* CIERRE INSTITUCIONAL */}
+      {/* 3. NIVEL: CIERRE Y CONFORMIDAD */}
       <Footer
         content={dictionary.footer}
         newsletterContent={dictionary.newsletter_form}
@@ -114,10 +130,19 @@ export default async function LocalizedLayout({
         tagline={dictionary.header.tagline}
       />
 
-      {/* CAPAS DE UI PERSISTENTE */}
+      {/* 
+          4. NIVEL: CAPA SOBERANA (Portales y HUD)
+          Envolviendo componentes pesados del lado del cliente en límites de Suspense
+          para optimizar el tiempo de interactividad (TTI).
+      */}
       <Suspense fallback={null}>
+        {/* Portal de Acceso y Gestión de Identidad */}
         <AuthPortal dictionary={dictionary.auth_portal} />
+        
+        {/* Captación de Leads y Notificaciones */}
         <NewsletterModal dictionary={dictionary.newsletter_form} />
+        
+        {/* Centro de Mando del Visitante */}
         <VisitorHud dictionary={dictionary} />
       </Suspense>
     </>

@@ -1,10 +1,11 @@
 /**
  * @file apps/portfolio-web/src/lib/blog/actions.ts
  * @description Orquestador soberano de datos editoriales y Reactor de Reputación.
- *              Refactorizado: Resolución de TS2322 mediante mapeo dinámico de parámetros.
- *              Optimizado: Purificación de tipos en el pipeline de Lexical y Mocks.
+ *              Refactorizado: Resolución de TS2322, purificación de Linter 
+ *              (ESLint no-console fix) e inyección de telemetría Heimdall v2.5.
  *              Estándar: Multi-Tenant Shield & Forensic Reputation Sync.
- * @version 43.5 - TS2322 Fixed & Type Narrowing Hardened
+ * 
+ * @version 44.0 - Linter Pure & P33 Reactor Hardened
  * @author Staff Engineer - MetaShark Tech
  */
 
@@ -117,7 +118,7 @@ class EditorialShaper {
     // A. Resolución de Autoría (Pilar III)
     let authorName = t.hero_title;
     if (raw.author && typeof raw.author === 'object') {
-      authorName = raw.author.name || raw.author.email?.split('@')[0] || authorName;
+      authorName = (raw.author as { name?: string }).name || (raw.author as { email?: string }).email?.split('@')[0] || authorName;
     }
 
     // B. Normalización de Taxonomía
@@ -140,7 +141,7 @@ class EditorialShaper {
         published_date: raw.publishedDate || new Date().toISOString(),
         tags: tags.length > 0 ? tags : ['sanctuary'],
         vibe: raw.vibe || 'day',
-        ogImage: typeof raw.ogImage === 'object' ? raw.ogImage?.url : raw.ogImage,
+        ogImage: typeof raw.ogImage === 'object' ? (raw.ogImage as { url: string }).url : raw.ogImage,
         readingTime
       },
       content: mdx
@@ -195,18 +196,13 @@ class EditorialDataResolver {
       if (slug) conditions.push({ slug: { equals: slug } });
       if (tag) conditions.push({ 'tags.tag': { equals: tag } });
 
-      /**
-       * @fix: RESOLUCIÓN DE TS2322
-       * Extraemos dinámicamente el tipo aceptado por la propiedad 'locale' de Payload 
-       * para asegurar que nuestro tipo 'Locale' encaje en el union-type de la librería.
-       */
       type PayloadLocale = NonNullable<Parameters<Payload['find']>[0]['locale']>;
 
       const { docs } = await payload.find({
         collection: 'blog-posts',
         where: { and: conditions },
         sort: '-publishedDate',
-        locale: options.lang as PayloadLocale, // Sincronía técnica con Payload Core
+        locale: options.lang as PayloadLocale,
         depth: 2
       });
 
@@ -261,7 +257,8 @@ export async function recordReadingXPAction(
   
   if (IS_BUILD) return { success: false, xpGained: 0, traceId };
 
-  console.log(`${C.magenta}${C.bold}[DNA][P33]${C.reset} Reading event detected: ${C.cyan}${articleSlug}${C.reset}`);
+  // @fix: console.info para cumplimiento Linter v10.0
+  console.info(`${C.magenta}${C.bold}[DNA][P33]${C.reset} Reading event detected: ${C.cyan}${articleSlug}${C.reset}`);
 
   try {
     const configModule = await import('@metashark/cms-core/config');
@@ -299,7 +296,8 @@ export async function recordReadingXPAction(
       }
     });
 
-    console.log(`${C.green}   ✓ [GRANTED]${C.reset} ${xpBonus} RZB added to ${user.email} | Trace: ${traceId}`);
+    // @fix: console.info para cumplimiento Linter v10.0
+    console.info(`${C.green}   ✓ [GRANTED]${C.reset} ${xpBonus} RZB added to ${user.email} | Trace: ${traceId}`);
     return { success: true, xpGained: xpBonus, traceId };
 
   } catch (err: unknown) {
