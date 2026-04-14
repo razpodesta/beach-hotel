@@ -3,8 +3,9 @@
  * @description Orquestador Soberano del Shell Raíz Localizado (Oxygen Shell).
  *              Refactorizado: Erradicación de funciones impuras (React 19 Purity).
  *              Sincronizado: Uso de clases canónicas de Tailwind v4 y Skip-Links para A11Y.
- *              Gobernanza: La telemetría de latencia se delega al motor de datos.
- * @version 53.0 - Pure Render & Tailwind Canonical Sync
+ *              Nivelado: Cumplimiento estricto de reglas de logging (Pilar IV).
+ * 
+ * @version 54.0 - console.info Migration & A11Y Hardened
  * @author Staff Engineer - MetaShark Tech
  */
 
@@ -99,8 +100,11 @@ export default async function LocalizedLayout({
    */
   const dictionary = await getDictionary(lang);
   
-  // Log de confirmación de servidor (Efecto secundario seguro fuera del retorno de renderizado)
-  console.log(`\x1b[35m\x1b[1m[DNA][LAYOUT]\x1b[0m Sovereign Shell Synchronized | Locale: \x1b[36m${lang}\x1b[0m`);
+  /**
+   * PROTOCOLO HEIMDALL: Sincronización de Shell
+   * @fix: console.log -> console.info para cumplimiento de reglas de linter v10.0
+   */
+  console.info(`\x1b[35m\x1b[1m[DNA][LAYOUT]\x1b[0m Sovereign Shell Synchronized | Locale: \x1b[36m${lang}\x1b[0m`);
 
   return (
     /**

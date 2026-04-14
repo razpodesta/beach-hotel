@@ -1,16 +1,17 @@
 /**
- * @file packages/identity-gateway/src/actions/server-auth.ts
- * @description Orquestador de Acceso Soberano (Server Actions).
+ * @file packages/identity-access-management/src/actions/server-auth.ts
+ * @description Orquestador de Acceso Autenticado (IAM Server Actions).
  *              Encapsula la comunicación con Supabase Auth y validación L0.
- *              Refactorizado: Resolución de TS-Linter (inferrable types),
- *              activación de Motor OAuth y blindaje de redirección.
- * @version 6.1 - Linter Pure & OAuth Hardened
+ *              Refactorizado: Resolución dinámica de BASE_URL para Vercel.
+ *              Nivelado: Sincronización con el Puerto Soberano 4200 y Linter Pure.
+ * 
+ * @version 7.0 - Vercel Production Ready & Port 4200 Sync
  * @author Staff Engineer - MetaShark Tech
  */
 
 'use server';
 
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import { createServerClient } from '@supabase/ssr';
 import { verifyReCaptcha } from '../security/recaptcha';
 import { 
@@ -54,7 +55,7 @@ async function getSupabaseServerClient() {
             cookieStore.set(name, value, options)
           );
         } catch {
-          // Bypass para prerendering estático
+          // Bypass para prerendering estático en Vercel
         }
       },
     },
@@ -64,21 +65,36 @@ async function getSupabaseServerClient() {
 /**
  * ACTION: signInWithOAuthAction
  * @description Inicia el flujo de autenticación con proveedores externos (Google/Apple).
- * @pilar IX: Inversión de Control. La librería genera el link, el host redirige.
+ * @fix Erradica redirección a localhost:3000 priorizando el dominio de Vercel.
  */
 export async function signInWithOAuthAction(
   provider: 'google' | 'apple' | 'facebook',
   nextPath = '/portal'
 ): Promise<AuthActionResult<{ url: string }>> {
   const traceId = `oauth_init_${Date.now().toString(36).toUpperCase()}`;
-  console.group(`[HEIMDALL][AUTH] OAuth Handshake: ${traceId} | Provider: ${provider}`);
+  console.group(`${C_MAGENTA}[HEIMDALL][AUTH] OAuth Handshake: ${traceId}${C_RESET}`);
 
   try {
     const supabase = await getSupabaseServerClient();
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:4200';
+    
+    /** 
+     * RESOLUCIÓN SOBERANA DE URL 
+     * @pilar VIII: Resiliencia - Si NEXT_PUBLIC_BASE_URL no está en el .env, 
+     * intentamos extraer el host real de la petición actual en Vercel.
+     */
+    const headerList = await headers();
+    const host = headerList.get('host');
+    const protocol = host?.includes('localhost') ? 'http' : 'https';
+    
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL 
+      || (host ? `${protocol}://${host}` : 'http://localhost:4200');
     
     // Construcción del callback URL con propagación del destino final
     const redirectTo = `${baseUrl}/auth/callback?next=${encodeURIComponent(nextPath)}`;
+
+    /** @fix: console.log -> console.info */
+    console.info(`   → [DOMAIN_SYNC] Base: ${baseUrl}`);
+    console.info(`   → [PROVIDER] Initiating flow with ${provider.toUpperCase()}`);
 
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider,
@@ -94,12 +110,12 @@ export async function signInWithOAuthAction(
     if (error) throw error;
     if (!data.url) throw new Error('OAUTH_URL_GENERATION_FAILED');
 
-    console.log(`[GRANTED] Redirect URL generated for ${provider}`);
+    console.info(`   ✓ [GRANTED] Redirect URL generated for ${provider}`);
     return { success: true, data: { url: data.url } };
 
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : 'OAUTH_ENGINE_DRIFT';
-    console.error(`[CRITICAL] OAuth flow aborted: ${msg}`);
+    console.error(`   ✕ [CRITICAL] OAuth flow aborted: ${msg}`);
     return { success: false, code: 'SERVER_ERROR', error: msg };
   } finally {
     console.groupEnd();
@@ -112,7 +128,7 @@ export async function signInWithOAuthAction(
  */
 export async function loginAction(rawCredentials: unknown): Promise<AuthActionResult<IdentityUser>> {
   const traceId = `login_${Date.now().toString(36).toUpperCase()}`;
-  console.group(`[HEIMDALL][AUTH] Login Handshake: ${traceId}`);
+  console.group(`${C_CYAN}[HEIMDALL][AUTH] Login Handshake: ${traceId}${C_RESET}`);
 
   try {
     const validation = loginCredentialsSchema.safeParse(rawCredentials);
@@ -131,10 +147,11 @@ export async function loginAction(rawCredentials: unknown): Promise<AuthActionRe
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
-      console.warn(`[BREACH] Authentication failed: ${email} | ${error.message}`);
+      console.warn(`   ⚠ [BREACH] Authentication failed: ${email} | ${error.message}`);
       return { success: false, code: 'AUTH_FAILURE', error: error.message };
     }
 
+    console.info(`   ✓ [IDENTIFIED] Node recognized: ${email}`);
     return { 
       success: true, 
       data: data.user as unknown as IdentityUser 
@@ -142,7 +159,7 @@ export async function loginAction(rawCredentials: unknown): Promise<AuthActionRe
 
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : 'CORE_ENGINE_DRIFT';
-    console.error(`[CRITICAL] Internal failure: ${msg}`);
+    console.error(`   ✕ [CRITICAL] Internal failure: ${msg}`);
     return { success: false, code: 'SERVER_ERROR', error: msg };
   } finally {
     console.groupEnd();
@@ -151,12 +168,11 @@ export async function loginAction(rawCredentials: unknown): Promise<AuthActionRe
 
 /**
  * ACTION: registerAction
- * @description Crea una nueva identidad soberana con metadatos extendidos.
+ * @description Crea una nueva identidad con metadatos de grado IAM.
  */
 export async function registerAction(rawCredentials: unknown): Promise<AuthActionResult<IdentityUser>> {
-  /** @fix: Eliminada anotación de tipo innecesaria para satisfacer regla no-inferrable-types */
   const traceId = `reg_${Date.now().toString(36).toUpperCase()}`;
-  console.group(`[HEIMDALL][AUTH] Registration Pipeline: ${traceId}`);
+  console.group(`${C_MAGENTA}[HEIMDALL][AUTH] Registration Pipeline: ${traceId}${C_RESET}`);
 
   try {
     const validation = registerCredentialsSchema.safeParse(rawCredentials);
@@ -180,7 +196,7 @@ export async function registerAction(rawCredentials: unknown): Promise<AuthActio
         data: {
           full_name: name,
           newsletter_opt_in: !!newsletterOptIn,
-          origin_node: 'IDENTITY_GATEWAY_V6',
+          origin_node: 'IAM_SERVICE_V31', // Sello MES
           trace_id: traceId
         }
       }
@@ -190,7 +206,8 @@ export async function registerAction(rawCredentials: unknown): Promise<AuthActio
       return { success: false, code: 'AUTH_FAILURE', error: error.message };
     }
 
-    console.log(`[SUCCESS] New identity provisioned: ${email}`);
+    /** @fix: console.log -> console.info */
+    console.info(`   ✓ [SUCCESS] New identity provisioned: ${email}`);
     return { 
       success: true, 
       data: data.user as unknown as IdentityUser 
@@ -198,7 +215,7 @@ export async function registerAction(rawCredentials: unknown): Promise<AuthActio
 
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : 'CORE_ENGINE_DRIFT';
-    console.error(`[CRITICAL] Registration failure: ${msg}`);
+    console.error(`   ✕ [CRITICAL] Registration failure: ${msg}`);
     return { success: false, code: 'SERVER_ERROR', error: msg };
   } finally {
     console.groupEnd();
@@ -218,3 +235,8 @@ export async function signOutAction(): Promise<AuthActionResult> {
     return { success: false, error: err instanceof Error ? err.message : 'SIGNOUT_FAILED' };
   }
 }
+
+// Auxiliares de color para terminal (Heimdall v2.5)
+const C_MAGENTA = '\x1b[35m';
+const C_CYAN = '\x1b[36m';
+const C_RESET = '\x1b[0m';
