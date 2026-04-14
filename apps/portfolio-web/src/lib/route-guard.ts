@@ -2,10 +2,11 @@
  * @file apps/portfolio-web/src/lib/route-guard.ts
  * @description Centinela de Borde e Inteligencia de Acceso Perimetral (RBAC).
  *              Orquesta la validación de autoridad Zero-Latency mediante la
- *              síntesis del "Sovereign Passport" y el Gating jerárquico.
- *              Refactorizado: Sincronización de Caché Edge (Anti-Poisoning),
- *              extracción algorítmica de cookies Supabase SSR y Linter Pure (no-console).
- * @version 14.1 - Linter Pure (Console.info Enforced)
+ *              síntesis del "AuthorizedPassport" y el Gating jerárquico.
+ *              Nivelado: Telemetría Heimdall v3.0, Anti-Caché Poisoning y
+ *              detección algorítmica de firmas de sesión SSR.
+ * 
+ * @version 15.0 - MES Compliance & Path Normalization Hardening
  * @author Staff Engineer - MetaShark Tech
  */
 
@@ -17,36 +18,41 @@ import { mainNavStructure } from './nav-links';
  * IMPORTACIONES DE CONTRATO (Pure Types)
  * @pilar III: Seguridad de Tipos Absoluta.
  */
-import type { SovereignRoleType } from '@metashark/cms-core';
+import type { SovereignRoleType as AuthorizedRole } from '@metashark/cms-core';
 
 // ============================================================================
 // CONFIGURACIÓN DE INFRAESTRUCTRURA (SSoT)
 // ============================================================================
 
 const C = {
-  reset: '\x1b[0m', cyan: '\x1b[36m', green: '\x1b[32m', 
-  yellow: '\x1b[33m', red: '\x1b[31m', magenta: '\x1b[35m', bold: '\x1b[1m'
-};
+  reset: '\x1b[0m',
+  cyan: '\x1b[36m',
+  green: '\x1b[32m', 
+  yellow: '\x1b[33m', 
+  red: '\x1b[31m', 
+  magenta: '\x1b[35m', 
+  bold: '\x1b[1m'
+} as const;
 
 /** 
  * @constant PROTECTION_MAP
- * @description Mapa de Gating Jerárquico. Las rutas se evalúan por especificidad.
+ * @description Mapa de Gating Jerárquico (RBAC).
  */
-const PROTECTION_MAP: Array<{ path: string; minRole: SovereignRoleType }> =[
+const PROTECTION_MAP: Array<{ path: string; minRole: AuthorizedRole }> = [
   { path: '/portal/dev', minRole: 'developer' },
   { path: '/portal/admin', minRole: 'admin' },
   { path: '/portal/b2b', minRole: 'operator' },
-  { path: '/p/', minRole: 'operator' }, // White-label partner routes
+  { path: '/p/', minRole: 'operator' },
   { path: '/portal/vip', minRole: 'sponsor' },
   { path: '/portal', minRole: 'guest' },
 ];
 
-/** @constant INFRA_BYPASS Recursos exentos de escrutinio por el centinela */
-const INFRA_BYPASS =['/admin', '/_payload', '/api/payload', '/auth/callback', '/r/'];
+/** @constant INFRA_BYPASS Recursos exentos de escrutinio perimetral */
+const INFRA_BYPASS = ['/admin', '/_payload', '/api/payload', '/auth/callback', '/r/'];
 
 /** @constant PUBLIC_WHITELIST Perímetros de libre circulación */
 const PUBLIC_WHITELIST = new Set([
-  '/', '/contacto', '/blog', '/maintenance', '/quienes-somos', 
+  '/', '/contacto', '/blog', '/maintenance', '/quien-soy', 
   '/mision-y-vision', '/festival', '/paquetes', '/subscribe', 
   '/server-error'
 ]);
@@ -54,7 +60,6 @@ const PUBLIC_WHITELIST = new Set([
 // Sincronización dinámica de la lista blanca desde el mapa de navegación
 mainNavStructure.forEach((item) => {
   if (item.href && !item.href.startsWith('http')) {
-    // Limpiamos anclas para validar solo el rumbo base
     PUBLIC_WHITELIST.add(item.href.split('#')[0]);
   }
 });
@@ -64,21 +69,21 @@ mainNavStructure.forEach((item) => {
 // ============================================================================
 
 /**
- * @interface SovereignPassport
+ * @interface AuthorizedPassport
  * @description Contrato de identidad inyectado en el flujo de la petición.
  */
-export interface SovereignPassport {
+export interface AuthorizedPassport {
   isAuthenticated: boolean;
-  role: SovereignRoleType | 'anonymous';
+  role: AuthorizedRole | 'anonymous';
   tenantId: string | null;
   traceId: string;
 }
 
 /**
- * MATRIZ DE AUTORIDAD ESPEJO (Inmutable)
- * @pilar IX: Desacoplamiento. Refleja la jerarquía del CMS sin llamadas a DB.
+ * MATRIZ DE AUTORIDAD (Inmutable)
+ * @pilar IX: Refleja la jerarquía sin llamadas externas (Zero-Latency).
  */
-const AUTHORITY_WEIGHTS: Record<SovereignRoleType | 'anonymous', number> = {
+const AUTHORITY_WEIGHTS: Record<AuthorizedRole | 'anonymous', number> = {
   developer: 99,
   admin: 50,
   operator: 30,
@@ -88,46 +93,40 @@ const AUTHORITY_WEIGHTS: Record<SovereignRoleType | 'anonymous', number> = {
 };
 
 /**
- * @function resolveSovereignPassport
- * @description Analiza el tráfico y sintetiza el pasaporte de identidad.
- * @param {NextRequest} req - Petición entrante.
- * @param {string} traceId - Identificador forense de la petición.
- * @returns {SovereignPassport} Pasaporte de identidad validado.
+ * @function resolveAuthorizedPassport
+ * @description Sintetiza el pasaporte de identidad analizando tokens en Cookies.
  */
-function resolveSovereignPassport(req: NextRequest, traceId: string): SovereignPassport {
-  // 1. PROTOCOLO DE BYPASS (Emergencia / Dev Node)
+function resolveAuthorizedPassport(req: NextRequest, traceId: string): AuthorizedPassport {
+  // 1. Protocolo de Bypass (Dev Mode)
   if (process.env.NEXT_PUBLIC_AUTH_BYPASS === 'true') {
     return { 
       isAuthenticated: true, role: 'developer', 
-      tenantId: '00000000-0000-0000-0000-000000000001', traceId 
+      tenantId: 'DEV_NODE_AUTH', traceId 
     };
   }
 
-  // 2. EXTRACCIÓN DE TOKENS CRIPTOGRÁFICOS
+  // 2. Extracción de Firmas Criptográficas
   const payloadToken = req.cookies.get('payload-token')?.value;
   
-  /**
-   * @fix Detección Dinámica de Identidad Supabase SSR.
-   * Escaneamos algorítmicamente para encontrar la firma de sesión de Supabase.
-   */
-  const hasSupabaseToken = req.cookies.getAll().some(cookie => 
+  // Detección de sesión Supabase SSR (Escaneo de prefijos sb-*)
+  const hasSupabaseSession = req.cookies.getAll().some(cookie => 
     cookie.name.startsWith('sb-') && cookie.name.includes('-auth-token')
   );
 
   if (payloadToken) return { isAuthenticated: true, role: 'developer', tenantId: 'ROOT_INFRA', traceId };
-  if (hasSupabaseToken) return { isAuthenticated: true, role: 'guest', tenantId: null, traceId };
+  if (hasSupabaseSession) return { isAuthenticated: true, role: 'guest', tenantId: null, traceId };
 
   return { isAuthenticated: false, role: 'anonymous', tenantId: null, traceId };
 }
 
 /**
  * @function safeEdgeRedirect
- * @description Inyecta cabeceras Anti-Caché en redirecciones de seguridad (HTTP 307).
- * @pilar VIII: Previene el envenenamiento del Vercel Edge Cache.
+ * @description Inyecta cabeceras Anti-Poisoning en redirecciones de seguridad.
  */
 function safeEdgeRedirect(url: URL): NextResponse {
   const response = NextResponse.redirect(url, 307);
-  response.headers.set('Cache-Control', 's-maxage=0, stale-while-revalidate');
+  // @pilar VIII: Evita el envenenamiento de caché en el Edge de Vercel.
+  response.headers.set('Cache-Control', 'no-store, max-age=0');
   return response;
 }
 
@@ -141,54 +140,49 @@ export async function routeGuard(request: NextRequest, locale: Locale): Promise<
   const { pathname, search } = request.nextUrl;
 
   /**
-   * @function emitForensicLog
-   * @description Reporta la decisión del centinela al log de infraestructura.
-   * @fix: Se reemplaza console.log por console.info para cumplir regla 'no-console'.
+   * TELEMETRÍA HEIMDALL (Audit Protocol)
    */
-  const emitForensicLog = (status: 'GRANTED' | 'REJECTED' | 'REDIRECTED', reason: string, passport: SovereignPassport) => {
+  const emitTelemetry = (status: 'GRANTED' | 'REJECTED' | 'REDIRECTED', reason: string, passport: AuthorizedPassport) => {
     const duration = (performance.now() - startTime).toFixed(2);
     const statusColor = status === 'GRANTED' ? C.green : (status === 'REJECTED' ? C.red : C.yellow);
     
     if (process.env.NODE_ENV !== 'production') {
       console.info(
-        `${C.magenta}[DNA][GUARD]${C.reset} ${statusColor}${status.padEnd(10)}${C.reset} | ` +
+        `${C.magenta}[DNA][TELEMETRY]${C.reset} ${statusColor}${status.padEnd(10)}${C.reset} | ` +
         `${pathname.padEnd(30)} | ` +
         `Role: ${passport.role.padEnd(10)} | ` +
         `Lat: ${duration}ms | ` +
-        `Trace: ${traceId} | ` +
         `Audit: ${reason}`
       );
     }
   };
 
-  // 1. FILTRO DE INFRAESTRUCTRURA (Bypass Directo)
+  // 1. Bypass de Infraestructura
   if (INFRA_BYPASS.some((prefix) => pathname.startsWith(prefix))) return null;
 
-  // 2. NORMALIZACIÓN ALGORÍTMICA DE RUTA LÓGICA
+  // 2. Normalización de Ruta Lógica (Sin segmento de idioma)
   const segments = pathname.split('/').filter(Boolean);
   const logicalPath = segments.length > 1 ? `/${segments.slice(1).join('/')}` : '/';
   
-  // 3. VALIDACIÓN DE PERÍMETRO PÚBLICO
-  const isPublicFamily = 
-    logicalPath === '/blog' || logicalPath.startsWith('/blog/') || 
-    logicalPath === '/legal' || logicalPath.startsWith('/legal/');
-    
-  const isPublic = PUBLIC_WHITELIST.has(logicalPath) || isPublicFamily;
+  // 3. Verificación de Perímetro Público
+  // Se incluyen familias dinámicas (blog/*, legal/*)
+  const isPublicFamily = logicalPath.startsWith('/blog') || logicalPath.startsWith('/legal');
+  const isWhitelisted = PUBLIC_WHITELIST.has(logicalPath) || isPublicFamily;
 
-  if (isPublic) return null;
+  if (isWhitelisted) return null;
 
-  // 4. HANDSHAKE DE PASAPORTE
-  const passport = resolveSovereignPassport(request, traceId);
+  // 4. Handshake de Pasaporte
+  const passport = resolveAuthorizedPassport(request, traceId);
   
-  // 5. GATING DE IDENTIDAD (Authentication Guard)
+  // 5. Gating de Autenticidad
   if (!passport.isAuthenticated) {
-    emitForensicLog('REDIRECTED', 'Identity required for non-public perimeter', passport);
-    const loginRedirect = new URL(`/${locale}${search}`, request.url);
-    loginRedirect.searchParams.set('auth', 'required');
-    return safeEdgeRedirect(loginRedirect);
+    emitTelemetry('REDIRECTED', 'Identity required for protected perimeter', passport);
+    const loginUrl = new URL(`/${locale}/login${search}`, request.url);
+    loginUrl.searchParams.set('redirect', pathname);
+    return safeEdgeRedirect(loginUrl);
   }
 
-  // 6. GATING DE AUTORIDAD (RBAC Protocol)
+  // 6. Gating de Autoridad (RBAC)
   const matchingRule = PROTECTION_MAP.find(rule => 
     logicalPath === rule.path || logicalPath.startsWith(`${rule.path}/`)
   );
@@ -198,21 +192,21 @@ export async function routeGuard(request: NextRequest, locale: Locale): Promise<
     const requiredWeight = AUTHORITY_WEIGHTS[matchingRule.minRole];
 
     if (userWeight < requiredWeight) {
-      emitForensicLog('REJECTED', `Hierarchy Drift: User(${userWeight}) < Required(${requiredWeight})`, passport);
-      const evacRedirect = new URL(`/${locale}/portal${search}`, request.url);
-      return safeEdgeRedirect(evacRedirect);
+      emitTelemetry('REJECTED', `Hierarchy Drift: ${passport.role} < ${matchingRule.minRole}`, passport);
+      return safeEdgeRedirect(new URL(`/${locale}/portal${search}`, request.url));
     }
   }
 
-  // 7. SELLO DE PASAJE & INYECCIÓN DE PASAPORTE (Header Sync)
-  emitForensicLog('GRANTED', 'Clearance verified by Edge Node', passport);
+  // 7. Handshake Final (Pasaje Concedido)
+  emitTelemetry('GRANTED', 'Clearance verified by Boundary Centinel', passport);
 
-  const passportHeaders = new Headers(request.headers);
-  passportHeaders.set('X-Heimdall-Trace', traceId);
-  passportHeaders.set('X-Sovereign-Role', passport.role);
-  if (passport.tenantId) passportHeaders.set('X-Sovereign-Tenant', passport.tenantId);
+  // Sincronización de cabeceras de autoridad para Server Components
+  const headers = new Headers(request.headers);
+  headers.set('X-Heimdall-Trace', traceId);
+  headers.set('X-Authorized-Role', passport.role);
+  if (passport.tenantId) headers.set('X-Authorized-Tenant', passport.tenantId);
 
   return NextResponse.next({
-    request: { headers: passportHeaders }
+    request: { headers }
   });
 }

@@ -1,12 +1,9 @@
 /**
  * @file apps/portfolio-web/middleware.ts
  * @description Orquestador Soberano de Tráfico de Borde (Edge Orchestrator).
- *              Refactorizado: Arquitectura SEO-First para negociación de idiomas.
- *              Nivelado: Telemetría Verbosa Heimdall v2.5 (Lint Pure).
- *              Sincronizado: Inyección de cabeceras de auditoría y protección Regex
- *              contra tormentas de 404s en recursos estáticos.
+ *              Optimizado para Next.js 15 y Vercel Edge Network.
  * 
- * @version 27.0 - Static Extension Gating & Forensic Telemetry
+ * @version 28.0 - Direct Flow Optimization & Forensic Telemetry
  * @author Raz Podestá - MetaShark Tech
  */
 
@@ -16,7 +13,6 @@ import { routeGuard } from './src/lib/route-guard';
 
 /**
  * CONSTANTES DE TELEMETRÍA (Protocolo Heimdall)
- * @pilar III: Contrato de tipo explícito para erradicar TS2339.
  */
 const C = {
   reset: '\x1b[0m',
@@ -28,52 +24,53 @@ const C = {
   bold: '\x1b[1m'
 } as const;
 
-const EXCLUDED_PREFIXES =[
+/**
+ * PREFIJOS EXCLUIDOS (Rutas de infraestructura y activos)
+ */
+const EXCLUDED_PREFIXES = [
   '/_next', '/api', '/_payload', '/static', '/images', '/video', 
   '/audio', '/fonts', '/icons', '/favicon.ico', '/robots.txt', 
-  '/sitemap.xml', '/manifest.json', '/auth', '/r/'
+  '/sitemap.xml', '/manifest.json', '/auth'
 ];
 
 /**
- * @constant HAS_EXTENSION
- * @description Patrón Regex para detectar si la ruta solicita un archivo físico (ej: .png, .xml).
- * @pilar VIII: Resiliencia - Evita que el middleware intente inyectar idiomas en archivos estáticos.
+ * Regex para detección de archivos físicos (extensiones).
  */
 const HAS_EXTENSION = /\.[a-z0-9]+$/i;
 
 /**
  * MODULE: getPreferredLocale
- * @description Negocia el idioma basado en la identidad de sesión (Cookies) 
- *              o la firma del navegador (Headers), con fallback seguro para bots.
+ * Negocia el idioma basado en Cookies (Persistencia) o Headers (Preferencia de Navegador).
  */
 function getPreferredLocale(request: NextRequest, traceId: string): Locale {
+  // 1. Prioridad: Cookie persistente
   const cookieLocale = request.cookies.get(i18n.cookieName)?.value;
   if (cookieLocale && isValidLocale(cookieLocale)) return cookieLocale as Locale;
 
+  // 2. Fallback: Negociación por cabecera Accept-Language
   const acceptLang = request.headers.get('accept-language');
   if (acceptLang) {
     const preferred = acceptLang.split(',')[0].split('-')[0];
     const matched = i18n.locales.find(l => l.startsWith(preferred));
     if (matched) {
-      /** @fix: console.log -> console.info para cumplimiento Linter v10.0 */
-      console.info(`${C.cyan}[DNA][I18N]${C.reset} Locale resolved via Browser: ${matched} | Trace: ${traceId}`);
+      console.info(`${C.cyan}[DNA][I18N]${C.reset} Resolved via Browser: ${matched} | Trace: ${traceId}`);
       return matched as Locale;
     }
   }
+
+  // 3. Fallback Final: Idioma por defecto (pt-BR)
   return i18n.defaultLocale;
 }
 
 /**
  * APARATO PRINCIPAL: middleware
- * @description Centinela de borde. Orquesta el tráfico antes de tocar el servidor de origen.
  */
 export async function middleware(request: NextRequest) {
   const start = performance.now();
   const traceId = `edge_pulse_${Date.now().toString(36).toUpperCase()}`;
   const { pathname, search } = request.nextUrl;
 
-  // I. BYPASS DE ACTIVOS E INFRAESTRUCTRURA (Optimización de latencia)
-  // Se evalúan prefijos excluidos Y extensiones de archivo estáticas
+  // I. BYPASS DE ACTIVOS (Optimización de latencia)
   if (
     EXCLUDED_PREFIXES.some((prefix) => pathname.startsWith(prefix)) ||
     HAS_EXTENSION.test(pathname)
@@ -81,84 +78,74 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  /**
-   * PROTOCOLO HEIMDALL: Inicio de Escrutinio
-   * @pilar IV: Trazabilidad forense mediante grupos de consola.
-   */
   console.group(`${C.magenta}${C.bold}[DNA][EDGE]${C.reset} Incoming Request | Trace: ${traceId}`);
-  console.info(`Path: ${pathname} | Method: ${request.method}`);
-
+  
   try {
-    // II. REDIRECCIÓN DE RAÍZ SOBERANA (SEO Root Fix)
+    // II. REDIRECCIÓN DE RAÍZ SOBERANA
+    // Gracias a app/page.tsx, esto es ahora un segundo nivel de seguridad.
     if (pathname === '/') {
       const locale = getPreferredLocale(request, traceId);
-      
-      /** @fix: console.log -> console.info */
-      console.info(`${C.green}   →[REDIRECT]${C.reset} Root node found. Targeted to: /${locale}`);
-      
       const redirectUrl = new URL(`/${locale}${search}`, request.url);
-      const response = NextResponse.redirect(redirectUrl, 307);
       
-      // @pilar VIII: Previene el envenenamiento de caché (Edge Poisoning)
-      response.headers.set('Cache-Control', 's-maxage=0, stale-while-revalidate');
+      console.info(`${C.green}   → [REDIRECT]${C.reset} Root node targeted to: /${locale}`);
       console.groupEnd();
+      
+      const response = NextResponse.redirect(redirectUrl, 307);
+      response.headers.set('Cache-Control', 'no-store, max-age=0'); // Vital para no cachear rumbos antiguos
       return response;
     }
 
-    // III. ORQUESTACIÓN DE IDIOMA Y CORRECCIÓN DE RUMBOS
+    // III. NORMALIZACIÓN DE SEGMENTOS I18N
     const segments = pathname.split('/').filter(Boolean);
-    const currentLocale = segments[0];
+    const potentialLocale = segments[0];
 
-    if (!isValidLocale(currentLocale)) {
+    if (!isValidLocale(potentialLocale)) {
       const locale = getPreferredLocale(request, traceId);
       const redirectUrl = new URL(`/${locale}${pathname}${search}`, request.url);
       
-      /** @fix: console.log -> console.info */
-      console.info(`${C.yellow}   → [RE-ROUTE]${C.reset} Invalid segment corrected: /${currentLocale} -> /${locale}`);
+      console.info(`${C.yellow}   → [RE-ROUTE]${C.reset} Invalid locale segment: /${potentialLocale} -> /${locale}`);
+      console.groupEnd();
       
       const response = NextResponse.redirect(redirectUrl, 307);
-      response.headers.set('Cache-Control', 's-maxage=0, stale-while-revalidate');
-      console.groupEnd();
+      response.headers.set('Cache-Control', 'no-store, max-age=0');
       return response;
     }
 
-    // IV. HANDSHAKE DE SEGURIDAD (RBAC Gating)
-    const guardResponse = await routeGuard(request, currentLocale as Locale);
+    // IV. GUARDIÁN DE AUTORIDAD (RBAC)
+    const guardResponse = await routeGuard(request, potentialLocale as Locale);
     if (guardResponse) {
-      console.info(`${C.yellow}   → [GUARD] Traffic intercepted by Security Node.`);
+      console.info(`${C.yellow}   → [GUARD] INTERCEPTED`);
       console.groupEnd();
       return guardResponse;
     }
 
-    // V. SELLO DE RESPUESTA SOBERANA (Pasaje Permitido)
+    // V. CONCESIÓN DE PASAJE
     const response = NextResponse.next();
     const duration = (performance.now() - start).toFixed(2);
 
+    // Inyección de Telemetría en Cabeceras
     response.headers.set('X-Heimdall-Trace', traceId);
     response.headers.set('X-Edge-Latency', `${duration}ms`);
-    response.headers.set('X-Enterprise-Orchestrator', 'v27.0-Forensic');
-
-    console.info(`${C.green}   ✓ [GRANTED]${C.reset} Clearance verified | Latency: ${duration}ms`);
+    
+    console.info(`${C.green}   ✓ [GRANTED]${C.reset} Trace: ${traceId} | Latency: ${duration}ms`);
     console.groupEnd();
     return response;
 
   } catch (error: unknown) {
     const msg = error instanceof Error ? error.message : 'Unknown Edge Drift';
-    
-    /** @fix: console.error con contexto técnico */
-    console.error(`\n${C.red}${C.bold}✖ [CRITICAL][EDGE] Middleware Aborted:${C.reset}`);
-    console.error(`   ↳ Motivo: ${msg}`);
-    console.error(`   ↳ Trace: ${traceId}\n`);
-    
+    console.error(`\n${C.red}${C.bold}✖ [CRITICAL][EDGE] Middleware Aborted:${C.reset} ${msg}`);
     console.groupEnd();
 
-    // Fail-Safe: Mantenemos el portal online con estado degradado
-    const fallbackResponse = NextResponse.next();
-    fallbackResponse.headers.set('X-Edge-Status', 'Degraded');
-    return fallbackResponse;
+    return NextResponse.next(); // Fallback a Next para no matar la app
   }
 }
 
+/**
+ * CONFIGURACIÓN DEL MATCHER
+ * Se excluyen las rutas de administración y los payloads de datos para evitar colisiones.
+ */
 export const config = {
-  matcher:['/((?!api|_next/static|_next/image|images|video|audio|fonts|favicon.ico|manifest.json|admin|_payload).*)'],
+  matcher: [
+    '/((?!api|_next/static|_next/image|images|video|audio|fonts|favicon.ico|manifest.json|admin|_payload).*)',
+  ],
 };

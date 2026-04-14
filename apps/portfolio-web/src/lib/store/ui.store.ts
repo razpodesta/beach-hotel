@@ -1,11 +1,11 @@
 /**
  * @file apps/portfolio-web/src/lib/store/ui.store.ts
- * @description Orquestador Soberano del Estado Global (The DNA Vault).
+ * @description Orquestador del Estado Global (The DNA Vault).
  *              Gestiona la visibilidad de widgets, persistencia de identidad 
  *              y el reactor de reputación reactivo (Protocolo 33).
- *              Refactorizado: Resolución de infracciones 'no-empty-function'
- *              mediante No-Op explícitos para entornos SSR.
- * @version 14.1 - Linter Pure & Reputation Reactor Active
+ *              Nivelado: MES Compliance, Telemetría Heimdall v3.0 y Linter Pure.
+ * 
+ * @version 15.0 - MES Compliance & Linter Pure Edition
  * @author Staff Engineer - MetaShark Tech
  */
 
@@ -19,19 +19,19 @@ import type { StateStorage } from 'zustand/middleware';
  * @pilar V: Adherencia Arquitectónica.
  */
 import { calculateProgress } from '@metashark/reputation-engine';
-import type { SovereignRoleType } from '@metashark/cms-core';
+import type { SovereignRoleType as AuthorizedRoleType } from '@metashark/cms-core';
 
 /**
- * @interface SovereignSession
+ * @interface AuthorizedSession
  * @description Contrato de identidad inyectado tras la validación criptográfica.
  */
-export interface SovereignSession {
+export interface AuthorizedSession {
   userId: string;
   email: string;
-  role: SovereignRoleType;
+  role: AuthorizedRoleType;
   tenantId: string | null;
   lastLogin: string;
-  /** Puntos de experiencia (RazTokens) - Sincronizado con Silo D */
+  /** Puntos de experiencia (RazTokens) */
   xp: number; 
   /** Nivel de ascensión calculado por el motor P33 */
   level: number;
@@ -49,7 +49,7 @@ interface UIState {
   tenantId: string | null;
 
   // --- SESIÓN Y REPUTACIÓN ---
-  session: SovereignSession | null;
+  session: AuthorizedSession | null;
 }
 
 interface UIActions {
@@ -66,7 +66,7 @@ interface UIActions {
   setTenant: (tenantId: string | null) => void;
   
   /** Acciones de Identidad */
-  setSession: (session: SovereignSession | null) => void;
+  setSession: (session: AuthorizedSession | null) => void;
   updateXP: (gain: number) => void;
   clearSession: () => void;
 }
@@ -74,27 +74,26 @@ interface UIActions {
 type UIStore = UIState & UIActions;
 
 /**
- * PROTOCOLO CROMÁTICO HEIMDALL v3.0
+ * PROTOCOLO CROMÁTICO (Telemetría)
  */
 const C = {
   reset: '\x1b[0m', magenta: '\x1b[35m', cyan: '\x1b[36m', 
   green: '\x1b[32m', yellow: '\x1b[33m', bold: '\x1b[1m'
-};
+} as const;
 
 /**
  * STORAGE ENGINE: Resilience Fallback
  * @description Provee una implementación No-Op para entornos de servidor (SSR).
- * @fix: Se añaden comentarios internos para satisfacer la regla 'no-empty-function'.
  */
 const resolveStorageEngine = (): StateStorage => {
   if (typeof window === 'undefined') {
     return {
       getItem: () => null,
       setItem: () => { 
-        /* Handshake de escritura omitido en servidor */ 
+        /** @note Handshake de escritura omitido en servidor para evitar desincronización */ 
       },
       removeItem: () => { 
-        /* Handshake de purga omitido en servidor */ 
+        /** @note Handshake de purga omitido en servidor */ 
       }
     };
   }
@@ -119,14 +118,14 @@ const stateCreator: StateCreator<UIStore, [["zustand/persist", unknown]]> = (set
 
   /**
    * @action setSession
-   * @description Handshake final de identidad. Calcula el rango inicial.
+   * @description Handshake final de identidad. Normaliza el nivel según XP.
    */
   setSession: (sessionData) => {
     if (sessionData) {
       const { currentLevel } = calculateProgress(sessionData.xp || 0);
       const normalizedSession = { ...sessionData, level: currentLevel };
       
-      console.log(
+      console.info(
         `${C.magenta}${C.bold}[DNA][SESSION]${C.reset} Identity Linked | ` +
         `Role: ${C.cyan}${normalizedSession.role}${C.reset} | ` +
         `XP: ${C.green}${normalizedSession.xp}${C.reset}`
@@ -141,7 +140,6 @@ const stateCreator: StateCreator<UIStore, [["zustand/persist", unknown]]> = (set
   /**
    * @action updateXP
    * @description Reactor de Reputación. Inyecta XP y dispara telemetría de ascensión.
-   * @pilar III: Inmutabilidad Total.
    */
   updateXP: (gain) => {
     const current = get().session;
@@ -152,7 +150,7 @@ const stateCreator: StateCreator<UIStore, [["zustand/persist", unknown]]> = (set
 
     // Detección de Ascensión (Level Up)
     if (currentLevel > current.level) {
-      console.log(
+      console.info(
         `%c[P33][ASCENSION] Nivel ${current.level} → ${currentLevel} | RZB Delta: +${gain}`, 
         'color: #a855f7; font-weight: bold; font-size: 12px;'
       );
@@ -169,10 +167,10 @@ const stateCreator: StateCreator<UIStore, [["zustand/persist", unknown]]> = (set
 
   /**
    * @action clearSession
-   * @description Protocolo Scorched-Earth para cierre de sesión.
+   * @description Protocolo de seguridad para purga de la bóveda.
    */
   clearSession: () => {
-    console.warn(`${C.yellow}[HEIMDALL][SECURITY] Session Severed. Purging Vault.${C.reset}`);
+    console.warn(`${C.yellow}[TELEMETRY][SECURITY] Session Severed. Purging Vault.${C.reset}`);
     set({ session: null, isAuthModalOpen: false });
   },
 
@@ -196,12 +194,8 @@ export const useUIStore = create<UIStore>()(
   persist(
     stateCreator,
     {
-      name: 'metashark-vault-ui',
+      name: 'hotel-beach-vault',
       storage: createJSONStorage(resolveStorageEngine),
-      /**
-       * @pilar XIII: Privacy & Build Isolation.
-       * Solo persistimos los datos necesarios para la continuidad de la atmósfera.
-       */
       partialize: (state) => ({
         isVisitorHudOpen: state.isVisitorHudOpen,
         session: state.session,
@@ -209,7 +203,7 @@ export const useUIStore = create<UIStore>()(
       onRehydrateStorage: () => (state) => {
         state?.setHasHydrated(true);
       },
-      version: 11, // Sincronizado con el Reactor P33 v2.0
+      version: 12, // MES Compliance Bump
     }
   )
 );
